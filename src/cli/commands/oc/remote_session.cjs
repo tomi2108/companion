@@ -5,8 +5,8 @@ const fzf = require("node-fzf");
 const { getPods, getProjects, login, remoteSession } = require("../../../lib/oc.cjs");
 
 module.exports = {
-  command: "rsh",
-  aliases: ["remote_session"],
+  command: "remote-session",
+  aliases: ["rsh", "remote"],
   describe: "Start a remote session",
   handler: async () => {
     login();

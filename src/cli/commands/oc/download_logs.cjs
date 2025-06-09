@@ -4,8 +4,8 @@ const fzf = require("node-fzf");
 const { downloadLogs, getPods, getProjects, login } = require("../../../lib/oc.cjs");
 
 module.exports = {
-  command: "download",
-  aliases: ["dwnld"],
+  command: "download-logs",
+  aliases: ["dwnld", "download"],
   describe: "Download pod logs",
   handler: async () => {
     login();

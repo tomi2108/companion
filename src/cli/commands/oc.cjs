@@ -5,11 +5,11 @@ module.exports = {
   describe: "Manage openshift resources",
   aliases: [],
   builder: (yargs) => yargs
-    .command(require("./oc/deploy.cjs"))
-    .command(require("./oc/download.cjs"))
     .command(require("./oc/logs.cjs"))
+    .command(require("./oc/download_logs.cjs"))
+    .command(require("./oc/deploy.cjs"))
     .command(require("./oc/restart.cjs"))
-    .command(require("./oc/rsh.cjs"))
+    .command(require("./oc/remote_session.cjs"))
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }
