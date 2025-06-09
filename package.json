@@ -16,6 +16,7 @@
   },
   "description": "",
   "dependencies": {
+    "node-fzf": "^0.14.0",
     "yargs": "^17.7.2"
   }
 }

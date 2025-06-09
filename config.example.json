@@ -1,0 +1,22 @@
+{
+  "paths": {
+    "scripts": "",
+    "ms": "",
+    "mf": "",
+    "oc": "",
+    "3scale": "",
+    "argocd": ""
+  },
+  "user": {
+    "oc": {
+      "cuyo": {
+        "token": ""
+      }
+    },
+    "gitlab": ""
+  },
+  "preferences": {
+    "logs_path": "",
+    "browser": ""
+  }
+}

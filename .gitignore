@@ -3,22 +3,13 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-.scannerwork
 
 # testing
 /coverage
 /data/traceability
 
-# next.js
-/.next/
-/out/
-/docs/
-
 # production
 /build
-/dist/index.js
-dist
-@mf-types
 
 # misc
 .DS_Store
@@ -37,12 +28,8 @@ yarn-error.log*
 env.production.local
 .env
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 #locks
 package-lock.json
@@ -50,3 +37,6 @@ yarn.lock
 yarn-lock.json
 /nbproject/private/
 /nbproject
+
+/configs
+config.json

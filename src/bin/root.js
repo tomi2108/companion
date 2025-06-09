@@ -1,23 +1,18 @@
 #!/usr/bin/env node
 
 import yargs from "yargs";
+import { loadConfig } from "../lib/config.js";
+import { setup } from "../lib/setup.js";
+
+loadConfig();
+setup();
 
 yargs()
   .scriptName("companion")
   .command({
-    command: "oc",
-    aliases: ["oc"],
-    describe: "Openshift related commands",
-    handler: () => import("./oc.js"),
-    builder: {
-    }
-  })
-  .command({
-    command: "deploy",
-    aliases: ["deploy", "d"],
-    describe: "Openshift related commands",
-    handler: () => import("./deploy.js"),
-    builder: {
-    }
+    command: "pods",
+    aliases: ["pods"],
+    describe: "Manage Openshift Pods",
+    handler: () => import("./pods/index.js")
   })
   .parse(process.argv.slice(2));

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+oc_token=$OC_TOKEN
+project=$1
+
+$OC login --token="$oc_token"  1> /dev/null
+
+$OC project $project 1> /dev/null
+
+pods=$($OC get pods | sed 1d)
+pod_name=$(echo "$pods" | fzf-tmux -w 100% -h 100%  --prompt="Choose pod: " --info=inline --layout=reverse | awk '{printf $1}')
+[ -z "$pod_name" ] && exit
+
+pod="pod/$pod_name"
+temp=${pod_name%-*}
+app_name=${temp%-*}
+command=$(echo $action | awk '{print $1}')
+
+
+clear
+tmux clear-history 1> /dev/null
+
+if [ $project == "movistar-empresas-cert" ] || [ $project == "movistar-empresas" ]; then
+  tmp="$(echo "$pods" | grep $app_name | awk '{print $1}')"
+  arr=($tmp)
+  tmux split-window -v -b "$OC logs -f pod/${arr[1]}"
+  tmux split-window -h "$OC logs -f pod/${arr[2]}"
+  $OC logs -f pod/${arr[0]}
+else
+  $OC logs -f $pod 
+fi
