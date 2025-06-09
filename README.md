@@ -46,9 +46,9 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [x] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
 - [x] Eliminación, reinicio y monitoreo de pods y deployments
 - [ ] Forwarding de puertos para servicios específicos
-- [ ] Gestión de secretos y configuración de variables de entorno (🚧 en progreso)
+- [x] Gestión de secretos y configuración de variables de entorno
 - [ ] Generación de rutas públicas para testing rápido
-- [x] Creación de archivos `.env` preconfigurados
+- [x] Creación de archivos `.env` con la configuración de ambientes desplegados
 
 ### 🔁 Utilidades para GitLab
 - [x] Clonación inteligente de repositorios del grupo del proyecto
