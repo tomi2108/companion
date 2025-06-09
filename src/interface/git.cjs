@@ -13,14 +13,12 @@ async function cloneRepo(link, full_path) {
 }
 
 async function stash(full_path, callback) {
-  // TODO implement
-  // const git = gitCreate({ baseDir: full_path });
-  // await git.stash();
-  console.log("Stashing");
+  const git = gitCreate({ baseDir: full_path });
+  const { total: stash_before } = await git.stashList();
+  await git.stash();
+  const { total: stash_after } = await git.stashList();
   await callback();
-  console.log("Popping stash if there were changes");
-  // if (changes_stashed)
-  // await git.stashPop();
+  if (stash_after !== stash_before) await git.stash(["pop"]);
 }
 
 async function createNewBranch(full_path, name) {
