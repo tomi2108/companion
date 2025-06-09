@@ -1,13 +1,13 @@
 const { Gitlab } = require("@gitbeaker/rest");
 const config = require("../lib/config.cjs");
 const path = require("node:path");
-const { cloneRepo: gitCloneRepo, getOriginUrl, getCommits, push, getActiveBranch, getDiffCommits } = require("./git.cjs");
+const { cloneRepo: gitCloneRepo, getOriginUrl, push, getActiveBranch, getDiffCommits } = require("./git.cjs");
 const { createDirIfNotExists } = require("./files.cjs");
 const log = require("../lib/log.cjs");
 
 const glab = () => new Gitlab({
   token: config.gitlab.token,
-  host: `https:/${config.gitlab.server}`
+  host: config.gitlab.server
 });
 
 async function getProjects(id) {
@@ -52,6 +52,9 @@ async function getProject(full_path) {
   const url = new URL(origin_url);
   const pathname = url.pathname.slice(0, -4).slice(1);
   const name = pathname.split("/").at(-1);
+  // TODO: should probably find a better way
+  // of getting gitlab info of a project based on
+  // git workspace
   const matches = await glab().Projects.search(name);
   return matches.find((r) => pathname === r.path_with_namespace);
 }
@@ -80,7 +83,7 @@ async function createMr(full_path, branch) {
 }
 
 async function createAndMergeMr(full_path, branch) {
-  await createMr(full_path, branch);
+  const mr = await createMr(full_path, branch);
   // TODO: Merge mr
 }
 

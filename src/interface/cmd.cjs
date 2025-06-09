@@ -19,10 +19,6 @@ function envs() {
 
   return {
     SCRIPTS_REPO_PATH: config.global.scripts_dir,
-    GLAB_CONFIG_DIR: config.global.glab_config_path,
-    GITLAB_HOST: config.gitlab.server,
-    GITLAB_API_HOST: config.gitlab.server,
-    GITLAB_TOKEN: config.gitlab.token,
     // TODO: OC_TOKEN && OC_SERVER may not be needed for the scripts...
     // we can maybe write the config file for each cluster/context
     // deriving from namespaces && config.openshift.(...).token
@@ -39,7 +35,6 @@ function envs() {
     // inject them in OC env. We need a way to change server by command, each command can use any
     //  server but only one, and a way to change cluster in the same command (a command gets a list
     //  of clusters and chan choose to use any of them) If cluster === project, if not then this is nonesense
-    GITLAB_USER: config.gitlab.username,
     NODE_OPTIONS: "--max-old-space-size=8192",
     TKN: `tkn --kubeconfig=${config.global.oc_config_path}`,
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,

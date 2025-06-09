@@ -1,13 +1,17 @@
 const config = require("../lib/config.cjs");
 const { executeScript } = require("./cmd.cjs");
 const axios = require("axios");
+const Jira = require("jira-client");
+
+const jira = () => new Jira({
+  host: config.jira.server,
+  protocol: "https",
+  username: config.jira.username,
+  password: config.jira.token
+});
 
 function formatLabels(labels) {
   return labels.map((l) => `-l${l}`);
-}
-
-function formatIssues(issues) {
-  return issues.split("\n").filter(Boolean).map(stringToIssue).filter((i) => Boolean(i.key));
 }
 
 function getEpics() {
@@ -18,12 +22,38 @@ function getEpics() {
   return getIssues({ type: "Feature" });
 }
 
-function getIssues({ labels = [], type }) {
-  return formatIssues(
-    executeScript("jira/list", {
-      args: [type ?? "", ...formatLabels(labels)].filter(Boolean),
-      supressStdout: true
-    }));
+async function getProject() {
+  return await jira().getProject(config.jira.project_key);
+}
+
+async function getBoard() {
+  return await jira().getBoard(config.jira.board_id);
+}
+
+async function getIssues({ labels, type } = { labels: [] }) {
+  const board = await getBoard();
+
+  let query = `${type ? `issuetype=${type}` : ""}`;
+  if (labels.length > 0) {
+    if (type) query += " AND ";
+    query += `labels in (${labels})`;
+  }
+
+  const { issues } = await jira().getIssuesForBoard(
+    board.id,
+    0,
+    100,
+    query,
+    true,
+    ["key", "summary", "issuetype", "status"]
+  );
+  return issues.map((i) => ({
+    id: i.id,
+    key: i.key,
+    type: i.fields.issuetype.name,
+    status: i.fields.status.name,
+    description: i.fields.summary
+  }));
 }
 
 function editIssue(issue_key) {
@@ -108,16 +138,6 @@ function estimateIssue(issue_key, estimacion) {
   });
 }
 
-function stringToIssue(issueString) {
-  const splitted = issueString.split("\t").filter((s) => Boolean(s));
-  if (splitted.length === 0) return null;
-  const type = splitted[0];
-  const key = splitted[1];
-  const description = splitted[2];
-  const status = splitted[3];
-  return { key, description, type, status };
-}
-
 module.exports = {
   commentIssue,
   createIssue,
@@ -133,5 +153,5 @@ module.exports = {
   getUsers,
   assignIssue,
   estimateIssue,
-  stringToIssue
+  getProject
 };

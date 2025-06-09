@@ -78,6 +78,7 @@
   },
   "jira": {
     "project_key": "ECR",
+    "board_id": 36,
     "labels": [
       "ECR-Replacement",
       "ECR-Raplacement"
