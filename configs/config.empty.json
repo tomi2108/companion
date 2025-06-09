@@ -9,10 +9,8 @@
     "rest": ""
   },
   "openshift": {
-    "cuyo": {
-      "username": "",
-      "password": ""
-    }
+    "username": "",
+    "password": ""
   },
   "gitlab": {
     "username": "",

@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const { deepMerge } = require("./utils.cjs");
 const Enquirer = require("enquirer");
 
-const { password, select } = Enquirer;
+const { password, select, input } = Enquirer;
 
 const default_config = {
   preferences: {
@@ -25,13 +25,14 @@ let config = {
     glab_config_path: path.resolve(__dirname, "../../.configs/glab/")
   },
   openshift: {
-    cuyo: {
-      server: "https://api.ocpnp.cuyorh.tcloud.ar:6443"
-    }
+    server_cuyo: "https://api.ocpnp.cuyorh.tcloud.ar:6443",
+    server_barracas: "https://api.ocpnp.brcrh.tcloud.ar:6443"
   },
   gitlab: {
     server: "gitlab-ee.agil.movistar.com.ar"
-
+  },
+  jira: {
+    server: "ar-telefonicahispam.atlassian.net"
   }
 };
 
@@ -73,12 +74,14 @@ function validateConfig(userConfig) {
       despliegues: userConfig.paths?.despliegues
     },
     openshift: {
-      cuyo: {
-        username: userConfig.openshift?.cuyo?.username,
-        password: userConfig.openshift?.cuyo?.password
-      }
+      username: userConfig.openshift?.username,
+      password: userConfig.openshift?.password
     },
     gitlab: {
+      username: userConfig.gitlab?.username,
+      token: userConfig.gitlab?.token
+    },
+    jira: {
       username: userConfig.gitlab?.username,
       token: userConfig.gitlab?.token
     },
@@ -105,15 +108,27 @@ config.setupConfig = async function() {
     choices: [...presets, "default"].map((s) => ({ name: s, value: s }))
   });
 
+  const oc_user = await input({
+    message: "Enter Openshift username"
+  });
+
   // TODO: maybe link the docs in the message on how to obtain them ?
   const oc_token = await password({
     message: "Enter Openshift auth token",
     mask: true
   });
 
+  const glab_user = await input({
+    message: "Enter Gitlab username"
+  });
+
   const glab_token = await password({
     message: "Enter Gitlab auth token",
     mask: true
+  });
+
+  const jira_user = await input({
+    message: "Enter Jira username"
   });
 
   const jira_token = await password({
@@ -122,7 +137,21 @@ config.setupConfig = async function() {
   });
 
   // TODO: write to our own config.json
-  console.log({ preset, oc_token, glab_token, jira_token });
+  console.log({
+    preset,
+    openshift: {
+      username: oc_user,
+      token: oc_token
+    },
+    gitlab: {
+      username: glab_user,
+      token: glab_token
+    },
+    jira: {
+      username: jira_user,
+      token: jira_token
+    }
+  });
 };
 
 module.exports = config;

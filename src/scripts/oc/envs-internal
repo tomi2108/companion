@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ $# != 1 ]
+then
+  echo "Usage: internal-envs <file>"
+  exit 1
+fi
+
+sed -i 's/-movistar-empresas/.movistar-empresas/g' $1 
+sed -i 's/.apps.ocpnp.cuyorh.tcloud.ar/.svc.cluster.local:8080/g' $1 

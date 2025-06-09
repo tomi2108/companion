@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+glab_user=$GITLAB_USER
+mf_path=$MF_REPOS_PATH
+
+name=$1
+[ -z "$name" ] && exit
+source_branch=$2
+[ -z "$source_branch" ] && exit
+target_branch=$3
+[ -z "$target_branch" ] && exit
+
+merge_branch="nivelacion/$source_branch-$target_branch"
+message="feat: nivelacion $source_branch to $target_branch"
+
+path=$mf_path/$name
+cd "$path" || exit
+stashed=$(git stash list | wc -l)
+git stash
+stashed2=$(git stash list | wc -l)
+
+git switch "$target_branch"
+git pull
+git switch -
+
+git switch "$source_branch"
+git pull
+git branch -D "$merge_branch"
+git branch "$merge_branch"
+
+git switch -
+git switch "$merge_branch"
+
+npm run test
+npm run lint
+npm run build
+
+git add .
+git commit -m "$message"
+glab mr create -b "$target_branch" -a "$glab_user" --no-editor -y --fill-commit-body --fill
+
+git switch -
+
+if [ "$stashed" != "$stashed2" ]
+then
+  git stash pop 
+fi

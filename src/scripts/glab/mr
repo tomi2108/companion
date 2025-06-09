@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+pipes_script=$SCRIPTS_REPO_PATH/interactive/pipes
+browser=qutebrowser
+glab_user=$GITLAB_USER
+
+actions=("Create.-- Create and Merge merge request" 
+  "Build.-- Create merge request"
+  "Merge.-- Merge merge request"
+  "Checkout.-- Checkout merge request last commit"
+  "Diff.-- Diff merge request"
+)
+
+command=$(printf '%s\n' "${actions[@]}" | column -t -s '.' -o '      ' | fzf-tmux -w 100% -h 100% --prompt="Choose command: " --info=inline --layout=reverse|awk '{printf $1}')
+[ -z "$command" ] && exit
+
+if [ "$command" == "Create" ]
+then
+  branch=$(git branch -a | grep -v "remote" | grep -v '*' | fzf-tmux -w 100% -h 100% --prompt="Choose branch: " --info=inline --layout=reverse)
+  [ -z "$branch" ] && exit
+  glab mr create -b $branch -a "$glab_user" --no-editor -y --fill-commit-body --fill
+  end=$((SECONDS+40))
+  while [ $SECONDS -lt $end ]; do
+    for var in / - \\ \|; do echo -en "\r$var Building merge request";sleep .1; done 
+  done
+  glab mr merge -d -y $mr || (echo "Retrying merge..." && sleep 20 && glab mr merge -d -y $mr)
+  $pipes_script
+fi
+
+if [ "$command" == "Build" ]
+then
+  branch=$(git branch -a | grep -v "remote" | grep -v '*' | fzf-tmux -w 100% -h 100% --prompt="Choose branch: " --info=inline --layout=reverse)
+  [ -z "$branch" ] && exit
+  glab mr create -b $branch -a "$glab_user" --no-editor -y --fill-commit-body --fill
+  mr=$(glab mr list | sed -n 3p | awk '{print $1}')
+  glab mr view "$mr" | grep https | awk '{printf $2}' | xargs $browser
+
+fi
+
+if [ "$command" == "Merge" ]
+then
+  mr=$(printf "\n" | glab mr ls | sed 1d | sed 1d | fzf-tmux -w 100% -h 100% --prompt="Choose merge request: " --info=inline --layout=reverse| awk '{printf $1}')
+  [ -z "$mr" ] && exit
+  glab mr merge -d -y "$mr"
+  $pipes_script
+fi
+
+if [ "$command" == "Checkout" ]
+then
+  mr=$(glab mr ls | sed 1d | sed 1d | fzf-tmux -w 100% -h 100% --prompt="Choose merge request: " --info=inline --layout=reverse| awk '{printf $1}')
+  [ -z "$mr" ] && exit
+  glab mr checkout "$mr"
+fi
+
+if [ "$command" == "Diff" ]
+then
+  mr=$(glab mr ls | sed 1d | sed 1d | fzf-tmux -w 100% -h 100% --prompt="Choose merge request: " --info=inline --layout=reverse| awk '{printf $1}')
+  [ -z "$mr" ] && exit
+  glab mr diff "$mr" | diff-so-fancy
+fi

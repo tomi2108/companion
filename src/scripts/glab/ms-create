@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+ms_path=$MS_REPOS_PATH
+
+types=("fcd" "int" "dao" "bau")
+type=$(printf '%s\n' "${types[@]}" | fzf-tmux -w 100% -h 100% --prompt="Enter service type: " --info=inline --layout=reverse)
+[ -z "$type" ] && exit
+
+if [ "$type" == "int" ]
+then
+  connections=("apigw" "digit3")
+  connection=$(printf '%s\n' "${connections[@]}" | fzf-tmux -w 100% -h 100% --prompt="Enter connection type: " --info=inline --layout=reverse)
+  [ -z "$connection" ] && exit
+fi
+
+dependencies=("axios@0.21.4")
+
+if [ "$type" == "dao" ]
+then
+  dependencies=("sequelize")
+fi
+
+if [ "$type" == "bau" ]
+then
+  dependencies=("mongoose")
+fi
+
+name=$(printf "\n" | fzf-tmux -w 100% -h 100% --print-query --prompt="Enter service name (without movistarempresas): " --info=inline --layout=reverse)
+[ -z "$name" ] && exit
+
+description=$(printf "\n" | fzf-tmux -w 100% -h 100% --print-query --prompt="Enter service description: " --info=inline --layout=reverse)
+[ -z "$description" ] && exit
+
+full_path=$ms_path/$name
+configuration=$full_path/src/configuration
+models=$full_path/src/models
+services=$full_path/src/services
+server=$full_path/src/server/index.ts
+tests_services=$full_path/tests/services
+tests_configuration=$full_path/tests/configuration
+
+cp -r "$ms_path"/movistarempresas-template "$full_path"
+cd "$full_path" || exit
+rm -rf .git coverage package-lock.json node_modules .scannerwork build dist
+
+if [ "$type" == "bau" ]
+then
+  rm "$models"/SequelizeExample.ts
+  rm "$configuration"/fcd_environment.ts
+  rm "$configuration"/dao_db.ts
+  rm "$configuration"/dao_environment.ts
+  rm "$configuration"/apigw_environment.ts
+  rm "$configuration"/digit3_environment.ts
+
+  rm "$services"/ApigwTokenService.ts
+  rm "$services"/Digit3TokenServices.ts
+
+  # TODO: add tests for bau connection to template
+  # mv "$tests_configuration"/bau.tests.ts "$tests_configuration"/db.tests.ts
+  rm -rf "$tests_configuration"
+  rm -rf "$tests_services"
+
+  mv "$configuration"/bau_db.ts "$configuration"/db.ts
+  mv "$configuration"/bau_environment.ts "$configuration"/environment.ts
+
+  sed -i '1 i\import "../configuration/db";' "$server"
+elif [ "$type" == "dao" ]
+then
+  rm "$models"/MongooseExample.ts
+  rm "$configuration"/fcd_environment.ts
+  rm "$configuration"/bau_db.ts
+  rm "$configuration"/bau_environment.ts
+  rm "$configuration"/apigw_environment.ts
+  rm "$configuration"/digit3_environment.ts
+  rm "$services"/ApigwTokenService.ts
+  rm "$services"/Digit3TokenServices.ts
+  rm -rf "$tests_services"
+
+  mv "$tests_configuration"/sequelize.tests.ts "$tests_configuration"/db.tests.ts
+  mv "$configuration"/dao_db.ts "$configuration"/db.ts
+  mv "$configuration"/dao_environment.ts "$configuration"/environment.ts
+
+elif [ "$type" == "int" ]
+then
+  rm -rf "$models"
+  rm "$configuration"/fcd_environment.ts
+  rm "$configuration"/bau_db.ts
+  rm "$configuration"/bau_environment.ts
+  rm "$configuration"/dao_db.ts
+  rm "$configuration"/dao_environment.ts
+  rm -rf "$tests_configuration"
+
+if [ "$connection" == "apigw" ]
+then
+  rm "$configuration"/digit3_environment.ts
+  rm "$services"/Digit3TokenServices.ts
+  rm "$tests_services"/digit3.test.ts
+
+  mv "$configuration"/apigw_environment.ts "$configuration"/environment.ts
+  mv "$services"/ApigwTokenService.ts "$services"/TokenService.ts
+  mv "$tests_services"/apigw.test.ts "$tests_services"/token.test.ts
+fi
+
+if [ "$connection" == "digit3" ]
+then
+  rm "$configuration"/apigw_environment.ts
+  rm "$services"/ApigwTokenService.ts
+  rm "$tests_services"/apigw.test.ts
+
+  mv "$configuration"/digit3_environment.ts "$configuration"/environment.ts
+  mv "$services"/Digit3TokenServices.ts "$services"/TokenService.ts
+  mv "$tests_services"/digit3.test.ts "$tests_services"/token.test.ts
+fi
+else
+  rm -rf "$models"
+
+  rm "$configuration"/bau_db.ts
+  rm "$configuration"/bau_environment.ts
+  rm "$configuration"/dao_db.ts
+  rm "$configuration"/dao_environment.ts
+  rm "$configuration"/apigw_environment.ts
+  rm "$configuration"/digit3_environment.ts
+  rm "$services"/ApigwTokenService.ts
+  rm "$services"/Digit3TokenServices.ts
+  rm -rf "$tests_configuration"
+  rm -rf "$tests_services"
+
+  mv "$configuration"/fcd_environment.ts "$configuration"/environment.ts
+fi
+
+replace_name(){
+  sed -i "s/{{name}}/movistarempresas-$name/g" "$full_path"/"$1"
+}
+
+replace_description(){
+  sed -i "s/{{description}}/$description/g" "$full_path"/"$1"
+}
+
+git init --initial-branch=master
+
+replace_name "package.json"
+replace_description "package.json"
+
+replace_name "README.md"
+replace_description "README.md"
+
+replace_name "sonar-project.properties"
+
+replace_name "src/app.ts"
+replace_name "src/server/index.ts"
+replace_name "src/utils/constant.ts"
+
+replace_name "tests/index.test.ts"
+
+replace_name "swagger/index.ts"
+replace_description "swagger/index.ts"
+
+replace_name "swagger/docs/specification.yaml"
+replace_description "swagger/docs/specification.yaml"
+
+npm install -E $dependencies
+npm run build
+npm run test
+
+git add .
+git commit -m "initial commit"
+glab repo create -g mimovistarempresas/backend --name "movistarempresas-$name" --defaultBranch master --remoteName origin
+git push

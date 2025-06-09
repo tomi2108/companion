@@ -2,14 +2,8 @@ const cp = require("node:child_process");
 const path = require("node:path");
 const config = require("./config.cjs");
 
-function executeScript(
-  script,
-  {
-    args,
-    supressStdout
-  }
-) {
-  const full_path = path.resolve(config.paths.scripts, script);
+function executeScript(script, { args, supressStdout }) {
+  const full_path = path.join(config.paths.scripts, script);
 
   const result = cp.execSync(`${full_path} ${args?.join(" ") ?? ""}`, {
     env: { ...process.env, ...envs() },
@@ -34,14 +28,17 @@ function envs() {
     // deriving from namespaces && config.openshift.(...).token
     // I think if we write the config in a smart and careful way
     // oc will just know the context when we run `oc project $project`
-    // OC_TOKEN: config.openshift.cuyo.token,
-    // OC_SERVER: config.openshift.cuyo.server,
+    // OC_TOKEN: config.openshift.token,
+    // OC_SERVER: config.openshift.server_cuyo,
     //  I think oc_tokens expire too quickly, we may be bound to using
     //  username and password... will investigate
-    OC_USER: config.openshift.cuyo.username,
-    OC_PASS: config.openshift.cuyo.password,
-    LOGS_PATH: config.preferences.logs_path,
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
+    OC_USER: config.openshift.username,
+    OC_PASS: config.openshift.password,
+    JIRA_USER: config.jira.username,
+    JIRA_API_TOKEN: config.jira.token,
+    JIRA_DOMAIN: config.jira.server,
+    LOGS_PATH: config.preferences.logs_path,
     BROWSER: config.preferences.browser,
     EDITOR: config.preferences.editor
   };

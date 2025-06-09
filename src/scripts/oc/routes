@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+oc_user=$OC_USER
+types=("mf" "ms")
+projects=("movistar-empresas-dev" "movistar-empresas-int" "movistar-empresas-cert" "movistar-empresas")
+actions=("Generate.-- Generate frontend routes" 
+"Search.-- Search created routes"
+)
+
+project=$(printf '%s\n' "${projects[@]}" | fzf-tmux -w 100% -h 100% --prompt="Choose project: " --info=inline --layout=reverse)
+[ -z "$project" ] && exit
+
+action=$(printf '%s\n' "${actions[@]}" | column -t -s '.' -o '      ' | fzf-tmux -w 100% -h 100% --prompt="Choose command: " --info=inline --layout=reverse)
+[ -z "$action" ] && exit
+
+
+env=${project#movistar-empresas-*}
+command=$(echo "$action" | awk '{print $1}')
+
+if [ "$command" == "Generate" ]
+then
+type=$(printf '%s\n' "${types[@]}" | fzf-tmux -w 100% -h 100% --prompt="Choose type: " --info=inline --layout=reverse)
+[ -z "$types" ] && exit
+
+oc project "$project"
+oc login -u "$oc_user" -p $(pass show oc/pass)
+
+if [ "$type" == "mf" ]
+then
+  deployments=$(oc get deployments | grep app- | awk '{print $1}')
+  arr=($deployments)
+for name in "${arr[@]}"
+do
+  deploy=${name#app-*}
+  host="${env}-mimovistarempresas.movistar.com.ar"
+  route_name=$name
+  if [ $project == "movistar-empresas" ] 
+  then
+  host="app-mimovistarempresas.apps.ocpprod.cuyorh.tcloud.ar"
+  route_name="$name-interna"
+  fi
+  path=$(echo "$deploy" | sed -E 's/-([a-z])/\U\1/g')
+  pathname="/app/$path"
+  oc create route edge "$route_name" --port=8080 --service="$name" --insecure-policy='Redirect' --path="$pathname" --hostname="$host"
+done
+fi
+
+if [ $type == "ms" ]
+then
+  deployments=$(oc get deployments | grep movistarempresas- | awk '{print $1}')
+  arr=($deployments)
+for name in "${arr[@]}"
+do
+  deploy=${name#movistarempresas-*}
+  host="${name}-movistar-empresas-${env}.apps.ocpnp.cuyorh.tcloud.ar"
+  pathname="/"
+  oc expose service "$name" --port=8080 --path="$pathname" --hostname="$host"
+done
+fi
+
+
+
+fi
+
+if [ "$command" == "Search" ]
+then
+oc project "$project"
+oc login -u "$oc_user" -p $(pass show oc/pass)
+  route=$(oc get routes | sed 1d | awk '{print $1,"*",$2,$3}' | column -t -s '*' -o '      '  |  fzf-tmux -w 100% -h 100% --prompt="Choose route: " --info=inline --layout=reverse | awk '{printf $1}')
+  [ -z "$route" ] && exit
+  oc describe route "$route"
+fi

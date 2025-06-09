@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+paths="$MF_REPOS_PATH $MS_REPOS_PATH $OC_REPOS_PATH"
+selected=$(find $paths -mindepth 1 -maxdepth 1 -type d)
+
+arr=($selected)
+
+for dir in "${arr[@]}"
+do
+  (
+  echo "Updating: $dir"
+  cd "$dir" || exit
+  git add . 
+  stashed=$(git stash list | wc -l)
+  git stash
+  stashed2=$(git stash list | wc -l)
+  git fetch -a 
+  git switch master && git pull  && git switch - 
+  git switch release && git pull && git switch - 
+  git switch develop && git pull && git switch - 
+ if [ "$stashed" != "$stashed2" ]
+ then
+  git stash pop 
+ fi
+)
+done

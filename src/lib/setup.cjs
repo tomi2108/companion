@@ -53,7 +53,7 @@ function checkInstalled(program) {
   // stores packages... may be give users a config to point to the exact
   // executable or to its folder?
 
-  const found = paths_to_check.some((p) => fs.existsSync(path.resolve(p, program)));
+  const found = paths_to_check.some((p) => fs.existsSync(path.join(p, program)));
   return found;
 }
 

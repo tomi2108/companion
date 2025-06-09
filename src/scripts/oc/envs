@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+ms_path=$MS_REPOS_PATH
+envs_external_script=$SCRIPTS_REPO_PATH/envs-external
+oc_user=$OC_USER
+
+tmp_file=/tmp/resource
+projects=("movistar-empresas-dev" "movistar-empresas-int" "movistar-empresas-cert" "movistar-empresas")
+actions=("Create" "Copy" "Edit" "Delete")
+resources=("Configmap" "Secret")
+
+project=$(printf "\n" | printf '%s\n' "${projects[@]}" | fzf-tmux -w 100% -h 100% --prompt="Choose project: " --info=inline --layout=reverse)
+[ -z "$project" ] && exit
+
+oc project "$project"
+oc login -u "$oc_user" -p "$(pass show oc/pass)"
+
+action=$(printf "\n" | printf '%s\n' "${actions[@]}" | fzf-tmux -w 100% -h 100% --prompt="Choose command: " --info=inline --layout=reverse)
+[ -z "$action" ] && exit
+
+if [ $action == "Copy" ]
+then
+  path=$(find $ms_path -mindepth 1 -maxdepth 1 -type d | fzf-tmux -w 100% -h 100% --info=inline --layout=reverse)
+  [ -z "$path" ] && exit
+  deployment=$(basename "$path")
+  env_file="$path/.env"
+  json_config=$(oc get deployment "movistarempresas-$deployment" -o json)
+  configmaps=$(echo $json_config | jq ".spec.template.spec.containers[0].envFrom[] | .configMapRef | .name | select( . != null )" | tr -d "\"" | tr " " "\n" | grep -v "cm-env")
+  secrets=$(echo $json_config | jq ".spec.template.spec.containers[0].envFrom[] | .secretRef | .name | select( . != null )" | tr -d "\"" | tr " " "\n" | grep -v "elasticsearch")
+  ss=($secrets)
+  cs=($configmaps)
+
+  rm "$env_file"
+  touch "$env_file"
+
+for s in "${ss[@]}"
+do
+  tmp=$(echo $s | tr -d '"')
+  keys=$(oc extract secret/$tmp --to="." --confirm) 
+  ks=($keys)
+for k in "${ks[@]}"
+do
+  value=$(cat "$k")
+  echo "$k=$value" >> $env_file
+  rm $k
+done
+done
+
+for c in "${cs[@]}"
+do
+  tmp=$(echo $c | tr -d '"')
+  keys=$(oc extract configmap/$tmp --to="." --confirm) 
+  ks=($keys)
+for k in "${ks[@]}"
+do
+  value=$(cat "$k")
+  echo "$k=$value" >> $env_file
+  rm $k
+done
+done
+$envs_external_script $env_file
+  exit
+fi
+
+
+resource=$(printf "\n" | printf '%s\n' "${resources[@]}" | fzf-tmux -w 100% -h 100% --prompt="Choose resource: " --info=inline --layout=reverse)
+[ -z "$resource" ] && exit
+
+create_arg="secret generic"
+edit_arg="secret"
+if [ $resource == "Configmap" ]
+then
+  create_arg="configmap"
+  edit_arg="configmap"
+fi
+
+if [ $action == "Create" ]
+then
+  name=$(printf "\n" | fzf-tmux -w 100% -h 100% --print-query --prompt="Enter name: " --info=inline --layout=reverse)
+  [ -z "$name" ] && exit
+  touch $tmp_file 
+  > $tmp_file cat <<< "KEY=VAL"
+  m1=$(md5sum $tmp_file | awk '{printf $1}')
+  $EDITOR $tmp_file 
+  m2=$(md5sum $tmp_file | awk '{printf $1}')
+  if [ $m1 == $m2 ] 
+  then 
+    echo "Create canceled, no changes made"  && exit 
+  fi
+   echo "create $create_arg $name --from-env-file=$tmp_file" | xargs -d " " oc
+   rm $tmp_file 
+fi
+
+if [ $action == "Edit" ]
+then
+  res=$(oc get $edit_arg | sed 1d | fzf-tmux -w 100% -h 100% --prompt="Choose config map: " --info=inline --layout=reverse | awk '{printf $1}')
+  [ -z "$res" ] && exit
+  echo -n "edit $edit_arg $res" | xargs -d " " oc
+fi
+
+if [ $action == "Delete" ]
+then
+  res=$(oc get $edit_arg | sed 1d | fzf-tmux -w 100% -h 100% --color=prompt:9 --color=pointer:9 --prompt="DELETING!!" --info=inline --layout=reverse | awk '{printf $1}')
+  [ -z "$res" ] && exit
+  echo -n "delete $edit_arg $res" | xargs -d " " oc
+fi
+

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+for arg in "$@"
+do
+  glab repo clone -g $arg
+done
