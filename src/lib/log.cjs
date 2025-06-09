@@ -1,18 +1,23 @@
 // TODO: Replace all logging with this
-function logSuccess(string) {
+// TODO: Add logging of error whenever we process.exit(1)
+// and maybe find a better way of exiting with custom errors... ?
+
+const log = {};
+
+log.success = function(string) {
   console.log(`✔ ${string}`);
-}
+};
 
-function logInfo(string) {
+log.info = function(string) {
   console.log(string);
-}
+};
 
-function logError(string) {
+log.error = function(string) {
   console.error(string);
-}
+};
 
-function logWarning(string) {
+log.warning = function(string) {
   console.warn(string);
-}
+};
 
-module.exports = { logSuccess, logError, logInfo, logWarning };
+module.exports = log;

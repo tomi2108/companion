@@ -1,3 +1,5 @@
+const fs = require("node:fs");
+
 function deepMerge(obj1, obj2) {
   for (const key in obj2) {
     if (Object.prototype.hasOwnProperty.call(obj2, key) && obj2[key] !== undefined && obj2[key] !== null) {
@@ -21,4 +23,12 @@ function removeSuffix(str, suffix) {
   return str;
 }
 
-module.exports = { deepMerge, removePrefix, removeSuffix };
+function readdirs(p) {
+  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+}
+
+function readfiles(p) {
+  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile()).map((d) => d.name);
+}
+
+module.exports = { deepMerge, removePrefix, removeSuffix, readdirs, readfiles };

@@ -2,7 +2,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { deepMerge, removePrefix, removeSuffix } = require("./utils.cjs");
 const { input, password, search, confirm } = require("./ui.cjs");
-const { logSuccess, logWarning } = require("./log.cjs");
+const log = require("./log.cjs");
 
 const config_file = path.resolve(__dirname, "../../config.json");
 
@@ -52,7 +52,7 @@ config.setupConfig = async function() {
   });
 
   const oc_user = await input({ message: "Enter Openshift username" });
-  const oc_token = await password({ message: "Enter Openshift auth token" });
+  const oc_password = await password({ message: "Enter Openshift auth token" });
 
   const glab_user = await input({ message: "Enter Gitlab username" });
   const glab_token = await password({ message: "Enter Gitlab auth token" });
@@ -64,7 +64,7 @@ config.setupConfig = async function() {
   const config_to_write = {
     openshift: {
       username: oc_user,
-      token: oc_token
+      password: oc_password
     },
     gitlab: {
       username: glab_user,
@@ -77,7 +77,7 @@ config.setupConfig = async function() {
   };
   if (preset !== "default") config_to_write.team = preset;
   fs.writeFileSync(config_file, JSON.stringify(config_to_write, null, 2));
-  logSuccess("Configuration was set up correctly");
+  log.success("Configuration was set up correctly");
 };
 
 config.loadConfig = async function() {
@@ -98,7 +98,7 @@ config.loadConfig = async function() {
     file_content = fs.readFileSync(config_file);
   } catch (err) {
     if (err.code === "ENOENT") {
-      logWarning("Configuration file config.json for Companion was not found");
+      log.warning("Configuration file config.json for Companion was not found");
       const setup = await confirm({ message: "Would you like to setup a config interactively?" });
       if (setup) {
         await config.setupConfig();
@@ -121,7 +121,9 @@ function validateUserConfig(userConfig) {
   // TODO: validate userConfig and set anything that is valid into valid config
   const validConfig = {
     paths: {
-      despliegues: userConfig.paths?.despliegues
+      despliegues: userConfig.paths?.despliegues,
+      frontend: userConfig.paths?.frontend,
+      backend: userConfig.paths?.backend
     },
     openshift: {
       username: userConfig.openshift?.username,
@@ -155,8 +157,8 @@ function getAvailablePresets() {
 function getTeamConfig(key) {
   if (!isValidTeamKey(key)) process.exit(1);
 
-  const config_file = path.resolve(__dirname, `../../configs/config.${key}.json`);
-  const team_config = fs.readFileSync(config_file);
+  const team_config_file = path.resolve(__dirname, `../../configs/config.${key}.json`);
+  const team_config = fs.readFileSync(team_config_file);
   return JSON.parse(team_config);
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { downloadLogs, getPods, getProjects, login } = require("../../../interface/oc.cjs");
-const { logSuccess } = require("../../../lib/log.cjs");
+const log = require("../../../lib/log.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {
@@ -20,6 +20,6 @@ module.exports = {
     if (!pod) return process.exit(1);
 
     downloadLogs(pod, `"${pods.join("\n").trim()}"`, project);
-    logSuccess("Download completed");
+    log.s("Download completed");
   }
 };

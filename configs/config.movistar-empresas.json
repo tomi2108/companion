@@ -6,6 +6,7 @@
   },
   "jira": {
     "project_key": "ECR",
+    "repo_ids": [],
     "labels": [
       "ECR-Replacement",
       "ECR-Raplacement"

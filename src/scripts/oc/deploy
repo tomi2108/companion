@@ -34,11 +34,11 @@ git switch -c feature/despliegue
 # do
   file_name="values-movistar-empresas-$env.yaml"
   $scripts_repo/dep-yaml $path/$file_name $type 
-  sed -i "s/tag: .*/tag: v$version/" $path/$file_name
+  sed -i "s/tag: .*/tag: $version/" $path/$file_name
   git add $file_name
 # done
 
-git commit -m "v$version"
+git commit -m "$version"
 
 branch="master"
 glab mr create -b $branch -a $glab_user --no-editor -y --fill-commit-body --fill

@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
-const { cloneRepos } = require("../../../interface/glab.cjs");
+const { cloneRepo } = require("../../../interface/glab.cjs");
+const config = require("../../../lib/config.cjs");
 
 module.exports = {
   command: "repos",
   aliases: [],
   describe: "Clone all repos",
   handler: async () => {
-    // TODO: get from config
-    const ids = [1, 2, 3, 4];
-    cloneRepos(ids);
+    const ids = config.gitlab.repo_ids;
+    for (const id of ids) {
+      cloneRepo(id);
+    }
   }
 };
