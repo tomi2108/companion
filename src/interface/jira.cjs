@@ -88,6 +88,12 @@ function assignIssue(issue_key, user) {
   });
 }
 
+function estimateIssue(issue_key, estimacion) {
+  return executeScript("jira/estimate", {
+    args: [issue_key, estimacion]
+  });
+}
+
 function stringToIssue(issueString) {
   const splitted = issueString.split("\t").filter((s) => Boolean(s));
   const type = splitted[0];
@@ -115,5 +121,6 @@ module.exports = {
   linkIssues,
   unlinkIssues,
   getUsers,
-  assignIssue
+  assignIssue,
+  estimateIssue
 };
