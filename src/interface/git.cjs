@@ -1,3 +1,5 @@
+const fs = require("node:fs");
+const path = require("node:path");
 const gitCreate = require("simple-git");
 
 async function getTags(full_path) {
@@ -13,12 +15,12 @@ async function cloneRepo(link, full_path) {
 }
 
 async function stash(full_path, callback) {
-  const git = gitCreate({ baseDir: full_path });
-  const { total: stash_before } = await git.stashList();
-  await git.stash();
-  const { total: stash_after } = await git.stashList();
+  // const git = gitCreate({ baseDir: full_path });
+  // const { total: stash_before } = await git.stashList();
+  // await git.stash();
+  // const { total: stash_after } = await git.stashList();
   await callback();
-  if (stash_after !== stash_before) await git.stash(["pop"]);
+  // if (stash_after !== stash_before) await git.stash(["pop"]);
 }
 
 async function createNewBranch(full_path, name) {
@@ -49,6 +51,16 @@ async function pull(full_path) {
   await git.pull();
 }
 
+async function getOriginUrl(full_path) {
+  const git = gitCreate({ baseDir: full_path });
+  const url = await git.getConfig("remote.origin.url");
+  return url.value;
+}
+
+function isGitRepo(full_path) {
+  return fs.existsSync(path.join(full_path, ".git"));
+}
+
 module.exports = {
   add,
   pull,
@@ -57,5 +69,7 @@ module.exports = {
   cloneRepo,
   stash,
   switchBranch,
-  createNewBranch
+  createNewBranch,
+  getOriginUrl,
+  isGitRepo
 };

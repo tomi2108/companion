@@ -18,7 +18,7 @@ module.exports = {
   handler: async () => {
     const apps = readdirs(config.paths.despliegues);
     const app_name = await search({ choices: apps });
-    const app = getApp(app_name);
+    const app = await getApp(app_name);
 
     await stash(app.deploy_path, async () => {
       await switchBranch(app.deploy_path, "master");
