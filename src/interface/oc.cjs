@@ -97,6 +97,9 @@ function deleteEnv(project, type, name) {
 }
 
 function editEnv(project, type, name) {
+  // TODO : I dont think this works with vscode...
+  // may be we need to create a tmp_file and do the same
+  // we are doing with create command
   return executeScript("oc/edit", {
     args: [project, type, name]
   });
