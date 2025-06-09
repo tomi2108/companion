@@ -1,8 +1,8 @@
-import cp from "node:child_process";
-import path from "node:path";
-import { config } from "./config.js";
+const cp = require("node:child_process");
+const path = require("node:path");
+const config = require("./config.cjs");
 
-export function executeScript(
+function executeScript(
   script,
   {
     args,
@@ -19,7 +19,7 @@ export function executeScript(
   if (result) return result.toString();
 }
 
-export function envs() {
+function envs() {
   // TODO: probably make commands envs be set by each command
   // commands will want to use different values for OC_SERVER for example
 
@@ -47,6 +47,9 @@ export function envs() {
   };
 }
 
-export function clearConsole() {
+function clearConsole() {
   process.stdout.write("\x1Bc");
 }
+
+module.exports = { clearConsole, executeScript };
+

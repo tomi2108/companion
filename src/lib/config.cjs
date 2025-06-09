@@ -1,14 +1,11 @@
-import path from "node:path";
-import fs from "node:fs";
-import url from "node:url";
-import { deepMerge } from "./utils.js";
-import Enquirer from "enquirer";
+const path = require("node:path");
+const fs = require("node:fs");
+const { deepMerge } = require("./utils.cjs");
+const Enquirer = require("enquirer");
 
 const { password, select } = Enquirer;
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-
-export const default_config = {
+const default_config = {
   preferences: {
     logs_path: path.resolve(__dirname, "../../logs"),
     editor: process.env.EDITOR,
@@ -17,7 +14,7 @@ export const default_config = {
 };
 
 // Some configs are not user configurable
-export let config = {
+let config = {
   paths: {
     // TODO: may be not needed
     scripts: path.resolve(__dirname, "../scripts")
@@ -46,7 +43,7 @@ export let config = {
 //   return configGet(rest.join("."), cfg);
 // }
 
-export function loadConfig() {
+config.loadConfig = function() {
 
   // TODO: offer different locations for config file ... ? may be we dont really need this
   const config_file = path.resolve(__dirname, "../../config.json");
@@ -60,12 +57,12 @@ export function loadConfig() {
   const { cfg: read_config, valid } = validateConfig(JSON.parse(file_content));
 
   // TODO: keep an eye on this... may cause problems with more complex configs
-  config = deepMerge(read_config, config);
+  config = deepMerge(config, read_config);
   // TODO: once we have a full and complete companion config.json
   // write them to the .configs for each program check setup() from ./setup.js
   // loadConfig() and setup() should be run every time companion runs overriding programs
   // config with our config.json values
-}
+};
 
 function validateConfig(userConfig) {
   // TODO: validate userConfig and set anything
@@ -102,7 +99,7 @@ function validateConfig(userConfig) {
   return { cfg: deepMerge(default_config, validConfig), valid: true };
 }
 
-export async function setupConfig() {
+config.setupConfig = async function() {
   // TODO: get presets
   const presets = ["movistar-empresas", "R.E.B.O", "SoySetm", "Estructurales"];
 
@@ -129,4 +126,6 @@ export async function setupConfig() {
 
   // TODO: write to our own config.json
   console.log({ preset, oc_token, glab_token, jira_token });
-}
+};
+
+module.exports = config;

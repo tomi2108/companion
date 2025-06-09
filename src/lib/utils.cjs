@@ -1,4 +1,4 @@
-export function deepMerge(obj1, obj2) {
+function deepMerge(obj1, obj2) {
   for (const key in obj2) {
     if (Object.prototype.hasOwnProperty.call(obj2, key)) {
       if (obj2[key] instanceof Object && obj1[key] instanceof Object) {
@@ -10,3 +10,5 @@ export function deepMerge(obj1, obj2) {
   }
   return obj1;
 }
+
+module.exports = { deepMerge };
