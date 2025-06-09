@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { getDeploymentFromPodName, getPods, getProjects, login, restartDeployment } = require("../../../interface/oc.cjs");
-const { search } = require("../../../lib/ui.cjs");
+const { login, getDeployments, restartDeployment } = require("../../../interface/oc.cjs");
+const { promptForOcProject, promptForOcResource } = require("../../../interface/prompts.cjs");
 
 module.exports = {
   command: "restart",
@@ -10,14 +10,11 @@ module.exports = {
   handler: async () => {
     login();
 
-    const projects = getProjects();
-    const project = await search({ choices: projects });
-    if (!project) return process.exit(1);
+    const project = await promptForOcProject();
 
-    const pods = getPods(project);
-    const pod = await search({ choices: pods });
-    if (!pod) return process.exit(1);
+    const deployments = getDeployments(project);
+    const deployment = await promptForOcResource(deployments);
 
-    restartDeployment(getDeploymentFromPodName(pod));
+    restartDeployment(deployment.metadata.name);
   }
 };

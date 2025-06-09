@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+project=$1
+resource=$2
+shift 
+shift
+args="$*"
+
+$OC project $project 1> /dev/null
+$OC get "$resource" $args -o json

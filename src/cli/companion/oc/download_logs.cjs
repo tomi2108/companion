@@ -1,25 +1,24 @@
 #!/usr/bin/env node
 
-const { downloadLogs, getPods, getProjects, login } = require("../../../interface/oc.cjs");
+const { downloadLogs, getPods, login, getItemNamesFromResource } = require("../../../interface/oc.cjs");
+const { promptForOcProject, promptForOcResource } = require("../../../interface/prompts.cjs");
 const log = require("../../../lib/log.cjs");
-const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {
   command: "download-logs",
   aliases: ["dwnld", "download"],
   describe: "Download pod logs",
   handler: async () => {
+    // TODO: migrate bash script
     login();
 
-    const projects = getProjects();
-    const project = await search({ choices: projects });
-    if (!project) return process.exit(1);
+    const project = await promptForOcProject();
 
     const pods = getPods(project);
-    const pod = await search({ choices: pods });
-    if (!pod) return process.exit(1);
+    const pods_names = getItemNamesFromResource(pods);
+    const pod = await promptForOcResource(pod);
 
-    downloadLogs(pod, `"${pods.join("\n").trim()}"`, project);
+    downloadLogs(pod.metadata.name, `"${pods_names.join("\n").trim()}"`, project);
     log.s("Download completed");
   }
 };

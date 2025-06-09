@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-const { promptForApp, createDirIfNotExists, externalEnvs } = require("../../../interface/files.cjs");
-const { getProjects, login, getDeployment, getSecretsFromDeployment, getConfigMapsFromDeployment, extract } = require("../../../interface/oc.cjs");
+const { createDirIfNotExists, externalEnvs } = require("../../../interface/files.cjs");
+const { login, getDeployment, getSecretsFromDeployment, getConfigMapsFromDeployment, extract } = require("../../../interface/oc.cjs");
 const log = require("../../../lib/log.cjs");
-const { search } = require("../../../lib/ui.cjs");
 const path = require("node:path");
 const fs = require("node:fs");
 const config = require("../../../lib/config.cjs");
+const { promptForApp, promptForOcProject } = require("../../../interface/prompts.cjs");
 
 module.exports = {
   command: "copy",
@@ -15,9 +15,7 @@ module.exports = {
   handler: async () => {
     login();
 
-    const projects = getProjects();
-    const project = await search({ choices: projects });
-    if (!project) return process.exit(1);
+    const project = await promptForOcProject();
 
     const app = await promptForApp();
     if (!app.full_path) {
@@ -25,7 +23,7 @@ module.exports = {
       process.exit(1);
     }
 
-    const deployment = getDeployment(app.name, project);
+    const deployment = getDeployment(project, app.name);
     const configMaps = getConfigMapsFromDeployment(deployment);
     const secrets = getSecretsFromDeployment(deployment);
 

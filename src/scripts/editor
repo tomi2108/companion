@@ -3,7 +3,7 @@
 file="$1"
 
 if [[ $EDITOR == 'code' ]]; then
-  $EDITOR --wait "$1"
+  $EDITOR --wait "$file"
 else 
-  $EDITOR "$1"
+  $EDITOR "$file"
 fi

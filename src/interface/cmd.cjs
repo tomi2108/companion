@@ -20,7 +20,6 @@ function envs() {
   return {
     SCRIPTS_REPO_PATH: config.global.scripts_dir,
     GLAB_CONFIG_DIR: config.global.glab_config_path,
-    // TODO: I dont think these are needed... will see
     GITLAB_HOST: config.gitlab.server,
     GITLAB_API_HOST: config.gitlab.server,
     GITLAB_TOKEN: config.gitlab.token,

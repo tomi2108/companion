@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-const { getProjects, login, createEnv } = require("../../../interface/oc.cjs");
+const { login, createEnv } = require("../../../interface/oc.cjs");
 const log = require("../../../lib/log.cjs");
 const { search, input } = require("../../../lib/ui.cjs");
 const path = require("node:path");
 const fs = require("node:fs");
-const crypto = require("node:crypto");
 const config = require("../../../lib/config.cjs");
 const { md5FromFile } = require("../../../lib/utils.cjs");
 const { openEditorAndWaitForSave } = require("../../../interface/files.cjs");
+const { promptForOcProject } = require("../../../interface/prompts.cjs");
 
 module.exports = {
   command: "create",
@@ -17,9 +17,7 @@ module.exports = {
   handler: async () => {
     login();
 
-    const projects = getProjects();
-    const project = await search({ choices: projects });
-    if (!project) return process.exit(1);
+    const project = await promptForOcProject();
 
     const choices = ["configmap", "secret"];
     const resource = await search({ choices });
@@ -46,7 +44,7 @@ module.exports = {
       process.exit(0);
     }
 
-    await createEnv(project, type, name, tmp_file);
+    createEnv(project, type, name, tmp_file);
     fs.rmSync(tmp_file);
   }
 };

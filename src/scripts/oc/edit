@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+project="$1"
+type="$2"
+name="$3"
+
+$OC project "$project" 1> /dev/null
+$OC edit "$type" "$name" 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { getPods, getProjects, login, tailLog } = require("../../../interface/oc.cjs");
-const { search } = require("../../../lib/ui.cjs");
+const { getPods, login, tailLog } = require("../../../interface/oc.cjs");
+const { promptForOcProject, promptForOcResource } = require("../../../interface/prompts.cjs");
 
 module.exports = {
   command: "logs",
@@ -9,15 +9,11 @@ module.exports = {
   describe: "Tail pods's logs",
   handler: async () => {
     login();
-
-    const projects = getProjects();
-    const project = await search({ choices: projects });
-    if (!project) return process.exit(1);
+    const project = await promptForOcProject();
 
     const pods = getPods(project);
-    const pod = await search({ choices: pods });
-    if (!pod) return process.exit(1);
+    const pod = await promptForOcResource(pods);
 
-    tailLog(pod);
+    tailLog(pod.metadata.name);
   }
 };

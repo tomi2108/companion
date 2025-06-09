@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { getPods, getProjects, login, remoteSession } = require("../../../interface/oc.cjs");
-const { search } = require("../../../lib/ui.cjs");
+const { getPods, login, remoteSession } = require("../../../interface/oc.cjs");
+const { promptForOcProject, promptForOcResource } = require("../../../interface/prompts.cjs");
 
 module.exports = {
   command: "remote-session",
@@ -10,14 +10,11 @@ module.exports = {
   handler: async () => {
     login();
 
-    const projects = getProjects();
-    const project = await search({ choices: projects });
-    if (!project) return process.exit(1);
+    const project = await promptForOcProject();
 
     const pods = getPods(project);
-    const pod = await search({ choices: pods });
-    if (!pod) return process.exit(1);
+    const pod = await promptForOcResource(pods);
 
-    remoteSession(pod);
+    remoteSession(pod.metadata.name);
   }
 };

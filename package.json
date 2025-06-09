@@ -2,7 +2,9 @@
   "name": "companion",
   "version": "0.0.2",
   "main": "./src/cli/companion.cjs",
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint --fix ./**/*.cjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

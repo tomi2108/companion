@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { search, input, promptForApp } = require("../../../lib/ui.cjs");
+const { search, input } = require("../../../lib/ui.cjs");
 const path = require("node:path");
 const fs = require("node:fs");
 const { prepareYamlForDeploy, yamlToString } = require("../../../interface/files.cjs");
@@ -8,6 +8,7 @@ const { getTags, stash, createNewBranch, add, commit, switchBranch, pull } = req
 const log = require("../../../lib/log.cjs");
 const { createAndMergeMr } = require("../../../interface/glab.cjs");
 const { ENVS } = require("../../../lib/constants.cjs");
+const { promptForApp } = require("../../../interface/prompts.cjs");
 
 module.exports = {
   command: "deploy",

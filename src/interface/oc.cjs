@@ -16,16 +16,16 @@ function login() {
 }
 
 function getPods(project) {
-  return executeScript("oc/get_pods", {
-    args: [project],
+  return JSON.parse(executeScript("oc/get", {
+    args: [project, "pods"],
     supressStdout: true
-  }).split("\n").map((s) => s.split(" ")[0]);
+  }));
 }
 
 function getProjects() {
-  return executeScript("oc/get_projects", {
+  return JSON.parse(executeScript("oc/get_projects", {
     supressStdout: true
-  }).split("\n").map((s) => s.split(" ")[0]);
+  }));
 }
 
 function tailLog(pod) {
@@ -36,10 +36,6 @@ function tailLog(pod) {
 function remoteSession(pod) {
   clearConsole();
   return executeScript("oc/remote_session", { args: [pod] });
-}
-
-function getDeploymentFromPodName(pod) {
-  return pod.split("-").slice(0, -2).join("-");
 }
 
 function restartDeployment(deployment) {
@@ -56,9 +52,16 @@ function deploy(envs, app, version) {
   });
 }
 
-function getDeployment(deployment, project) {
-  return JSON.parse(executeScript("oc/get_deployment", {
-    args: [deployment, project],
+function getDeployments(project) {
+  return JSON.parse(executeScript("oc/get", {
+    args: [project, "deployments"],
+    supressStdout: true
+  }));
+}
+
+function getDeployment(project, deployment) {
+  return JSON.parse(executeScript("oc/get", {
+    args: [project, "deployment", deployment],
     supressStdout: true
   }));
 }
@@ -82,18 +85,51 @@ function extract(type, project, value, to) {
 }
 
 function createEnv(project, type, name, from_file) {
-  return JSON.parse(executeScript("oc/create", {
+  return executeScript("oc/create", {
     args: [project, type, name, from_file]
+  });
+}
+
+function deleteEnv(project, type, name) {
+  return executeScript("oc/delete", {
+    args: [project, type, name]
+  });
+}
+
+function editEnv(project, type, name) {
+  return executeScript("oc/edit", {
+    args: [project, type, name]
+  });
+}
+
+function getConfigMapsFromProject(project) {
+  return JSON.parse(executeScript("oc/get", {
+    args: [project, "configmaps"],
+    supressStdout: true
   }));
+}
+
+function getSecretsFromProject(project) {
+  return JSON.parse(executeScript("oc/get", {
+    args: [project, "secrets"],
+    supressStdout: true
+  }));
+}
+
+function getItemNamesFromResource(resource) {
+  return resource.items.map((e) => e.metadata.name);
 }
 
 module.exports = {
   deploy,
   downloadLogs,
   createEnv,
+  deleteEnv,
+  editEnv,
   getConfigMapsFromDeployment,
   getDeployment,
-  getDeploymentFromPodName,
+  getSecretsFromProject,
+  getConfigMapsFromProject,
   getPods,
   getProjects,
   getSecretsFromDeployment,
@@ -101,5 +137,7 @@ module.exports = {
   remoteSession,
   extract,
   restartDeployment,
-  tailLog
+  getDeployments,
+  tailLog,
+  getItemNamesFromResource
 };

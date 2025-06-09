@@ -5,7 +5,6 @@ const yaml = require("js-yaml");
 const { readdirs } = require("../lib/utils.cjs");
 const { MS_TYPES, ENVS } = require("../lib/constants.cjs");
 const { getOriginUrl, isGitRepo } = require("./git.cjs");
-const { search } = require("../lib/ui.cjs");
 const { executeScript } = require("./cmd.cjs");
 
 function getMsType(name) {
@@ -176,12 +175,6 @@ function internalEnvs(full_path) {
   fs.writeFileSync(full_path, replaced);
 }
 
-async function promptForApp() {
-  const apps = readdirs(config.paths.despliegues);
-  const app_name = await search({ choices: apps });
-  return await getApp(app_name);
-}
-
 async function openEditorAndWaitForSave(full_path) {
   return executeScript("editor", {
     args: [full_path]
@@ -193,7 +186,6 @@ module.exports = {
   prepareYamlForDeploy,
   getApp,
   yamlToString,
-  promptForApp,
   externalEnvs,
   internalEnvs,
   openEditorAndWaitForSave
