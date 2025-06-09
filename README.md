@@ -69,3 +69,23 @@ Tu opinión es clave para que Companion siga mejorando y adaptándose a las nece
 
 ¡Gracias por ser parte del proyecto! 🙌
 
+---
+
+## 🛠️ Herramientas y Documentación
+
+Companion utiliza y extiende funcionalidades de herramientas oficiales y de la comunidad.  
+Aquí tienes enlaces útiles para conocer más sobre ellas:
+
+- 🔗 **OpenShift CLI (`oc`)**  
+  Herramienta oficial para gestionar clústeres de OpenShift desde la terminal.  
+  [📖 Documentación oficial](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/)
+
+- 🔗 **GitLab CLI (`glab`)**  
+  Cliente de línea de comandos para interactuar con GitLab: MR, issues, pipelines y más.  
+  [📖 Documentación oficial](https://docs.gitlab.com/17.5/editor_extensions/gitlab_cli/)
+
+- 🔗 **Jira CLI (`jira-cli`)**  
+  Cliente de línea de comandos no oficial pero muy completo para trabajar con Jira desde la terminal.  
+  [📖 Proyecto en GitHub](https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file)
+
+---
