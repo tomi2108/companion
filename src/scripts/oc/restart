@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+deployment=$1
+
+$OC rollout restart deployment $deployment

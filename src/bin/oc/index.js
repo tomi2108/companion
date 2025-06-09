@@ -16,6 +16,12 @@ yargs()
     handler: () => import("./remote_session.js")
   })
   .command({
+    command: "restart",
+    aliases: [],
+    describe: "Restart rollout for pod",
+    handler: () => import("./restart.js")
+  })
+  .command({
     command: "deploy",
     aliases: ["dep"],
     describe: "Deploy specific pod version",

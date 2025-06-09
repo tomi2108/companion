@@ -27,3 +27,11 @@ export function remoteSession(pod) {
   return executeScript("oc/remote_session", { args: [`pod/${pod}`] });
 }
 
+export function getDeployment(pod) {
+  return pod.split("-").slice(0, -2).join("-");
+}
+
+export function restartDeployment(deployment) {
+  return executeScript("oc/restart", { args: [deployment] });
+}
+
