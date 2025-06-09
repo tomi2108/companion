@@ -11,6 +11,8 @@ app_name=${temp%-*}
 clear
 tmux clear-history 1> /dev/null
 
+
+# TODO: Think what we should do about this
 if [ $project == "movistar-empresas-cert" ] || [ $project == "movistar-empresas" ]; then
   tmp="$(echo "$pods" | grep $app_name | awk '{print $1}')"
   arr=($tmp)

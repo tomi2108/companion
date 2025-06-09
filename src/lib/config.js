@@ -2,6 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import url from "node:url";
 import { deepMerge } from "./utils.js";
+import { password, select } from "@inquirer/prompts";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -13,13 +14,17 @@ export const config = {
   },
   global: {
     oc_config_path: path.resolve(__dirname, "../../.configs/.kube/config"),
-    oc_cache_path: path.resolve(__dirname, "../../.configs/.kube/cache")
+    oc_cache_path: path.resolve(__dirname, "../../.configs/.kube/cache"),
+    glab_config_path: path.resolve(__dirname, "../../.configs/glab/")
   },
   user: {
     oc: {
       cuyo: {
         server: "https://api.ocpnp.cuyorh.tcloud.ar:6443"
       }
+    },
+    glab: {
+      server: "gitlab-ee.agil.movistar.com.ar"
     }
   }
 };
@@ -62,10 +67,38 @@ function validateConfig(userConfig) {
           token: userConfig.user.oc.cuyo.token
         }
       }
+    },
+    preferences: {
+      logs_path: userConfig.preferences.logs_path,
+      editor: userConfig.preferences.editor,
+      browser: userConfig.preferences.browser
     }
   };
 
   // TODO: In the end, check if the resulting config is complete (has everything we need)
   // and return valid:true or valid:false
   return { cfg: validConfig, valid: true };
+}
+
+export async function setupConfig() {
+  // TODO: get presets
+  const presets = [];
+
+  const preset = await select({
+    message: "Select a preset or custom config",
+    choices: [...presets, "custom"].map((s) => ({ name: s, value: s }))
+  });
+
+  // TODO: maybe link the docs in the message on how to obtain them ?
+  const oc_token = await password({
+    message: "Enter Openshift token",
+    mask: true
+  });
+
+  const glab_token = await password({
+    message: "Enter Gitlab auth token",
+    mask: true
+  });
+
+  console.log({ preset, oc_token, glab_token });
 }

@@ -12,7 +12,7 @@ export function executeScript(
   const full_path = path.resolve(config.paths.scripts, script);
 
   const result = cp.execSync(`${full_path} ${args?.join(" ") ?? ""}`, {
-    env: envs(),
+    env: { ...process.env, ...envs() },
     stdio: ["inherit", supressStdout ? "pipe" : "inherit", "inherit"]
   });
 
@@ -24,10 +24,20 @@ export function envs() {
   // commands will want to use different values for OC_SERVER for example
 
   return {
-    OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
-    // TODO: Maybe not needed, I think that having them be written in oc's kubeconfig is enough
-    OC_TOKEN: config.user.oc.cuyo.token,
-    OC_SERVER: config.user.oc.cuyo.server
+    GLAB_CONFIG_DIR: config.global.glab_config_path,
+    // TODO: I dont think these are needed... will see
+    // GITLAB_HOST: config.user.glab.server,
+    // GITLAB_API_HOST: config.user.glab.server,
+    // GITLAB_TOKEN: config.user.glab.token,
+    // TODO: OC_TOKEN && OC_SERVER may not be needed for the scripts...
+    // we can maybe write the config file for each cluster/context
+    // deriving from namespaces && config.user.oc.(...).token
+    // I think if we write the config in a smart and careful way
+    // oc will just know the context when we run `oc project $project`
+    // OC_TOKEN: config.user.oc.cuyo.token,
+    // OC_SERVER: config.user.oc.cuyo.server,
+    LOGS_PATH: config.preferences.logs_path,
+    OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`
   };
 }
 

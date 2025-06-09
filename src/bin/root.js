@@ -11,8 +11,14 @@ yargs()
   .scriptName("companion")
   .command({
     command: "pods",
-    aliases: ["pods"],
+    aliases: [],
     describe: "Manage Openshift Pods",
     handler: () => import("./pods/index.js")
+  })
+  .command({
+    command: "setup",
+    aliases: [],
+    describe: "Companion setup commands",
+    handler: () => import("./setup/index.js")
   })
   .parse(process.argv.slice(2));

@@ -5,7 +5,7 @@ import yargs from "yargs";
 yargs()
   .command({
     command: "logs",
-    aliases: ["logs"],
+    aliases: [],
     describe: "Tail pods's logs",
     handler: () => import("./logs.js")
   })

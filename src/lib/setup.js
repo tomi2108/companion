@@ -16,6 +16,8 @@ export function setup() {
 }
 
 function setupGitLab() {
+  // TODO: glab has config for setting browser
+  // and editor. We should set those... dont know when
   const found = checkInstalled("glab");
   if (!found) logProgramNotFound("Gitlab client", "http://something.com");
   checkConfig("glab");
