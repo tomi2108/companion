@@ -31,6 +31,57 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 
 ---
 
+## ✅ Checklist funcionalidades de Companion
+
+### 🔧 Inicialización de Entornos
+- [x] Generación automática de estructura de carpetas para el proyecto
+- [ ] Descarga y configuración de dependencias necesarias 
+- [x] Carga de configuraciones según equipo (ej. frontend, backend, devops)
+- [ ] Validación de requisitos del sistema (git, node, oc, glab, etc.) 
+
+### 🚀 Integración con OpenShift
+- [x] Login automático al clúster mediante configuración guardada
+- [x] Despliegue de aplicaciones 
+- [x] Visualización de logs en tiempo real de pods específicos
+- [x] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
+- [x] Eliminación, reinicio y monitoreo de pods y deployments
+- [ ] Forwarding de puertos para servicios específicos
+- [ ] Gestión de secretos y configuración de variables de entorno (🚧 en progreso)
+- [ ] Generación de rutas públicas para testing rápido
+- [x] Creación de archivos `.env` preconfigurados
+
+### 🔁 Utilidades para GitLab
+- [x] Clonación inteligente de repositorios del grupo del proyecto
+- [ ] Creación y asignación automática de *merge requests*
+- [ ] Revisión del estado de pipelines asociados a una MR o branch
+- [ ] Asignación de revisores automáticamente según reglas del equipo
+- [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
+- [ ] Generación de mensajes de commit formateados con convención de equipo
+- [ ] Sincronización de ramas locales con `origin` automáticamente
+
+### 📋 Integración con Jira
+- [x] Creación de tickets 
+- [ ] Cambio automático de estado de ticket al crear una nueva rama
+- [x] Actualización del ticket con comentarios 
+- [ ] Enlace automático entre tickets y commits o MRs
+- [ ] Búsqueda de tickets abiertos asignados al usuario actual (🚧 en progreso)
+- [ ] Filtro de tickets por sprint, tipo o estado desde la CLI (🚧 en progreso)
+- [ ] Transiciones de estado automatizadas según evento (ej. push a `main`)
+- [x] Comando para estimar tickets 
+
+### 🧠 Configuraciones por Equipo/Proyecto
+- [x] Carga condicional de configuración basada en clave `"team"`
+- [x] Fallback a configuraciones por defecto si no se encuentra personalización
+- [ ] Comando interactivo `companion setup config` para facilitar configuración (🚧 en progreso)
+- [ ] Validación automática de esquemas de configuración (`schema.json`) (🚧 en progreso)
+
+### 🛠 Otras Utilidades
+- [ ] Generación de documentación interna 
+- [ ] Notificaciones locales o vía Slack en eventos clave
+- [ ] Comando `companion upgrade` para autoactualización de la herramienta
+
+---
+
 ## 📦 Instalación
 
 ```bash
