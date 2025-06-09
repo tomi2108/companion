@@ -1,21 +1,13 @@
 #!/usr/bin/env bash
 
-oc_token=$OC_TOKEN
-project=$1
 
-$OC login --token="$oc_token"  1> /dev/null
+[ -z "$1" ] && exit 1
 
-$OC project $project 1> /dev/null
-
-pods=$($OC get pods | sed 1d)
-pod_name=$(echo "$pods" | fzf-tmux -w 100% -h 100%  --prompt="Choose pod: " --info=inline --layout=reverse | awk '{printf $1}')
-[ -z "$pod_name" ] && exit
+pod_name=$(echo $1 | awk '{printf $1}')
 
 pod="pod/$pod_name"
 temp=${pod_name%-*}
 app_name=${temp%-*}
-command=$(echo $action | awk '{print $1}')
-
 
 clear
 tmux clear-history 1> /dev/null

@@ -5,20 +5,24 @@ import { config } from "./config.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-export function executeScript(script, args) {
+export function executeScript(
+  script,
+  {
+    args,
+    onStdOut,
+    // TODO: maybe not necessary, maybe every command that handles
+    // stdout with onStdOut should suprressOriginalStdout so it does
+    // not print
+    supressStdout
+  }
+) {
   const full_path = path.resolve(config.paths.scripts, script);
-  const child = cp.exec(`${full_path} ${args.join(" ")}`, {
-    env: envs()
-  });
-  child.stdout?.on("data", (data) => process.stdout.write(data));
-  child.stderr?.on("data", (data) => process.stderr.write(data));
-  child.on("close", (code) => {
-    if (code !== 0) {
-      process.stderr.write(`El proceso falló con codigo de error ${code}`);
-      process.exit(1);
-    }
-    console.log("El proceso finalizó correctamente");
-  });
+
+  const result = cp.execSync(`${full_path} ${args?.join(" ") ?? ""}`, {
+    env: envs(),
+    stdio: ["pipe", supressStdout ? "pipe" : "inherit", "pipe"]
+  }).toString();
+  onStdOut?.(result);
 }
 
 export function envs() {
@@ -29,9 +33,12 @@ export function envs() {
   const oc_cache_path = path.resolve(__dirname, "../../configs/.kube/cache");
   return {
     OC: `oc --kubeconfig=${oc_config_path} --cache-dir=${oc_cache_path}`,
-    // TODO: Maybe not needed, I think that having them be written in oc kubeconfig is enough
+    // TODO: Maybe not needed, I think that having them be written in oc's kubeconfig is enough
     OC_TOKEN: config.user.oc.cuyo.token,
     OC_SERVER: config.user.oc.cuyo.server
   };
 }
 
+export function clearConsole() {
+  process.stdout.write("\x1Bc");
+}
