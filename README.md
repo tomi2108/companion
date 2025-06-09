@@ -35,3 +35,36 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 
 ```bash
 ./install.sh
+
+---
+
+## 🤝 Contribuciones
+
+¡Tu colaboración es más que bienvenida!  
+Companion es un proyecto abierto que busca crecer con el aporte de la comunidad.  
+Si tienes ideas para nuevas funcionalidades, mejoras en la experiencia de uso,  
+o simplemente notaste algo que podría hacerse mejor, no dudes en participar.
+
+Puedes contribuir de las siguientes maneras:
+
+- 💡 Sugerir nuevas funcionalidades
+- 🐛 Reportar errores
+- 🛠️ Enviar mejoras de código o documentación
+- ✨ Proponer integraciones adicionales
+
+---
+
+## 📬 Comentarios y Soporte
+
+¿Tienes una sugerencia o encontraste un problema?
+
+1. 📂 Visita la pestaña [Issues](https://github.com/tomi2108/companion/issues)
+2. 📝 Abre un nuevo *issue* explicando claramente el contexto y cómo reproducirlo si es un error
+3. ✅ Etiquétalo como `bug`, `feature request`, o `question` según corresponda
+
+También puedes darle seguimiento a problemas ya reportados y votar por aquellos que consideres prioritarios.
+
+Tu opinión es clave para que Companion siga mejorando y adaptándose a las necesidades reales de los desarrolladores.
+
+¡Gracias por ser parte del proyecto! 🙌
+
