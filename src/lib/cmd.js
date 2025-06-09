@@ -36,6 +36,10 @@ export function envs() {
     // oc will just know the context when we run `oc project $project`
     // OC_TOKEN: config.user.oc.cuyo.token,
     // OC_SERVER: config.user.oc.cuyo.server,
+    //  I think oc_tokens expire too quickly, we may be bound to using
+    //  username and password... will investigate
+    OC_USER: config.user.oc.cuyo.username,
+    OC_PASS: config.user.oc.cuyo.password,
     LOGS_PATH: config.preferences.logs_path,
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`
   };

@@ -10,7 +10,7 @@ import { config } from "../../lib/config.js";
   if (!projectList.selected) return process.exit(1);
   const { value: project } = projectList.selected;
 
-  const pods = executeScript("pods/get_pods", {
+  const pods = executeScript("oc/get_pods", {
     args: [project],
     supressStdout: true
   });
@@ -21,5 +21,5 @@ import { config } from "../../lib/config.js";
   const { value: pod } = podsList.selected;
 
   clearConsole();
-  executeScript("pods/download_logs", { args: [pod, pods, project] });
+  executeScript("oc/download_logs", { args: [pod, pods, project] });
 })();

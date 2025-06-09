@@ -15,4 +15,10 @@ yargs()
     describe: "Start a remote session",
     handler: () => import("./remote_session.js")
   })
+  .command({
+    command: "deploy",
+    aliases: ["dep"],
+    describe: "Deploy specific pod version",
+    handler: () => import("./deploy.js")
+  })
   .parse(process.argv.slice(3));

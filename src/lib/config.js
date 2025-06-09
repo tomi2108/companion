@@ -15,7 +15,7 @@ export const default_config = {
 };
 
 // Some configs are not user configurable
-export const config = {
+export let config = {
   paths: {
     // TODO: may be not needed
     scripts: path.resolve(__dirname, "../scripts")
@@ -58,7 +58,7 @@ export function loadConfig() {
   const { cfg: read_config, valid } = validateConfig(JSON.parse(file_content));
 
   // TODO: keep an eye on this... may cause problems with more complex configs
-  deepMerge(read_config, config);
+  config = deepMerge(read_config, config);
   // TODO: once we have a full and complete companion config.json
   // write them to the .configs for each program check setup() from ./setup.js
   // loadConfig() and setup() should be run every time companion runs overriding programs
@@ -71,11 +71,15 @@ function validateConfig(userConfig) {
   // anything that the user does not specify should be
   // filled in with sensible defaults here found in default_config
   const validConfig = {
+    paths: {
+      oc: userConfig.paths.oc
+    },
     user: {
       oc: {
         cuyo: {
           namespaces: userConfig.user.oc.cuyo.namespaces,
-          token: userConfig.user.oc.cuyo.token
+          username: userConfig.user.oc.cuyo.username,
+          password: userConfig.user.oc.cuyo.password
         }
       }
     },

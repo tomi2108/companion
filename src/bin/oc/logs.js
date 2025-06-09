@@ -2,24 +2,22 @@
 
 import { clearConsole, executeScript } from "../../lib/cmd.js";
 import fzf from "node-fzf";
-import { config } from "../../lib/config.js";
+import { getPods, getProjects, login, tailLog } from "../../lib/oc.js";
 
 (async () => {
-  const projectList = await fzf({ list: config.user.oc.cuyo.namespaces });
+  login();
+  const projects = getProjects().split("\n").map((s) => s.split(" ")[0]);
+  const projectList = await fzf({ list: projects });
 
   if (!projectList.selected) return process.exit(1);
   const { value: project } = projectList.selected;
 
-  const pods = executeScript("pods/get_pods", {
-    args: [project],
-    supressStdout: true
-  });
-
-  const podsList = await fzf({ list: pods.split("\n") });
+  const pods = getPods(project).split("\n").map((s) => s.split(" ")[0]);
+  const podsList = await fzf({ list: pods });
 
   if (!podsList.selected) return process.exit(1);
   const { value: pod } = podsList.selected;
 
   clearConsole();
-  executeScript("pods/remote_session", { args: [pod] });
+  tailLog(pod);
 })();
