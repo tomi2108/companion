@@ -2,12 +2,12 @@ const cp = require("node:child_process");
 const path = require("node:path");
 const config = require("../lib/config.cjs");
 
-function executeScript(script, { args, supressStdout }) {
+function executeScript(script, opts) {
   const full_path = path.join(config.global.scripts_dir, script);
 
-  const result = cp.execSync(`${full_path} ${args?.join(" ") ?? ""}`, {
+  const result = cp.execSync(`${full_path} ${opts?.args?.join(" ") ?? ""}`, {
     env: { ...process.env, ...envs() },
-    stdio: ["inherit", supressStdout ? "pipe" : "inherit", "inherit"]
+    stdio: ["inherit", opts?.supressStdout ? "pipe" : "inherit", "inherit"]
   });
 
   if (result) return result.toString();

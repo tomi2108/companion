@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+user=$JIRA_USER
+domain=$JIRA_DOMAIN
+token=$JIRA_API_TOKEN
+key=$JIRA_PROJECT_KEY
+
+curl -X GET "https://$domain/rest/api/3/user/assignable/search?project=$key&maxResults=1000" -u "$user:$token"

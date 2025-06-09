@@ -72,9 +72,19 @@ function unlinkIssues(issue_key, issue2_key) {
   });
 }
 
+function getUsers() {
+  return JSON.parse(executeScript("jira/get_users", { supressStdout: true })).map((u) => u.displayName);
+}
+
 function createIssue(parent_issue, labels = []) {
   return executeScript("jira/create", {
     args: [parent_issue, ...formatLabels(labels)]
+  });
+}
+
+function assignIssue(issue_key, user) {
+  return executeScript("jira/assign", {
+    args: [issue_key, user]
   });
 }
 
@@ -103,5 +113,7 @@ module.exports = {
   viewIssue,
   issueToString,
   linkIssues,
-  unlinkIssues
+  unlinkIssues,
+  getUsers,
+  assignIssue
 };
