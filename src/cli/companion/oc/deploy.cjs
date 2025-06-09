@@ -53,7 +53,7 @@ module.exports = {
         const { file_path, yaml } = app.deployments.find((y) => y.env === env);
         const file_name = path.basename(file_path);
 
-        prepareYamlForDeploy(yaml);
+        // prepareYamlForDeploy(yaml);
         yaml.image.tag = version;
         const yaml_string = yamlToString(yaml);
         fs.writeFileSync(file_path, yaml_string);
