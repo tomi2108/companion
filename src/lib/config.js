@@ -6,6 +6,14 @@ import { password, select } from "@inquirer/prompts";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
+export const default_config = {
+  preferences: {
+    logs_path: path.resolve(__dirname, "../../logs"),
+    editor: process.env.EDITOR,
+    browser: process.env.BROWSER
+  }
+};
+
 // Some configs are not user configurable
 export const config = {
   paths: {
@@ -38,27 +46,30 @@ export const config = {
 
 export function loadConfig() {
 
-  // TODO: offer different locations for config file
+  // TODO: offer different locations for config file ... ? may be we dont really need this
   const config_file = path.resolve(__dirname, "../../config.json");
   const file_content = fs.readFileSync(config_file);
-  // TODO: if no config is found prompt user to create a default one
-  // ask for preset (teams preset maybe...)
-  // or custom and ask for needed variables (tokens... etc) and set
-  // sensible defaults, also print a message to where the config was created so the
-  // user can change it if needed
+  // TODO: if file is not found, ask the user if he wants to run the interactive config setup
+  // and run setupConfig() after setup we should exit, and the next time companion is run
+  // config should exist and setup will be skipped
 
-  const { cfg, valid } = validateConfig(JSON.parse(file_content));
-  // TODO: if not valid error or warning depending on severity
+  // TODO: if file exists, but is not valid
+  // log error(s) or warning(s) depending on severity
+  const { cfg: read_config, valid } = validateConfig(JSON.parse(file_content));
 
-  // TODO: keep an eye on this... may cause problems with more complex
-  // configs
-  deepMerge(config, cfg);
+  // TODO: keep an eye on this... may cause problems with more complex configs
+  deepMerge(read_config, config);
+  // TODO: once we have a full and complete companion config.json
+  // write them to the .configs for each program check setup() from ./setup.js
+  // loadConfig() and setup() should be run every time companion runs overriding programs
+  // config with our config.json values
 }
 
 function validateConfig(userConfig) {
-
   // TODO: validate userConfig and set anything
   // that is valid into valid config
+  // anything that the user does not specify should be
+  // filled in with sensible defaults here found in default_config
   const validConfig = {
     user: {
       oc: {
@@ -77,21 +88,23 @@ function validateConfig(userConfig) {
 
   // TODO: In the end, check if the resulting config is complete (has everything we need)
   // and return valid:true or valid:false
-  return { cfg: validConfig, valid: true };
+  // if a critical config is missing eg. glabs_token
+  // we should return valid:false
+  return { cfg: deepMerge(default_config, validConfig), valid: true };
 }
 
 export async function setupConfig() {
   // TODO: get presets
-  const presets = [];
+  const presets = ["movistar-empresas", "R.E.B.O"];
 
   const preset = await select({
-    message: "Select a preset or custom config",
-    choices: [...presets, "custom"].map((s) => ({ name: s, value: s }))
+    message: "Select a preset or default config",
+    choices: [...presets, "default"].map((s) => ({ name: s, value: s }))
   });
 
   // TODO: maybe link the docs in the message on how to obtain them ?
   const oc_token = await password({
-    message: "Enter Openshift token",
+    message: "Enter Openshift auth token",
     mask: true
   });
 
@@ -100,5 +113,11 @@ export async function setupConfig() {
     mask: true
   });
 
-  console.log({ preset, oc_token, glab_token });
+  const jira_token = await password({
+    message: "Enter Jira auth token",
+    mask: true
+  });
+
+  // TODO: write to our own config.json
+  console.log({ preset, oc_token, glab_token, jira_token });
 }
