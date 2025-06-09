@@ -104,7 +104,7 @@ function validateConfig(userConfig) {
 
 export async function setupConfig() {
   // TODO: get presets
-  const presets = ["movistar-empresas", "R.E.B.O"];
+  const presets = ["movistar-empresas", "R.E.B.O", "SoySetm", "Estructurales"];
 
   const preset = await select({
     message: "Select a preset or default config",
