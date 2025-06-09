@@ -2,7 +2,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 const gitCreate = require("simple-git");
 
-const git = (full_path) => gitCreate({ baseDir: full_path });
+const git = (full_path) => gitCreate({
+  baseDir: full_path
+});
 
 async function getTags(full_path) {
   await git(full_path).fetch(["--tags"]);
@@ -79,6 +81,10 @@ async function getActiveBranch(full_path) {
   return (await git(full_path).branchLocal()).current;
 }
 
+async function getBranches(full_path) {
+  return (await git(full_path).branchLocal()).all;
+}
+
 async function getCommits(full_path) {
   return (await git(full_path).log()).all;
 }
@@ -103,5 +109,6 @@ module.exports = {
   getActiveBranch,
   getCommits,
   getDiffCommits,
-  isGitRepo
+  isGitRepo,
+  getBranches
 };

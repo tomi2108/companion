@@ -6,6 +6,7 @@ const { readdirs } = require("../lib/utils.cjs");
 const { MS_TYPES, ENVS } = require("../lib/constants.cjs");
 const { getOriginUrl, isGitRepo } = require("./git.cjs");
 const { executeScript } = require("./cmd.cjs");
+const { cwd } = require("node:process");
 
 function getMsType(name) {
   return MS_TYPES
@@ -181,6 +182,10 @@ async function openEditorAndWaitForSave(full_path) {
   });
 }
 
+function getCurrentPath() {
+  return cwd();
+}
+
 module.exports = {
   createDirIfNotExists,
   prepareYamlForDeploy,
@@ -188,5 +193,6 @@ module.exports = {
   yamlToString,
   externalEnvs,
   internalEnvs,
-  openEditorAndWaitForSave
+  openEditorAndWaitForSave,
+  getCurrentPath
 };

@@ -64,13 +64,13 @@ async function getCurrentUser() {
 }
 
 async function getMrDescriptionFromCommits(commits) {
+  // TODO: not working :p
   return commits.map((c) => `• ${c.message}`).join("\n");
 }
 
 async function createMr(full_path, branch) {
   await push(full_path);
   const project = await getProject(full_path);
-
   const sourceBranch = await getActiveBranch(full_path);
   const commits = await getDiffCommits(full_path, sourceBranch, branch);
   const title = commits[0].message;
@@ -78,6 +78,7 @@ async function createMr(full_path, branch) {
   const description = await getMrDescriptionFromCommits(commits);
   return await glab().MergeRequests.create(project.id, sourceBranch, branch, title, {
     description,
+    removeSourceBranch: true,
     assigneeId
   });
 }

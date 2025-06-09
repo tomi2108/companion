@@ -11,7 +11,6 @@ module.exports = {
   describe: "View pipelines logs",
   handler: async () => {
     login(config.openshift.server_barracas);
-
     const project = await promptForOcProject();
     const pipes = getPipelineRuns(project);
     const pipe = await promptForOcResource(pipes);
