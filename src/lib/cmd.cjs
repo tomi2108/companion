@@ -1,8 +1,8 @@
-import cp from "node:child_process";
-import path from "node:path";
-import { config } from "./config.js";
+const cp = require("node:child_process");
+const path = require("node:path");
+const { config } = require("./config.cjs");
 
-export function executeScript(
+function executeScript(
   script,
   {
     args,
@@ -47,6 +47,9 @@ export function envs() {
   };
 }
 
-export function clearConsole() {
+function clearConsole() {
   process.stdout.write("\x1Bc");
 }
+
+module.exports = { clearConsole, executeScript };
+

@@ -1,9 +1,9 @@
-import path from "node:path";
-import fs from "node:fs";
+const path = require("node:path");
+const fs = require("node:fs");
 
 // TODO: if not installed give the user a link to official docs for installing
 
-export function setup() {
+function setup() {
   const ocOk = setupOpenShift();
   const glabOk = setupGitLab();
   const jiraOk = setupJira();
@@ -70,3 +70,5 @@ function checkConfig(program) {
   // and to specific
   return Boolean(program);
 }
+
+module.exports = { setup };
