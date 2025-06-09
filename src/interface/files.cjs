@@ -3,11 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const yaml = require("js-yaml");
 const { readdirs } = require("../lib/utils.cjs");
-const log = require("../lib/log.cjs");
-
-// TODO: consider moving to global variables
-const types = ["fcd", "int", "dao", "app"];
-const ENVS = ["dev", "int", "cert"];
+const { MS_TYPES, ENVS } = require("../lib/constants.cjs");
 
 function getRepo(search_path, app_name) {
   const dir = readdirs(search_path);
@@ -58,7 +54,7 @@ function parseYaml(file_path) {
 
   const name = yaml_content.image.repository.split("/").at(-1);
   const version = yaml_content.image.tag;
-  const type = types.reduce((acc, curr) => name.includes(curr) ? curr : null) ?? config.openshift.default_ms_type ?? "fcd";
+  const type = MS_TYPES.reduce((acc, curr) => name.includes(curr) ? curr : null) ?? config.openshift.default_ms_type ?? MS_TYPES[0];
   return { env, name, file_path, version, type, yaml_content };
 }
 
@@ -94,6 +90,5 @@ module.exports = {
   createDirIfNotExists,
   prepareYamlForDeploy,
   getApp,
-  yamlToString,
-  ENVS
+  yamlToString
 };

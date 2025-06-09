@@ -4,11 +4,12 @@ const config = require("../../../lib/config.cjs");
 const { search, input } = require("../../../lib/ui.cjs");
 const path = require("node:path");
 const fs = require("node:fs");
-const { getApp, prepareYamlForDeploy, ENVS, yamlToString } = require("../../../interface/files.cjs");
+const { getApp, prepareYamlForDeploy, yamlToString } = require("../../../interface/files.cjs");
 const { getTags, stash, createNewBranch, add, commit, switchBranch, pull } = require("../../../interface/git.cjs");
 const log = require("../../../lib/log.cjs");
 const { readdirs } = require("../../../lib/utils.cjs");
 const { createAndMergeMr } = require("../../../interface/glab.cjs");
+const { ENVS } = require("../../../lib/constants.cjs");
 
 module.exports = {
   command: "deploy",
