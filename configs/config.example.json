@@ -1,11 +1,11 @@
 {
   "paths": {
-    "scripts": "",
     "ms": "",
     "mf": "",
     "oc": "",
     "3scale": "",
-    "argocd": ""
+    "argocd": "",
+    "rest": ""
   },
   "user": {
     "oc": {
@@ -20,6 +20,7 @@
   },
   "preferences": {
     "logs_path": "",
-    "browser": ""
+    "browser": "",
+    "editor": ""
   }
 }

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+[ -z "$1" ] && exit 1
+
+pod_name=$(echo $1 | awk '{printf $1}')
+
+pod="pod/$pod_name"
+temp=${pod_name%-*}
+app_name=${temp%-*}
+
+$OC rsh $pod 
