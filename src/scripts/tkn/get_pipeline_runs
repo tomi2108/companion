@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+project="$1"
+
+$OC project $project 1> /dev/null
+$TKN pipelinerun list -o json 

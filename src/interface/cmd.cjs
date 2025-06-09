@@ -5,12 +5,12 @@ const config = require("../lib/config.cjs");
 function executeScript(script, opts) {
   const full_path = path.join(config.global.scripts_dir, script);
 
-  const result = cp.execSync(`${full_path} ${opts?.args?.join(" ") ?? ""}`, {
+  const result = cp.spawnSync(`${full_path}`, opts.args, {
     env: { ...process.env, ...envs() },
     stdio: ["inherit", opts?.supressStdout ? "pipe" : "inherit", "inherit"]
   });
 
-  if (result) return result.toString();
+  if (result) return result.stdout.toString();
 }
 
 function envs() {
@@ -40,6 +40,8 @@ function envs() {
     //  server but only one, and a way to change cluster in the same command (a command gets a list
     //  of clusters and chan choose to use any of them) If cluster === project, if not then this is nonesense
     GITLAB_USER: config.gitlab.username,
+    NODE_OPTIONS: "--max-old-space-size=8192",
+    TKN: `tkn --kubeconfig=${config.global.oc_config_path}`,
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
     OC_USER: config.openshift.username,
     OC_PASS: config.openshift.password,

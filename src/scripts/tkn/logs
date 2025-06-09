@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+pipe="$1"
+
+$TKN pipelinerun logs -f "$pipe"

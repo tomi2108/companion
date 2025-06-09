@@ -2,6 +2,6 @@
 
 oc_user=$OC_USER
 oc_pass=$OC_PASS
+server="$1"
 
-$OC login 1> /dev/null  -u $oc_user -p $oc_pass
-
+$OC login "$server" -u "$oc_user" -p "$oc_pass" --insecure-skip-tls-verify=true

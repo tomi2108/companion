@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const config = require("../../../lib/config.cjs");
-const { getIssues, assignIssue, issueToString, getUsers } = require("../../../interface/jira.cjs");
+const { assignIssue, getUsers } = require("../../../interface/jira.cjs");
+const { promptForJiraIssue } = require("../../../interface/prompts.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {
@@ -9,12 +9,10 @@ module.exports = {
   describe: "Assign ticket to a user",
   handler: async () => {
 
-    const issues = getIssues({ labels: config.jira.labels });
-    const issue = await search({ choices: issues.map(issueToString) });
-    const issue_key = issue.split(" ")[1];
+    const issue = await promptForJiraIssue();
 
-    const users = getUsers();
-    const user = await search({ choices: users });
-    assignIssue(issue_key, user);
+    const users = await getUsers();
+    const user = await search({ choices: users.map((u) => ({ name: u.name, hint: u.email })) });
+    assignIssue(issue, user);
   }
 };

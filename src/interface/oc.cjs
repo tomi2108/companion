@@ -3,9 +3,10 @@ const path = require("node:path");
 const { executeScript, clearConsole } = require("./cmd.cjs");
 const { EXCLUDED_SECRETS } = require("../lib/constants.cjs");
 
-function login() {
+function login(server) {
   try {
     executeScript("oc/login", {
+      args: [server ?? config.openshift.server_cuyo],
       supressStdout: true
     });
   } catch (err) {

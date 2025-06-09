@@ -1,4 +1,6 @@
+const config = require("../lib/config.cjs");
 const { executeScript } = require("./cmd.cjs");
+const axios = require("axios");
 
 function formatLabels(labels) {
   return labels.map((l) => `-l${l}`);
@@ -19,7 +21,7 @@ function getEpics() {
 function getIssues({ labels = [], type }) {
   return formatIssues(
     executeScript("jira/list", {
-      args: [type ?? "", ...formatLabels(labels)],
+      args: [type ?? "", ...formatLabels(labels)].filter(Boolean),
       supressStdout: true
     }));
 }
@@ -72,8 +74,20 @@ function unlinkIssues(issue_key, issue2_key) {
   });
 }
 
-function getUsers() {
-  return JSON.parse(executeScript("jira/get_users", { supressStdout: true })).map((u) => u.displayName);
+async function getUsers() {
+  // TODO: probably get this out of here
+  const string = `${config.jira.username}:${config.jira.token}`;
+  const encodedString = Buffer.from(string).toString("base64");
+
+  const headers = {
+    Authorization: `Basic ${encodedString}`
+  };
+  const params = {
+    project: config.jira.project_key,
+    maxResults: 1000
+  };
+  const res = await axios.get(`https://${config.jira.server}/rest/api/3/user/assignable/search`, { headers, params });
+  return res.data.map((u) => ({ name: u.displayName, email: u.emailAddress }));
 }
 
 function createIssue(parent_issue, labels = []) {
@@ -104,10 +118,6 @@ function stringToIssue(issueString) {
   return { key, description, type, status };
 }
 
-function issueToString(i) {
-  return `${i.type}\t${i.key}\t${i.description}\t${i.status}`;
-}
-
 module.exports = {
   commentIssue,
   createIssue,
@@ -118,7 +128,6 @@ module.exports = {
   moveIssue,
   openIssue,
   viewIssue,
-  issueToString,
   linkIssues,
   unlinkIssues,
   getUsers,

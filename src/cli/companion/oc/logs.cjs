@@ -5,7 +5,7 @@ const { promptForOcProject, promptForOcResource } = require("../../../interface/
 
 module.exports = {
   command: "logs",
-  aliases: [],
+  aliases: ["log"],
   describe: "Tail pods's logs",
   handler: async () => {
     login();
