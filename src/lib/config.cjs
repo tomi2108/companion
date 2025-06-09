@@ -1,7 +1,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const { deepMerge, removePrefix, removeSuffix } = require("./utils.cjs");
-const { input, password, search } = require("./ui.cjs");
+const { input, password, search, confirm } = require("./ui.cjs");
 const { logSuccess, logWarning } = require("./log.cjs");
 
 const config_file = path.resolve(__dirname, "../../config.json");
@@ -98,11 +98,14 @@ config.loadConfig = async function() {
     file_content = fs.readFileSync(config_file);
   } catch (err) {
     if (err.code === "ENOENT") {
-      logWarning("Configuration file config.json for Companion was not found, would you like to setup a config interactvely?");
-      // TODO: prompt for yes/no look into Enquirer I think it has a "confirm" function
-      await config.setupConfig();
-      file_content = fs.readFileSync(config_file);
-    } else throw err;
+      logWarning("Configuration file config.json for Companion was not found");
+      const setup = await confirm({ message: "Would you like to setup a config interactively?" });
+      if (setup) {
+        await config.setupConfig();
+        file_content = fs.readFileSync(config_file);
+      }
+    }
+    throw err;
   }
 
   const userConfig = JSON.parse(file_content);

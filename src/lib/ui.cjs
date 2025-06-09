@@ -12,4 +12,8 @@ async function search(opts) {
   return await Enquirer.autocomplete(opts);
 }
 
-module.exports = { password, input, search };
+async function confirm(opts) {
+  return await Enquirer.confirm({ initial: true, format: (s) => s === true ? "yes" : "no", ...opts });
+}
+
+module.exports = { password, input, search, confirm };
