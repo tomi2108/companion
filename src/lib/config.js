@@ -2,7 +2,9 @@ import path from "node:path";
 import fs from "node:fs";
 import url from "node:url";
 import { deepMerge } from "./utils.js";
-import { password, select } from "@inquirer/prompts";
+import Enquirer from "enquirer";
+
+const { password, select } = Enquirer;
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -77,10 +79,13 @@ function validateConfig(userConfig) {
     user: {
       oc: {
         cuyo: {
-          namespaces: userConfig.user.oc.cuyo.namespaces,
           username: userConfig.user.oc.cuyo.username,
           password: userConfig.user.oc.cuyo.password
         }
+      },
+      gitlab: {
+        username: userConfig.user.gitlab.username,
+        token: userConfig.user.gitlab.token
       }
     },
     preferences: {

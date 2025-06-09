@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+download_logs_path=$LOGS_PATH
+
+[ -z "$1" ] && exit 1
+[ -z "$2" ] && exit 1
+[ -z "$3" ] && exit 1
+
+pod_name=$(echo $1 | awk '{printf $1}')
+pods=$2
+project=$3
+
+pod="pod/$pod_name"
+temp=${pod_name%-*}
+app_name=${temp%-*}
+
+date=""
+printf -v date '%(%Y-%m-%d)T' -1
+time=$(date +"%T")
+if [ ! -d "$download_logs_path/$project/$date" ]; then 
+  mkdir -p "$download_logs_path/$project/$date"
+fi
+
+# TODO: Think what we should do about this
+if [ $project == "movistar-empresas-cert" ] || [ $project == "movistar-empresas" ]; then
+  tmp="$(echo "$pods" | grep $app_name | awk '{print $1}')"
+  arr=($tmp)
+  filename0="$download_logs_path/$project/$date/[$time]_${arr[0]}"
+  filename1="$download_logs_path/$project/$date/[$time]_${arr[1]}"
+  filename2="$download_logs_path/$project/$date/[$time]_${arr[2]}"
+  touch "$filename0"
+  touch "$filename1"
+  touch "$filename2"
+  $OC logs -f=false pod/${arr[0]} >> "$filename0"
+  $OC logs -f=false pod/${arr[1]} >> "$filename1"
+  $OC logs -f=false pod/${arr[2]} >> "$filename2"
+else
+  filename="$download_logs_path/$project/$date/[$time]_$pod_name"
+  touch "$filename"
+  $OC logs -f=false $pod >> "$filename"
+fi

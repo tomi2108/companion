@@ -7,7 +7,7 @@ import Enquirer from "enquirer";
 import fs from "node:fs";
 import path from "node:path";
 
-const { Input } = Enquirer;
+const { input } = Enquirer;
 
 (async () => {
   const basePath = config.paths.oc;
@@ -25,9 +25,9 @@ const { Input } = Enquirer;
   // TODO: maybe search for the repository in
   // config.paths.mf and config.paths.ms
   // and show available tags to the user
-  const version = await new Input({
+  const version = await input({
     message: "Enter version"
-  }).run();
+  });
 
   executeScript("oc/deploy", {
     args: [env, path.resolve(basePath, app), version]

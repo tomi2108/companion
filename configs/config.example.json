@@ -1,4 +1,5 @@
 {
+  "preset": "",
   "paths": {
     "ms": "",
     "mf": "",
@@ -10,13 +11,14 @@
   "user": {
     "oc": {
       "cuyo": {
-        "namespaces": [
-          ""
-        ],
-        "token": ""
+        "username": "",
+        "password": ""
       }
     },
-    "gitlab": ""
+    "gitlab": {
+      "username": "",
+      "token": ""
+    }
   },
   "preferences": {
     "logs_path": "",

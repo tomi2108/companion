@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+oc_user=$OC_USER
+oc_pass=$OC_PASS
+
+$OC login 1> /dev/null  -u $oc_user -p $oc_pass
+

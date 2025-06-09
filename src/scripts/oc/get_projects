@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+$OC get projects | sed 1d
