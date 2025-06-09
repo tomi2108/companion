@@ -124,24 +124,31 @@ function getItemNamesFromResource(resource) {
   return resource.items.map((e) => e.metadata.name);
 }
 
+function generateRoutes(name, port, insecurePolicy, pathname, host) {
+  return executeScript("oc/routes_generate", {
+    args: [name, port, insecurePolicy, pathname, host]
+  });
+}
+
 module.exports = {
-  deploy,
-  downloadLogs,
   createEnv,
   deleteEnv,
+  deploy,
+  downloadLogs,
   editEnv,
+  extract,
+  generateRoutes,
   getConfigMapsFromDeployment,
-  getDeployment,
-  getSecretsFromProject,
   getConfigMapsFromProject,
+  getDeployment,
+  getDeployments,
+  getItemNamesFromResource,
   getPods,
   getProjects,
   getSecretsFromDeployment,
+  getSecretsFromProject,
   login,
   remoteSession,
-  extract,
   restartDeployment,
-  getDeployments,
-  tailLog,
-  getItemNamesFromResource
+  tailLog
 };

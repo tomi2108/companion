@@ -2,7 +2,7 @@
 
 module.exports = {
   command: "pod <command>",
-  describe: "Manage pods",
+  describe: "Manage OpenShift pods",
   aliases: ["pods"],
   builder: (yargs) => yargs
     .command(require("./pod/download.cjs"))

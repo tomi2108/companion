@@ -2,7 +2,7 @@
 
 module.exports = {
   command: "deployment <command>",
-  describe: "Manage deployments",
+  describe: "Manage OpenShift deployments",
   aliases: ["dep"],
   builder: (yargs) => yargs
     .command(require("./deployment/deploy.cjs"))

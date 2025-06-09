@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+oc_user=$OC_USER
+
+  oc create route edge "$route_name" --port="$port"--service="$name" --insecure-policy="$insecure_policy" --path="$pathname" --hostname="$host"
+
+  oc expose service "$name" --port=8080 --path="$pathname" --hostname="$host"
+
+
+  deployments=$(oc get deployments | grep app- | awk '{print $1}')
+  arr=($deployments)
+for name in "${arr[@]}"
+do
+  path=$(echo "$deploy" | sed -E 's/-([a-z])/\U\1/g')
+  pathname="/app/$path"
+done
+fi
+
+if [ $type == "ms" ]
+then
+  deployments=$(oc get deployments | grep movistarempresas- | awk '{print $1}')
+  arr=($deployments)
+for name in "${arr[@]}"
+do
+  deploy=${name#movistarempresas-*}
+  host="${name}-movistar-empresas-${env}.apps.ocpnp.cuyorh.tcloud.ar"
+  pathname="/"
+done
+fi
+
+
+
+fi
+
+if [ "$command" == "Search" ]
+then
+oc project "$project"
+oc login -u "$oc_user" -p $(pass show oc/pass)
+  route=$(oc get routes | sed 1d | awk '{print $1,"*",$2,$3}' | column -t -s '*' -o '      '  |  fzf-tmux -w 100% -h 100% --prompt="Choose route: " --info=inline --layout=reverse | awk '{printf $1}')
+  [ -z "$route" ] && exit
+  oc describe route "$route"
+fi

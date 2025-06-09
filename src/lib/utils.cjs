@@ -39,4 +39,8 @@ function md5FromFile(file_path) {
   return hash.digest("hex");
 }
 
-module.exports = { deepMerge, removePrefix, removeSuffix, readdirs, readfiles, md5FromFile };
+function kebabToCamel(str) {
+  return str.replace(/-./g, (x) => x[1].toUpperCase());
+}
+
+module.exports = { deepMerge, removePrefix, removeSuffix, readdirs, readfiles, md5FromFile, kebabToCamel };
