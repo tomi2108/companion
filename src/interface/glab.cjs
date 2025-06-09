@@ -8,7 +8,7 @@ const log = require("../lib/log.cjs");
 
 const glab = () => new Gitlab({
   token: config.gitlab.token,
-  host: config.gitlab.server
+  host: `https:/${config.gitlab.server}`
 });
 
 async function getProjects(id) {

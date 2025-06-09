@@ -31,7 +31,7 @@ let config = {
     server_cuyo: "https://api.ocpnp.cuyorh.tcloud.ar:6443",
     server_barracas: "https://api.ocpnp.brcrh.tcloud.ar:6443"
   },
-  gitlab: { server: "https://gitlab-ee.agil.movistar.com.ar" },
+  gitlab: { server: "gitlab-ee.agil.movistar.com.ar" },
   jira: { server: "ar-telefonicahispam.atlassian.net" }
 };
 
