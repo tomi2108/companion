@@ -35,6 +35,7 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 
 ```bash
 ./install.sh
+```
 
 ---
 
