@@ -25,7 +25,9 @@ function getOcYaml(env, app_name) {
   if (!file) return null;
   const full_path = path.join(dir, file);
   const file_content = fs.readFileSync(full_path);
-  const yaml_content = yaml.load(file_content)["helm-chart-master"];
+  const yaml_content = yaml.load(file_content)?.["helm-chart-master"];
+  if (!yaml_content) return null;
+
   const name = yaml_content.image.repository.split("/").at(-1);
   const version = yaml_content.image.tag;
   return { name, full_path, version };

@@ -19,14 +19,14 @@ module.exports = {
 
     const apps = readdirs(config.paths.despliegues);
     const app = await search({ choices: apps });
-    const { name: app_name } = getOcYaml(env, app);
+    const yaml = getOcYaml(env, app);
 
-    const repo = getRepo(config.paths.frontend, app_name) ?? getRepo(config.paths.backend, app_name);
+    const repo = getRepo(config.paths.frontend, yaml.name) ?? getRepo(config.paths.backend, yaml.name);
     let version = null;
 
     if (repo) {
       const tags = await getTags(repo.full_path);
-      version = await search({ choices: tags, message: "Choose a version to deploy" });
+      version = await search({ choices: tags, message: `Choose a version to deploy, current version: ${yaml.version}` });
     } else {
       log.warning(`Tags for repository ${app} not found, searched in ${config.paths.frontend} and ${config.paths.backend}`);
       version = await input({ message: "Enter version to deploy, starting with a 'v':" });

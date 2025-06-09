@@ -33,7 +33,7 @@ git switch -c feature/despliegue
 # for env in "${selected_envs[@]}"
 # do
   file_name="values-movistar-empresas-$env.yaml"
-  $scripts_repo/dep-yaml $path/$file_name $type 
+  $scripts_repo/oc/dep-yaml $path/$file_name $type 
   sed -i "s/tag: .*/tag: $version/" $path/$file_name
   git add $file_name
 # done
@@ -53,4 +53,4 @@ then
   git stash pop 
 fi
 
-$SCRIPTS_REPO_PATH/pipes
+$SCRIPTS_REPO_PATH/oc/pipes

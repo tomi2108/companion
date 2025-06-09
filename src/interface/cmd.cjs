@@ -18,6 +18,7 @@ function envs() {
   // commands will want to use different values for OC_SERVER for example
 
   return {
+    SCRIPTS_REPO_PATH: config.global.scripts_dir,
     GLAB_CONFIG_DIR: config.global.glab_config_path,
     // TODO: I dont think these are needed... will see
     // GITLAB_HOST: config.gitlab.server,
