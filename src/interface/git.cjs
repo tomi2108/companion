@@ -6,7 +6,7 @@ const git = (full_path) => gitCreate({ baseDir: full_path });
 
 async function getTags(full_path) {
   await git(full_path).fetch(["--tags"]);
-  const tags = await git.tags({ "--sort": "-v:refname" });
+  const tags = await git(full_path).tags({ "--sort": "-v:refname" });
   return tags.all;
 }
 

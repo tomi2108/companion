@@ -97,8 +97,8 @@ function createDirIfNotExists(dir) {
 
 function accessObj(obj, keys) {
   const val = obj?.[keys?.[0]];
-  if (!val) return null;
-  if (val && typeof val !== "object") return val;
+  if (val === null || val === undefined) return null;
+  if (typeof val !== "object") return val;
   return accessObj(val, keys.slice(1));
 }
 
@@ -106,19 +106,19 @@ function getDeploymentOption(path, type, env, y) {
   const keys = path.split(".");
 
   const env_type_value = accessObj(config.openshift?.deployments?.[env]?.[type], keys);
-  if (env_type_value) return env_type_value;
+  if (env_type_value !== null && env_type_value !== undefined) return env_type_value;
 
   const type_env_value = accessObj(config.openshift?.deployments?.[type]?.[env], keys);
-  if (type_env_value) return type_env_value;
+  if (type_env_value !== null && type_env_value !== undefined) return type_env_value;
 
   const type_value = accessObj(config.openshift?.deployments?.[type], keys);
-  if (type_value) return type_value;
+  if (type_value !== null && type_value !== undefined) return type_value;
 
   const env_value = accessObj(config.openshift?.deployments?.[env], keys);
-  if (env_value) return env_value;
+  if (env_value !== null && env_value !== undefined) return env_value;
 
   const deployment_value = accessObj(config.openshift?.deployments, keys);
-  if (deployment_value) return deployment_value;
+  if (env_value !== null && env_value !== undefined) return deployment_value;
 
   return accessObj(y, keys);
 }

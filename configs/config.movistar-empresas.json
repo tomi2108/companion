@@ -4,6 +4,9 @@
     "project": "empresas",
     "product": "mimovistarempresas",
     "deployments": {
+      "exclude": [
+        "app-shell"
+      ],
       "configmapENV": {
         "ELK_LOGS_DEBUG": "off",
         "ELK_LOGS": "on",

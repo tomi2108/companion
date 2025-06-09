@@ -9,6 +9,7 @@ const log = require("../../../lib/log.cjs");
 const { createAndMergeMr } = require("../../../interface/glab.cjs");
 const { ENVS } = require("../../../lib/constants.cjs");
 const { promptForApp } = require("../../../interface/prompts.cjs");
+const config = require("../../../lib/config.cjs");
 
 module.exports = {
   command: "deploy",
@@ -50,7 +51,12 @@ module.exports = {
         const { file_path, yaml } = app.deployments.find((y) => y.env === env);
         const file_name = path.basename(file_path);
 
-        prepareYamlForDeploy(yaml, app.type, env);
+        if (
+          !config.openshift.deployments.exclude?.includes(app.name)
+          && !config.openshift.deployments.exclude?.includes(env)
+          && !config.openshift.deployments.exclude?.includes(app.type)
+        ) prepareYamlForDeploy(yaml, app.type, env);
+
         yaml.image.tag = version;
         const yaml_string = yamlToString(yaml);
         fs.writeFileSync(file_path, yaml_string);
