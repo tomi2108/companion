@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-id="$1"
-path="$2"
-
-cd "$path" || exit  
-glab repo clone -g "$id" -a=false "$path" --paginate

@@ -65,8 +65,8 @@
       "backend": 6058,
       "frontend": 6057,
       "despliegues": 6069,
-      "argocd": "https://gitlab-ee.agil.movistar.com.ar/despliegues-gitops/argo-cd-app-create.git",
-      "3scale": "https://gitlab-ee.agil.movistar.com.ar/apis-3scale/ocpnp-3scale/empresas/ocpnp-3scale.git",
+      "argocd": 431,
+      "3scale": 4825,
       "vault": 6070
     }
   },

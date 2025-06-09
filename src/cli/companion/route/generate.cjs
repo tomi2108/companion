@@ -19,6 +19,7 @@ module.exports = {
 
     const port = 8080;
     if (type === "frontend") {
+      // TODO: not good, find another way to filter out front_end deployments
       const frontend_deployments = deployments.items.filter((e) => e.metadata.name.startsWith("app-"));
 
       const host_template = "{{env}}-mimovistarempresas.movistar.com.ar";

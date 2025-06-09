@@ -2,58 +2,60 @@ const fs = require("node:fs");
 const path = require("node:path");
 const gitCreate = require("simple-git");
 
+const git = (full_path) => gitCreate({ baseDir: full_path });
+
 async function getTags(full_path) {
-  const git = gitCreate({ baseDir: full_path });
-  await git.fetch(["--tags"]);
+  await git(full_path).fetch(["--tags"]);
   const tags = await git.tags({ "--sort": "-v:refname" });
   return tags.all;
 }
 
 async function cloneRepo(link, full_path) {
-  const git = gitCreate({ baseDir: full_path });
-  await git.clone(link, full_path);
+  await git(full_path).clone(link);
 }
 
 async function stash(full_path, callback) {
-  const git = gitCreate({ baseDir: full_path });
-  const { total: stash_before } = await git.stashList();
-  await git.stash(["--include-untracked"]);
-  const { total: stash_after } = await git.stashList();
+  const g = git(full_path);
+  const { total: stash_before } = await g.stashList();
+  await g.stash(["--include-untracked"]);
+  const { total: stash_after } = await g.stashList();
   await callback();
-  if (stash_after !== stash_before) await git.stash(["pop"]);
+  if (stash_after !== stash_before) await g.stash(["pop"]);
 }
 
 async function createNewBranch(full_path, name) {
-  const git = gitCreate({ baseDir: full_path });
+  const g = git(full_path);
   try {
-    await git.deleteLocalBranch(name, true);
+    await g.deleteLocalBranch(name, true);
   } catch { }
-  await git.checkoutLocalBranch(name);
+  await g.checkoutLocalBranch(name);
 }
 
 async function add(full_path, file) {
-  const git = gitCreate({ baseDir: full_path });
-  await git.add(file);
+  await git(full_path).add(file);
 }
 
 async function commit(full_path, message) {
-  const git = gitCreate({ baseDir: full_path });
-  await git.commit(message);
+  await git(full_path).commit(message);
 }
 
 async function switchBranch(full_path, branch) {
-  const git = gitCreate({ baseDir: full_path });
-  await git.checkout(branch);
+  await git(full_path).checkout(branch);
+}
+
+async function switchBranchIfExists(full_path, branch) {
+  const g = git(full_path);
+  const branches = await g.branchLocal();
+  if (!branches.all.includes(branch)) return;
+  await g.checkout(branch);
 }
 
 async function pull(full_path) {
-  const git = gitCreate({ baseDir: full_path });
-  await git.pull();
+  await git(full_path).pull();
 }
 
 async function getOriginUrl(full_path) {
-  const git = gitCreate({ baseDir: full_path });
-  const url = await git.getConfig("remote.origin.url");
+  const url = await git(full_path).getConfig("remote.origin.url");
   return url.value;
 }
 
@@ -71,5 +73,6 @@ module.exports = {
   switchBranch,
   createNewBranch,
   getOriginUrl,
+  switchBranchIfExists,
   isGitRepo
 };
