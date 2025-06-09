@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-const { config } = require("yargs");
-const { setupConfig } = require("../../../lib/config.cjs");
-const { executeScript } = require("../../../lib/cmd.cjs");
+const { cloneRepos } = require("../../../lib/glab.cjs");
 
 module.exports = {
   command: "repos",
@@ -11,8 +9,6 @@ module.exports = {
   handler: async () => {
     // TODO: get from config
     const ids = [1, 2, 3, 4];
-    executeScript("glab/repo_clone", {
-      args: ids
-    });
+    cloneRepos(ids);
   }
 };

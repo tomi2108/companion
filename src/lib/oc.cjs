@@ -1,4 +1,6 @@
+const path = require("node:path");
 const { executeScript } = require("./cmd.cjs");
+const config = require("./config.cjs");
 
 function login() {
   try {
@@ -45,6 +47,12 @@ function downloadLogs(pod, pods, project) {
   executeScript("oc/download_logs", { args: [pod, pods, project] });
 }
 
+function deploy(env, app, version) {
+  executeScript("oc/deploy", {
+    args: [env, path.join(config.paths.despliegues, app), version]
+  });
+}
+
 module.exports = {
   downloadLogs,
   restartDeployment,
@@ -53,5 +61,6 @@ module.exports = {
   remoteSession,
   getDeployment,
   getProjects,
-  getPods
+  getPods,
+  deploy
 };

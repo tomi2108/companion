@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-const { executeScript } = require("../../../lib/cmd.cjs");
 const config = require("../../../lib/config.cjs");
 const fs = require("node:fs");
-const path = require("node:path");
 const { search, input } = require("../../../lib/ui.cjs");
+const { deploy } = require("../../../lib/oc.cjs");
 
 module.exports = {
   command: "deploy",
@@ -12,11 +11,10 @@ module.exports = {
   describe: "Deploy specific pod version",
   handler: async () => {
 
-    const basePath = config.paths.despliegues;
     const env = await search({ choices: ["dev", "int", "cert"] });
     if (!env) return process.exit(1);
 
-    const apps = fs.readdirSync(basePath);
+    const apps = fs.readdirSync(config.paths.despliegues);
     const app = await search({ choices: apps });
     if (!app) return process.exit(1);
 
@@ -25,9 +23,6 @@ module.exports = {
     // and show available tags to the user
     const version = await input({ message: "Enter version" });
 
-    executeScript("oc/deploy", {
-      args: [env, path.join(basePath, app), version]
-    });
-
+    deploy(env, app, version);
   }
 };
