@@ -46,14 +46,14 @@ function setupTkn() {
   return found;
 }
 
-const paths_to_check = ["/usr/bin"];
+const paths_to_check = process.env.PATH;
 function checkInstalled(program) {
   // TODO: check if programs is installed in the system
   // probably add more options for linux and search where windows
   // stores packages... may be give users a config to point to the exact
   // executable or to its folder?
 
-  const found = paths_to_check.some((p) => fs.existsSync(path.join(p, program)));
+  const found = paths_to_check.split(":").some((p) => fs.existsSync(path.join(p, program)));
   return found;
 }
 

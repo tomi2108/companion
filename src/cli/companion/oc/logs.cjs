@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const { clearConsole } = require("../../../lib/cmd.cjs");
 const { getPods, getProjects, login, tailLog } = require("../../../interface/oc.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
@@ -19,7 +18,6 @@ module.exports = {
     const pod = await search({ choices: pods });
     if (!pod) return process.exit(1);
 
-    clearConsole();
     tailLog(pod);
   }
 };

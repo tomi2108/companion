@@ -1,5 +1,5 @@
 const path = require("node:path");
-const { executeScript } = require("../lib/cmd.cjs");
+const { executeScript, clearConsole } = require("./cmd.cjs");
 const config = require("../lib/config.cjs");
 
 function login() {
@@ -28,10 +28,12 @@ function getProjects() {
 }
 
 function tailLog(pod) {
+  clearConsole();
   return executeScript("oc/tail_log", { args: [pod] });
 }
 
 function remoteSession(pod) {
+  clearConsole();
   return executeScript("oc/remote_session", { args: [pod] });
 }
 

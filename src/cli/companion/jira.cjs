@@ -5,7 +5,7 @@ module.exports = {
   describe: "Manage Jira tickets",
   aliases: [],
   builder: (yargs) => yargs
-    .command(require("./jira/list.cjs"))
+    .command(require("./jira/edit.cjs"))
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }

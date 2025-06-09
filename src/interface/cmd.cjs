@@ -1,6 +1,6 @@
 const cp = require("node:child_process");
 const path = require("node:path");
-const config = require("./config.cjs");
+const config = require("../lib/config.cjs");
 
 function executeScript(script, { args, supressStdout }) {
   const full_path = path.join(config.global.scripts_dir, script);
