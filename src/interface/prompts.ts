@@ -27,8 +27,7 @@ export async function promptForApp(promptOpts?: PromptOptions) {
   // can maybe improve this, not searching by app_name, but by origin url ?
   // think more about this and making deploy_repo in return type
   // not optional, since we are searching in Config.get().paths.despliegues;
-  // TODO: check
-  return await getApp(app_name as unknown as string);
+  return await getApp(app_name);
 }
 
 export async function promptForOcProject(promptOpts?: PromptOptions) {
@@ -40,8 +39,7 @@ export async function promptForOcProject(promptOpts?: PromptOptions) {
     ...opts
   });
   if (!project) return process.exit(1);
-  // TODO: check
-  return project as unknown as string;
+  return project;
 }
 
 export async function promptForOcResource<T extends Resource>(resources: { items: T[] }, promptOpts?: PromptOptions) {
@@ -52,8 +50,7 @@ export async function promptForOcResource<T extends Resource>(resources: { items
     ...opts
   });
   if (!resource) return process.exit(1);
-  // TODO:check
-  return resources.items.find((r) => r.metadata.name === resource as unknown as string) as T;
+  return resources.items.find((r) => r.metadata.name === resource) as T;
 }
 
 export async function promptForJiraIssue(
@@ -69,8 +66,7 @@ export async function promptForJiraIssue(
   const choice = await search({ choices, message: "Select an issue:", ...pOpts });
 
   if (!choice) return process.exit(1);
-  // TODO:check
-  return new Issue(choice as unknown as string);
+  return new Issue(choice);
 }
 
 export function promptTmpFile(file_name: string, content: string) {

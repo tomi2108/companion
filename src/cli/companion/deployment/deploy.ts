@@ -29,8 +29,7 @@ export default {
           };
         });
 
-      // TODO:check
-      const selectedEnvs = await search({ message: "Select environment", multiple: true, choices }) as unknown as Env[];
+      const selectedEnvs = await search({ message: "Select environment", multiple: true, choices }) as Env[];
       if (selectedEnvs.length === 0) return process.exit(1);
 
       let version = null;
@@ -39,13 +38,11 @@ export default {
 
       if (app_repo) {
         const tags = await app_repo.getTags();
-        // TODO:check
-        version = await search({ choices: tags, message: "Choose a version to deploy:" }) as unknown as string;
+        version = await search({ choices: tags, message: "Choose a version to deploy:" });
       } else {
         log.warning(`Tags for repository ${name} not found`);
 
-        // TODO:check
-        version = await input({ message: "Enter version to deploy, starting with a 'v':" }) as unknown as string;
+        version = await input({ message: "Enter version to deploy, starting with a 'v':" });
       }
 
       await deploy_repo.createNewBranch("feature/despliegue");

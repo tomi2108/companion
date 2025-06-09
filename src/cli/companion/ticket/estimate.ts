@@ -9,7 +9,6 @@ export default {
   handler: async () => {
     const issue = await promptForJiraIssue();
     const estimacion = await input({ message: "Input estimate for the ticket" });
-    // TODO: check
-    issue.estimate(estimacion as unknown as string);
+    issue.estimate(estimacion);
   }
 };

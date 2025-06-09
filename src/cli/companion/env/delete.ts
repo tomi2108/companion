@@ -13,8 +13,7 @@ export default {
     const project = await promptForOcProject();
 
     const choices = ["configmap", "secret"];
-    // TODO:check
-    const type = await search({ message: "Choose type of resource to delete", choices }) as unknown as string;
+    const type = await search({ message: "Choose type of resource to delete", choices });
     if (!type) process.exit(1);
 
     if (type === "configmap") {

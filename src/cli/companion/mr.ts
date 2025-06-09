@@ -16,6 +16,6 @@ export default {
     const targetBranches = branches.filter((b) => b !== activeBranch);
     const targetBranch = await search({ choices: targetBranches, message: "Choose target branch" });
     // TODO : check
-    await repo.createAndMergeMr(targetBranch as unknown as string);
+    await repo.createAndMergeMr(targetBranch);
   }
 };

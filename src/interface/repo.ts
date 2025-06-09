@@ -124,8 +124,8 @@ export class Repo {
   }
 
   private getMrDescriptionFromCommits(commits: readonly { message: string }[]) {
-    // TODO: not working :p
-    return commits.map((c) => `• ${c.message}`).join("\n");
+    // TODO: test
+    return commits.map((c) => `- ${c.message}`).join("\n\n");
   }
 
   async createMr(branch: string) {

@@ -16,7 +16,6 @@ export default {
     const project = await promptForOcProject();
 
     const choices = ["configmap", "secret"];
-    // TODO: check
     const resource = await search({ message: "Choose type of resource to edit", choices }) as unknown as string;
     if (!resource) process.exit(1);
 
@@ -25,8 +24,7 @@ export default {
       secret: "secret generic"
     }[resource];
 
-    // TODO: check
-    const name = await input({ message: `Enter a name for the new ${resource}` }) as unknown as string;
+    const name = await input({ message: `Enter a name for the new ${resource}` });
     if (!name) process.exit(1);
 
     const { changed, file_path } = promptTmpFile(`${name}-${resource}`, "KEY=VALUE");

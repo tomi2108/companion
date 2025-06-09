@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
-import { removePrefix, removeSuffix } from "./utils";
+import { deepMerge, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
 import { MsType } from "./constants";
@@ -106,8 +106,7 @@ class Config {
     const preset = await search({
       message: "Select a preset or default config",
       choices: [...presets, "default"]
-      // TODO: check
-    }) as unknown as string;
+    });
 
     const oc_user = await input({ message: "Enter Openshift username" });
     const oc_password = await password({ message: "Enter Openshift auth token" });
@@ -168,12 +167,22 @@ class Config {
       throw err;
     }
 
-    // const userConfig = JSON.parse(file_content);
-    // const readConfig = this.validateUserConfig(userConfig);
+    // TODO: validate and type here team config
+    const readConfig = JSON.parse(file_content);
+    const userConfig = this.validateUserConfig(readConfig);
     // TODO: probably validate each config (gitlab, jira... etc) separately
     // and merge them with defaults
-    // if (this.isValidTeamKey(userConfig.team)) config = deepMerge(config, this.getTeamConfig(userConfig.team));
-    // config = deepMerge(config, readConfig);
+    if (this.isValidTeamKey(readConfig.team)) {
+      this.jira = deepMerge(this.jira, this.getTeamConfig(readConfig.team).jira);
+      this.gitlab = deepMerge(this.gitlab, this.getTeamConfig(readConfig.team).gitlab);
+      this.openshift = deepMerge(this.openshift, this.getTeamConfig(readConfig.team).openshift);
+      this.dynatrace = deepMerge(this.dynatrace, this.getTeamConfig(readConfig.team).dynatrace);
+    }
+    // TODO: find a better way to do this... integrate zod probably
+    // https://zod.dev/
+    this.jira = deepMerge(this.jira, userConfig.jira);
+    this.gitlab = deepMerge(this.gitlab, userConfig.gitlab);
+    this.openshift = deepMerge(this.openshift, userConfig.openshift);
   }
 
   validateUserConfig(userConfig: any) {

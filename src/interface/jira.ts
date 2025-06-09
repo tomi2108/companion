@@ -63,7 +63,6 @@ export class Jira {
     );
 
     const issues = res.issues as IssueResponse[];
-
     return issues.map(Issue.fromIssueResponse);
   }
 }

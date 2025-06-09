@@ -19,7 +19,6 @@ export default {
 
     const issue = (await new Jira().getIssues({ labels: labels }))[0];
     const estimacion = await input({ message: "Input estimate for the ticket" });
-    // TODO: check
-    issue.estimate(estimacion as unknown as string);
+    issue.estimate(estimacion);
   }
 };

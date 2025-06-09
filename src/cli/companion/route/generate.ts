@@ -13,14 +13,13 @@ export default {
     login();
     const project = await promptForOcProject();
     const types = ["frontend", "backend"];
-    const type = await search({ message: "for:", choices: types }) as unknown as string;
+    const type = await search({ message: "for:", choices: types });
 
     const deployments = getDeployments(project);
 
     const port = 8080;
-    // TODO:check
     if (type === "frontend") {
-      // TODO: not good, find another way to filter out front_end deployments
+      // TODO: not the best, find another way to filter out front_end deployments
       const frontend_deployments = deployments.items.filter((e: any) => e.metadata.name.startsWith("app-"));
 
       const host_template = "{{env}}-mimovistarempresas.movistar.com.ar";

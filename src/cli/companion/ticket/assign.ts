@@ -16,7 +16,6 @@ export default {
       message: `Select a user to assing issue ${issue.key}`,
       choices: users.map((u) => ({ name: u.name, hint: u.email }))
     });
-    // TODO: check
-    issue.assign(user as unknown as string);
+    issue.assign(user);
   }
 };
