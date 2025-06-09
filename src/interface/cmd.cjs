@@ -10,7 +10,7 @@ function executeScript(script, opts) {
     stdio: ["inherit", opts?.supressStdout ? "pipe" : "inherit", "inherit"]
   });
 
-  if (result) return result.stdout.toString();
+  if (result.stdout) return result.stdout.toString();
 }
 
 function envs() {

@@ -12,6 +12,7 @@ module.exports = {
     const issue = await promptForJiraIssue();
 
     const users = await getUsers();
+    // TODO: fix this script
     const user = await search({ choices: users.map((u) => ({ name: u.name, hint: u.email })) });
     assignIssue(issue, user);
   }
