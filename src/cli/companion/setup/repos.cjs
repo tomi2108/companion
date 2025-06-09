@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { cloneRepos } = require("../../../lib/glab.cjs");
+const { cloneRepos } = require("../../../interface/glab.cjs");
 
 module.exports = {
   command: "repos",

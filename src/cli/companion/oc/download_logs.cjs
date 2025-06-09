@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { downloadLogs, getPods, getProjects, login } = require("../../../lib/oc.cjs");
+const { downloadLogs, getPods, getProjects, login } = require("../../../interface/oc.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {

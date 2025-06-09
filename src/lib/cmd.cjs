@@ -32,9 +32,17 @@ function envs() {
     // OC_SERVER: config.openshift.server_cuyo,
     //  I think oc_tokens expire too quickly, we may be bound to using
     //  username and password... will investigate
+    // IMPORTANT:  oc has an oc options command that lists all options that
+    // can be passed in to any command. I think we should use this instead
+    // of maintaining a kubeconfig file, --kubeconfig still needs to exist I believe
+    // or else oc will create kubeconfigs on cwd. Look into --server and --cluster, and
+    // inject them in OC env. We need a way to change server by command, each command can use any
+    //  server but only one, and a way to change cluster in the same command (a command gets a list
+    //  of clusters and chan choose to use any of them) If cluster === project, if not then this is nonesense
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
     OC_USER: config.openshift.username,
     OC_PASS: config.openshift.password,
+    JIRA_PROJECT_KEY: config.jira.project_key,
     JIRA_USER: config.jira.username,
     JIRA_API_TOKEN: config.jira.token,
     JIRA_DOMAIN: config.jira.server,

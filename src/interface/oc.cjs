@@ -1,6 +1,6 @@
 const path = require("node:path");
-const { executeScript } = require("./cmd.cjs");
-const config = require("./config.cjs");
+const { executeScript } = require("../lib/cmd.cjs");
+const config = require("../lib/config.cjs");
 
 function login() {
   try {

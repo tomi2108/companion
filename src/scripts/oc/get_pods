@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO: I dont think we need this
-
 project=$1
 
 $OC project $project 1> /dev/null

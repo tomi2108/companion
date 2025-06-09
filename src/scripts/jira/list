@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
 
-labels="${@[*]}"
-echo $labels
-
-# jira issue list $extra_flags -s~Finalizado -s~Cancelado $labels --no-headers --plain 
+labels="$*"
+jira issue list -s~Finalizado -s~Cancelado $labels --no-headers --plain 

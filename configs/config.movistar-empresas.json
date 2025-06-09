@@ -5,6 +5,7 @@
     "editor": "nvim"
   },
   "jira": {
+    "project_key": "ECR",
     "labels": [
       "ECR-Replacement",
       "ECR-Raplacement"

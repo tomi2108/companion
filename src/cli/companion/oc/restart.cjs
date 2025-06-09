@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 const { clearConsole } = require("../../../lib/cmd.cjs");
-const { getPods, getProjects, login, tailLog } = require("../../../lib/oc.cjs");
+const { getDeployment, getPods, getProjects, login, restartDeployment } = require("../../../interface/oc.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {
-  command: "logs",
+  command: "restart",
   aliases: [],
-  describe: "Tail pods's logs",
+  describe: "Restart rollout for pod",
   handler: async () => {
     login();
 
@@ -20,6 +20,6 @@ module.exports = {
     if (!pod) return process.exit(1);
 
     clearConsole();
-    tailLog(pod);
+    restartDeployment(getDeployment(pod));
   }
 };

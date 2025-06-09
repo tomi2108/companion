@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const config = require("../../../lib/config.cjs");
-const { getIssues } = require("../../../lib/jira.cjs");
+const { getIssues } = require("../../../interface/jira.cjs");
 
 module.exports = {
   command: "list",

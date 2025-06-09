@@ -3,7 +3,7 @@
 const config = require("../../../lib/config.cjs");
 const fs = require("node:fs");
 const { search, input } = require("../../../lib/ui.cjs");
-const { deploy } = require("../../../lib/oc.cjs");
+const { deploy } = require("../../../interface/oc.cjs");
 
 module.exports = {
   command: "deploy",

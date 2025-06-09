@@ -1,8 +1,8 @@
-const { executeScript } = require("./cmd.cjs");
+const { executeScript } = require("../lib/cmd.cjs");
 
 function getIssues(labels) {
   return executeScript("jira/list", {
-    args: labels,
+    args: labels.map((l) => `-l${l}`),
     supressStdout: true
   });
 }

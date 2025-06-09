@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { clearConsole } = require("../../../lib/cmd.cjs");
-const { getPods, getProjects, login, remoteSession } = require("../../../lib/oc.cjs");
+const { getPods, getProjects, login, remoteSession } = require("../../../interface/oc.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {

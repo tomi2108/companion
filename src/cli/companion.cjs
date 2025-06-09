@@ -10,8 +10,9 @@ setup();
 yargs
   .scriptName("companion")
   .usage("$0 <command> [subcommand]")
-  .command(require("./commands/oc.cjs"))
-  .command(require("./commands/setup.cjs"))
+  .command(require("./companion/oc.cjs"))
+  .command(require("./companion/jira.cjs"))
+  .command(require("./companion/setup.cjs"))
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()

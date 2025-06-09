@@ -28,12 +28,8 @@ let config = {
     server_cuyo: "https://api.ocpnp.cuyorh.tcloud.ar:6443",
     server_barracas: "https://api.ocpnp.brcrh.tcloud.ar:6443"
   },
-  gitlab: {
-    server: "gitlab-ee.agil.movistar.com.ar"
-  },
-  jira: {
-    server: "ar-telefonicahispam.atlassian.net"
-  }
+  gitlab: { server: "gitlab-ee.agil.movistar.com.ar" },
+  jira: { server: "ar-telefonicahispam.atlassian.net" }
 };
 
 // export function configGet(key, c = config) {
@@ -80,6 +76,7 @@ function validateUserConfig(userConfig) {
       token: userConfig.gitlab?.token
     },
     jira: {
+      project_key: userConfig.jira?.project_key,
       username: userConfig.jira?.username,
       token: userConfig.jira?.token,
       labels: userConfig.jira?.labels
@@ -114,9 +111,8 @@ function isValidTeamKey(key) {
 }
 
 config.setupConfig = async function() {
-  // TODO: get presets
   // TODO: maybe link the docs in the message on how to obtain tokens ?
-  const presets = ["movistar-empresas", "R.E.B.O", "SoySetm", "Estructurales"];
+  const presets = getAvailablePresets();
 
   const preset = await search({
     message: "Select a preset or default config",
@@ -129,6 +125,7 @@ config.setupConfig = async function() {
   const glab_user = await input({ message: "Enter Gitlab username" });
   const glab_token = await password({ message: "Enter Gitlab auth token" });
 
+  // TODO: find out if we need email or username...
   const jira_user = await input({ message: "Enter Jira username" });
   const jira_token = await password({ message: "Enter Jira auth token" });
 
