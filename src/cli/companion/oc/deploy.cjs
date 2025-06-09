@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
-const config = require("../../../lib/config.cjs");
-const { search, input } = require("../../../lib/ui.cjs");
+const { search, input, promptForApp } = require("../../../lib/ui.cjs");
 const path = require("node:path");
 const fs = require("node:fs");
-const { getApp, prepareYamlForDeploy, yamlToString } = require("../../../interface/files.cjs");
+const { prepareYamlForDeploy, yamlToString } = require("../../../interface/files.cjs");
 const { getTags, stash, createNewBranch, add, commit, switchBranch, pull } = require("../../../interface/git.cjs");
 const log = require("../../../lib/log.cjs");
-const { readdirs } = require("../../../lib/utils.cjs");
 const { createAndMergeMr } = require("../../../interface/glab.cjs");
 const { ENVS } = require("../../../lib/constants.cjs");
 
@@ -16,9 +14,7 @@ module.exports = {
   aliases: ["dep"],
   describe: "Deploy specific pod version",
   handler: async () => {
-    const apps = readdirs(config.paths.despliegues);
-    const app_name = await search({ choices: apps });
-    const app = await getApp(app_name);
+    const app = await promptForApp();
 
     await stash(app.deploy_path, async () => {
       await switchBranch(app.deploy_path, "master");

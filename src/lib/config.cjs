@@ -22,6 +22,7 @@ let config = {
   global: {
     scripts_dir: path.resolve(__dirname, "../scripts"),
     configs_dir: path.resolve(__dirname, "../../configs"),
+    tmp_dir: path.resolve(__dirname, "../../tmp"),
     oc_config_path: path.resolve(__dirname, "../../.configs/.kube/config"),
     oc_cache_path: path.resolve(__dirname, "../../.configs/.kube/cache"),
     glab_config_path: path.resolve(__dirname, "../../.configs/glab/")

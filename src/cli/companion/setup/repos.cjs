@@ -2,7 +2,7 @@
 
 const { cloneRepo } = require("../../../interface/git.cjs");
 const { cloneGroup } = require("../../../interface/glab.cjs");
-const { createDirIfNotExists } = require("../../../interface/paths.cjs");
+const { createDirIfNotExists } = require("../../../interface/files.cjs");
 const config = require("../../../lib/config.cjs");
 const log = require("../../../lib/log.cjs");
 

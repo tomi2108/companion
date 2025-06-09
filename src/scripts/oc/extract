@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+type=$1
+project=$2
+value=$3
+to=$4
+
+$OC project "$project" 1> /dev/null
+$OC extract "$type"/"$value" --to="$to" --confirm

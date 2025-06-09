@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+deployment=$1
+project=$2
+
+$OC project $project 1> /dev/null
+$OC get deployment "$deployment" -o json

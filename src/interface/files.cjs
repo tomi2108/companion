@@ -5,6 +5,7 @@ const yaml = require("js-yaml");
 const { readdirs } = require("../lib/utils.cjs");
 const { MS_TYPES, ENVS } = require("../lib/constants.cjs");
 const { getOriginUrl, isGitRepo } = require("./git.cjs");
+const { search } = require("../lib/ui.cjs");
 
 function getMsType(name) {
   return MS_TYPES
@@ -158,9 +159,34 @@ function yamlToString(y) {
   return yaml.dump({ "helm-chart-master": y });
 }
 
+function externalEnvs(full_path) {
+  const file_content = fs.readFileSync(full_path).toString();
+  const replaced = file_content
+    .replace(new RegExp(`.${config.openshift.namespace_prefix}`, "g"), `-${config.openshift.namespace_prefix}`)
+    .replace(/\.svc\.cluster\.local:8080/g, ".apps.ocpnp.cuyorh.tcloud.ar");
+  fs.writeFileSync(full_path, replaced);
+}
+
+function internalEnvs(full_path) {
+  const file_content = fs.readFileSync(full_path);
+  const replaced = file_content
+    .replaceAll(new RegExp(`-${config.openshift.namespace_prefix}`, "g"), `.${config.openshift.namespace_prefix}`)
+    .replaceAll(/\.apps\.ocpnp\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
+  fs.writeFileSync(full_path, replaced);
+}
+
+async function promptForApp() {
+  const apps = readdirs(config.paths.despliegues);
+  const app_name = await search({ choices: apps });
+  return await getApp(app_name);
+}
+
 module.exports = {
   createDirIfNotExists,
   prepareYamlForDeploy,
   getApp,
-  yamlToString
+  yamlToString,
+  promptForApp,
+  externalEnvs,
+  internalEnvs
 };

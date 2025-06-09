@@ -1,6 +1,7 @@
+const config = require("../lib/config.cjs");
 const path = require("node:path");
 const { executeScript, clearConsole } = require("./cmd.cjs");
-const config = require("../lib/config.cjs");
+const { EXCLUDED_SECRETS } = require("../lib/constants.cjs");
 
 function login() {
   try {
@@ -37,7 +38,7 @@ function remoteSession(pod) {
   return executeScript("oc/remote_session", { args: [pod] });
 }
 
-function getDeployment(pod) {
+function getDeploymentFromPodName(pod) {
   return pod.split("-").slice(0, -2).join("-");
 }
 
@@ -55,14 +56,43 @@ function deploy(envs, app, version) {
   });
 }
 
+function getDeployment(deployment, project) {
+  return JSON.parse(executeScript("oc/get_deployment", {
+    args: [deployment, project],
+    supressStdout: true
+  }));
+}
+
+function getConfigMapsFromDeployment(deploymentJson) {
+  return deploymentJson.spec.template.spec.containers[0].envFrom
+    .map((e) => e.configMapRef).filter(Boolean).map((cm) => cm.name);
+}
+
+function getSecretsFromDeployment(deploymentJson) {
+  return deploymentJson.spec.template.spec.containers[0].envFrom
+    .map((e) => e.secretRef).filter(Boolean).map((s) => s.name)
+    .filter((s) => !EXCLUDED_SECRETS.includes(s));
+}
+
+function extract(type, project, value, to) {
+  return executeScript("oc/extract", {
+    args: [type, project, value, to],
+    supressStdout: true
+  }).split("\n").filter(Boolean);
+}
+
 module.exports = {
   deploy,
   downloadLogs,
+  getConfigMapsFromDeployment,
   getDeployment,
+  getDeploymentFromPodName,
   getPods,
   getProjects,
+  getSecretsFromDeployment,
   login,
   remoteSession,
+  extract,
   restartDeployment,
   tailLog
 };

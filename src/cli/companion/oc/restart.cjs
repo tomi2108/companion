@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { getDeployment, getPods, getProjects, login, restartDeployment } = require("../../../interface/oc.cjs");
+const { getDeploymentFromPodName, getPods, getProjects, login, restartDeployment } = require("../../../interface/oc.cjs");
 const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {
@@ -18,6 +18,6 @@ module.exports = {
     const pod = await search({ choices: pods });
     if (!pod) return process.exit(1);
 
-    restartDeployment(getDeployment(pod));
+    restartDeployment(getDeploymentFromPodName(pod));
   }
 };
