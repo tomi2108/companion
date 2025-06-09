@@ -24,15 +24,14 @@ let config = {
     oc_cache_path: path.resolve(__dirname, "../../.configs/.kube/cache"),
     glab_config_path: path.resolve(__dirname, "../../.configs/glab/")
   },
-  user: {
-    oc: {
-      cuyo: {
-        server: "https://api.ocpnp.cuyorh.tcloud.ar:6443"
-      }
-    },
-    glab: {
-      server: "gitlab-ee.agil.movistar.com.ar"
+  openshift: {
+    cuyo: {
+      server: "https://api.ocpnp.cuyorh.tcloud.ar:6443"
     }
+  },
+  gitlab: {
+    server: "gitlab-ee.agil.movistar.com.ar"
+
   }
 };
 
@@ -71,24 +70,22 @@ function validateConfig(userConfig) {
   // filled in with sensible defaults here found in default_config
   const validConfig = {
     paths: {
-      oc: userConfig.paths.oc
+      oc: userConfig.paths?.oc
     },
-    user: {
-      oc: {
-        cuyo: {
-          username: userConfig.user.oc.cuyo.username,
-          password: userConfig.user.oc.cuyo.password
-        }
-      },
-      gitlab: {
-        username: userConfig.user.gitlab.username,
-        token: userConfig.user.gitlab.token
+    openshift: {
+      cuyo: {
+        username: userConfig.openshift?.cuyo?.username,
+        password: userConfig.openshift?.cuyo?.password
       }
     },
+    gitlab: {
+      username: userConfig.gitlab?.username,
+      token: userConfig.gitlab?.token
+    },
     preferences: {
-      logs_path: userConfig.preferences.logs_path,
-      editor: userConfig.preferences.editor,
-      browser: userConfig.preferences.browser
+      logs_path: userConfig.preferences?.logs_path,
+      editor: userConfig.preferences?.editor,
+      browser: userConfig.preferences?.browser
     }
   };
 

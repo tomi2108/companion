@@ -1,0 +1,7 @@
+{
+  "preferences": {
+    "logs_path": "/home/tsanchen/logs",
+    "browser": "qutebrowser",
+    "editor": "nvim"
+  }
+}

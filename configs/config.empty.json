@@ -1,5 +1,5 @@
 {
-  "preset": "",
+  "team": "",
   "paths": {
     "ms": "",
     "mf": "",
@@ -8,17 +8,15 @@
     "argocd": "",
     "rest": ""
   },
-  "user": {
-    "oc": {
-      "cuyo": {
-        "username": "",
-        "password": ""
-      }
-    },
-    "gitlab": {
+  "openshift": {
+    "cuyo": {
       "username": "",
-      "token": ""
+      "password": ""
     }
+  },
+  "gitlab": {
+    "username": "",
+    "token": ""
   },
   "preferences": {
     "logs_path": "",

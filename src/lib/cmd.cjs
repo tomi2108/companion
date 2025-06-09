@@ -26,20 +26,20 @@ function envs() {
   return {
     GLAB_CONFIG_DIR: config.global.glab_config_path,
     // TODO: I dont think these are needed... will see
-    // GITLAB_HOST: config.user.glab.server,
-    // GITLAB_API_HOST: config.user.glab.server,
-    // GITLAB_TOKEN: config.user.glab.token,
+    // GITLAB_HOST: config.gitlab.server,
+    // GITLAB_API_HOST: config.gitlab.server,
+    // GITLAB_TOKEN: config.gitlab.token,
     // TODO: OC_TOKEN && OC_SERVER may not be needed for the scripts...
     // we can maybe write the config file for each cluster/context
-    // deriving from namespaces && config.user.oc.(...).token
+    // deriving from namespaces && config.openshift.(...).token
     // I think if we write the config in a smart and careful way
     // oc will just know the context when we run `oc project $project`
-    // OC_TOKEN: config.user.oc.cuyo.token,
-    // OC_SERVER: config.user.oc.cuyo.server,
+    // OC_TOKEN: config.openshift.cuyo.token,
+    // OC_SERVER: config.openshift.cuyo.server,
     //  I think oc_tokens expire too quickly, we may be bound to using
     //  username and password... will investigate
-    OC_USER: config.user.oc.cuyo.username,
-    OC_PASS: config.user.oc.cuyo.password,
+    OC_USER: config.openshift.cuyo.username,
+    OC_PASS: config.openshift.cuyo.password,
     LOGS_PATH: config.preferences.logs_path,
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
     BROWSER: config.preferences.browser,
