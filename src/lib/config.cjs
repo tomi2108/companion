@@ -102,6 +102,8 @@ config.loadConfig = async function() {
       const setup = await confirm({ message: "Would you like to setup a config interactively?" });
       if (setup) {
         await config.setupConfig();
+        // TODO: I dont think this is working :?  try  running companion setup config without a config.json
+        // and after writing the config ENOENT is thrown for some reason
         file_content = fs.readFileSync(config_file);
       }
     }

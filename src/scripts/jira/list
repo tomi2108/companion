@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
 
+type="$1"
 labels="$*"
+
+if [[ $type == -l* ]]; then
+# TODO: check if statuses are the same for every team ?
+# is this something configured server wise ?
+# maybe we should not hide any issue ?
 jira issue list -s~Finalizado -s~Cancelado $labels --no-headers --plain 
+else
+  shift
+  labels="$*"
+  jira issue list -s~Finalizado -s~Cancelado $labels --no-headers --plain --type $type
+fi
+
+

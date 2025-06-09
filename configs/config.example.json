@@ -16,6 +16,10 @@
     "username": "",
     "token": ""
   },
+  "jira": {
+    "username": "",
+    "token": ""
+  },
   "preferences": {
     "logs_path": "",
     "browser": "",

@@ -56,13 +56,13 @@ function deploy(env, app, version) {
 }
 
 module.exports = {
+  deploy,
   downloadLogs,
-  restartDeployment,
-  tailLog,
+  getDeployment,
+  getPods,
+  getProjects,
   login,
   remoteSession,
-  getDeployment,
-  getProjects,
-  getPods,
-  deploy
+  restartDeployment,
+  tailLog
 };
