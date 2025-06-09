@@ -60,6 +60,18 @@ function openIssue(issue_key) {
   });
 }
 
+function linkIssues(issue_key, issue2_key) {
+  return executeScript("jira/link", {
+    args: [issue_key, issue2_key]
+  });
+}
+
+function unlinkIssues(issue_key, issue2_key) {
+  return executeScript("jira/unlink", {
+    args: [issue_key, issue2_key]
+  });
+}
+
 function createIssue(parent_issue, labels = []) {
   return executeScript("jira/create", {
     args: [parent_issue, ...formatLabels(labels)]
@@ -89,5 +101,7 @@ module.exports = {
   moveIssue,
   openIssue,
   viewIssue,
-  issueToString
+  issueToString,
+  linkIssues,
+  unlinkIssues
 };

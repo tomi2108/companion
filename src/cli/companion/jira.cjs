@@ -12,6 +12,8 @@ module.exports = {
     .command(require("./jira/move.cjs"))
     .command(require("./jira/open.cjs"))
     .command(require("./jira/view.cjs"))
+    .command(require("./jira/link.cjs"))
+    .command(require("./jira/unlink.cjs"))
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }
