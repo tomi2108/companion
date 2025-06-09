@@ -3,12 +3,14 @@
 glab_user=$GITLAB_USER
 deploy_repos_path=$OC_REPOS_PATH
 scripts_repo=$SCRIPTS_REPO_PATH
-env=$1
-path=$2
-version=$3
+path=$1
+version=$2
 
-# TODO: Support for updating multiple envs 
-# selected_envs=($selected)
+shift
+shift
+envs=$*
+
+selected_envs=($envs)
 
 # TODO: This is not entirely correct, not all 
 # ms use fcd-  int-  
@@ -30,13 +32,13 @@ git switch -c feature/despliegue
 
 
 # TODO: Support for updating multiple envs 
-# for env in "${selected_envs[@]}"
-# do
+for env in "${selected_envs[@]}"
+do
   file_name="values-movistar-empresas-$env.yaml"
   $scripts_repo/oc/dep-yaml $path/$file_name $type 
   sed -i "s/tag: .*/tag: $version/" $path/$file_name
   git add $file_name
-# done
+done
 
 git commit -m "$version"
 

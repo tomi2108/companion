@@ -49,9 +49,9 @@ function downloadLogs(pod, pods, project) {
   executeScript("oc/download_logs", { args: [pod, pods, project] });
 }
 
-function deploy(env, app, version) {
+function deploy(envs, app, version) {
   executeScript("oc/deploy", {
-    args: [env, path.join(config.paths.despliegues, app), version]
+    args: [path.join(config.paths.despliegues, app), version, envs.join(" ")]
   });
 }
 
