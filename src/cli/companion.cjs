@@ -11,9 +11,11 @@ yargs
     await config.loadConfig();
     setup();
   }, true)
-  .command(require("./companion/oc.cjs"))
-  .command(require("./companion/jira.cjs"))
+  .command(require("./companion/deployment.cjs"))
+  .command(require("./companion/env.cjs"))
+  .command(require("./companion/pod.cjs"))
   .command(require("./companion/setup.cjs"))
+  .command(require("./companion/ticket.cjs"))
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()

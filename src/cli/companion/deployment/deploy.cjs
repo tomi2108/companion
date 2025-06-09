@@ -13,7 +13,7 @@ const { promptForApp } = require("../../../interface/prompts.cjs");
 module.exports = {
   command: "deploy",
   aliases: ["dep"],
-  describe: "Deploy specific pod version",
+  describe: "Deploy specific app version",
   handler: async () => {
     const app = await promptForApp();
 

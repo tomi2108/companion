@@ -8,7 +8,7 @@ const config = require("../../../lib/config.cjs");
 module.exports = {
   command: "pipeline",
   aliases: ["pipe", "pipe-log"],
-  describe: "Download pod logs",
+  describe: "View pipelines logs",
   handler: async () => {
     login(config.openshift.server_barracas);
 
