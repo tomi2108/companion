@@ -1,9 +1,15 @@
 const { executeScript } = require("./cmd.cjs");
 
 function login() {
-  return executeScript("oc/login", {
-    supressStdout: true
-  });
+  try {
+    executeScript("oc/login", {
+      supressStdout: true
+    });
+  } catch (err) {
+    if (err.stdout.toString().includes("couldn't get current server API"));
+    console.error("Could not connect to Openshift instance, check network settings (VPN), connectivity and credentials");
+    process.exit(1);
+  }
 }
 
 function getPods(project) {

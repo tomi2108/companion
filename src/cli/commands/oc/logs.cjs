@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { clearConsole } = require("../../lib/cmd.cjs");
+const { clearConsole } = require("../../../lib/cmd.cjs");
 const fzf = require("node-fzf");
-const { getPods, getProjects, login, tailLog } = require("../../lib/oc.cjs");
+const { getPods, getProjects, login, tailLog } = require("../../../lib/oc.cjs");
 
 module.exports = {
   command: "logs",

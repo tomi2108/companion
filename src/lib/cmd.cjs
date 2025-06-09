@@ -1,6 +1,6 @@
 const cp = require("node:child_process");
 const path = require("node:path");
-const { config } = require("./config.cjs");
+const config = require("./config.cjs");
 
 function executeScript(
   script,
@@ -19,7 +19,7 @@ function executeScript(
   if (result) return result.toString();
 }
 
-export function envs() {
+function envs() {
   // TODO: probably make commands envs be set by each command
   // commands will want to use different values for OC_SERVER for example
 

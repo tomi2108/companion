@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-const { clearConsole } = require("../../lib/cmd.cjs");
+const { clearConsole } = require("../../../lib/cmd.cjs");
 const fzf = require("node-fzf");
-const { getPods, getProjects, login, remoteSession } = require("../../lib/oc.cjs");
+const { getDeployment, getPods, getProjects, login, restartDeployment } = require("../../../lib/oc.cjs");
 
 module.exports = {
-  command: "remote_session",
-  aliases: ["rsh"],
-  describe: "Start a remote session",
+  command: "restart",
+  aliases: [],
+  describe: "Restart rollout for pod",
   handler: async () => {
     login();
     const projects = getProjects();
@@ -17,13 +17,12 @@ module.exports = {
     const { value: project } = projectList.selected;
 
     const pods = getPods(project);
-
     const podsList = await fzf({ list: pods });
+
     if (!podsList.selected) return process.exit(1);
     const { value: pod } = podsList.selected;
 
     clearConsole();
-
-    remoteSession(pod);
+    restartDeployment(getDeployment(pod));
   }
 };

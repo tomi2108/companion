@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { executeScript } = require("../../lib/cmd.cjs");
+const { executeScript } = require("../../../lib/cmd.cjs");
 const fzf = require("node-fzf");
-const { config } = require("../../lib/config.cjs");
+const config = require("../../../lib/config.cjs");
 const Enquirer = require("enquirer");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -13,7 +13,6 @@ module.exports = {
   command: "deploy",
   aliases: ["dep"],
   describe: "Deploy specific pod version",
-
   handler: async () => {
     const basePath = config.paths.oc;
     const envList = await fzf({ list: ["dev", "int", "cert"] });

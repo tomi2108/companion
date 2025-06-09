@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fzf = require("node-fzf");
-const { downloadLogs, getPods, getProjects, login } = require("../../lib/oc.cjs");
+const { downloadLogs, getPods, getProjects, login } = require("../../../lib/oc.cjs");
 
 module.exports = {
   command: "download",
