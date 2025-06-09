@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const crypto = require("node:crypto");
 
 function deepMerge(obj1, obj2) {
   for (const key in obj2) {
@@ -31,4 +32,11 @@ function readfiles(p) {
   return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile()).map((d) => d.name);
 }
 
-module.exports = { deepMerge, removePrefix, removeSuffix, readdirs, readfiles };
+function md5FromFile(file_path) {
+  const content = fs.readFileSync(file_path);
+  const hash = crypto.createHash("md5");
+  hash.update(content);
+  return hash.digest("hex");
+}
+
+module.exports = { deepMerge, removePrefix, removeSuffix, readdirs, readfiles, md5FromFile };

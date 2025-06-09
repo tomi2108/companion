@@ -15,12 +15,12 @@ async function cloneRepo(link, full_path) {
 }
 
 async function stash(full_path, callback) {
-  // const git = gitCreate({ baseDir: full_path });
-  // const { total: stash_before } = await git.stashList();
-  // await git.stash();
-  // const { total: stash_after } = await git.stashList();
+  const git = gitCreate({ baseDir: full_path });
+  const { total: stash_before } = await git.stashList();
+  await git.stash(["--include-untracked"]);
+  const { total: stash_after } = await git.stashList();
   await callback();
-  // if (stash_after !== stash_before) await git.stash(["pop"]);
+  if (stash_after !== stash_before) await git.stash(["pop"]);
 }
 
 async function createNewBranch(full_path, name) {

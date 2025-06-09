@@ -12,8 +12,8 @@ const default_config = {
   },
   preferences: {
     logs_path: path.resolve(__dirname, "../../logs"),
-    editor: process.env.EDITOR,
-    browser: process.env.BROWSER
+    editor: process.env.EDITOR ?? "vi",
+    browser: process.env.BROWSER ?? "firefox"
   }
 };
 

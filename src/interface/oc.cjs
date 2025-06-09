@@ -81,9 +81,16 @@ function extract(type, project, value, to) {
   }).split("\n").filter(Boolean);
 }
 
+function createEnv(project, type, name, from_file) {
+  return JSON.parse(executeScript("oc/create", {
+    args: [project, type, name, from_file]
+  }));
+}
+
 module.exports = {
   deploy,
   downloadLogs,
+  createEnv,
   getConfigMapsFromDeployment,
   getDeployment,
   getDeploymentFromPodName,

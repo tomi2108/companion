@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+file="$1"
+
+if [[ $EDITOR == 'code' ]]; then
+  $EDITOR --wait "$1"
+else 
+  $EDITOR "$1"
+fi

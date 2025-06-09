@@ -6,6 +6,7 @@ module.exports = {
   aliases: [],
   builder: (yargs) => yargs
     .command(require("./oc/copy_envs.cjs"))
+    .command(require("./oc/create_env.cjs"))
     .command(require("./oc/deploy.cjs"))
     .command(require("./oc/download_logs.cjs"))
     .command(require("./oc/logs.cjs"))
