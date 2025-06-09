@@ -5,6 +5,10 @@ const yaml = require("js-yaml");
 const { readdirs } = require("../lib/utils.cjs");
 const log = require("../lib/log.cjs");
 
+// TODO: consider moving to global variables
+const types = ["fcd", "int", "dao", "app"];
+const ENVS = ["dev", "int", "cert"];
+
 function getRepo(search_path, app_name) {
   const dir = readdirs(search_path);
   const matcher = (name) => name.includes(app_name);
@@ -14,26 +18,48 @@ function getRepo(search_path, app_name) {
     const name = package_file.name;
     if (!matcher(name)) continue;
     const version = package_file.version;
-    // TODO: get type
-    const type = "fcd";
 
-    return { full_path, name, version, type };
+    return { full_path, name, version };
   }
   return null;
 }
 
-function getOcYaml(env, app_name) {
-  const dir = path.join(config.paths.despliegues, app_name);
-  const file = fs.readdirSync(dir).find((f) => f.includes(env));
-  if (!file) return null;
-  const full_path = path.join(dir, file);
-  const file_content = fs.readFileSync(full_path);
+function getApp(app_name) {
+  const app_path = path.join(config.paths.despliegues, app_name);
+  const app_dir = fs.readdirSync(app_path, { withFileTypes: true });
+  const yaml_files = app_dir
+    .filter((f) => f.isFile() && ENVS.some((e) => f.name.includes(e)))
+    .map((f) => path.join(f.parentPath, f.name));
+
+  const parsedYamls = yaml_files.map(parseYaml);
+  const ret = {};
+  ret.deployments = parsedYamls.map(({ env, yaml_content, file_path, version }) => ({
+    env,
+    file_path,
+    version,
+    yaml: yaml_content
+  }));
+
+  ret.name = parsedYamls?.[0].name ?? null;
+  ret.type = parsedYamls?.[0].type ?? null;
+  const repo = getRepo(config.paths.frontend, app_name) ?? getRepo(config.paths.backend, app_name) ?? null;
+  ret.version = repo?.version ?? null;
+  ret.full_path = repo?.full_path ?? null;
+  ret.deploy_path = app_path;
+
+  return ret;
+}
+
+function parseYaml(file_path) {
+  const file_content = fs.readFileSync(file_path);
+  const env = ENVS.find((e) => path.basename(file_path).includes(e));
   const yaml_content = yaml.load(file_content)?.["helm-chart-master"];
   if (!yaml_content) return null;
 
   const name = yaml_content.image.repository.split("/").at(-1);
   const version = yaml_content.image.tag;
-  return { name, full_path, version };
+  const type = types.reduce((acc, curr) => name.includes(curr) ? curr : null) ?? config.openshift.default_ms_type ?? "fcd";
+  return { env, name, file_path, version, type, yaml_content };
 }
 
 function createDirIfNotExists(dir) {
@@ -42,19 +68,32 @@ function createDirIfNotExists(dir) {
   return { created: !exists };
 }
 
-function searchAndReplace(file, regex, replace) {
-  const fileAsString = fs.readFileSync(file).toString();
-  const replaced = fileAsString.replace(regex, replace);
-  if (!replaced || !fileAsString) {
-    log.error(`Failed while replacing ${regex.toString()} with ${replace} in ${file}, file is empty`);
-    process.exit(1);
-  }
-  fs.writeFileSync(file, replaced);
+function prepareYamlForDeploy(y) {
+  // TODO: migrate dep-yaml script
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+  y.resources.limits.cpu = "";
+
+  return y;
+}
+
+function yamlToString(y) {
+  return yaml.dump({ "helm-chart-master": y });
 }
 
 module.exports = {
-  getRepo,
-  getOcYaml,
   createDirIfNotExists,
-  searchAndReplace
+  prepareYamlForDeploy,
+  getApp,
+  yamlToString,
+  ENVS
 };

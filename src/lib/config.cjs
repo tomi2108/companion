@@ -129,6 +129,7 @@ function validateUserConfig(userConfig) {
     },
     openshift: {
       namespace_prefix: userConfig.openshift?.namespace_prefix,
+      default_ms_type: userConfig.openshift?.default_ms_type,
       username: userConfig.openshift?.username,
       password: userConfig.openshift?.password
     },
