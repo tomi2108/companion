@@ -6,6 +6,7 @@
     "despliegues": "",
     "3scale": "",
     "argocd": "",
+    "vault": "",
     "rest": ""
   },
   "openshift": {
@@ -13,7 +14,6 @@
     "password": ""
   },
   "gitlab": {
-    "repo_ids": [],
     "username": "",
     "token": ""
   },

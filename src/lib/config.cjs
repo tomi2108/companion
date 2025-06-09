@@ -123,7 +123,10 @@ function validateUserConfig(userConfig) {
     paths: {
       despliegues: userConfig.paths?.despliegues,
       frontend: userConfig.paths?.frontend,
-      backend: userConfig.paths?.backend
+      backend: userConfig.paths?.backend,
+      "3scale": userConfig.paths?.["3scale"],
+      argocd: userConfig.paths?.argocd,
+      vault: userConfig.paths?.vault
     },
     openshift: {
       username: userConfig.openshift?.username,

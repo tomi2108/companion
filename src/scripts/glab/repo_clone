@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
 
-arg="$1"
-glab repo clone -g $arg
+id="$1"
+path="$2"
+
+cd "$path" || exit  
+glab repo clone -g "$id" -a=false "$path" --paginate

@@ -1,9 +1,9 @@
 const { executeScript } = require("./cmd.cjs");
 
-function cloneRepo(id) {
+function cloneGroup(id, path) {
   return executeScript("glab/repo_clone", {
-    args: id
+    args: [id, path]
   });
 }
 
-module.exports = { cloneRepo };
+module.exports = { cloneGroup };

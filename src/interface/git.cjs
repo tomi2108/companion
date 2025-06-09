@@ -7,4 +7,9 @@ async function getTags(full_path) {
   return tags.all;
 }
 
-module.exports = { getTags };
+async function cloneRepo(link, full_path) {
+  const git = gitCreate({ baseDir: full_path });
+  await git.clone(link, full_path);
+}
+
+module.exports = { getTags, cloneRepo };

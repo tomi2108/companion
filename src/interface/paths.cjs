@@ -33,4 +33,10 @@ function getOcYaml(env, app_name) {
   return { name, full_path, version };
 }
 
-module.exports = { getRepo, getOcYaml };
+function createDirIfNotExists(dir) {
+  const exists = fs.existsSync(dir);
+  if (!exists) fs.mkdirSync(dir, { recursive: true });
+  return { created: !exists };
+}
+
+module.exports = { getRepo, getOcYaml, createDirIfNotExists };
