@@ -73,7 +73,7 @@ async function getApp(app_name) {
   ret.version = repo?.version ?? null;
   ret.full_path = repo?.full_path ?? null;
   ret.deploy_path = app_path;
-  if (!ret.deployments) ret.deployments = null;
+  ret.deployments ??= null;
 
   return ret;
 }
@@ -94,21 +94,63 @@ function createDirIfNotExists(dir) {
   return { created: !exists };
 }
 
-function prepareYamlForDeploy(y) {
-  // TODO: migrate dep-yaml script
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
-  y.resources.limits.cpu = "";
+function accessObj(obj, keys) {
+  const val = obj?.[keys?.[0]];
+  if (!val) return null;
+  if (val && typeof val !== "object") return val;
+  return accessObj(val, keys.slice(1));
+}
 
+function getDeploymentOption(path, type, env, y) {
+  const keys = path.split(".");
+
+  const env_type_value = accessObj(config.openshift?.deployments?.[env]?.[type], keys);
+  if (env_type_value) return env_type_value;
+
+  const type_env_value = accessObj(config.openshift?.deployments?.[type]?.[env], keys);
+  if (type_env_value) return type_env_value;
+
+  const type_value = accessObj(config.openshift?.deployments?.[type], keys);
+  if (type_value) return type_value;
+
+  const env_value = accessObj(config.openshift?.deployments?.[env], keys);
+  if (env_value) return env_value;
+
+  const deployment_value = accessObj(config.openshift?.deployments, keys);
+  if (deployment_value) return deployment_value;
+
+  return accessObj(y, keys);
+}
+
+function prepareYamlForDeploy(y, type, env) {
+  // TODO: add elasticsearch automatically as last secret
+  y.dynatrace.modulo = config.dynatrace?.modulo ?? y.dynatrace.modulo ?? "NO_INFORMADO";
+  y.dynatrace.tipo = type === "app" ? "MICROFRONTEND" : type.toUpperCase();
+  y.dynatrace.clave_jira = config.jira?.project_key ?? y.dynatrace.clave_jira ?? "NO_INFORMADO";
+  // TODO: vincular con Jira ?
+  y.dynatrace.masivo_critico = "NO";
+  y.dynatrace.issue_jira = "NO_INFORMADO";
+
+  y.route.enabled = getDeploymentOption("route.enabled", type, env, y);
+
+  y.resources.limits.cpu = getDeploymentOption("resources.limits.cpu", type, env, y);
+  y.resources.limits.memory = getDeploymentOption("resources.limits.memory", type, env, y);
+
+  y.resources.requests.cpu = getDeploymentOption("resources.requests.cpu", type, env, y);
+  y.resources.requests.memory = getDeploymentOption("resources.requests.memory", type, env, y);
+
+  y.autoscaling.enabled = getDeploymentOption("autoscaling.enabled", type, env, y);
+  y.autoscaling.minReplicas = getDeploymentOption("autoscaling.minReplicas", type, env, y);
+  y.autoscaling.maxReplicas = getDeploymentOption("autoscaling.maxReplicas", type, env, y);
+
+  y.readinessProbe.enabled = getDeploymentOption("readinessProbe.enabled", type, env, y);
+
+  y.configmapENV.ELK_LOGS = getDeploymentOption("configmapENV.ELK_LOGS", type, env, y);
+  y.configmapENV.ELK_LOGS_DEBUG = getDeploymentOption("configmapENV.ELK_LOGS_DEBUG", type, env, y);
+  y.configmapENV.STDOUT_LOGS = getDeploymentOption("configmapENV.STDOUT_LOGS", type, env, y);
+
+  y.labels.lproduct = config.openshift.product ?? y.labels.lproduct;
+  y.labels.lenvironment = env;
   return y;
 }
 

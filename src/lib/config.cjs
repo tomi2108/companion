@@ -130,6 +130,9 @@ function validateUserConfig(userConfig) {
     openshift: {
       namespace_prefix: userConfig.openshift?.namespace_prefix,
       default_ms_type: userConfig.openshift?.default_ms_type,
+      project: userConfig.openshift?.project,
+      product: userConfig.openshift?.product,
+      deployments: userConfig.openshift?.deployments,
       username: userConfig.openshift?.username,
       password: userConfig.openshift?.password
     },
@@ -147,6 +150,9 @@ function validateUserConfig(userConfig) {
       logs_path: userConfig.preferences?.logs_path,
       editor: userConfig.preferences?.editor,
       browser: userConfig.preferences?.browser
+    },
+    dynatrace: {
+      modulo: userConfig.dynatrace?.modulo
     }
   };
   return validConfig;

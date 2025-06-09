@@ -2,23 +2,62 @@
   "openshift": {
     "namespace_prefix": "movistar-empresas",
     "project": "empresas",
-    "dev": {
-      "dao": {},
-      "fcd": {},
-      "int": {},
-      "app": {}
-    },
-    "int": {
-      "dao": {},
-      "fcd": {},
-      "int": {},
-      "app": {}
-    },
-    "cert": {
-      "dao": {},
-      "fcd": {},
-      "int": {},
-      "app": {}
+    "product": "mimovistarempresas",
+    "deployments": {
+      "configmapENV": {
+        "ELK_LOGS_DEBUG": "off",
+        "ELK_LOGS": "on",
+        "STDOUT_LOGS": "on"
+      },
+      "autoscaling": {
+        "enabled": false,
+        "minReplicas": 1,
+        "maxReplicas": 3
+      },
+      "resources": {
+        "limits": {
+          "cpu": "40m",
+          "memory": "128Mi"
+        },
+        "requests": {
+          "cpu": "15m",
+          "memory": "64Mi"
+        }
+      },
+      "readinessProbe": {
+        "enabled": true
+      },
+      "route": {
+        "enabled": true
+      },
+      "app": {
+        "readinessProbe": {
+          "enabled": false
+        },
+        "route": {
+          "enabled": false
+        }
+      },
+      "cert": {
+        "autoscaling": {
+          "enabled": true,
+          "minReplicas": 3,
+          "maxReplicas": 6
+        },
+        "resources": {
+          "limits": {
+            "cpu": "100m",
+            "memory": "256Mi"
+          },
+          "requests": {
+            "cpu": "30m",
+            "memory": "256Mi"
+          }
+        },
+        "configmapENV": {
+          "STDOUT_LOGS": "off"
+        }
+      }
     }
   },
   "gitlab": {
@@ -30,6 +69,9 @@
       "3scale": "https://gitlab-ee.agil.movistar.com.ar/apis-3scale/ocpnp-3scale/empresas/ocpnp-3scale.git",
       "vault": 6070
     }
+  },
+  "dynatrace": {
+    "modulo": "MIMOVISTAREMPRESAS"
   },
   "jira": {
     "project_key": "ECR",
