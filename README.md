@@ -53,11 +53,11 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 ### 🔁 Utilidades para GitLab
 - [x] Clonación inteligente de repositorios del grupo del proyecto
 - [ ] Creación y asignación automática de *merge requests*
-- [ ] Revisión del estado de pipelines asociados a una MR o branch
+- [x] Revisión del estado de pipelines asociados a una MR o branch
 - [ ] Asignación de revisores automáticamente según reglas del equipo
 - [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
 - [ ] Generación de mensajes de commit formateados con convención de equipo
-- [ ] Sincronización de ramas locales con `origin` automáticamente
+- [x] Sincronización de ramas locales con `origin` automáticamente
 
 ### 📋 Integración con Jira
 - [x] Creación de tickets 
@@ -72,13 +72,13 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 ### 🧠 Configuraciones por Equipo/Proyecto
 - [x] Carga condicional de configuración basada en clave `"team"`
 - [x] Fallback a configuraciones por defecto si no se encuentra personalización
-- [ ] Comando interactivo `companion setup config` para facilitar configuración (🚧 en progreso)
+- [ ] Comando interactivo `companion setup` para facilitar configuración (🚧 en progreso)
 - [ ] Validación automática de esquemas de configuración (`schema.json`) (🚧 en progreso)
 
 ### 🛠 Otras Utilidades
 - [ ] Generación de documentación interna 
 - [ ] Notificaciones locales o vía Slack en eventos clave
-- [ ] Comando `companion upgrade` para autoactualización de la herramienta
+- [x] Comando `companion upgrade` para autoactualización de la herramienta
 
 ---
 

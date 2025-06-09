@@ -3,7 +3,7 @@ const path = require("node:path");
 const config = require("../lib/config.cjs");
 
 function executeScript(script, opts) {
-  const full_path = path.join(config.global.scripts_dir, script);
+  const full_path = path.join(opts.path ?? config.global.scripts_dir, script);
 
   const result = cp.spawnSync(`${full_path}`, opts.args, {
     env: { ...process.env, ...envs() },
