@@ -6,7 +6,7 @@ const { readdirs } = require("../lib/utils.cjs");
 const { MS_TYPES, ENVS } = require("../lib/constants.cjs");
 const { getOriginUrl, isGitRepo } = require("./git.cjs");
 
-async function getMsType(name) {
+function getMsType(name) {
   return MS_TYPES
     .reduce((acc, curr) => name.includes(curr) ? curr : null)
     ?? config.openshift.default_ms_type
@@ -50,7 +50,7 @@ async function getApp(app_name) {
       break;
     }
   }
-  const repo = getRepo(config.paths.frontend, app_name) ?? getRepo(config.paths.backend, app_name) ?? null;
+  const repo = await getRepo(config.paths.frontend, app_name) ?? await getRepo(config.paths.backend, app_name) ?? null;
 
   const ret = {};
   if (app_path) {

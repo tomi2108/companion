@@ -5,7 +5,7 @@ function formatLabels(labels) {
 }
 
 function formatIssues(issues) {
-  return issues.split("\n").map(stringToIssue).filter((i) => Boolean(i.key));
+  return issues.split("\n").filter(Boolean).map(stringToIssue).filter((i) => Boolean(i.key));
 }
 
 function getEpics() {
@@ -96,6 +96,7 @@ function estimateIssue(issue_key, estimacion) {
 
 function stringToIssue(issueString) {
   const splitted = issueString.split("\t").filter((s) => Boolean(s));
+  if (splitted.length === 0) return null;
   const type = splitted[0];
   const key = splitted[1];
   const description = splitted[2];
@@ -104,7 +105,7 @@ function stringToIssue(issueString) {
 }
 
 function issueToString(i) {
-  return `[${i.type}] ${i.key} ${i.description}`;
+  return `${i.type}\t${i.key}\t${i.description}\t${i.status}`;
 }
 
 module.exports = {
@@ -122,5 +123,6 @@ module.exports = {
   unlinkIssues,
   getUsers,
   assignIssue,
-  estimateIssue
+  estimateIssue,
+  stringToIssue
 };
