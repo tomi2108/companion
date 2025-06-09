@@ -4,9 +4,8 @@ const { search, input } = require("../../../lib/ui.cjs");
 const path = require("node:path");
 const fs = require("node:fs");
 const { prepareYamlForDeploy, yamlToString } = require("../../../interface/files.cjs");
-const { getTags, stash, createNewBranch, add, commit, switchBranch, pull } = require("../../../interface/git.cjs");
+const { Repo, InvalidGitRepo } = require("../../../interface/repo.cjs");
 const log = require("../../../lib/log.cjs");
-const { createAndMergeMr } = require("../../../interface/glab.cjs");
 const { ENVS } = require("../../../lib/constants.cjs");
 const { promptForApp } = require("../../../interface/prompts.cjs");
 const config = require("../../../lib/config.cjs");
@@ -18,9 +17,10 @@ module.exports = {
   handler: async () => {
     const app = await promptForApp();
 
-    await stash(app.deploy_path, async () => {
-      await switchBranch(app.deploy_path, "master");
-      await pull(app.deploy_path, "master");
+    const deploy_repo = new Repo(app.deploy_path);
+    await deploy_repo.stash(async () => {
+      await deploy_repo.switchBranch("master");
+      await deploy_repo.pull("master");
 
       const versions = app.deployments.map(({ env, version }) => ({ env, version }));
       const choices = ENVS
@@ -38,15 +38,18 @@ module.exports = {
       if (selectedEnvs.length === 0) return process.exit(1);
 
       let version = null;
-      if (app.full_path) {
-        const tags = await getTags(app.full_path);
+
+      try {
+        const tags = await new Repo(app.full_path).getTags();
         version = await search({ choices: tags, message: "Choose a version to deploy:" });
-      } else {
-        log.warning(`Tags for repository ${app.name} not found`);
-        version = await input({ message: "Enter version to deploy, starting with a 'v':" });
+      } catch (err) {
+        if (err instanceof InvalidGitRepo) {
+          log.warning(`Tags for repository ${app.name} not found`);
+          version = await input({ message: "Enter version to deploy, starting with a 'v':" });
+        }
       }
 
-      await createNewBranch(app.deploy_path, "feature/despliegue");
+      await deploy_repo.createNewBranch("feature/despliegue");
       for (const env of selectedEnvs) {
         const { file_path, yaml } = app.deployments.find((y) => y.env === env);
         const file_name = path.basename(file_path);
@@ -60,11 +63,11 @@ module.exports = {
         yaml.image.tag = version;
         const yaml_string = yamlToString(yaml);
         fs.writeFileSync(file_path, yaml_string);
-        await add(app.deploy_path, file_name);
+        await deploy_repo.add(file_name);
       }
 
-      await commit(app.deploy_path, version);
-      createAndMergeMr(app.deploy_path, "master");
+      await deploy_repo.commit(version);
+      await deploy_repo.createAndMergeMr("master");
     });
   }
 };

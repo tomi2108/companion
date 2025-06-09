@@ -4,7 +4,7 @@ const path = require("node:path");
 const yaml = require("js-yaml");
 const { readdirs } = require("../lib/utils.cjs");
 const { MS_TYPES, ENVS } = require("../lib/constants.cjs");
-const { getOriginUrl, isGitRepo } = require("./git.cjs");
+const { getOriginUrl, Repo } = require("./repo.cjs");
 const { executeScript } = require("./cmd.cjs");
 const { cwd } = require("node:process");
 
@@ -19,12 +19,14 @@ function isDeployYamlFile(f) {
   return f.isFile() && ENVS.some((e) => f.name.includes(e));
 }
 
+// TODO: should probably refactor getRepo and getApp and
+// find better abstractions
 async function getRepo(search_path, app_name) {
   const dirs = readdirs(search_path);
   for (const d of dirs) {
     const possible_path = path.join(search_path, d);
-    if (!isGitRepo(possible_path)) continue;
-    const origin = await getOriginUrl(possible_path);
+    if (!Repo.isGitRepo(possible_path)) continue;
+    const origin = await new Repo(possible_path).getOriginUrl();
     const possible_app_name = origin.split("/").at(-1).split(".").at(0);
     if (app_name === possible_app_name) {
       const package_file = JSON.parse(fs.readFileSync(path.join(possible_path, "package.json")));
@@ -44,7 +46,7 @@ async function getApp(app_name) {
   const dirs = readdirs(config.paths.despliegues);
   for (const d of dirs) {
     const possible_path = path.join(config.paths.despliegues, d);
-    if (!isGitRepo(possible_path)) continue;
+    if (!Repo.isGitRepo(possible_path)) continue;
     const origin = await getOriginUrl(possible_path);
     const possible_app_name = origin.split("/").at(-1).split(".").at(0);
     if (app_name === possible_app_name) {

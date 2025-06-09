@@ -2,7 +2,7 @@
 
 const { executeScript } = require("../../interface/cmd.cjs");
 const path = require("node:path");
-const { pull } = require("../../interface/git.cjs");
+const { Repo } = require("../../interface/repo.cjs");
 
 module.exports = {
   command: "upgrade",
@@ -10,7 +10,8 @@ module.exports = {
   describe: "Upgrade companion",
   handler: async () => {
     const full_path = path.resolve(__dirname, "../../../");
-    await pull(full_path);
+    const repo = new Repo(full_path);
+    await repo.pull();
     executeScript("install.sh", { path: full_path });
   }
 };

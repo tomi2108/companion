@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { stash, pull, switchBranchIfExists } = require("../../../interface/git.cjs");
+const { Repo } = require("../../../interface/repo.cjs");
 const config = require("../../../lib/config.cjs");
 const log = require("../../../lib/log.cjs");
 const { readdirs } = require("../../../lib/utils.cjs");
@@ -13,36 +13,26 @@ module.exports = {
   handler: async () => {
     // TODO: clone missing repositories
 
-    const apps = [
-      ...readdirs(config.paths.frontend).map((p) => path.join(config.paths.frontend, p)),
-      ...readdirs(config.paths.backend).map((p) => path.join(config.paths.backend, p))
-    ].filter(Boolean);
+    const repos = Array.from(new Set(
+      Object.values(config.paths)
+        .flatMap((full_path) =>
+          readdirs(full_path)
+            .map((p) => path.join(full_path, p))
+        )
+        .filter(Boolean)
+    ));
 
-    const repos = [
-      ...readdirs(config.paths.despliegues).map((p) => path.join(config.paths.despliegues, p)),
-      ...readdirs(config.paths.vault).map((p) => path.join(config.paths.vault, p)),
-      config.paths["3scale"],
-      config.paths.argocd
-    ].filter(Boolean);
-
-    for (const full_path of apps) {
-      log.info(`Updating ${full_path}`);
-      await stash(full_path, async () => {
-        await switchBranchIfExists(full_path, "master");
-        await pull(full_path);
-        await switchBranchIfExists(full_path, "develop");
-        await pull(full_path);
-        await switchBranchIfExists(full_path, "release");
-        await pull(full_path);
-      });
-    }
-
-    for (const full_path of repos) {
-      log.info(`Updating ${full_path}`);
-      await stash(full_path, async () => {
-        await switchBranchIfExists(full_path, "master");
-        await pull(full_path);
-      });
-    }
+    await Promise.all(
+      repos.map(
+        async (path) => {
+          // TODO: should probably filter from repos
+          // everything that is not a valid git repo
+          try {
+            log.info(`Updating ${path}`);
+            await new Repo(path).update();
+          } catch { }
+        }
+      )
+    );
   }
 };
