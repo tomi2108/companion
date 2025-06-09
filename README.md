@@ -55,19 +55,23 @@ Puedes contribuir de las siguientes maneras:
 
 ---
 
-## 📬 Comentarios y Soporte
+## 🔧 Explicación del Sistema de Configuración
 
-¿Tienes una sugerencia o encontraste un problema?
+La herramienta *companion* utiliza un sistema de configuración en **capas** que te ofrece flexibilidad sin perder configuraciones predeterminadas útiles. Los valores de configuración se cargan en el siguiente orden de prioridad:
 
-1. 📂 Visita la pestaña [Issues](https://github.com/tomi2108/companion/issues)
-2. 📝 Abre un nuevo *issue* explicando claramente el contexto y cómo reproducirlo si es un error
-3. ✅ Etiquétalo como `bug`, `feature request`, o `question` según corresponda
+1. **Tu archivo personal `config.json`** – Este archivo tiene la prioridad más alta. Cualquier valor definido aquí **sobrescribirá todos los demás**.
+2. **Configuración del equipo** – Si tu `config.json` incluye una clave `"team"` (por ejemplo: `"team": "frontend"`), la herramienta cargará la configuración compartida correspondiente al equipo. Cualquier valor **no definido** en tu configuración personal se tomará del archivo del equipo.
+3. **Valores predeterminados del sistema** – Si una opción no está definida ni en tu configuración personal ni en la del equipo, se aplicarán **valores predeterminados sensatos**.
 
-También puedes darle seguimiento a problemas ya reportados y votar por aquellos que consideres prioritarios.
+Este sistema asegura un equilibrio entre personalización individual y coherencia dentro del equipo.
 
-Tu opinión es clave para que Companion siga mejorando y adaptándose a las necesidades reales de los desarrolladores.
+### 🛠 Cómo Configurar tu Archivo
 
-¡Gracias por ser parte del proyecto! 🙌
+Para simplificar el proceso, la herramienta ofrece un comando interactivo:
+
+```bash
+companion setup config
+```
 
 ---
 
@@ -89,3 +93,18 @@ Aquí tienes enlaces útiles para conocer más sobre ellas:
   [📖 Proyecto en GitHub](https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file)
 
 ---
+
+## 📬 Comentarios y Soporte
+
+¿Tienes una sugerencia o encontraste un problema?
+
+1. 📂 Visita la pestaña [Issues](https://github.com/tomi2108/companion/issues)
+2. 📝 Abre un nuevo *issue* explicando claramente el contexto y cómo reproducirlo si es un error
+3. ✅ Etiquétalo como `bug`, `feature request`, o `question` según corresponda
+
+También puedes darle seguimiento a problemas ya reportados y votar por aquellos que consideres prioritarios.
+
+Tu opinión es clave para que Companion siga mejorando y adaptándose a las necesidades reales de los desarrolladores.
+
+¡Gracias por ser parte del proyecto! 🙌
+

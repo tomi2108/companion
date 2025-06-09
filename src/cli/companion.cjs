@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 const yargs = require("yargs");
-const { loadConfig } = require("../lib/config.cjs");
+const config = require("../lib/config.cjs");
 const { setup } = require("../lib/setup.cjs");
 
-loadConfig();
+config.loadConfig();
+console.log(config);
 setup();
 
 yargs
