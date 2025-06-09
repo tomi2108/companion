@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+import { login, getDeployments, generateRoutes } from "../../../interface/oc";
+import { promptForOcProject } from "../../../interface/prompts";
+import { search } from "../../../lib/ui";
+import { kebabToCamel } from "../../../lib/utils";
+
+export default {
+  command: "generate",
+  describe: "Generate OpenShift routes",
+  handler: async () => {
+
+    login();
+    const project = await promptForOcProject();
+    const types = ["frontend", "backend"];
+    const type = await search({ message: "for:", choices: types }) as unknown as string;
+
+    const deployments = getDeployments(project);
+
+    const port = 8080;
+    // TODO:check
+    if (type === "frontend") {
+      // TODO: not good, find another way to filter out front_end deployments
+      const frontend_deployments = deployments.items.filter((e: any) => e.metadata.name.startsWith("app-"));
+
+      const host_template = "{{env}}-mimovistarempresas.movistar.com.ar";
+      const env = frontend_deployments[0].spec.template.metadata.labels["app.environment"];
+      const host = host_template.replaceAll("{{env}}", env);
+
+      for (const deployment of frontend_deployments) {
+        const service = deployment.metadata.name;
+        const camelCaseName = kebabToCamel(service.slice(4));
+        const pathname = `/app/${camelCaseName}`;
+        const insecurePolicy = "Redirect";
+
+        generateRoutes(service, port, insecurePolicy, pathname, host);
+      }
+    }
+  }
+};

@@ -1,0 +1,70 @@
+import axios, { AxiosInstance } from "axios";
+import JiraCli from "jira-client";
+import { Issue, IssueResponse } from "./issue";
+import { Config } from "../lib/config";
+
+export class Jira {
+  private jira: JiraCli;
+  private api: AxiosInstance;
+
+  constructor() {
+    this.jira = new JiraCli({
+      host: Config.get().jira.server,
+      protocol: "https",
+      username: Config.get().jira.username,
+      password: Config.get().jira.token
+    });
+
+    const string = `${Config.get().jira.username}:${Config.get().jira.token}`;
+    const encodedString = Buffer.from(string).toString("base64");
+    this.api = axios.create({
+      headers: { Authorization: `Basic ${encodedString}` }
+    });
+  }
+
+  async getUsers() {
+    const params = { project: Config.get().jira.project_key, maxResults: 1000 };
+    const res = await this.api.get(`https://${Config.get().jira.server}/rest/api/3/user/assignable/search`, { params });
+    const data = res.data as { displayName: string; emailAddress: string }[];
+    return data.map((u) => ({ name: u.displayName, email: u.emailAddress }));
+  }
+
+  getEpics() {
+    // TODO: Should only fetch Epic issues
+    // maybe we need labels here ? but in movistar-empresas
+    // parent issues ("Features") do not have labels, at least no the ones listed in theConfig.get()
+    return this.getIssues({ type: "Feature" });
+  }
+
+  async getProject() {
+    return await this.jira.getProject(Config.get().jira.project_key);
+  }
+
+  async getBoard() {
+    return await this.jira.getBoard(String(Config.get().jira.board_id));
+  }
+
+  async getIssues({ labels, type }: { labels?: string[]; type?: string }) {
+    const board = await this.getBoard();
+
+    let query = `${type ? `issuetype=${type}` : ""}`;
+    if (labels && labels.length > 0) {
+      if (type) query += " AND ";
+      query += `labels in (${labels})`;
+    }
+
+    const res = await this.jira.getIssuesForBoard(
+      board.id,
+      0,
+      100,
+      query,
+      true,
+      ["key", "summary", "issuetype", "status"] as unknown as string // works
+    );
+
+    const issues = res.issues as IssueResponse[];
+
+    return issues.map(Issue.fromIssueResponse);
+  }
+}
+

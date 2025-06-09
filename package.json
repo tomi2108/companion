@@ -1,20 +1,21 @@
 {
   "name": "companion",
-  "version": "0.0.3",
-  "main": "./src/cli/companion.cjs",
+  "version": "0.0.4",
+  "main": "./dist/cli/companion.js",
   "scripts": {
-    "lint": "eslint --fix ./**/*.cjs"
+    "lint": "eslint --fix ./**/*.cjs",
+    "build": "tsc --project ./tsconfig.json",
+    "test": "echo 'Implement test'",
+    "precommit": "tsc --project ./tsconfig.json && lint-staged && npm run test",
+    "clean": "rm -rf package-lock.json node_modules dist",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.13.0",
-    "eslint": "^8.57.0"
-  },
   "bin": {
-    "companion": "./src/cli/companion.cjs"
+    "companion": "./dist/cli/companion.js"
   },
   "description": "",
   "dependencies": {
@@ -25,5 +26,23 @@
     "js-yaml": "^4.1.0",
     "simple-git": "^3.27.0",
     "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.13.0",
+    "@types/jira-client": "^7.1.9",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.15.30",
+    "@types/yargs": "^17.0.33",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "eslint": "^8.57.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
+    "typescript": "^5.8.3"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix --max-warnings=50"
+    ]
   }
 }
