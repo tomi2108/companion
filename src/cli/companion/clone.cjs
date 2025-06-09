@@ -7,7 +7,7 @@ const config = require("../../../lib/config.cjs");
 const log = require("../../../lib/log.cjs");
 
 module.exports = {
-  command: "repos",
+  command: "clone",
   aliases: [],
   describe: "Clone all repos",
   handler: async () => {

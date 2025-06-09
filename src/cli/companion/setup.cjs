@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
+const { setupConfig } = require("../../lib/config.cjs");
+
 module.exports = {
-  command: "setup <command>",
+  command: "setup",
   aliases: [],
   describe: "Setup companion",
-  builder: (yargs) => yargs
-    .command(require("./setup/config.cjs"))
-    .command(require("./setup/repos.cjs"))
-    .demandCommand(1, "Please specify a command")
-    .help(),
-  handler: () => { }
+  handler: async () => {
+    await setupConfig();
+  }
 };
