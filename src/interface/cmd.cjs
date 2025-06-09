@@ -40,6 +40,7 @@ function envs() {
     // inject them in OC env. We need a way to change server by command, each command can use any
     //  server but only one, and a way to change cluster in the same command (a command gets a list
     //  of clusters and chan choose to use any of them) If cluster === project, if not then this is nonesense
+    GITLAB_USER: config.gitlab.username,
     OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
     OC_USER: config.openshift.username,
     OC_PASS: config.openshift.password,

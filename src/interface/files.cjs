@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const yaml = require("js-yaml");
 const { readdirs } = require("../lib/utils.cjs");
+const log = require("../lib/log.cjs");
 
 function getRepo(search_path, app_name) {
   const dir = readdirs(search_path);
@@ -13,8 +14,10 @@ function getRepo(search_path, app_name) {
     const name = package_file.name;
     if (!matcher(name)) continue;
     const version = package_file.version;
+    // TODO: get type
+    const type = "fcd";
 
-    return { full_path, name, version };
+    return { full_path, name, version, type };
   }
   return null;
 }
@@ -39,4 +42,19 @@ function createDirIfNotExists(dir) {
   return { created: !exists };
 }
 
-module.exports = { getRepo, getOcYaml, createDirIfNotExists };
+function searchAndReplace(file, regex, replace) {
+  const fileAsString = fs.readFileSync(file).toString();
+  const replaced = fileAsString.replace(regex, replace);
+  if (!replaced || !fileAsString) {
+    log.error(`Failed while replacing ${regex.toString()} with ${replace} in ${file}, file is empty`);
+    process.exit(1);
+  }
+  fs.writeFileSync(file, replaced);
+}
+
+module.exports = {
+  getRepo,
+  getOcYaml,
+  createDirIfNotExists,
+  searchAndReplace
+};

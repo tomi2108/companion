@@ -20,7 +20,6 @@ const default_config = {
 // Some configs are not user configurable
 let config = {
   global: {
-    // TODO: may be not needed
     scripts_dir: path.resolve(__dirname, "../scripts"),
     configs_dir: path.resolve(__dirname, "../../configs"),
     oc_config_path: path.resolve(__dirname, "../../.configs/.kube/config"),
@@ -129,6 +128,7 @@ function validateUserConfig(userConfig) {
       vault: userConfig.paths?.vault
     },
     openshift: {
+      namespace_prefix: userConfig.openshift?.namespace_prefix,
       username: userConfig.openshift?.username,
       password: userConfig.openshift?.password
     },

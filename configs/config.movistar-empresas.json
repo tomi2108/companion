@@ -4,6 +4,9 @@
     "browser": "qutebrowser",
     "editor": "nvim"
   },
+  "openshift": {
+    "namespace_prefix": "movistar-empresas"
+  },
   "gitlab": {
     "repos": {
       "backend": 6058,
