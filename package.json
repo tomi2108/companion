@@ -1,0 +1,21 @@
+{
+  "name": "companion",
+  "version": "0.0.1",
+  "main": "./src/bin/root.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.13.0",
+    "eslint": "^8.57.0"
+  },
+  "bin": {
+    "companion": "./src/bin/root.js"
+  },
+  "description": "",
+  "dependencies": {
+    "yargs": "^17.7.2"
+  }
+}

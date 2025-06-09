@@ -1,0 +1,86 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "plugins": [
+    "@stylistic"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "@stylistic/arrow-parens": 2,
+    "@stylistic/brace-style": 2,
+    "@stylistic/comma-dangle": 2,
+    "@stylistic/comma-spacing": 2,
+    "@stylistic/dot-location": [
+      2,
+      "property"
+    ],
+    "@stylistic/func-call-spacing": 2,
+    "@stylistic/indent": [
+      "error",
+      2
+    ],
+    "@stylistic/indent-binary-ops": [
+      "error",
+      2
+    ],
+    "@stylistic/key-spacing": 2,
+    "@stylistic/keyword-spacing": 2,
+    "@stylistic/member-delimiter-style": 2,
+    "@stylistic/no-extra-parens": 2,
+    "@stylistic/no-extra-semi": 2,
+    "@stylistic/no-floating-decimal": 2,
+    "@stylistic/no-mixed-spaces-and-tabs": 2,
+    "@stylistic/no-multiple-empty-lines": [
+      2,
+      {
+        "max": 1
+      }
+    ],
+    "@stylistic/no-tabs": 2,
+    "@stylistic/no-trailing-spaces": 2,
+    "@stylistic/no-whitespace-before-property": 2,
+    "@stylistic/nonblock-statement-body-position": 2,
+    "@stylistic/operator-linebreak": [
+      2,
+      "before"
+    ],
+    "@stylistic/padding-line-between-statements": 2,
+    "@stylistic/quotes": [
+      "error",
+      "double"
+    ],
+    "@stylistic/semi": [
+      "error"
+    ],
+    "@stylistic/semi-spacing": 2,
+    "@stylistic/space-before-blocks": 2,
+    "@stylistic/space-in-parens": 2,
+    "@stylistic/space-infix-ops": 2,
+    "@stylistic/space-unary-ops": 2,
+    "@stylistic/spaced-comment": 2,
+    "@stylistic/template-curly-spacing": 2,
+    "arrow-spacing": "error",
+    "dot-notation": "error",
+    "eqeqeq": "error",
+    "no-alert": "error",
+    "no-const-assign": "error",
+    "no-multi-spaces": "error",
+    "no-multiple-empty-lines": "error",
+    "prefer-const": "error",
+    "quotes": [
+      "error",
+      "double",
+      {
+        "allowTemplateLiterals": true
+      }
+    ]
+  }
+}
