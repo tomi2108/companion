@@ -2,6 +2,9 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { deepMerge, removePrefix, removeSuffix } = require("./utils.cjs");
 const { input, password, search } = require("./ui.cjs");
+const { logSuccess, logWarning } = require("./log.cjs");
+
+const config_file = path.resolve(__dirname, "../../config.json");
 
 const default_config = {
   jira: {
@@ -39,7 +42,45 @@ let config = {
 //   return configGet(rest.join("."), cfg);
 // }
 
-config.loadConfig = function() {
+config.setupConfig = async function() {
+  // TODO: maybe link the docs in the message on how to obtain tokens ?
+  const presets = getAvailablePresets();
+
+  const preset = await search({
+    message: "Select a preset or default config",
+    choices: [...presets, "default"]
+  });
+
+  const oc_user = await input({ message: "Enter Openshift username" });
+  const oc_token = await password({ message: "Enter Openshift auth token" });
+
+  const glab_user = await input({ message: "Enter Gitlab username" });
+  const glab_token = await password({ message: "Enter Gitlab auth token" });
+
+  // TODO: find out if we need email or username...
+  const jira_user = await input({ message: "Enter Jira username" });
+  const jira_token = await password({ message: "Enter Jira auth token" });
+
+  const config_to_write = {
+    openshift: {
+      username: oc_user,
+      token: oc_token
+    },
+    gitlab: {
+      username: glab_user,
+      token: glab_token
+    },
+    jira: {
+      username: jira_user,
+      token: jira_token
+    }
+  };
+  if (preset !== "default") config_to_write.team = preset;
+  fs.writeFileSync(config_file, JSON.stringify(config_to_write, null, 2));
+  logSuccess("Configuration was set up correctly");
+};
+
+config.loadConfig = async function() {
 
   // TODO: offer different locations for config file ... ? may be we dont really need this
   // TODO: if file is not found, ask the user if he wants to run the interactive config setup
@@ -52,8 +93,18 @@ config.loadConfig = function() {
   // loadConfig() and setup() should be run every time companion runs overriding programs
   // config with our config.json values
 
-  const config_file = path.resolve(__dirname, "../../config.json");
-  const file_content = fs.readFileSync(config_file);
+  let file_content = "";
+  try {
+    file_content = fs.readFileSync(config_file);
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      logWarning("Configuration file config.json for Companion was not found, would you like to setup a config interactvely?");
+      // TODO: prompt for yes/no look into Enquirer I think it has a "confirm" function
+      await config.setupConfig();
+      file_content = fs.readFileSync(config_file);
+    } else throw err;
+  }
+
   const userConfig = JSON.parse(file_content);
   const readConfig = validateUserConfig(userConfig);
   config = deepMerge(config, default_config);
@@ -109,42 +160,5 @@ function isValidTeamKey(key) {
   const keys = getAvailablePresets();
   return keys.includes(key);
 }
-
-config.setupConfig = async function() {
-  // TODO: maybe link the docs in the message on how to obtain tokens ?
-  const presets = getAvailablePresets();
-
-  const preset = await search({
-    message: "Select a preset or default config",
-    choices: [...presets, "default"]
-  });
-
-  const oc_user = await input({ message: "Enter Openshift username" });
-  const oc_token = await password({ message: "Enter Openshift auth token" });
-
-  const glab_user = await input({ message: "Enter Gitlab username" });
-  const glab_token = await password({ message: "Enter Gitlab auth token" });
-
-  // TODO: find out if we need email or username...
-  const jira_user = await input({ message: "Enter Jira username" });
-  const jira_token = await password({ message: "Enter Jira auth token" });
-
-  // TODO: write to our own config.json
-  console.log({
-    preset,
-    openshift: {
-      username: oc_user,
-      token: oc_token
-    },
-    gitlab: {
-      username: glab_user,
-      token: glab_token
-    },
-    jira: {
-      username: jira_user,
-      token: jira_token
-    }
-  });
-};
 
 module.exports = config;

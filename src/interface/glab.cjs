@@ -1,4 +1,4 @@
-const { executeScript } = require("../lib/cmd.cjs");
+const { executeScript } = require("./cmd.cjs");
 
 function cloneRepos(ids) {
   return executeScript("glab/repo_clone", {

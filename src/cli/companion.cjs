@@ -4,12 +4,13 @@ const yargs = require("yargs");
 const config = require("../lib/config.cjs");
 const { setup } = require("../lib/setup.cjs");
 
-config.loadConfig();
-setup();
-
 yargs
   .scriptName("companion")
   .usage("$0 <command> [subcommand]")
+  .middleware(async () => {
+    await config.loadConfig();
+    setup();
+  }, true)
   .command(require("./companion/oc.cjs"))
   .command(require("./companion/jira.cjs"))
   .command(require("./companion/setup.cjs"))
