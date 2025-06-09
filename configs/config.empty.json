@@ -1,9 +1,9 @@
 {
   "team": "",
   "paths": {
-    "ms": "",
-    "mf": "",
-    "oc": "",
+    "backend": "",
+    "frotend": "",
+    "despliegues": "",
     "3scale": "",
     "argocd": "",
     "rest": ""

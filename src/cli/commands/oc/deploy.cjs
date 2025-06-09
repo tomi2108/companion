@@ -14,7 +14,7 @@ module.exports = {
   aliases: ["dep"],
   describe: "Deploy specific pod version",
   handler: async () => {
-    const basePath = config.paths.oc;
+    const basePath = config.paths.despliegues;
     const envList = await fzf({ list: ["dev", "int", "cert"] });
 
     if (!envList.selected) return process.exit(1);
@@ -27,7 +27,7 @@ module.exports = {
     const { value: app } = appList.selected;
 
     // TODO: maybe search for the repository in
-    // config.paths.mf and config.paths.ms
+    // config.paths.frontend and config.paths.backend
     // and show available tags to the user
     const version = await input({
       message: "Enter version"

@@ -70,7 +70,7 @@ function validateConfig(userConfig) {
   // filled in with sensible defaults here found in default_config
   const validConfig = {
     paths: {
-      oc: userConfig.paths?.oc
+      despliegues: userConfig.paths?.despliegues
     },
     openshift: {
       cuyo: {
