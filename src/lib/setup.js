@@ -30,6 +30,6 @@ function checkInstalled(program) {
 function checkConfig(program) {
   // TODO: check if programs config is present in system and has everything we need
   // compare each programs config against ours and make changes if needed overriding the programs
-  // config. programs config are under /configs directory
+  // config. programs config are under /.configs directory
   return Boolean(program);
 }

@@ -1,10 +1,28 @@
 import path from "node:path";
 import fs from "node:fs";
 import url from "node:url";
+import { deepMerge } from "./utils.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-export let config = {};
+// Some configs are not user configurable
+export const config = {
+  paths: {
+    // TODO: may be not needed
+    scripts: path.resolve(__dirname, "../scripts")
+  },
+  global: {
+    oc_config_path: path.resolve(__dirname, "../../.configs/.kube/config"),
+    oc_cache_path: path.resolve(__dirname, "../../.configs/.kube/cache")
+  },
+  user: {
+    oc: {
+      cuyo: {
+        server: "https://api.ocpnp.cuyorh.tcloud.ar:6443"
+      }
+    }
+  }
+};
 
 // export function configGet(key, c = config) {
 //   const [entry, ...rest] = key.split(".");
@@ -27,24 +45,21 @@ export function loadConfig() {
   const { cfg, valid } = validateConfig(JSON.parse(file_content));
   // TODO: if not valid error or warning depending on severity
 
-  config = cfg;
+  // TODO: keep an eye on this... may cause problems with more complex
+  // configs
+  deepMerge(config, cfg);
 }
 
-function validateConfig(readConfig) {
-  // Some configs are not user configurable, this is why they are set
-  // during the validation stage.
+function validateConfig(userConfig) {
 
-  // TODO: validate readConfig and set anything
+  // TODO: validate userConfig and set anything
   // that is valid into valid config
   const validConfig = {
-    paths: {
-      scripts: path.resolve(__dirname, "../scripts")
-    },
     user: {
       oc: {
         cuyo: {
-          server: "https://api.ocpnp.cuyorh.tcloud.ar:6443",
-          token: readConfig.user.oc.cuyo.token
+          namespaces: userConfig.user.oc.cuyo.namespaces,
+          token: userConfig.user.oc.cuyo.token
         }
       }
     }

@@ -21,5 +21,5 @@ import { config } from "../../lib/config.js";
   const { value: pod } = podsList.selected;
 
   clearConsole();
-  executeScript("pods/tail_log", { args: [pod] });
+  executeScript("pods/remote_session", { args: [pod] });
 })();

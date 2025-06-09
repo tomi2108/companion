@@ -38,5 +38,5 @@ yarn-lock.json
 /nbproject/private/
 /nbproject
 
-/configs
+/.configs
 config.json
