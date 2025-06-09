@@ -2,7 +2,6 @@
 
 const { getCurrentPath } = require("../../interface/files.cjs");
 const { Repo } = require("../../lib/repo.cjs");
-const { createAndMergeMr } = require("../../interface/glab.cjs");
 const { search } = require("../../lib/ui.cjs");
 
 module.exports = {
