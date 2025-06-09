@@ -21,9 +21,9 @@ function envs() {
     SCRIPTS_REPO_PATH: config.global.scripts_dir,
     GLAB_CONFIG_DIR: config.global.glab_config_path,
     // TODO: I dont think these are needed... will see
-    // GITLAB_HOST: config.gitlab.server,
-    // GITLAB_API_HOST: config.gitlab.server,
-    // GITLAB_TOKEN: config.gitlab.token,
+    GITLAB_HOST: config.gitlab.server,
+    GITLAB_API_HOST: config.gitlab.server,
+    GITLAB_TOKEN: config.gitlab.token,
     // TODO: OC_TOKEN && OC_SERVER may not be needed for the scripts...
     // we can maybe write the config file for each cluster/context
     // deriving from namespaces && config.openshift.(...).token
