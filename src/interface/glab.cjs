@@ -1,8 +1,7 @@
 const { Gitlab } = require("@gitbeaker/rest");
-const { executeScript } = require("./cmd.cjs");
 const config = require("../lib/config.cjs");
 const path = require("node:path");
-const { cloneRepo: gitCloneRepo } = require("./git.cjs");
+const { cloneRepo: gitCloneRepo, getOriginUrl, getCommits, push, getActiveBranch, getDiffCommits } = require("./git.cjs");
 const { createDirIfNotExists } = require("./files.cjs");
 const log = require("../lib/log.cjs");
 
@@ -48,10 +47,41 @@ async function cloneGroupOrProject(id, full_path) {
   }
 }
 
-function createAndMergeMr(full_path, branch) {
-  return executeScript("glab/merge", {
-    args: [branch, full_path]
+async function getProject(full_path) {
+  const origin_url = await getOriginUrl(full_path);
+  const url = new URL(origin_url);
+  const pathname = url.pathname.slice(0, -4).slice(1);
+  const name = pathname.split("/").at(-1);
+  const matches = await glab().Projects.search(name);
+  return matches.find((r) => pathname === r.path_with_namespace);
+}
+
+async function getCurrentUser() {
+  return (await glab().Search.all("users", config.gitlab.username))[0];
+}
+
+async function getMrDescriptionFromCommits(commits) {
+  return commits.map((c) => `• ${c.message}`).join("\n");
+}
+
+async function createMr(full_path, branch) {
+  await push(full_path);
+  const project = await getProject(full_path);
+
+  const sourceBranch = await getActiveBranch(full_path);
+  const commits = await getDiffCommits(full_path, sourceBranch, branch);
+  const title = commits[0].message;
+  const assigneeId = (await getCurrentUser()).id;
+  const description = await getMrDescriptionFromCommits(commits);
+  return await glab().MergeRequests.create(project.id, sourceBranch, branch, title, {
+    description,
+    assigneeId
   });
+}
+
+async function createAndMergeMr(full_path, branch) {
+  await createMr(full_path, branch);
+  // TODO: Merge mr
 }
 
 module.exports = { cloneGroupOrProject, createAndMergeMr };

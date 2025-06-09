@@ -54,18 +54,43 @@ async function pull(full_path) {
   await git(full_path).pull();
 }
 
+async function push(full_path) {
+  return await git(full_path).push("origin");
+}
+
+async function getConfig(full_path, key) {
+  const k = await git(full_path).getConfig(key);
+  return k.value;
+}
+
+async function setConfig(full_path, key, value) {
+  await git(full_path).setConfig(key, value);
+}
+
 async function getOriginUrl(full_path) {
-  const url = await git(full_path).getConfig("remote.origin.url");
-  return url.value;
+  return getConfig(full_path, "remote.origin.url");
 }
 
 function isGitRepo(full_path) {
   return fs.existsSync(path.join(full_path, ".git"));
 }
 
+async function getActiveBranch(full_path) {
+  return (await git(full_path).branchLocal()).current;
+}
+
+async function getCommits(full_path) {
+  return (await git(full_path).log()).all;
+}
+
+async function getDiffCommits(full_path, sourceBranch, targetBranch) {
+  return (await git(full_path).log({ from: sourceBranch, to: targetBranch })).all;
+}
+
 module.exports = {
   add,
   pull,
+  push,
   getTags,
   commit,
   cloneRepo,
@@ -73,6 +98,10 @@ module.exports = {
   switchBranch,
   createNewBranch,
   getOriginUrl,
+  setConfig,
   switchBranchIfExists,
+  getActiveBranch,
+  getCommits,
+  getDiffCommits,
   isGitRepo
 };
