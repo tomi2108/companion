@@ -1,9 +1,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const { deepMerge } = require("./utils.cjs");
-const Enquirer = require("enquirer");
-
-const { password, select, input } = Enquirer;
+const { select, input, password, search } = require("./ui.cjs");
 
 const default_config = {
   preferences: {
@@ -101,40 +99,22 @@ function validateConfig(userConfig) {
 
 config.setupConfig = async function() {
   // TODO: get presets
+  // TODO: maybe link the docs in the message on how to obtain tokens ?
   const presets = ["movistar-empresas", "R.E.B.O", "SoySetm", "Estructurales"];
 
-  const preset = await select({
+  const preset = await search({
     message: "Select a preset or default config",
-    choices: [...presets, "default"].map((s) => ({ name: s, value: s }))
+    choices: [...presets, "default"]
   });
 
-  const oc_user = await input({
-    message: "Enter Openshift username"
-  });
+  const oc_user = await input({ message: "Enter Openshift username" });
+  const oc_token = await password({ message: "Enter Openshift auth token" });
 
-  // TODO: maybe link the docs in the message on how to obtain them ?
-  const oc_token = await password({
-    message: "Enter Openshift auth token",
-    mask: true
-  });
+  const glab_user = await input({ message: "Enter Gitlab username" });
+  const glab_token = await password({ message: "Enter Gitlab auth token" });
 
-  const glab_user = await input({
-    message: "Enter Gitlab username"
-  });
-
-  const glab_token = await password({
-    message: "Enter Gitlab auth token",
-    mask: true
-  });
-
-  const jira_user = await input({
-    message: "Enter Jira username"
-  });
-
-  const jira_token = await password({
-    message: "Enter Jira auth token",
-    mask: true
-  });
+  const jira_user = await input({ message: "Enter Jira username" });
+  const jira_token = await password({ message: "Enter Jira auth token" });
 
   // TODO: write to our own config.json
   console.log({

@@ -2,11 +2,9 @@
 
 const { executeScript } = require("../../../lib/cmd.cjs");
 const config = require("../../../lib/config.cjs");
-const Enquirer = require("enquirer");
 const fs = require("node:fs");
 const path = require("node:path");
-
-const { input, autocomplete } = Enquirer;
+const { search, input } = require("../../../lib/ui.cjs");
 
 module.exports = {
   command: "deploy",
@@ -15,11 +13,11 @@ module.exports = {
   handler: async () => {
 
     const basePath = config.paths.despliegues;
-    const env = await autocomplete({ choices: ["dev", "int", "cert"] });
+    const env = await search({ choices: ["dev", "int", "cert"] });
     if (!env) return process.exit(1);
 
     const apps = fs.readdirSync(basePath);
-    const app = await autocomplete({ choices: apps });
+    const app = await search({ choices: apps });
     if (!app) return process.exit(1);
 
     // TODO: maybe search for the repository in

@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 const { downloadLogs, getPods, getProjects, login } = require("../../../lib/oc.cjs");
-const Enquirer = require("enquirer");
-
-const { autocomplete } = Enquirer;
+const { search } = require("../../../lib/ui.cjs");
 
 module.exports = {
   command: "download-logs",
@@ -13,11 +11,11 @@ module.exports = {
     login();
 
     const projects = getProjects();
-    const project = await autocomplete({ list: projects });
+    const project = await search({ choices: projects });
     if (!project) return process.exit(1);
 
     const pods = getPods(project);
-    const pod = await autocomplete({ list: pods });
+    const pod = await search({ choices: pods });
     if (!pod) return process.exit(1);
 
     downloadLogs(pod, `"${pods.join("\n").trim()}"`, project);
