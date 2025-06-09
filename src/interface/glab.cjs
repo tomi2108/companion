@@ -3,16 +3,12 @@ const config = require("../lib/config.cjs");
 const path = require("node:path");
 const { createDirIfNotExists } = require("./files.cjs");
 const log = require("../lib/log.cjs");
-const { Repo } = require("./repo.cjs");
+const { Repo } = require("../lib/repo.cjs");
 
 const glab = () => new Gitlab({
   token: config.gitlab.token,
   host: config.gitlab.server
 });
-
-async function getCurrentUser() {
-  return (await glab().Search.all("users", config.gitlab.username))[0];
-}
 
 async function getProjects(id) {
   return await glab().Groups.allProjects(id);
@@ -51,4 +47,4 @@ async function cloneGroupOrProject(id, full_path) {
   }
 }
 
-module.exports = { getCurrentUser, cloneGroupOrProject };
+module.exports = { cloneGroupOrProject };

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { Repo } = require("../../../interface/repo.cjs");
+const { Repo } = require("../../../lib/repo.cjs");
 const config = require("../../../lib/config.cjs");
 const log = require("../../../lib/log.cjs");
 const { readdirs } = require("../../../lib/utils.cjs");
@@ -19,18 +19,14 @@ module.exports = {
           readdirs(full_path)
             .map((p) => path.join(full_path, p))
         )
-        .filter(Boolean)
+        .filter(Repo.isGitRepo)
     ));
 
     await Promise.all(
       repos.map(
         async (path) => {
-          // TODO: should probably filter from repos
-          // everything that is not a valid git repo
-          try {
-            log.info(`Updating ${path}`);
-            await new Repo(path).update();
-          } catch { }
+          log.info(`Updating ${path}`);
+          await new Repo(path).update();
         }
       )
     );

@@ -2,7 +2,7 @@
 
 const { executeScript } = require("../../interface/cmd.cjs");
 const path = require("node:path");
-const { Repo } = require("../../interface/repo.cjs");
+const { Repo } = require("../../lib/repo.cjs");
 
 module.exports = {
   command: "upgrade",

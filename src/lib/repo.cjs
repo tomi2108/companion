@@ -1,18 +1,23 @@
-const { Gitlab } = require("@gitbeaker/rest");
 const fs = require("node:fs");
 const path = require("node:path");
-const gitCreate = require("simple-git");
-const config = require("../lib/config.cjs");
-const { getCurrentUser } = require("./glab.cjs");
+const { Gitlab } = require("@gitbeaker/rest");
+const { simpleGit } = require("simple-git");
+const config = require("./config.cjs");
+const { MS_TYPES } = require("./constants.cjs");
 
 const glab = () => new Gitlab({
   token: config.gitlab.token,
   host: config.gitlab.server
 });
 
-const git = (full_path) => gitCreate({
+const git = (full_path) => simpleGit({
   baseDir: full_path
 });
+
+// TODO: move somewhere
+async function getCurrentUser() {
+  return (await glab().Search.all("users", config.gitlab.username))[0];
+}
 
 class InvalidRepo extends Error {
   constructor(full_path) {
@@ -42,6 +47,7 @@ class Repo {
     if (Repo.isGitRepo(full_path)) {
       this.git = git(full_path);
       this.glab = glab();
+      this.full_path = full_path;
     } else throw new InvalidRepo(full_path);
   }
 
@@ -73,7 +79,7 @@ class Repo {
     await this.git.commit(message);
   }
 
-  async switchAndCreateBranch(branch) {
+  async checkout(branch) {
     await this.git.checkout(branch);
   }
 
@@ -165,6 +171,19 @@ class Repo {
       const { switchedD } = await this.switchBranchIfExists("develop");
       if (switchedD) await this.pull();
     });
+  }
+
+  async getName() {
+    const origin = await this.getOriginUrl();
+    return origin.split("/").at(-1).split(".").at(0);
+  }
+
+  async getType() {
+    const name = await this.getName();
+    return MS_TYPES
+      .reduce((_, curr) => name.includes(curr) ? curr : null)
+      ?? config.openshift.default_ms_type
+      ?? MS_TYPES[0];
   }
 }
 

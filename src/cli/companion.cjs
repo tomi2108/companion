@@ -19,6 +19,7 @@ yargs
   .command(require("./companion/ticket.cjs"))
   .command(require("./companion/setup.cjs"))
   .command(require("./companion/upgrade.cjs"))
+  .command(require("./companion/mr.cjs"))
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()
