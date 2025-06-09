@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { clearConsole, executeScript } from "../../lib/cmd.js";
+import { clearConsole } from "../../lib/cmd.js";
 import fzf from "node-fzf";
 import { getPods, getProjects, login, remoteSession } from "../../lib/oc.js";
 

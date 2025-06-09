@@ -16,6 +16,12 @@ yargs()
     handler: () => import("./remote_session.js")
   })
   .command({
+    command: "download",
+    aliases: ["dwnld"],
+    describe: "Download pod logs",
+    handler: () => import("./download_logs.js")
+  })
+  .command({
     command: "restart",
     aliases: [],
     describe: "Restart rollout for pod",

@@ -24,7 +24,7 @@ export function tailLog(pod) {
 }
 
 export function remoteSession(pod) {
-  return executeScript("oc/remote_session", { args: [`pod/${pod}`] });
+  return executeScript("oc/remote_session", { args: [pod] });
 }
 
 export function getDeployment(pod) {
@@ -33,5 +33,9 @@ export function getDeployment(pod) {
 
 export function restartDeployment(deployment) {
   return executeScript("oc/restart", { args: [deployment] });
+}
+
+export function downloadLogs(pod, pods, project) {
+  executeScript("oc/download_logs", { args: [pod, pods, project] });
 }
 

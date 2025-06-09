@@ -41,7 +41,9 @@ export function envs() {
     OC_USER: config.user.oc.cuyo.username,
     OC_PASS: config.user.oc.cuyo.password,
     LOGS_PATH: config.preferences.logs_path,
-    OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`
+    OC: `oc --kubeconfig=${config.global.oc_config_path} --cache-dir=${config.global.oc_cache_path}`,
+    BROWSER: config.preferences.browser,
+    EDITOR: config.preferences.editor
   };
 }
 
