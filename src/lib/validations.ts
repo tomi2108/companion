@@ -75,6 +75,7 @@ export type OpenShiftConfig = UserOpenShiftConfig & {
   server_cuyo: string;
   server_barracas: string;
   namespace_prefix?: string;
+  mf_host_template?: string;
   project?: string;
   product: string;
 };

@@ -3,6 +3,7 @@
     "namespace_prefix": "movistar-empresas",
     "project": "empresas",
     "product": "mimovistarempresas",
+    "mf_host_template": "{{env}}-mimovistarempresas.movistar.com.ar",
     "deployments": {
       "exclude": [
         "app-shell"
