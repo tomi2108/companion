@@ -83,9 +83,9 @@ export class Issue {
     });
   }
 
-  createChild(labels: string[]) {
+  createChild(labels?: string[]) {
     return executeScript("jira/create", {
-      args: [this.key, ...Issue.formatLabels(labels)]
+      args: [this.key, ...Issue.formatLabels(labels ?? [])]
     });
   }
 

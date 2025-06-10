@@ -6,7 +6,7 @@ import { Repo } from "../../interface/repo";
 
 export default {
   command: "upgrade",
-  aliases: [],
+  aliases: ["up"],
   describe: "Upgrade companion",
   handler: async () => {
     const full_path = path.resolve(__dirname, "../../../");

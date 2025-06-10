@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { login, getDeployments, generateRoutes } from "../../../interface/oc";
+import { login, getDeployments, generateRoutes, Resource } from "../../../interface/oc";
 import { promptForOcProject } from "../../../interface/prompts";
 import { search } from "../../../lib/ui";
 import { kebabToCamel } from "../../../lib/utils";
@@ -20,7 +20,7 @@ export default {
     const port = 8080;
     if (type === "frontend") {
       // TODO: not the best, find another way to filter out front_end deployments
-      const frontend_deployments = deployments.items.filter((e: any) => e.metadata.name.startsWith("app-"));
+      const frontend_deployments = deployments.items.filter((e: Resource) => e.metadata.name.startsWith("app-"));
 
       const host_template = "{{env}}-mimovistarempresas.movistar.com.ar";
       const env = frontend_deployments[0].spec.template.metadata.labels["app.environment"];

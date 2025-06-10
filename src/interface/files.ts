@@ -49,7 +49,8 @@ export function createDirIfNotExists(dir: string) {
   return { created: !exists };
 }
 
-export function accessObj(obj: Record<string, unknown>, keys: string[]) {
+export function accessObj(obj: Record<string, unknown> | undefined, keys: string[]) {
+  if (!obj) return;
   const val = obj?.[keys?.[0]];
   if (val === null || val === undefined) return null;
   if (typeof val !== "object") return val;
@@ -84,20 +85,21 @@ export function getCurrentPath() {
 
 export function getDeploymentOption(path: string, type: MsType, env: Env, y: any) {
   const keys = path.split(".");
+  const deployments = Config.get().openshift?.deployments as any;
 
-  const env_type_value = accessObj(Config.get().openshift?.deployments?.[env]?.[type], keys);
+  const env_type_value = accessObj(deployments?.[env]?.[type], keys);
   if (env_type_value !== null && env_type_value !== undefined) return env_type_value;
 
-  const type_env_value = accessObj(Config.get().openshift?.deployments?.[type]?.[env], keys);
+  const type_env_value = accessObj(deployments?.[type]?.[env], keys);
   if (type_env_value !== null && type_env_value !== undefined) return type_env_value;
 
-  const type_value = accessObj(Config.get().openshift?.deployments?.[type], keys);
+  const type_value = accessObj(deployments?.[type], keys);
   if (type_value !== null && type_value !== undefined) return type_value;
 
-  const env_value = accessObj(Config.get().openshift?.deployments?.[env], keys);
+  const env_value = accessObj(deployments?.[env], keys);
   if (env_value !== null && env_value !== undefined) return env_value;
 
-  const deployment_value = accessObj(Config.get().openshift?.deployments, keys);
+  const deployment_value = accessObj(deployments, keys);
   if (env_value !== null && env_value !== undefined) return deployment_value;
 
   return accessObj(y, keys);

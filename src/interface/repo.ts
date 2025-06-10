@@ -58,11 +58,9 @@ export class Repo {
   }
 
   async createNewBranch(name: string) {
-    try {
-      await this.git.deleteLocalBranch(name, true);
-    } finally {
-      await this.git.checkoutLocalBranch(name);
-    }
+    const branches = await this.git.branchLocal();
+    if (branches.all.includes(name)) await this.git.deleteLocalBranch(name, true);
+    await this.git.checkoutLocalBranch(name);
   }
 
   async add(file: string) {
@@ -179,16 +177,13 @@ export class Repo {
     const url = new URL(origin_url);
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
-    return { name, pathname };
-  }
-
-  async getType() {
-    const { name } = await this.getInfo();
-    return MS_TYPES
-      .reduce((_, curr) => name?.includes(curr) ? curr : "")
+    const type = MS_TYPES
+      .reduce((_, curr) => name?.includes(curr) ? curr : "" as "fcd")
       || Config.get().openshift.default_ms_type
       || MS_TYPES[0];
+    return { name, pathname, type };
   }
+
 }
 
 export class InvalidRepo extends Error {

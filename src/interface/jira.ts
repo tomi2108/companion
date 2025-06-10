@@ -37,7 +37,9 @@ export class Jira {
   }
 
   async getProject() {
-    return await this.jira.getProject(Config.get().jira.project_key);
+    const project_key = Config.get().jira.project_key;
+    if (!project_key) throw new Error("Missing jira project_key");
+    return await this.jira.getProject(project_key);
   }
 
   async getBoard() {

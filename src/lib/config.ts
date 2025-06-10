@@ -3,62 +3,9 @@ import fs from "node:fs";
 import { deepMerge, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
-import { MsType } from "./constants";
+import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig } from "./validations";
 
 const config_file = path.resolve(__dirname, "../../config.json");
-
-// Properties here should be optional if and only if
-// we cannot guarantee they are there, when:
-// they are not required in personal config
-// they are not required in team config
-// they are not set by default
-type GitlabConfig = {
-  server: string;
-  token: string;
-  username: string;
-  repos: { [K in keyof PathsConfig]?: number };
-};
-
-type JiraConfig = {
-  server: string;
-  token: string;
-  username: string;
-  labels: string[];
-  project_key: string;
-  board_id: number;
-};
-
-type OpenShiftConfig = {
-  server_cuyo: string;
-  server_barracas: string;
-  password: string;
-  username: string;
-  default_ms_type?: MsType;
-  namespace_prefix?: string;
-  project?: string;
-  product: string;
-  // TODO : type this
-  deployments: any;
-};
-
-type PreferencesConfig = {
-  logs_path: string;
-  editor: string;
-  browser: string;
-};
-
-type PathsConfig = {
-  despliegues?: string;
-  frontend?: string;
-  backend?: string;
-  "3scale"?: string;
-  argocd?: string;
-  vault?: string;
-};
-
-type DynatraceConfig = {
-  modulo?: string;
-};
 
 class Config {
   static config: Config | null = null;
@@ -167,64 +114,13 @@ class Config {
       throw err;
     }
 
-    // TODO: validate and type here team config
-    const readConfig = JSON.parse(file_content);
-    const userConfig = this.validateUserConfig(readConfig);
-    // TODO: probably validate each config (gitlab, jira... etc) separately
-    // and merge them with defaults
-    if (this.isValidTeamKey(readConfig.team)) {
-      this.jira = deepMerge(this.jira, this.getTeamConfig(readConfig.team).jira);
-      this.gitlab = deepMerge(this.gitlab, this.getTeamConfig(readConfig.team).gitlab);
-      this.openshift = deepMerge(this.openshift, this.getTeamConfig(readConfig.team).openshift);
-      this.dynatrace = deepMerge(this.dynatrace, this.getTeamConfig(readConfig.team).dynatrace);
-    }
-    // TODO: find a better way to do this... integrate zod probably
-    // https://zod.dev/
-    this.jira = deepMerge(this.jira, userConfig.jira);
-    this.gitlab = deepMerge(this.gitlab, userConfig.gitlab);
-    this.openshift = deepMerge(this.openshift, userConfig.openshift);
-  }
-
-  validateUserConfig(userConfig: any) {
-    // TODO: validate userConfig and set anything that is valid into valid config
-    const validConfig = {
-      paths: {
-        despliegues: userConfig.paths?.despliegues,
-        frontend: userConfig.paths?.frontend,
-        backend: userConfig.paths?.backend,
-        "3scale": userConfig.paths?.["3scale"],
-        argocd: userConfig.paths?.argocd,
-        vault: userConfig.paths?.vault
-      },
-      openshift: {
-        namespace_prefix: userConfig.openshift?.namespace_prefix,
-        default_ms_type: userConfig.openshift?.default_ms_type,
-        project: userConfig.openshift?.project,
-        product: userConfig.openshift?.product,
-        deployments: userConfig.openshift?.deployments,
-        username: userConfig.openshift?.username,
-        password: userConfig.openshift?.password
-      },
-      gitlab: {
-        username: userConfig.gitlab?.username,
-        token: userConfig.gitlab?.token
-      },
-      jira: {
-        project_key: userConfig.jira?.project_key,
-        username: userConfig.jira?.username,
-        token: userConfig.jira?.token,
-        labels: userConfig.jira?.labels
-      },
-      preferences: {
-        logs_path: userConfig.preferences?.logs_path,
-        editor: userConfig.preferences?.editor,
-        browser: userConfig.preferences?.browser
-      },
-      dynatrace: {
-        modulo: userConfig.dynatrace?.modulo
+    const readConfig = ConfigSchema.parse(JSON.parse(file_content));
+    (["jira", "gitlab", "openshift", "dynatrace", "paths", "preferences"] as const).forEach((key) => {
+      if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
+        this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);
       }
-    };
-    return validConfig;
+      this[key] = deepMerge(this[key], readConfig[key]);
+    });
   }
 
   private getAvailablePresets() {
@@ -234,7 +130,6 @@ class Config {
   }
 
   private isValidTeamKey(key: string) {
-    if (!key) return;
     const keys = this.getAvailablePresets();
     return keys.includes(key);
   }

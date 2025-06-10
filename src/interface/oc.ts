@@ -1,6 +1,6 @@
 import path from "node:path";
 import { executeScript, clearConsole } from "./cmd";
-import { Env, EXCLUDED_SECRETS, MsType, Version } from "../lib/constants";
+import { Env, EXCLUDED_SECRETS, Version } from "../lib/constants";
 import { Config } from "../lib/config";
 
 export function login(server?: string) {
@@ -83,26 +83,26 @@ export function getSecretsFromDeployment(deploymentJson: any) {
     .filter((s: any) => !EXCLUDED_SECRETS.includes(s));
 }
 
-export function extract(type: MsType, project: string, value: string, to: string) {
+export function extract(type: string, project: string, value: string, to: string) {
   return executeScript("oc/extract", {
     args: [type, project, value, to],
     supressStdout: true
   }).split("\n").filter(Boolean);
 }
 
-export function createEnv(project: string, type: MsType, name: string, from_file: string) {
+export function createEnv(project: string, type: string, name: string, from_file: string) {
   return executeScript("oc/create", {
     args: [project, type, name, from_file]
   });
 }
 
-export function deleteEnv(project: string, type: MsType, name: string) {
+export function deleteEnv(project: string, type: string, name: string) {
   return executeScript("oc/delete", {
     args: [project, type, name]
   });
 }
 
-export function editEnv(project: string, type: MsType, name: string) {
+export function editEnv(project: string, type: string, name: string) {
   // TODO : I dont think this works with vscode...
   // may be we need to create a tmp_file and do the same
   // we are doing with create command

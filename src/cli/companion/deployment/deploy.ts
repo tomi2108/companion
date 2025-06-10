@@ -34,7 +34,7 @@ export default {
 
       let version = null;
       const { name } = await deploy_repo.getInfo();
-      const type = await deploy_repo.getType();
+      const { type } = await deploy_repo.getInfo();
 
       if (app_repo) {
         const tags = await app_repo.getTags();
@@ -50,14 +50,14 @@ export default {
         const deploymentFile = deploy_repo.getDeployment(env);
         if (!deploymentFile) throw new Error(`Could not find deployment file for env ${env}`);
 
-        if (!Config.get().openshift.deployments.exclude?.includes(name)
-          && !Config.get().openshift.deployments.exclude?.includes(env)
-          && !Config.get().openshift.deployments.exclude?.includes(type)
-          && !Config.get().openshift.deployments.exclude?.includes(type)
+        if (!Config.get().openshift.deployments?.exclude?.includes(name)
+          && !Config.get().openshift.deployments?.exclude?.includes(env)
+          && !Config.get().openshift.deployments?.exclude?.includes(type)
         ) deploymentFile.prepareDeploy(type);
 
         deploymentFile.setVersion(version);
         deploymentFile.save();
+        await deploy_repo.add(deploymentFile.file_path);
       }
 
       await deploy_repo.commit(version);

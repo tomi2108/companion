@@ -1,4 +1,4 @@
-export const MS_TYPES = ["fcd", "int", "dao", "app"];
+export const MS_TYPES = ["fcd", "int", "dao", "app"] as const;
 export const ENVS = ["dev", "int", "cert"] as const;
 export const EXCLUDED_SECRETS = ["elasticsearch"];
 

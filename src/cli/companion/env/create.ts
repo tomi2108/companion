@@ -35,7 +35,7 @@ export default {
       process.exit(0);
     }
 
-    createEnv(project, type as string, name, file_path);
+    createEnv(project, type!, name, file_path);
     fs.rmSync(file_path);
   }
 };
