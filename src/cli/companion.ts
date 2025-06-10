@@ -2,8 +2,9 @@
 
 import yargs from "yargs";
 import { setup as setupApp } from "../lib/setup";
-import deployment from "./companion/deployment";
+import deploy from "./companion/deploy";
 import env from "./companion/env";
+import pipeline from "./companion/pipeline";
 import pod from "./companion/pod";
 import route from "./companion/route";
 import repos from "./companion/repos";
@@ -20,15 +21,16 @@ yargs
     await Config.get().load();
     setupApp();
   }, true)
-  .command(deployment)
   .command(env)
   .command(pod)
   .command(route)
   .command(repos)
   .command(ticket)
+  .command(mr)
+  .command(deploy)
+  .command(pipeline)
   .command(setup)
   .command(upgrade)
-  .command(mr)
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()

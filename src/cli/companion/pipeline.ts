@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { login } from "../../../interface/oc";
-import { promptForOcResource, promptForOcProject } from "../../../interface/prompts";
-import { pipelineLogs, getPipelineRuns } from "../../../interface/tkn";
-import { Config } from "../../../lib/config";
+import { login } from "../../interface/oc";
+import { promptForOcResource, promptForOcProject } from "../../interface/prompts";
+import { pipelineLogs, getPipelineRuns } from "../../interface/tkn";
+import { Config } from "../../lib/config";
 
 export default {
   command: "pipeline",

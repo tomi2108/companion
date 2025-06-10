@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { search, input } from "../../../lib/ui";
-import log from "../../../lib/log";
-import { Env, ENVS } from "../../../lib/constants";
-import { promptForApp } from "../../../interface/prompts";
-import { Config } from "../../../lib/config";
+import { search, input } from "../../lib/ui";
+import log from "../../lib/log";
+import { Env, ENVS } from "../../lib/constants";
+import { promptForApp } from "../../interface/prompts";
+import { Config } from "../../lib/config";
 
 export default {
   command: "deploy",
@@ -46,6 +46,7 @@ export default {
       }
 
       await deploy_repo.createNewBranch("feature/despliegue");
+      await deploy_repo.reset();
       for (const env of selectedEnvs) {
         const deploymentFile = deploy_repo.getDeployment(env);
         if (!deploymentFile) throw new Error(`Could not find deployment file for env ${env}`);

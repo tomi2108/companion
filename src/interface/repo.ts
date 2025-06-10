@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Gitlab } from "@gitbeaker/rest";
-import { SimpleGit, simpleGit } from "simple-git";
+import { ResetMode, SimpleGit, simpleGit } from "simple-git";
 import { Config } from "../lib/config";
 import { MS_TYPES } from "../lib/constants";
 import log from "../lib/log";
@@ -57,8 +57,13 @@ export class Repo {
     if (stash_after !== stash_before) await this.git.stash(["pop"]);
   }
 
+  async reset() {
+    return await this.git.reset(ResetMode.HARD);
+  }
+
   async createNewBranch(name: string) {
     const branches = await this.git.branchLocal();
+    // TODO: revisit this
     if (branches.all.includes(name)) await this.git.deleteLocalBranch(name, true);
     await this.git.checkoutLocalBranch(name);
   }
