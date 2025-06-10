@@ -4,7 +4,6 @@ import { Gitlab } from "@gitbeaker/rest";
 import { ResetMode, SimpleGit, simpleGit } from "simple-git";
 import { Config } from "../lib/config";
 import { MS_TYPES } from "../lib/constants";
-import log from "../lib/log";
 
 const glab = () => new Gitlab({
   token: Config.get().gitlab.token,
@@ -131,28 +130,42 @@ export class Repo {
     return commits.map((c) => `- ${c.message}`).join("\n\n");
   }
 
-  async createMr(branch: string) {
+  async createMr(branch: string, projectId?: number) {
     await this.push();
-    const project = await this.getProject();
+
+    const project = !projectId ? await this.getProject() : { id: projectId };
+    const id = project?.id;
+    if (!id) throw new Error("Could not find project");
+
     const sourceBranch = await this.getActiveBranch();
     const commits = await this.getDiffCommits(sourceBranch, branch);
     const title = commits[0].message;
     const assigneeId = (await getCurrentUser()).id;
     const description = this.getMrDescriptionFromCommits(commits);
-    const projectId = project?.id;
-    if (!projectId) return log.error("Could not find project");
 
-    return await this.glab.MergeRequests.create(projectId, sourceBranch, branch, title, {
+    return await this.glab.MergeRequests.create(id, sourceBranch, branch, title, {
       description,
       removeSourceBranch: true,
       assigneeId
     });
   }
 
+  async merge(mergeRequestId: number, projectId?: number) {
+    const project = !projectId ? await this.getProject() : { id: projectId };
+    const id = project?.id;
+    if (!id) throw new Error("Could not find project");
+    return await this.glab.MergeRequests.merge(id, mergeRequestId);
+  }
+
   async createAndMergeMr(branch: string) {
-    this.createMr(branch);
-    setTimeout(() => {
-      // TODO: merge, probably with one retry just in case
+    const mr = await this.createMr(branch);
+    setTimeout(async () => {
+      // =) genius
+      try {
+        await this.merge(mr.id);
+      } catch {
+        await this.merge(mr.id);
+      }
     }, 40 * 1000);
   }
 
@@ -182,10 +195,8 @@ export class Repo {
     const url = new URL(origin_url);
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
-    const type = MS_TYPES
-      .reduce((_, curr) => name?.includes(curr) ? curr : "" as "fcd")
-      || Config.get().openshift.default_ms_type
-      || MS_TYPES[0];
+    let type = Config.get().openshift.default_ms_type || MS_TYPES[0];
+    MS_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
     return { name, pathname, type };
   }
 
