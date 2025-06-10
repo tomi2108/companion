@@ -6,12 +6,14 @@ type Opts = {
   path?: string;
   supressStdout?: boolean;
   args?: string[];
+  cwd?: string;
 };
 
 export function executeScript(script: string, opts?: Opts) {
   const full_path = path.join(opts?.path ?? Config.get().global.scripts_dir, script);
 
   const result = cp.spawnSync(`${full_path}`, opts?.args, {
+    cwd: opts?.cwd,
     env: { ...process.env, ...envs() },
     stdio: ["inherit", opts?.supressStdout ? "pipe" : "inherit", "inherit"]
   });

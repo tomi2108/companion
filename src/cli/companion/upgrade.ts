@@ -12,6 +12,6 @@ export default {
     const full_path = path.resolve(__dirname, "../../../");
     const repo = new Repo(full_path);
     await repo.pull();
-    executeScript("install.sh", { path: full_path });
+    executeScript("install.sh", { path: full_path, cwd: full_path });
   }
 };
