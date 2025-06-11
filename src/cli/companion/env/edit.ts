@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { login, getConfigMapsFromProject, getSecretsFromProject, editEnv } from "../../../interface/oc";
 import { search } from "../../../lib/ui";
 import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Argv } from "yargs";
 import download from "./pod/download";
 import logs from "./pod/logs";

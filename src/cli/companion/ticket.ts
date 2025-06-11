@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Argv } from "yargs";
 import assign from "./ticket/assign";
 import comment from "./ticket/comment";

@@ -1,9 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { cwd } from "node:process";
 import { readdirs } from "../lib/utils";
 import { Repo } from "./repo";
-import { executeScript } from "./cmd";
 import { DeployRepo } from "./deploy_repo";
 import { AppRepo } from "./app_repo";
 import { Env, MsType } from "../lib/constants";
@@ -71,16 +69,6 @@ export function internalEnvs(full_path: string) {
     .replaceAll(new RegExp(`-${Config.get().openshift.namespace_prefix}`, "g"), `.${Config.get().openshift.namespace_prefix}`)
     .replaceAll(/\.apps\.ocpnp\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
   fs.writeFileSync(full_path, replaced);
-}
-
-export async function openEditorAndWaitForSave(full_path: string) {
-  return executeScript("editor", {
-    args: [full_path]
-  });
-}
-
-export function getCurrentPath() {
-  return cwd();
 }
 
 export function getDeploymentOption(path: string, type: MsType, env: Env, y: any) {

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Argv } from "yargs";
 import create from "./mr/create";
 import build from "./mr/build";

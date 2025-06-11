@@ -1,8 +1,6 @@
-#!/usr/bin/env node
-
-import { getCurrentPath } from "../../../interface/files";
 import { Repo } from "../../../interface/repo";
 import { search } from "../../../lib/ui";
+import { getCurrentPath } from "../../../lib/utils";
 
 export default {
   command: "create",

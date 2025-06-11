@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { search, input } from "../../lib/ui";
 import log from "../../lib/log";
 import { Env, ENVS } from "../../lib/constants";
@@ -13,7 +11,6 @@ export default {
   handler: async () => {
 
     const { app_repo, deploy_repo } = await promptForApp();
-    if (!deploy_repo) throw new Error("Could not find deploy repo");
 
     await deploy_repo.stash(async () => {
       await deploy_repo.update();

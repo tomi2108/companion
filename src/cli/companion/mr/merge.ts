@@ -1,8 +1,6 @@
-#!/usr/bin/env node
-
-import { getCurrentPath } from "../../../interface/files";
 import { promptForMr } from "../../../interface/prompts";
 import { Repo } from "../../../interface/repo";
+import { getCurrentPath } from "../../../lib/utils";
 
 export default {
   command: "merge",
@@ -11,8 +9,7 @@ export default {
   handler: async () => {
     const full_path = getCurrentPath();
     const repo = new Repo(full_path);
-    const mr_id = await promptForMr(repo);
-
-    await repo.merge(Number(mr_id));
+    const mr = await promptForMr(repo);
+    await mr.merge();
   }
 };

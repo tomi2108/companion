@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { cloneGroupOrProject } from "../../../interface/glab";
 import { createDirIfNotExists } from "../../../interface/files";
 import log from "../../../lib/log";

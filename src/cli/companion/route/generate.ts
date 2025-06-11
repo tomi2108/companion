@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { login, getDeployments, generateRoutes, Resource } from "../../../interface/oc";
 import { promptForOcProject } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";

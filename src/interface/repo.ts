@@ -4,6 +4,7 @@ import { Gitlab } from "@gitbeaker/rest";
 import { ResetMode, SimpleGit, simpleGit } from "simple-git";
 import { Config } from "../lib/config";
 import { MS_TYPES } from "../lib/constants";
+import { MergeRequest } from "./merge_request";
 
 const glab = () => new Gitlab({
   token: Config.get().gitlab.token,
@@ -125,11 +126,6 @@ export class Repo {
     return (await this.git.log({ from: sourceBranch, to: targetBranch })).all;
   }
 
-  private getMrDescriptionFromCommits(commits: readonly { message: string }[]) {
-    // TODO: test
-    return commits.map((c) => `- ${c.message}`).join("\n\n");
-  }
-
   async createMr(branch: string, projectId?: number) {
     await this.push();
 
@@ -139,18 +135,14 @@ export class Repo {
     const commits = await this.getDiffCommits(sourceBranch, branch);
     const title = commits[0].message;
     const assigneeId = (await getCurrentUser()).id;
-    const description = this.getMrDescriptionFromCommits(commits);
+    const description = MergeRequest.descriptionFromCommits(commits);
 
-    return await this.glab.MergeRequests.create(id, sourceBranch, branch, title, {
-      description,
-      removeSourceBranch: true,
-      assigneeId
-    });
-  }
-
-  async merge(mergeRequestId: number, projectId?: number) {
-    const { id } = !projectId ? await this.getProject() : { id: projectId };
-    return await this.glab.MergeRequests.merge(id, mergeRequestId);
+    return MergeRequest.fromMergeRequestResponse(
+      await this.glab.MergeRequests.create(id, sourceBranch, branch, title, {
+        description,
+        removeSourceBranch: true,
+        assigneeId
+      }));
   }
 
   async createAndMergeMr(branch: string) {
@@ -159,9 +151,9 @@ export class Repo {
     setTimeout(async () => {
       // =) genius
       try {
-        await this.merge(mr.id, id);
+        await mr.merge();
       } catch {
-        await this.merge(mr.id, id);
+        await mr.merge();
       }
     }, 40 * 1000);
   }
@@ -169,13 +161,7 @@ export class Repo {
   async getMrs() {
     const { id } = await this.getProject();
     return (await this.glab.MergeRequests.all({ projectId: id, state: "opened" }))
-      .map((mr) => ({
-        source: mr.source_branch,
-        target: mr.target_branch,
-        id: mr.id,
-        title: mr.title,
-        merge_status: mr.merge_status
-      }));
+      .map(MergeRequest.fromMergeRequestResponse);
   }
 
   async getProject() {

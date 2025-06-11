@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Config } from "../../lib/config";
 
 export default {

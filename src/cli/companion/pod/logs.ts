@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { getPods, login, tailLog } from "../../../interface/oc";
 import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
 

@@ -15,31 +15,33 @@
   "license": "ISC",
   "type": "commonjs",
   "bin": {
-    "companion": "./dist/cli/companion.js"
+    "companion": "./dist/cli/app.js"
   },
   "description": "",
   "dependencies": {
-    "@gitbeaker/rest": "^42.5.0",
-    "axios": "^1.9.0",
-    "enquirer": "^2.4.1",
-    "jira-client": "^8.2.2",
-    "js-yaml": "^4.1.0",
-    "simple-git": "^3.27.0",
-    "yargs": "^17.7.2",
-    "zod": "^3.25.57"
+    "@gitbeaker/rest": "42.5.0",
+    "axios": "1.9.0",
+    "enquirer": "2.4.1",
+    "jira-client": "8.2.2",
+    "js-yaml": "4.1.0",
+    "open": "10.1.2",
+    "open-editor": "5.1.0",
+    "simple-git": "3.27.0",
+    "yargs": "17.7.2",
+    "zod": "3.25.57"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.13.0",
-    "@types/jira-client": "^7.1.9",
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.15.30",
-    "@types/yargs": "^17.0.33",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
-    "@typescript-eslint/parser": "^8.33.1",
-    "eslint": "^8.57.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.0",
-    "typescript": "^5.8.3"
+    "@stylistic/eslint-plugin": "2.6.5",
+    "@types/jira-client": "7.1.9",
+    "@types/js-yaml": "4.0.9",
+    "@types/node": "22.15.30",
+    "@types/yargs": "17.0.33",
+    "@typescript-eslint/eslint-plugin": "6.15.0",
+    "@typescript-eslint/parser": "6.15.0",
+    "eslint": "8.57.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.1.0",
+    "typescript": "5.8.3"
   },
   "lint-staged": {
     "*.ts": [

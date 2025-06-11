@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { login, getDeployments, restartDeployment } from "../../../interface/oc";
 import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
 

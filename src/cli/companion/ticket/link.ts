@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { promptForJiraIssue } from "../../../interface/prompts";
 
 export default {

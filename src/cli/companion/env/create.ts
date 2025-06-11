@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { login, createEnv } from "../../../interface/oc";
 import log from "../../../lib/log";
 import { search, input } from "../../../lib/ui";

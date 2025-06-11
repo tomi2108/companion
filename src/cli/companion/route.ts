@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Argv } from "yargs";
 
 import generate from "./route/generate";

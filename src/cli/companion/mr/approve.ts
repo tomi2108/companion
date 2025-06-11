@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 export default {
   command: "approve",
   aliases: [],

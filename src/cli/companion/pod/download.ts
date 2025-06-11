@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { downloadLogs, getPods, login, getItemNamesFromResource } from "../../../interface/oc";
 import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
 import log from "../../../lib/log";

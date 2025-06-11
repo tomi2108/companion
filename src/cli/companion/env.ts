@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Argv } from "yargs";
 import copy from "./env/copy";
 import create from "./env/create";

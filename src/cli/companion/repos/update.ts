@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Repo } from "../../../interface/repo";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";

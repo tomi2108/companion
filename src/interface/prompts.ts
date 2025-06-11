@@ -3,12 +3,13 @@ import fs from "node:fs";
 import { Config } from "../lib/config";
 import log from "../lib/log";
 import { search, StringPromptOptions } from "../lib/ui";
-import { md5FromFile, readdirs } from "../lib/utils";
-import { getApp, openEditorAndWaitForSave } from "./files";
-import { Issue } from "./issue";
+import { md5FromFile, openEditorAndWaitForSave, readdirs } from "../lib/utils";
+import { getApp } from "./files";
 import { Jira } from "./jira";
 import { getProjects, getItemNamesFromResource, Resource } from "./oc";
 import { Repo } from "./repo";
+import { AppRepo } from "./app_repo";
+import { DeployRepo } from "./deploy_repo";
 
 type PromptOptions = Omit<StringPromptOptions, "choices">;
 
@@ -28,7 +29,7 @@ export async function promptForApp(promptOpts?: PromptOptions) {
   // can maybe improve this, not searching by app_name, but by origin url ?
   // think more about this and making deploy_repo in return type
   // not optional, since we are searching in Config.get().paths.despliegues;
-  return await getApp(app_name);
+  return await getApp(app_name) as { app_repo: AppRepo | null; deploy_repo: DeployRepo };
 }
 
 export async function promptForOcProject(promptOpts?: PromptOptions) {
@@ -67,7 +68,7 @@ export async function promptForJiraIssue(
   const choice = await search({ choices, message: "Select an issue:", ...pOpts });
 
   if (!choice) return process.exit(1);
-  return new Issue(choice);
+  return issues.find((i) => i.key === choice)!;
 }
 
 export function promptTmpFile(file_name: string, content: string) {
@@ -82,28 +83,10 @@ export function promptTmpFile(file_name: string, content: string) {
   return { changed: m1 !== m2, file_path, new_content };
 }
 
-function getMrHint(mr: {
-  source: string;
-  target: string;
-  id: number;
-  title: string;
-  merge_status: "unchecked" | "checking" | "can_be_merged" | "cannot_be_merged" | "cannot_be_merged_recheck";
-}
-) {
-  let hint = "";
-  hint += `${mr.source} -> ${mr.target} `;
-  hint += mr.merge_status === "can_be_merged" ? "(Can be merged)" : "(! Cannot be merged)";
-  return hint;
-}
-
 export async function promptForMr(repo: Repo) {
   const mrs = await repo.getMrs();
-  const choices = mrs.map((mr) => ({
-    name: mr.title,
-    value: mr.id,
-    hint: getMrHint(mr)
-  }));
-  const mr_id = await search({ choices, message: "Select merge request" });
-  if (!mr_id) process.exit(1);
-  return Number(mr_id);
+  const choices = mrs.map((mr) => mr.toChoice());
+  const choice = await search({ choices, message: "Select merge request" });
+  if (!choice) return process.exit(1);
+  return mrs.find((mr) => mr.id === Number(choice))!;
 }

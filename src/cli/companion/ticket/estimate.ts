@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { input } from "../../../lib/ui";
 import { promptForJiraIssue } from "../../../interface/prompts";
 

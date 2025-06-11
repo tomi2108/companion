@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { createDirIfNotExists, externalEnvs } from "../../../interface/files";
 import { login, getDeployment, getSecretsFromDeployment, getConfigMapsFromDeployment, extract } from "../../../interface/oc";
 import log from "../../../lib/log";

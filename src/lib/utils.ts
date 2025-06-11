@@ -1,5 +1,9 @@
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { Config } from "./config";
+import openEditor from "open-editor";
+import { cwd } from "node:process";
+import open from "open";
 
 // do not bother with typing this will probably be removed...
 export function deepMerge(obj1: any, obj2: any) {
@@ -44,3 +48,17 @@ export function kebabToCamel(str: string) {
   return str.replace(/-./g, (x) => x[1].toUpperCase());
 }
 
+export async function openInBrowser(url: string) {
+  const browser = Config.get().preferences.browser;
+  if (browser) open(url, { app: { name: browser } });
+  else open(url);
+}
+
+export async function openEditorAndWaitForSave(full_path: string) {
+  // TODO: test
+  await openEditor([{ file: full_path }], { wait: true, editor: Config.get().preferences.editor });
+}
+
+export function getCurrentPath() {
+  return cwd();
+}
