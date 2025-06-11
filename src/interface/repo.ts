@@ -84,7 +84,7 @@ export class Repo {
   }
 
   async push(branch: string) {
-    return await this.git.push(["--set-upstream", "origin", branch]);
+    return await this.git.push(["-u", "origin", branch]);
   }
 
   async getConfig(key: string) {
@@ -119,11 +119,11 @@ export class Repo {
   }
 
   async createMr(branch: string, projectId?: number) {
-    await this.push(branch);
+    const sourceBranch = await this.getActiveBranch();
+    await this.push(sourceBranch);
 
     const { id } = !projectId ? await this.getProject() : { id: projectId };
 
-    const sourceBranch = await this.getActiveBranch();
     const commits = await this.getDiffCommits(sourceBranch, branch);
     const title = commits[0].message;
     const assigneeId = (await getCurrentUser()).id;
