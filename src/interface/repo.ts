@@ -83,8 +83,8 @@ export class Repo {
     await this.git.pull();
   }
 
-  async push() {
-    return await this.git.push(["--set-upstream", "origin"]);
+  async push(branch: string) {
+    return await this.git.push(["--set-upstream", "origin", branch]);
   }
 
   async getConfig(key: string) {
@@ -119,7 +119,7 @@ export class Repo {
   }
 
   async createMr(branch: string, projectId?: number) {
-    await this.push();
+    await this.push(branch);
 
     const { id } = !projectId ? await this.getProject() : { id: projectId };
 
