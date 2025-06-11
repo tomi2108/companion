@@ -17,6 +17,9 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - 🔧 **Inicialización de Entornos**  
   Configura automáticamente entornos locales con configuraciones preestablecidas según el equipo o proyecto.
 
+- 🧠 **Configuraciones por Equipo**  
+  Carga y cambia configuraciones basadas en tu equipo o proyecto, asegurando entornos coherentes y comportamientos personalizados.
+
 - 🚀 **Integración con OpenShift**  
   Interactúa fácilmente con clústeres de OpenShift para operaciones comunes como desplegar aplicaciones, ver logs, gestionar pods y más.
 
@@ -26,8 +29,14 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - 📋 **Integración con Jira**  
   Crea, actualiza y gestiona tickets de Jira directamente desde la terminal. Automatiza transiciones de tickets según la actividad en tu rama.
 
-- 🧠 **Configuraciones por Equipo**  
-  Carga y cambia configuraciones basadas en tu equipo o proyecto, asegurando entornos coherentes y comportamientos personalizados.
+- 📈 **Integración con Dynatrace**  
+  Interfaz directa con Dynatrace para monitorear el rendimiento de tus aplicaciones y facilitar el diagnóstico
+
+- 🛡️ **Integración con Vault**
+  Conexión a Vault para manejar secretos de forma segura y centralizada
+
+- 🗄️ **Utilidades para MongoDB**  
+  Acceso rápido a operaciones básicas sobre bases de datos MongoDB
 
 ---
 
@@ -35,9 +44,14 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 
 ### 🔧 Inicialización de Entornos
 - [x] Generación automática de estructura de carpetas para el proyecto
-- [ ] Descarga y configuración de dependencias necesarias 
 - [x] Carga de configuraciones según equipo (ej. frontend, backend, devops)
 - [ ] Validación de requisitos del sistema (git, node, oc, glab, etc.) 
+
+### 🧠 Configuraciones por Equipo/Proyecto
+- [x] Carga condicional de configuración basada en clave `"team"`
+- [x] Fallback a configuraciones por defecto si no se encuentra personalización
+- [ ] Comando interactivo `companion setup` para facilitar configuración (🚧 en progreso)
+- [x] Validación automática de esquemas de configuración.
 
 ### 🚀 Integración con OpenShift
 - [x] Login automático al clúster mediante configuración guardada
@@ -47,12 +61,12 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [x] Eliminación, reinicio y monitoreo de pods y deployments
 - [ ] Forwarding de puertos para servicios específicos
 - [x] Gestión de secretos y configuración de variables de entorno
-- [ ] Generación de rutas públicas para testing rápido
+- [x] Generación de rutas públicas para testing rápido
 - [x] Creación de archivos `.env` con la configuración de ambientes desplegados
 
 ### 🔁 Utilidades para GitLab
 - [x] Clonación inteligente de repositorios del grupo del proyecto
-- [ ] Creación y asignación automática de *merge requests*
+- [x] Creación y asignación automática de *merge requests*
 - [x] Revisión del estado de pipelines asociados a una MR o branch
 - [ ] Asignación de revisores automáticamente según reglas del equipo
 - [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
@@ -69,11 +83,23 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [ ] Transiciones de estado automatizadas según evento (ej. push a `main`)
 - [x] Comando para estimar tickets 
 
-### 🧠 Configuraciones por Equipo/Proyecto
-- [x] Carga condicional de configuración basada en clave `"team"`
-- [x] Fallback a configuraciones por defecto si no se encuentra personalización
-- [ ] Comando interactivo `companion setup` para facilitar configuración (🚧 en progreso)
-- [ ] Validación automática de esquemas de configuración (`schema.json`) (🚧 en progreso)
+### 📈 Integración con Dynatrace  
+- [ ] Consulta de *health status* por aplicación o servicio. 
+- [ ] Búsqueda de problemas activos y eventos recientes.  
+- [ ] Visualización de métricas clave en tiempo real (CPU, RAM, latencia, etc.).
+- [ ] Asociación de despliegues a versiones monitoreadas en Dynatrace. 
+- [ ] Alertas automáticas en terminal o Slack ante incidentes críticos.
+
+### 🛡️ Integración con Vault  
+- [ ] Lectura y escritura de secretos por entorno/proyecto
+- [ ] Reinicio de deployments afectados por un secret luego de su actualizacion
+
+### 🗄️ Utilidades para MongoDB  
+- [ ] Conexión simplificada a instancias MongoDB.
+- [ ] Exploración rápida de colecciones y conteo de documentos  
+- [ ] Ejecución de consultas predefinidas o scripts desde archivos `.js`  
+- [ ] Exportación e importación de datos.
+- [ ] Generación de backups. 
 
 ### 🛠 Otras Utilidades
 - [ ] Generación de documentación interna 
