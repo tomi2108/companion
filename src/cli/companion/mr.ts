@@ -1,21 +1,27 @@
 #!/usr/bin/env node
 
-import { getCurrentPath } from "../../interface/files";
-import { Repo } from "../../interface/repo";
-import { search } from "../../lib/ui";
+import { Argv } from "yargs";
+import create from "./mr/create";
+import build from "./mr/build";
+import merge from "./mr/merge";
+import checkout from "./mr/checkout";
+import diff from "./mr/diff";
+import open from "./mr/open";
+import approve from "./mr/approve";
 
 export default {
-  command: "mr",
+  command: "mr <command>",
+  describe: "Manage Gitlab merge requests",
   aliases: [],
-  describe: "Mr",
-  handler: async () => {
-    const full_path = getCurrentPath();
-    const repo = new Repo(full_path);
-    const branches = await repo.getBranches();
-    const activeBranch = await repo.getActiveBranch();
-    const targetBranches = branches.filter((b) => b !== activeBranch);
-    const targetBranch = await search({ choices: targetBranches, message: "Choose target branch" });
-    // TODO : check
-    await repo.createAndMergeMr(targetBranch);
-  }
+  builder: (yargs: Argv) => yargs
+    .command(approve)
+    .command(build)
+    .command(checkout)
+    .command(create)
+    .command(diff)
+    .command(merge)
+    .command(open)
+    .demandCommand(1, "Please specify a command")
+    .help(),
+  handler: () => { }
 };

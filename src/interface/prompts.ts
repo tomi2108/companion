@@ -8,6 +8,7 @@ import { getApp, openEditorAndWaitForSave } from "./files";
 import { Issue } from "./issue";
 import { Jira } from "./jira";
 import { getProjects, getItemNamesFromResource, Resource } from "./oc";
+import { Repo } from "./repo";
 
 type PromptOptions = Omit<StringPromptOptions, "choices">;
 
@@ -79,4 +80,30 @@ export function promptTmpFile(file_name: string, content: string) {
   const m2 = md5FromFile(file_path);
   const new_content = fs.readFileSync(file_path).toString();
   return { changed: m1 !== m2, file_path, new_content };
+}
+
+function getMrHint(mr: {
+  source: string;
+  target: string;
+  id: number;
+  title: string;
+  merge_status: "unchecked" | "checking" | "can_be_merged" | "cannot_be_merged" | "cannot_be_merged_recheck";
+}
+) {
+  let hint = "";
+  hint += `${mr.source} -> ${mr.target} `;
+  hint += mr.merge_status === "can_be_merged" ? "(Can be merged)" : "(! Cannot be merged)";
+  return hint;
+}
+
+export async function promptForMr(repo: Repo) {
+  const mrs = await repo.getMrs();
+  const choices = mrs.map((mr) => ({
+    name: mr.title,
+    value: mr.id,
+    hint: getMrHint(mr)
+  }));
+  const mr_id = await search({ choices, message: "Select merge request" });
+  if (!mr_id) process.exit(1);
+  return Number(mr_id);
 }

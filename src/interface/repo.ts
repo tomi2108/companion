@@ -133,9 +133,7 @@ export class Repo {
   async createMr(branch: string, projectId?: number) {
     await this.push();
 
-    const project = !projectId ? await this.getProject() : { id: projectId };
-    const id = project?.id;
-    if (!id) throw new Error("Could not find project");
+    const { id } = !projectId ? await this.getProject() : { id: projectId };
 
     const sourceBranch = await this.getActiveBranch();
     const commits = await this.getDiffCommits(sourceBranch, branch);
@@ -151,22 +149,33 @@ export class Repo {
   }
 
   async merge(mergeRequestId: number, projectId?: number) {
-    const project = !projectId ? await this.getProject() : { id: projectId };
-    const id = project?.id;
-    if (!id) throw new Error("Could not find project");
+    const { id } = !projectId ? await this.getProject() : { id: projectId };
     return await this.glab.MergeRequests.merge(id, mergeRequestId);
   }
 
   async createAndMergeMr(branch: string) {
-    const mr = await this.createMr(branch);
+    const { id } = await this.getProject();
+    const mr = await this.createMr(branch, id);
     setTimeout(async () => {
       // =) genius
       try {
-        await this.merge(mr.id);
+        await this.merge(mr.id, id);
       } catch {
-        await this.merge(mr.id);
+        await this.merge(mr.id, id);
       }
     }, 40 * 1000);
+  }
+
+  async getMrs() {
+    const { id } = await this.getProject();
+    return (await this.glab.MergeRequests.all({ projectId: id, state: "opened" }))
+      .map((mr) => ({
+        source: mr.source_branch,
+        target: mr.target_branch,
+        id: mr.id,
+        title: mr.title,
+        merge_status: mr.merge_status
+      }));
   }
 
   async getProject() {
@@ -175,7 +184,9 @@ export class Repo {
     // of getting gitlab info of a project based on
     // git workspace
     const matches = await this.glab.Projects.search(name);
-    return matches.find((r) => pathname === r.path_with_namespace);
+    const project = matches.find((r) => pathname === r.path_with_namespace);
+    if (!project?.id) throw new Error("Could not find project");
+    return project;
   }
 
   async update() {
