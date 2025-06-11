@@ -3,13 +3,13 @@ import { Repo } from "../../../interface/repo";
 import { getCurrentPath } from "../../../lib/utils";
 
 export default {
-  command: "approve",
+  command: "close",
   aliases: [],
-  describe: "Approve merge request",
+  describe: "Close merge request",
   handler: async () => {
     const full_path = getCurrentPath();
     const repo = new Repo(full_path);
     const mr = await promptForMr(repo);
-    await mr.approve();
+    await mr.close();
   }
 };

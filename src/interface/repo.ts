@@ -1,19 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Gitlab } from "@gitbeaker/rest";
-import { ResetMode, SimpleGit, simpleGit } from "simple-git";
+import { ResetMode, SimpleGit } from "simple-git";
 import { Config } from "../lib/config";
 import { MS_TYPES } from "../lib/constants";
 import { MergeRequest } from "./merge_request";
-
-const glab = () => new Gitlab({
-  token: Config.get().gitlab.token,
-  host: Config.get().gitlab.server
-});
-
-const git = (full_path: string) => simpleGit({
-  baseDir: full_path
-});
+import { git, glab } from "./glab";
 
 // TODO: move somewhere
 async function getCurrentUser() {
@@ -77,6 +68,7 @@ export class Repo {
   }
 
   async checkout(branch: string) {
+    await this.git.fetch(["-a"]);
     await this.git.checkout(branch);
   }
 

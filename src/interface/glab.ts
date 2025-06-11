@@ -4,13 +4,18 @@ import { createDirIfNotExists } from "./files";
 import log from "../lib/log";
 import { Repo } from "../interface/repo";
 import { Config } from "../lib/config";
+import simpleGit from "simple-git";
 
 type Project = {
   path: string;
   http_url_to_repo: string;
 };
 
-const glab = () => new Gitlab({
+export const git = (full_path: string) => simpleGit({
+  baseDir: full_path
+});
+
+export const glab = () => new Gitlab({
   token: Config.get().gitlab.token,
   host: Config.get().gitlab.server
 });

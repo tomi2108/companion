@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { Config } from "../lib/config";
 import log from "../lib/log";
 import { search, StringPromptOptions } from "../lib/ui";
-import { md5FromFile, openEditorAndWaitForSave, readdirs } from "../lib/utils";
+import { md5FromFile, openInEditor, readdirs } from "../lib/utils";
 import { getApp } from "./files";
 import { Jira } from "./jira";
 import { getProjects, getItemNamesFromResource, Resource } from "./oc";
@@ -77,7 +77,7 @@ export function promptTmpFile(file_name: string, content: string) {
   fs.writeFileSync(file_path, content);
 
   const m1 = md5FromFile(file_path);
-  openEditorAndWaitForSave(file_path);
+  openInEditor(file_path, { wait: true });
   const m2 = md5FromFile(file_path);
   const new_content = fs.readFileSync(file_path).toString();
   return { changed: m1 !== m2, file_path, new_content };

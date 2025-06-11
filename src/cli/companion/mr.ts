@@ -6,6 +6,7 @@ import checkout from "./mr/checkout";
 import diff from "./mr/diff";
 import open from "./mr/open";
 import approve from "./mr/approve";
+import close from "./mr/close";
 
 export default {
   command: "mr <command>",
@@ -15,6 +16,7 @@ export default {
     .command(approve)
     .command(build)
     .command(checkout)
+    .command(close)
     .command(create)
     .command(diff)
     .command(merge)
