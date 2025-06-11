@@ -5,7 +5,7 @@ import { Config } from "../../lib/config";
 
 export default {
   command: "pipeline",
-  aliases: ["pipe", "pipe-log"],
+  aliases: ["pipe", "pipes", "pipe-log"],
   describe: "View pipelines logs",
   handler: async () => {
     login(Config.get().openshift.server_barracas);
