@@ -84,7 +84,7 @@ export class Repo {
   }
 
   async push() {
-    return await this.git.push("origin");
+    return await this.git.push(["--set-upstream", "origin"]);
   }
 
   async getConfig(key: string) {

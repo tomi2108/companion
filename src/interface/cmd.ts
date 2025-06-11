@@ -23,27 +23,8 @@ export function executeScript(script: string, opts?: Opts) {
 }
 
 function envs() {
-  // TODO: probably make commands envs be set by each command
-  // commands will want to use different values for OC_SERVER for example
-
   return {
     SCRIPTS_REPO_PATH: Config.get().global.scripts_dir,
-    // TODO: OC_TOKEN && OC_SERVER may not be needed for the scripts...
-    // we can maybe write the Config.get() file for each cluster/context
-    // deriving from namespaces && Config.get().openshift.(...).token
-    // I think if we write the Config.get() in a smart and careful way
-    // oc will just know the context when we run `oc project $project`
-    // OC_TOKEN: Config.get().openshift.token,
-    // OC_SERVER: Config.get().openshift.server_cuyo,
-    //  I think oc_tokens expire too quickly, we may be bound to using
-    //  username and password... will investigate
-    // IMPORTANT:  oc has an oc options command that lists all options that
-    // can be passed in to any command. I think we should use this instead
-    // of maintaining a kubeconfig file, --kubeconfig still needs to exist I believe
-    // or else oc will create kubeconfigs on cwd. Look into --server and --cluster, and
-    // inject them in OC env. We need a way to change server by command, each command can use any
-    //  server but only one, and a way to change cluster in the same command (a command gets a list
-    //  of clusters and chan choose to use any of them) If cluster === project, if not then this is nonesense
     NODE_OPTIONS: "--max-old-space-size=8192",
     TKN: `tkn --kubeconfig=${Config.get().global.oc_config_path}`,
     OC: `oc --kubeconfig=${Config.get().global.oc_config_path} --cache-dir=${Config.get().global.oc_cache_path}`,

@@ -7,7 +7,6 @@ export default {
   aliases: ["dwnld", "download"],
   describe: "Download pod logs",
   handler: async () => {
-    // TODO: migrate bash script
     login();
 
     const project = await promptForOcProject();

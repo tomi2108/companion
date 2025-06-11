@@ -63,7 +63,7 @@ class Config {
 
     // TODO: find out if we need email or username...
     const jira_user = await input({ message: "Enter Jira username" });
-    const jira_token = await password({ message: "Enter Jira auth token" });
+    const jira_token = await password({ message: "Enter Jira auth token (https://id.atlassian.com/manage-profile/security/api-tokens)" });
 
     const config_to_write = {
       team: preset !== "default" ? preset : null,
