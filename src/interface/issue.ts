@@ -1,4 +1,6 @@
+import { Config } from "../lib/config";
 import { Choice } from "../lib/constants";
+import { openInBrowser } from "../lib/utils";
 import { executeScript } from "./cmd";
 import { jira } from "./jira";
 
@@ -72,9 +74,7 @@ export class Issue {
   }
 
   openInBrowser() {
-    return executeScript("jira/open", {
-      args: [this.key]
-    });
+    openInBrowser(`https://${Config.get().jira.server}/browse/${this.key}`);
   }
 
   link(issue: Issue) {
