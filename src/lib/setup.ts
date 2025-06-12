@@ -5,24 +5,14 @@ import fs from "node:fs";
 
 export function setup() {
   const ocOk = setupOpenShift();
-  const glabOk = setupGitLab();
   const jiraOk = setupJira();
   const tknOk = setupTkn();
 
-  if (!ocOk || !glabOk || !jiraOk || !tknOk) {
+  if (!ocOk || !jiraOk || !tknOk) {
     if (paths_to_check) console.error(`Checked in: ${paths_to_check.join("\n")}`);
     else console.error("No PATH env found");
     process.exit(1);
   }
-}
-
-function setupGitLab() {
-  // TODO: glab has config for setting browser
-  // and editor. We should set those... dont know when
-  const found = checkInstalled("glab");
-  if (!found) logProgramNotFound("Gitlab client", "http://something.com");
-  checkConfig("glab");
-  return found;
 }
 
 function setupJira() {

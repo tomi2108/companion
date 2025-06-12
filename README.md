@@ -32,7 +32,7 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - 📈 **Integración con Dynatrace**  
   Interfaz directa con Dynatrace para monitorear el rendimiento de tus aplicaciones y facilitar el diagnóstico
 
-- 🛡️ **Integración con Vault**
+- 🛡️ **Integración con Vault**  
   Conexión a Vault para manejar secretos de forma segura y centralizada
 
 - 🗄️ **Utilidades para MongoDB**  
@@ -147,7 +147,7 @@ Este sistema asegura un equilibrio entre personalización individual y coherenci
 Para simplificar el proceso, la herramienta ofrece un comando interactivo:
 
 ```bash
-companion setup config
+companion setup 
 ```
 
 ---
@@ -160,10 +160,6 @@ Aquí tienes enlaces útiles para conocer más sobre ellas:
 - 🔗 **OpenShift CLI (`oc`)**  
   Herramienta oficial para gestionar clústeres de OpenShift desde la terminal.  
   [📖 Documentación oficial](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/)
-
-- 🔗 **GitLab CLI (`glab`)**  
-  Cliente de línea de comandos para interactuar con GitLab: MR, issues, pipelines y más.  
-  [📖 Documentación oficial](https://docs.gitlab.com/17.5/editor_extensions/gitlab_cli/)
 
 - 🔗 **Jira CLI (`jira-cli`)**  
   Cliente de línea de comandos no oficial pero muy completo para trabajar con Jira desde la terminal.  
