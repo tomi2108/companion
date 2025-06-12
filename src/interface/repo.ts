@@ -22,7 +22,12 @@ export class Repo {
 
   static async cloneRepo(full_path: string, link: string) {
     await git(full_path).clone(link);
-    const repo = new Repo(full_path);
+
+    const url = new URL(link);
+    const pathname = url.pathname.slice(0, -4).slice(1);
+    const name = pathname.split("/").at(-1) ?? "";
+
+    const repo = new Repo(path.join(full_path, name));
     repo.update();
     return repo;
   }

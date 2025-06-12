@@ -22,7 +22,6 @@ export async function search<T>(opts: ArrayPromptOptions<T>) {
 }
 
 export async function confirm(opts: Omit<BooleanPromptOptions, "format">) {
-  // TODO: test
   const res = await prompt({ initial: true, ...opts, name: "selected", type: "confirm", format: (s) => s ? "yes" : "no" });
   return (res as { selected: boolean }).selected;
 }

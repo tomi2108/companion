@@ -6,7 +6,7 @@ import { Config } from "../../../lib/config";
 export default {
   command: "clone",
   aliases: [],
-  describe: "Clone all repos",
+  describe: "Clone all repos and update existing ones",
   handler: async () => {
     const config = Config.get();
 

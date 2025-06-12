@@ -18,13 +18,14 @@ export class Jira {
     const string = `${Config.get().jira.username}:${Config.get().jira.token}`;
     const encodedString = Buffer.from(string).toString("base64");
     this.api = axios.create({
+      baseURL: `https://${Config.get().jira.server}/rest/api`,
       headers: { Authorization: `Basic ${encodedString}` }
     });
   }
 
   async getUsers() {
     const params = { project: Config.get().jira.project_key, maxResults: 1000 };
-    const res = await this.api.get(`https://${Config.get().jira.server}/rest/api/3/user/assignable/search`, { params });
+    const res = await this.api.get("/3/user/assignable/search", { params });
     const data = res.data as { displayName: string; emailAddress: string }[];
     return data.map((u) => ({ name: u.displayName, email: u.emailAddress }));
   }

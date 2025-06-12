@@ -24,35 +24,31 @@ async function getProjects(id: number) {
   return await glab().Groups.allProjects(id);
 }
 
-async function cloneProject(project: Project, full_path: string) {
+async function cloneProject(project: Project, full_path: string, index: number, total: number) {
   const name = project.path;
   const clone_url = project.http_url_to_repo;
   const clone_path = path.join(full_path, name);
 
   const { created } = createDirIfNotExists(clone_path);
-  if (!created) return null;
 
-  await Repo.cloneRepo(clone_url, full_path);
-  log.info(`Cloning ${name} into ${clone_path}`);
-  return true;
+  if (!created && Repo.isGitRepo(clone_path)) {
+    log.info(`(${index}/${total}) [${name}] Updating in ${clone_path}`);
+    await new Repo(clone_path).update();
+  } else {
+    log.info(`(${index}/${total}) [${name}] Cloning in ${clone_path}`);
+    await Repo.cloneRepo(full_path, clone_url);
+  }
 }
 
 export async function cloneGroupOrProject(id: number, full_path: string) {
   try {
     const projects = await getProjects(id);
-    for (const project of projects) {
-      const name = project.path;
-      const cloned = await cloneProject(project, full_path);
-      if (!cloned) {
-        log.info(`Skipping cloning of ${name} because it already exists`);
-        continue;
-      }
-      continue;
+    for (let index = 0; index < projects.length; index += 10) {
+      const toClone = projects.slice(index, index + 10);
+      await Promise.all(toClone.map((p, i) => cloneProject(p, full_path, 1 + index + i, projects.length)));
     }
-  } catch {
+  } catch (err) {
     const project = await glab().Projects.show(id);
-    const name = project.path;
-    const cloned = await cloneProject(project, full_path);
-    if (!cloned) log.info(`Skipping cloning of ${name} because it already exists`);
+    await cloneProject(project, full_path, 1, 1);
   }
 }
