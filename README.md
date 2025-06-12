@@ -157,13 +157,51 @@ companion setup
 Companion utiliza y extiende funcionalidades de herramientas oficiales y de la comunidad.  
 Aquí tienes enlaces útiles para conocer más sobre ellas:
 
-- 🔗 **OpenShift CLI (`oc`)**  
-  Herramienta oficial para gestionar clústeres de OpenShift desde la terminal.  
-  [📖 Documentación oficial](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/)
+### ☁️ OpenShift
 
-- 🔗 **Jira CLI (`jira-cli`)**  
-  Cliente de línea de comandos no oficial pero muy completo para trabajar con Jira desde la terminal.  
-  [📖 Proyecto en GitHub](https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file)
+- 🔗 **CLI Oficial (`oc`)**  
+  Herramienta de línea de comandos para gestionar recursos en clústeres OpenShift.  
+  [📖 Documentación CLI](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/)
+
+- 🌐 **API REST de OpenShift (Kubernetes Core)**  
+  Permite interacción directa con el clúster (pods, deployments, namespaces, etc.).  
+  [📚 Referencia API](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18#API%20Reference)
+
+---
+
+### 🧪 GitLab
+
+- 🌐 **API REST de GitLab**  
+  Acceso completo a proyectos, repos, issues, pipelines, etc.  
+  [📚 Referencia API](https://docs.gitlab.com/api/rest/)
+
+---
+
+### 📋 Jira
+
+- 🔗 **Jira CLI (no oficial)**  
+  Cliente de terminal para trabajar con tickets, filtros y estados de Jira.  
+  [📖 Proyecto en GitHub](https://github.com/ankitpokhrel/jira-cli)
+
+- 🌐 **API REST de Jira (Cloud)**  
+  Permite crear, actualizar y buscar tickets, usuarios, sprints, etc.  
+  [📚 Referencia API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)
+
+---
+
+### 📈 Dynatrace
+
+- 🌐 **API REST de Dynatrace**  
+  Accede a métricas, health status, eventos, entidades, alertas y más.  
+  [📚 Referencia API](https://www.dynatrace.com/support/help/dynatrace-api/)
+
+---
+
+### 🛡️ Vault (HashiCorp)
+
+- 🌐 **API REST de Vault**  
+  Permite leer, escribir y gestionar secretos de forma programática.  
+  [📚 Referencia API](https://developer.hashicorp.com/vault/api-docs)
 
 ---
 
