@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-[ -z "$1" ] && exit
-issue=$1
-
-jira issue move "$issue"

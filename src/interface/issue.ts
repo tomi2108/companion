@@ -1,5 +1,6 @@
 import { Choice } from "../lib/constants";
 import { executeScript } from "./cmd";
+import { jira } from "./jira";
 
 export type IssueResponse = {
   id: string;
@@ -13,50 +14,55 @@ export type IssueResponse = {
 
 export class Issue {
   key: string;
-  id?: string;
+  id: string;
   type?: string;
   status?: string;
   description?: string;
+
+  private jira;
 
   static formatLabels(labels: string[]) {
     return labels.map((l) => `-l${l}`);
   }
 
   static fromIssueResponse(i: IssueResponse) {
-    const issue = new Issue(i.key);
-    issue.id = i.id;
+    const issue = new Issue(i.key, i.id);
     issue.type = i.fields.issuetype.name;
     issue.status = i.fields.status.name;
     issue.description = i.fields.summary;
     return issue;
   }
 
-  constructor(key: string) {
+  constructor(key: string, id: string) {
     this.key = key;
+    this.id = id;
+    this.jira = jira();
   }
 
-  edit() {
-    return executeScript("jira/edit", {
-      args: [this.key]
+  async edit() {
+    return await this.jira.updateIssue(this.id, {
+      // TODO: fields
     });
   }
 
-  delete() {
-    return executeScript("jira/delete", {
-      args: [this.key]
-    });
+  async delete() {
+    return await this.jira.deleteIssue(this.id);
   }
 
-  comment() {
-    return executeScript("jira/comment", {
-      args: [this.key]
-    });
+  async comment(comment: string) {
+    return await this.jira.addComment(this.id, comment);
   }
 
-  transition() {
-    return executeScript("jira/move", {
-      args: [this.key]
-    });
+  async getComments() {
+    return (await this.jira.getComments(this.id)).comments;
+  }
+
+  async getAvailableTransitions() {
+    return (await this.jira.listTransitions(this.id)).transitions;
+  }
+
+  async transition(transitionId: string) {
+    return await this.jira.transitionIssue(this.id, { id: transitionId });
   }
 
   view() {

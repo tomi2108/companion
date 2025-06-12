@@ -3,18 +3,19 @@ import JiraCli from "jira-client";
 import { Issue, IssueResponse } from "./issue";
 import { Config } from "../lib/config";
 
+export const jira = () => new JiraCli({
+  host: Config.get().jira.server,
+  protocol: "https",
+  username: Config.get().jira.username,
+  password: Config.get().jira.token
+});
+
 export class Jira {
   private jira: JiraCli;
   private api: AxiosInstance;
 
   constructor() {
-    this.jira = new JiraCli({
-      host: Config.get().jira.server,
-      protocol: "https",
-      username: Config.get().jira.username,
-      password: Config.get().jira.token
-    });
-
+    this.jira = jira();
     const string = `${Config.get().jira.username}:${Config.get().jira.token}`;
     const encodedString = Buffer.from(string).toString("base64");
     this.api = axios.create({
@@ -47,14 +48,13 @@ export class Jira {
     return await this.jira.getBoard(String(Config.get().jira.board_id));
   }
 
-  async getIssues({ labels, type }: { labels?: string[]; type?: string }) {
+  async getIssues({ labels, type, status }: { labels?: string[]; type?: string; status?: string[] }) {
     const board = await this.getBoard();
-
-    let query = `${type ? `issuetype=${type}` : ""}`;
-    if (labels && labels.length > 0) {
-      if (type) query += " AND ";
-      query += `labels in (${labels})`;
-    }
+    const query = [
+      type && `issuetype=${type}`,
+      labels && labels.length > 0 && `labels in (${labels.map((l) => `'${l}'`).join(",")})`,
+      status && status.length > 0 && `!status in (${status.map((s) => `'${s}'`).join(",")})`
+    ].filter(Boolean).join(" AND ");
 
     const res = await this.jira.getIssuesForBoard(
       board.id,

@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-[ -z "$1" ] && exit
-issue=$1
-
-# TODO: check if this status is server wise
-# maybe make it a config under config.jira.deleted_status ?
-jira issue move "$issue" "Cancelado"
