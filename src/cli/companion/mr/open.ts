@@ -1,5 +1,5 @@
 import { promptForMr } from "../../../interface/prompts";
-import { Repo } from "../../../interface/repo";
+import { Repo } from "../../../interface/files/repo";
 import { getCurrentPath } from "../../../lib/utils";
 
 export default {

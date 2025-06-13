@@ -1,18 +1,17 @@
-import { getPods, login, remoteSession } from "../../../interface/oc";
-import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
+import { Openshift } from "../../../interface/oc/oc";
+import { promptForOcResource } from "../../../interface/prompts";
 
 export default {
   command: "remote-session",
   aliases: ["rsh", "remote"],
   describe: "Start a remote session",
   handler: async () => {
-    login();
 
-    const project = await promptForOcProject();
+    const projects = await new Openshift().getProjects();
+    const project = await promptForOcResource(projects);
 
-    const pods = getPods(project);
+    const pods = await project.getPods();
     const pod = await promptForOcResource(pods);
-
-    remoteSession(pod.metadata.name);
+    pod.remoteSession();
   }
 };

@@ -1,6 +1,6 @@
-import { Repo } from "./repo";
 import fs from "node:fs";
 import path from "node:path";
+import { Repo } from "./repo";
 
 export class AppRepo extends Repo {
   version?: string;

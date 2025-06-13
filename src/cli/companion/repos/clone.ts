@@ -1,5 +1,5 @@
-import { cloneGroupOrProject } from "../../../interface/glab";
-import { createDirIfNotExists } from "../../../interface/files";
+import { cloneGroupOrProject } from "../../../interface/glab/glab";
+import { createDirIfNotExists } from "../../../interface/files/files";
 import log from "../../../lib/log";
 import { Config } from "../../../lib/config";
 

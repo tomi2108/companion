@@ -1,4 +1,4 @@
-import { executeScript, clearConsole } from "./cmd";
+import { executeScript, clearConsole } from "../cmd";
 
 export function pipelineLogs(pipeline: string) {
   clearConsole();

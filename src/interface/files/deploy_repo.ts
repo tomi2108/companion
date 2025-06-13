@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Repo } from "./repo";
+import { Env } from "../../lib/constants";
 import { DeployYaml } from "./deploy_yaml";
-import { Env } from "../lib/constants";
+import { Repo } from "./repo";
 
 export class DeployRepo extends Repo {
   deployments: DeployYaml[];

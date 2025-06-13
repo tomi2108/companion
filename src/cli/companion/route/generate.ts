@@ -1,4 +1,4 @@
-import { generateRoutes, Openshift } from "../../../interface/oc";
+import { generateRoutes, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";

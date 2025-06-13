@@ -29,8 +29,9 @@ export function removeSuffix(str: string, suffix: string) {
   return str;
 }
 
-export function readdirs(p: string) {
-  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+export function readdirs(p: string | undefined) {
+  if (!p || !fs.existsSync(p)) return;
+  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory());
 }
 
 export function readfiles(p: string) {
@@ -55,7 +56,6 @@ export async function openInBrowser(url: string) {
 }
 
 export async function openInEditor(full_path: string, opts?: { wait?: boolean }) {
-  // TODO: test
   await openEditor([{ file: full_path }], { wait: opts?.wait, editor: Config.get().preferences.editor });
 }
 

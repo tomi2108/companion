@@ -1,9 +1,9 @@
 import fs, { Dirent } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
-import { Env, ENVS, MsType } from "../lib/constants";
-import { getDeploymentOption } from "../interface/files";
-import { Config } from "../lib/config";
+import { Env, ENVS, MsType } from "../../lib/constants";
+import { getDeploymentOption } from "./files";
+import { Config } from "../../lib/config";
 
 export class DeployYaml {
   file_path: string;

@@ -1,39 +1,33 @@
-import { login, createEnv } from "../../../interface/oc";
 import log from "../../../lib/log";
 import { search, input } from "../../../lib/ui";
-import fs from "node:fs";
-import { promptForOcProject, promptTmpFile } from "../../../interface/prompts";
+import { promptForOcResource, promptTmpFile } from "../../../interface/prompts";
+import { Openshift } from "../../../interface/oc/oc";
 
 export default {
   command: "create",
   aliases: [],
   describe: "Create configmap or secret",
   handler: async () => {
-    login();
 
-    const project = await promptForOcProject();
+    const projects = await new Openshift().getProjects();
+    const project = await promptForOcResource(projects);
 
     const choices = ["configmap", "secret"];
-    const resource = await search({ message: "Choose type of resource to edit", choices }) as unknown as string;
+    const resource = await search({ message: "Choose type of resource to create", choices });
     if (!resource) process.exit(1);
-
-    const type = {
-      configmap: "configmap",
-      secret: "secret generic"
-    }[resource];
 
     const name = await input({ message: `Enter a name for the new ${resource}` });
     if (!name) process.exit(1);
 
-    const { changed, file_path } = promptTmpFile(`${name}-${resource}`, "KEY=VALUE");
+    const { changed } = await promptTmpFile(`${name}-${resource}`, "KEY=VALUE");
 
     if (changed) {
       log.info("Create canceled, no changes made");
-      fs.rmSync(file_path);
       process.exit(0);
     }
+    console.log(project);
 
-    createEnv(project, type!, name, file_path);
-    fs.rmSync(file_path);
+    // TODO: create
+
   }
 };

@@ -1,6 +1,6 @@
-import { executeScript, clearConsole } from "./cmd";
-import { EXCLUDED_SECRETS } from "../lib/constants";
-import { Config } from "../lib/config";
+import { executeScript, clearConsole } from "../cmd";
+import { EXCLUDED_SECRETS } from "../../lib/constants";
+import { Config } from "../../lib/config";
 import axios, { AxiosInstance } from "axios";
 import { Project } from "./project";
 
@@ -59,23 +59,8 @@ export function extract(type: string, project: string, value: string, to: string
   }).split("\n").filter(Boolean);
 }
 
-export function createEnv(project: string, type: string, name: string, from_file: string) {
-  return executeScript("oc/create", {
-    args: [project, type, name, from_file]
-  });
-}
-
 export function deleteEnv(project: string, type: string, name: string) {
   return executeScript("oc/delete", {
-    args: [project, type, name]
-  });
-}
-
-export function editEnv(project: string, type: string, name: string) {
-  // TODO : I dont think this works with vscode...
-  // may be we need to create a tmp_file and do the same
-  // we are doing with create command
-  return executeScript("oc/edit", {
     args: [project, type, name]
   });
 }

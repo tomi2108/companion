@@ -1,7 +1,7 @@
 import { input } from "../../../lib/ui";
 import { promptForJiraIssue } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
-import { Jira } from "../../../interface/jira";
+import { Jira } from "../../../interface/jira/jira";
 
 export default {
   command: "create",

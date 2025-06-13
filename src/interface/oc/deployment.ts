@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import { oc } from "./oc";
-import { Choice } from "../lib/constants";
+import { Choice } from "../../lib/constants";
 
 type DeploymentResponse = {
   metadata: {

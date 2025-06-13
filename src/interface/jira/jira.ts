@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import JiraCli from "jira-client";
+import { Config } from "../../lib/config";
 import { Issue, IssueResponse } from "./issue";
-import { Config } from "../lib/config";
 
 export const jira = () => new JiraCli({
   host: Config.get().jira.server,

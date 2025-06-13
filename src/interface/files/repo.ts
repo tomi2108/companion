@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ResetMode, SimpleGit } from "simple-git";
-import { Config } from "../lib/config";
-import { MS_TYPES } from "../lib/constants";
-import { MergeRequest } from "./merge_request";
-import { git, glab } from "./glab";
+import { Config } from "../../lib/config";
+import { MS_TYPES } from "../../lib/constants";
+import { MergeRequest } from "../glab/merge_request";
+import { git, glab } from "../glab/glab";
 
 // TODO: move somewhere
 async function getCurrentUser() {

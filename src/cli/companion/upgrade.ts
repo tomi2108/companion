@@ -1,6 +1,6 @@
 import { executeScript } from "../../interface/cmd";
 import path from "node:path";
-import { Repo } from "../../interface/repo";
+import { Repo } from "../../interface/files/repo";
 
 export default {
   command: "upgrade",

@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
-import { oc } from "./oc";
-import { Choice } from "../lib/constants";
+import { oc } from "../oc/oc";
+import { Choice } from "../../lib/constants";
 
 type PodResponse = {
   metadata: {
@@ -40,6 +40,10 @@ export class Pod {
       `/api/v1/namespaces/${this.namespace}/pods/${this.name}/log`,
       { params: { container: this.container } }
     )).data;
+  }
+
+  remoteSession() {
+    // TODO: implement (ssh...)
   }
 
   toChoice(): Choice {

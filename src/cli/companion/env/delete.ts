@@ -1,4 +1,4 @@
-import { login, getConfigMapsFromProject, deleteEnv, getSecretsFromProject } from "../../../interface/oc";
+import { login, getConfigMapsFromProject, deleteEnv, getSecretsFromProject } from "../../../interface/oc/oc";
 import { search } from "../../../lib/ui";
 import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
 

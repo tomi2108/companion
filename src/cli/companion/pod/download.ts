@@ -1,5 +1,5 @@
-import { createDirIfNotExists } from "../../../interface/files";
-import { Openshift } from "../../../interface/oc";
+import { createDirIfNotExists } from "../../../interface/files/files";
+import { Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";

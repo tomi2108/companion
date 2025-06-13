@@ -4,11 +4,11 @@ import { Config } from "../lib/config";
 import log from "../lib/log";
 import { search, StringPromptOptions } from "../lib/ui";
 import { md5FromFile, openInEditor, readdirs } from "../lib/utils";
-import { getApp } from "./files";
-import { Jira } from "./jira";
-import { Repo } from "./repo";
-import { AppRepo } from "./app_repo";
-import { DeployRepo } from "./deploy_repo";
+import { createDirIfNotExists, getApp } from "./files/files";
+import { Jira } from "./jira/jira";
+import { Repo } from "./files/repo";
+import { AppRepo } from "./files/app_repo";
+import { DeployRepo } from "./files/deploy_repo";
 import { Choice } from "../lib/constants";
 
 type PromptOptions = Omit<StringPromptOptions, "choices">;
@@ -20,9 +20,9 @@ export async function promptForApp(promptOpts?: PromptOptions) {
     log.error("Despliegues path not set");
     process.exit(1);
   }
-  const apps = readdirs(dep_path);
+  const apps = readdirs(dep_path) ?? [];
   const app_name = await search({
-    choices: apps,
+    choices: apps.map((a) => a.name),
     message: "",
     ...opts
   });
@@ -62,16 +62,17 @@ export async function promptForJiraIssue(
   return issues.find((i) => i.key === choice)!;
 }
 
-export function promptTmpFile(file_name: string, content: string) {
+export async function promptTmpFile(file_name: string, content: string) {
   const file_path = path.join(Config.get().global.tmp_dir, file_name);
-  fs.rmSync(file_path);
+  if (fs.existsSync(file_path)) fs.rmSync(file_path);
+  createDirIfNotExists(path.dirname(file_path));
   fs.writeFileSync(file_path, content);
-
   const m1 = md5FromFile(file_path);
-  openInEditor(file_path, { wait: true });
+  await openInEditor(file_path, { wait: true });
   const m2 = md5FromFile(file_path);
   const new_content = fs.readFileSync(file_path).toString();
-  return { changed: m1 !== m2, file_path, new_content };
+  fs.rmSync(file_path);
+  return { changed: m1 !== m2, new_content };
 }
 
 export async function promptForMr(repo: Repo) {

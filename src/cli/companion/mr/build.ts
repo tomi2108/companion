@@ -1,5 +1,5 @@
 import { getCurrentPath } from "../../../lib/utils";
-import { Repo } from "../../../interface/repo";
+import { Repo } from "../../../interface/files/repo";
 import { confirm, search } from "../../../lib/ui";
 
 export default {

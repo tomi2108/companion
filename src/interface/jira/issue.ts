@@ -1,7 +1,7 @@
-import { Config } from "../lib/config";
-import { Choice } from "../lib/constants";
-import { openInBrowser } from "../lib/utils";
-import { executeScript } from "./cmd";
+import { Config } from "../../lib/config";
+import { Choice } from "../../lib/constants";
+import { openInBrowser } from "../../lib/utils";
+import { executeScript } from "../cmd";
 import { jira } from "./jira";
 
 export type IssueResponse = {

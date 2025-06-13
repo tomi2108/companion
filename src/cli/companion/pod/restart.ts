@@ -1,4 +1,4 @@
-import { Openshift } from "../../../interface/oc";
+import { Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 
 export default {

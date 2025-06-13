@@ -1,9 +1,9 @@
 import path from "node:path";
 import { Gitlab } from "@gitbeaker/rest";
-import { createDirIfNotExists } from "./files";
-import log from "../lib/log";
-import { Repo } from "../interface/repo";
-import { Config } from "../lib/config";
+import { createDirIfNotExists } from "../files/files";
+import log from "../../lib/log";
+import { Repo } from "../files/repo";
+import { Config } from "../../lib/config";
 import simpleGit from "simple-git";
 
 type Project = {

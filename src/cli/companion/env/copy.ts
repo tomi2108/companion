@@ -1,5 +1,5 @@
-import { createDirIfNotExists, externalEnvs } from "../../../interface/files";
-import { login, getDeployment, getSecretsFromDeployment, getConfigMapsFromDeployment, extract } from "../../../interface/oc";
+import { createDirIfNotExists, externalEnvs } from "../../../interface/files/files";
+import { login, getDeployment, getSecretsFromDeployment, getConfigMapsFromDeployment, extract } from "../../../interface/oc/oc";
 import log from "../../../lib/log";
 import path from "node:path";
 import fs from "node:fs";

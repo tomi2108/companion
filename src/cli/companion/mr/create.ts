@@ -1,4 +1,4 @@
-import { Repo } from "../../../interface/repo";
+import { Repo } from "../../../interface/files/repo";
 import { search } from "../../../lib/ui";
 import { getCurrentPath } from "../../../lib/utils";
 
