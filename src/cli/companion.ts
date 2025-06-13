@@ -12,7 +12,6 @@ import ticket from "./companion/ticket";
 import setup from "./companion/setup";
 import upgrade from "./companion/upgrade";
 import mr from "./companion/mr";
-import open from "./companion/open";
 import { Config } from "../lib/config";
 
 yargs
@@ -32,7 +31,6 @@ yargs
   .command(pipeline)
   .command(setup)
   .command(upgrade)
-  .command(open)
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()
