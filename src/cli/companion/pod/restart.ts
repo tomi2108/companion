@@ -1,18 +1,18 @@
-import { login, getDeployments, restartDeployment } from "../../../interface/oc";
-import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
+import { Openshift } from "../../../interface/oc";
+import { promptForOcResource } from "../../../interface/prompts";
 
 export default {
   command: "restart",
   aliases: [],
   describe: "Restart rollout for pod",
   handler: async () => {
-    login();
 
-    const project = await promptForOcProject();
+    const projects = await new Openshift().getProjects();
+    const project = await promptForOcResource(projects);
 
-    const deployments = getDeployments(project);
+    const deployments = await project.getDeployments();
     const deployment = await promptForOcResource(deployments);
 
-    restartDeployment(deployment.metadata.name);
+    await deployment.restart();
   }
 };

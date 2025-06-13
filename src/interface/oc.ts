@@ -34,21 +34,6 @@ export function remoteSession(pod: string) {
   return executeScript("oc/remote_session", { args: [pod] });
 }
 
-export function restartDeployment(deployment: string) {
-  return executeScript("oc/restart", { args: [deployment] });
-}
-
-export function downloadLogs(pod: string, pods: string, project: string) {
-  executeScript("oc/download_logs", { args: [pod, pods, project] });
-}
-
-export function getDeployments(project: string) {
-  return JSON.parse(executeScript("oc/get", {
-    args: [project, "deployments"],
-    supressStdout: true
-  }));
-}
-
 export function getDeployment(project: string, deployment: string) {
   return JSON.parse(executeScript("oc/get", {
     args: [project, "deployment", deployment],

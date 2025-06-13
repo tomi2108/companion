@@ -2,6 +2,17 @@ import { AxiosInstance } from "axios";
 import { oc } from "./oc";
 import { Choice } from "../lib/constants";
 
+type PodResponse = {
+  metadata: {
+    name: string;
+    namespace: string;
+  };
+  status: {
+    phase: string;
+    containerStatuses: { name: string }[];
+  };
+};
+
 export class Pod {
   name: string;
   status?: string;
@@ -9,7 +20,7 @@ export class Pod {
   namespace?: string;
   private oc: AxiosInstance;
 
-  static fromPodResponse(pod: any) {
+  static fromPodResponse(pod: PodResponse) {
     const p = new Pod(pod.metadata.name);
     p.status = pod.status.phase;
     console.dir(pod, { depth: null });
