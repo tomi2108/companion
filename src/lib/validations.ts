@@ -27,7 +27,8 @@ export const OpenShiftConfigSchema = z.object({
       })
     ).optional(),
   username: z.string(),
-  password: z.string()
+  password: z.string(),
+  token: z.string()
 });
 
 export const PreferencesConfigSchema = z.object({

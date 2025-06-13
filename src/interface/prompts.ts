@@ -6,10 +6,10 @@ import { search, StringPromptOptions } from "../lib/ui";
 import { md5FromFile, openInEditor, readdirs } from "../lib/utils";
 import { getApp } from "./files";
 import { Jira } from "./jira";
-import { getProjects, getItemNamesFromResource, Resource } from "./oc";
 import { Repo } from "./repo";
 import { AppRepo } from "./app_repo";
 import { DeployRepo } from "./deploy_repo";
+import { Choice } from "../lib/constants";
 
 type PromptOptions = Omit<StringPromptOptions, "choices">;
 
@@ -32,27 +32,18 @@ export async function promptForApp(promptOpts?: PromptOptions) {
   return await getApp(app_name) as { app_repo: AppRepo | null; deploy_repo: DeployRepo };
 }
 
-export async function promptForOcProject(promptOpts?: PromptOptions) {
-  const opts = promptOpts || {};
-  const projects = getProjects();
-  const project = await search({
-    choices: getItemNamesFromResource(projects),
-    message: "",
-    ...opts
-  });
-  if (!project) return process.exit(1);
-  return project;
-}
-
-export async function promptForOcResource<T extends Resource>(resources: { items: T[] }, promptOpts?: PromptOptions) {
+export async function promptForOcResource<T extends {
+  name: string;
+  toChoice: () => Choice;
+}>(resources: T[], promptOpts?: PromptOptions) {
   const opts = promptOpts || {};
   const resource = await search({
-    choices: getItemNamesFromResource(resources),
+    choices: resources.map((r) => r.toChoice()),
     message: "",
     ...opts
   });
   if (!resource) return process.exit(1);
-  return resources.items.find((r) => r.metadata.name === resource) as T;
+  return resources.find((r) => r.name === resource) as T;
 }
 
 export async function promptForJiraIssue(

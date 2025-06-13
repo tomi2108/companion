@@ -62,3 +62,14 @@ export async function openInEditor(full_path: string, opts?: { wait?: boolean })
 export function getCurrentPath() {
   return cwd();
 }
+
+export function tryParseJSONObject(jsonString: unknown) {
+  try {
+    const o = JSON.parse(jsonString as string);
+    if (o && typeof o === "object") {
+      return o;
+    }
+  } catch (e) {
+    return false;
+  }
+}

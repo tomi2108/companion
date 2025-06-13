@@ -1,6 +1,7 @@
 import { MergeRequestSchema } from "@gitbeaker/rest";
 import { openInBrowser } from "../lib/utils";
 import { glab } from "./glab";
+import { Choice } from "../lib/constants";
 
 export type MergeRequestResponse = MergeRequestSchema;
 
@@ -60,7 +61,7 @@ export class MergeRequest {
     openInBrowser(this.url);
   }
 
-  toChoice() {
+  toChoice(): Choice {
     let hint = "";
     hint += `${this.source_branch} -> ${this.target_branch} `;
     hint += this.merge_status === "can_be_merged" ? "(Can be merged)" : "(! Cannot be merged)";

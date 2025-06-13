@@ -10,4 +10,9 @@ export type VersionNumber = `v${number}.${number}.${number}`;
 export type VersionBeta = `${VersionNumber}-beta.${number}`;
 export type VersionRC = `${VersionNumber}-rc.${number}`;
 
-export type Choice = { name: string; hint?: string; disabled?: boolean };
+export type Choice = {
+  name: string;
+  hint?: string;
+  value?: unknown;
+  disabled?: boolean;
+};

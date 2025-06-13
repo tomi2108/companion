@@ -1,40 +1,32 @@
-import path from "node:path";
 import { executeScript, clearConsole } from "./cmd";
-import { Env, EXCLUDED_SECRETS, Version } from "../lib/constants";
+import { EXCLUDED_SECRETS } from "../lib/constants";
 import { Config } from "../lib/config";
+import axios, { AxiosInstance } from "axios";
+import { Project } from "./project";
 
-export function login(server?: string) {
-  try {
-    executeScript("oc/login", {
-      args: [server ?? Config.get().openshift.server_cuyo],
-      supressStdout: true
-    });
-  } catch (err) {
-    if (
-      err && typeof err === "object" && "stdout" in err
-      && err.stdout && typeof err.stdout === "object" && "toString" in err.stdout
-      && err.stdout.toString().includes("couldn't get current server API")
-    ) console.error("Could not connect to Openshift instance, check network settings (VPN), connectivity and credentials");
-    process.exit(1);
+export const oc = () => {
+  // const string = `${Config.get().openshift.username}:${Config.get().openshift.password}`;
+  // const encodedString = Buffer.from(string).toString("base64");
+  return axios.create({
+    baseURL: `${Config.get().openshift.server_cuyo}`,
+    // headers: { Authorization: `Basic ${encodedString}` }
+    headers: { Authorization: `Bearer ${Config.get().openshift.token}` }
+  });
+};
+
+export class Openshift {
+  server: string;
+  private oc: AxiosInstance;
+
+  constructor(server?: string) {
+    this.server = server ?? Config.get().openshift.server_cuyo;
+    this.oc = oc();
   }
-}
 
-export function getPods(project: string) {
-  return JSON.parse(executeScript("oc/get", {
-    args: [project, "pods"],
-    supressStdout: true
-  }));
-}
-
-export function getProjects() {
-  return JSON.parse(executeScript("oc/get_projects", {
-    supressStdout: true
-  }));
-}
-
-export function tailLog(pod: string) {
-  clearConsole();
-  return executeScript("oc/tail_log", { args: [pod] });
+  async getProjects() {
+    return (await this.oc.get("/apis/project.openshift.io/v1/projects"))
+      .data.items.map(Project.fromProjectResponse) as Project[];
+  }
 }
 
 export function remoteSession(pod: string) {
@@ -48,14 +40,6 @@ export function restartDeployment(deployment: string) {
 
 export function downloadLogs(pod: string, pods: string, project: string) {
   executeScript("oc/download_logs", { args: [pod, pods, project] });
-}
-
-export function deploy(envs: Env[], app: string, version: Version) {
-  const p = Config.get().paths.despliegues;
-  if (!p) throw new Error("Despliegues path not set");
-  executeScript("oc/deploy", {
-    args: [path.join(p, app), version, envs.join(" ")]
-  });
 }
 
 export function getDeployments(project: string) {
@@ -130,10 +114,6 @@ export type Resource = {
     name: string;
   };
 };
-
-export function getItemNamesFromResource(resource: { items: Resource[] }) {
-  return resource.items.map((e) => e.metadata.name);
-}
 
 export function generateRoutes(name: string, port: number, insecurePolicy: string, pathname: string, host: string) {
   return executeScript("oc/routes_generate", {

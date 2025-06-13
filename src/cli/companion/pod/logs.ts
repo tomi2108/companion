@@ -1,17 +1,22 @@
-import { getPods, login, tailLog } from "../../../interface/oc";
-import { promptForOcProject, promptForOcResource } from "../../../interface/prompts";
+import { Openshift } from "../../../interface/oc";
+import { promptForOcResource } from "../../../interface/prompts";
+import { tryParseJSONObject } from "../../../lib/utils";
 
 export default {
   command: "logs",
   aliases: ["log"],
   describe: "Tail pods's logs",
   handler: async () => {
-    login();
-    const project = await promptForOcProject();
 
-    const pods = getPods(project);
+    const oc = new Openshift();
+    const projects = await oc.getProjects();
+    const project = await promptForOcResource(projects);
+    const pods = await project.getPods();
     const pod = await promptForOcResource(pods);
 
-    tailLog(pod.metadata.name);
+    const logs = await pod.getLogs();
+    const formattedLogs = logs.split("\n").map(tryParseJSONObject).filter(Boolean);
+    // TODO: have a flag -f for formatted logs and no flag for non formatted
+    console.log(formattedLogs);
   }
 };

@@ -1,5 +1,5 @@
-import { login, getDeployments, generateRoutes, Resource } from "../../../interface/oc";
-import { promptForOcProject } from "../../../interface/prompts";
+import { getDeployments, generateRoutes, Resource, Openshift } from "../../../interface/oc";
+import { promptForOcResource } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
 import { search } from "../../../lib/ui";
@@ -10,8 +10,8 @@ export default {
   describe: "Generate OpenShift routes",
   handler: async () => {
 
-    login();
-    const project = await promptForOcProject();
+    const projects = await new Openshift().getProjects();
+    const project = await promptForOcResource(projects);
     const types = ["frontend", "backend"];
     const type = await search({ message: "for:", choices: types });
 
