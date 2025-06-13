@@ -3,6 +3,7 @@ import { EXCLUDED_SECRETS } from "../../lib/constants";
 import { Config } from "../../lib/config";
 import axios, { AxiosInstance } from "axios";
 import { Project, ProjectResponse } from "./project";
+import { Secret } from "./secret";
 
 export const oc = (server: "cuyo" | "brc" = "cuyo") => {
 
@@ -36,40 +37,12 @@ export function remoteSession(pod: string) {
   return executeScript("oc/remote_session", { args: [pod] });
 }
 
-export function getDeployment(project: string, deployment: string) {
-  return JSON.parse(executeScript("oc/get", {
-    args: [project, "deployment", deployment],
-    supressStdout: true
-  }));
-}
-
-export function getConfigMapsFromDeployment(deploymentJson: any) {
-  return deploymentJson.spec.template.spec.containers[0].envFrom
-    .map((e: any) => e.configMapRef).filter(Boolean).map((cm: any) => cm.name);
-}
-
-export function getSecretsFromDeployment(deploymentJson: any) {
-  return deploymentJson.spec.template.spec.containers[0].envFrom
-    .map((e: any) => e.secretRef).filter(Boolean).map((s: any) => s.name)
-    .filter((s: any) => !EXCLUDED_SECRETS.includes(s));
-}
-
-export function extract(type: string, project: string, value: string, to: string) {
-  return executeScript("oc/extract", {
-    args: [type, project, value, to],
-    supressStdout: true
-  }).split("\n").filter(Boolean);
-}
-
-export function deleteEnv(project: string, type: string, name: string) {
-  return executeScript("oc/delete", {
-    args: [project, type, name]
-  });
-}
-
 export function generateRoutes(name: string, port: number, insecurePolicy: string, pathname: string, host: string) {
   return executeScript("oc/routes_generate", {
     args: [name, String(port), insecurePolicy, pathname, host]
   });
 }
 
+export const filterExcludedSecrets = (s: Secret) => !EXCLUDED_SECRETS.includes(s.name);
+//                                      (cm :Configmap)
+export const filterExcludedConfigmaps = () => true;
