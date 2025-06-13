@@ -67,26 +67,6 @@ export function deleteEnv(project: string, type: string, name: string) {
   });
 }
 
-export function getConfigMapsFromProject(project: string) {
-  return JSON.parse(executeScript("oc/get", {
-    args: [project, "configmaps"],
-    supressStdout: true
-  }));
-}
-
-export function getSecretsFromProject(project: string) {
-  return JSON.parse(executeScript("oc/get", {
-    args: [project, "secrets"],
-    supressStdout: true
-  }));
-}
-
-export type Resource = {
-  metadata: {
-    name: string;
-  };
-};
-
 export function generateRoutes(name: string, port: number, insecurePolicy: string, pathname: string, host: string) {
   return executeScript("oc/routes_generate", {
     args: [name, String(port), insecurePolicy, pathname, host]

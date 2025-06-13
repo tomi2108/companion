@@ -64,4 +64,8 @@ export class ConfigMap extends Resource {
     // TODO: implement
     console.log({ new_data });
   }
+
+  async delete() {
+    await this.oc.delete(`/api/v1/namespaces/${this.namespace}/configmaps/${this.name}`);
+  }
 }

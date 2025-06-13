@@ -15,6 +15,13 @@ export abstract class Resource {
 
   protected oc: AxiosInstance;
 
+  abstract getData(): typeof this.data;
+  abstract setData(data: typeof this.data): void;
+
+  abstract save(): void;
+  abstract edit(new_data: typeof this.data): void;
+  abstract delete(): void;
+
   constructor(name: string, oc: typeof this.oc) {
     this.name = name;
     this.oc = oc;
@@ -23,9 +30,6 @@ export abstract class Resource {
   toChoice(): Choice {
     return { name: this.name };
   }
-
-  abstract getData(): typeof this.data;
-  abstract edit(new_data: typeof this.data): void;
 
   toYaml(): string {
     return yaml.dump({

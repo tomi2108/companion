@@ -76,4 +76,8 @@ export class Secret extends Resource {
     const encoded = enconde_object(new_data);
     console.log({ encoded });
   }
+
+  async delete() {
+    await this.oc.delete(`/api/v1/namespaces/${this.namespace}/secrets/${this.name}`);
+  }
 }
