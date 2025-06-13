@@ -2,30 +2,32 @@ import { executeScript, clearConsole } from "../cmd";
 import { EXCLUDED_SECRETS } from "../../lib/constants";
 import { Config } from "../../lib/config";
 import axios, { AxiosInstance } from "axios";
-import { Project } from "./project";
+import { Project, ProjectResponse } from "./project";
 
-export const oc = () => {
+export const oc = (server: "cuyo" | "brc" = "cuyo") => {
+
+  const oc_config = Config.get().openshift;
+  const s = server === "cuyo" ? oc_config.server_cuyo : oc_config.server_barracas;
+  const t = server === "cuyo" ? oc_config.token_cuyo : oc_config.token_barracas;
   // const string = `${Config.get().openshift.username}:${Config.get().openshift.password}`;
-  // const encodedString = Buffer.from(string).toString("base64");
+  // const encodedString = base64Encode(string);
   return axios.create({
-    baseURL: `${Config.get().openshift.server_cuyo}`,
+    baseURL: `${s}`,
+    headers: { Authorization: `Bearer ${t}` }
     // headers: { Authorization: `Basic ${encodedString}` }
-    headers: { Authorization: `Bearer ${Config.get().openshift.token}` }
   });
 };
 
 export class Openshift {
-  server: string;
   private oc: AxiosInstance;
 
-  constructor(server?: string) {
-    this.server = server ?? Config.get().openshift.server_cuyo;
-    this.oc = oc();
+  constructor(s: "cuyo" | "brc" = "cuyo") {
+    this.oc = oc(s);
   }
 
   async getProjects() {
     return (await this.oc.get("/apis/project.openshift.io/v1/projects"))
-      .data.items.map(Project.fromProjectResponse) as Project[];
+      .data.items.map((r: ProjectResponse) => Project.fromProjectResponse(r, this.oc)) as Project[];
   }
 }
 

@@ -11,7 +11,8 @@
   },
   "openshift": {
     "username": "",
-    "password": ""
+    "token_cuyo": "",
+    "token_barracas": ""
   },
   "gitlab": {
     "username": "",

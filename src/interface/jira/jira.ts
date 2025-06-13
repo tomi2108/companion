@@ -17,7 +17,7 @@ export class Jira {
   constructor() {
     this.jira = jira();
     const string = `${Config.get().jira.username}:${Config.get().jira.token}`;
-    const encodedString = Buffer.from(string).toString("base64");
+    const encodedString = base64Encode(string);
     this.api = axios.create({
       baseURL: `https://${Config.get().jira.server}/rest/api`,
       headers: { Authorization: `Basic ${encodedString}` }
@@ -70,3 +70,5 @@ export class Jira {
   }
 }
 
+export const base64Encode = (string: string) => Buffer.from(string).toString("base64");
+export const base64Decode = (string: string) => Buffer.from(string).toString("base64");

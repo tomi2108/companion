@@ -1,8 +1,7 @@
 import { AxiosInstance } from "axios";
-import { oc } from "../oc/oc";
 import { Choice } from "../../lib/constants";
 
-type PodResponse = {
+export type PodResponse = {
   metadata: {
     name: string;
     namespace: string;
@@ -20,8 +19,8 @@ export class Pod {
   namespace?: string;
   private oc: AxiosInstance;
 
-  static fromPodResponse(pod: PodResponse) {
-    const p = new Pod(pod.metadata.name);
+  static fromPodResponse(pod: PodResponse, oc: AxiosInstance) {
+    const p = new Pod(pod.metadata.name, oc);
     p.status = pod.status.phase;
     console.dir(pod, { depth: null });
     p.container = pod.status.containerStatuses[0].name;
@@ -29,9 +28,9 @@ export class Pod {
     return p;
   }
 
-  constructor(name: string) {
+  constructor(name: string, oc: typeof this.oc) {
     this.name = name;
-    this.oc = oc();
+    this.oc = oc;
   }
 
   async getLogs() {

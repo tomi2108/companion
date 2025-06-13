@@ -1,8 +1,7 @@
 import { AxiosInstance } from "axios";
-import { oc } from "./oc";
 import { Choice } from "../../lib/constants";
 
-type DeploymentResponse = {
+export type DeploymentResponse = {
   metadata: {
     name: string;
     namespace: string;
@@ -28,17 +27,17 @@ export class Deployment {
   env?: string;
   private oc: AxiosInstance;
 
-  static fromDeploymentResponse(deployment: DeploymentResponse) {
-    const d = new Deployment(deployment.metadata.name);
+  static fromDeploymentResponse(deployment: DeploymentResponse, oc: AxiosInstance) {
+    const d = new Deployment(deployment.metadata.name, oc);
     d.namespace = deployment.metadata.namespace;
     d.restartedAt = deployment.spec.template.metadata.annotations["kubectl.kubernetes.io/restartedAt"];
     d.env = deployment.spec.template.metadata.labels["app.environment"];
     return d;
   }
 
-  constructor(name: string) {
+  constructor(name: string, oc: typeof this.oc) {
     this.name = name;
-    this.oc = oc();
+    this.oc = oc;
   }
 
   async restart() {

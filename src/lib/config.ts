@@ -56,7 +56,8 @@ class Config {
     });
 
     const oc_user = await input({ message: "Enter Openshift username" });
-    const oc_password = await password({ message: "Enter Openshift auth token" });
+    const oc_cuyo_token = await password({ message: "Enter Openshift CUYO token" });
+    const oc_barracas_token = await password({ message: "Enter Openshift BARRACAS token" });
 
     const glab_user = await input({ message: "Enter Gitlab username" });
     const glab_token = await password({ message: "Enter Gitlab auth token" });
@@ -69,7 +70,8 @@ class Config {
       team: preset !== "default" ? preset : null,
       openshift: {
         username: oc_user,
-        password: oc_password
+        token_cuyo: oc_cuyo_token,
+        token_barracas: oc_barracas_token
       },
       gitlab: {
         username: glab_user,

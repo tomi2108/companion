@@ -1,9 +1,7 @@
 import { AxiosInstance } from "axios";
-import { oc } from "./oc";
-import { Choice } from "../../lib/constants";
-import yaml from "js-yaml";
+import { Resource } from "./resource";
 
-type SecretResponse = {
+export type SecretResponse = {
   metadata: {
     name: string;
     namespace: string;
@@ -17,20 +15,11 @@ type SecretResponse = {
   data: Record<string, string>;
 };
 
-export class Secret {
-  name: string;
-  namespace?: string;
-  uid?: string;
-  resourceVersion?: string;
-  creationTimestamp?: string;
-  data?: Record<string, string>;
-  apiVersion?: string;
+export class Secret extends Resource {
   kind = "Secret" as const;
 
-  private oc: AxiosInstance;
-
-  static fromSecretResponse(secretResponse: SecretResponse) {
-    const secret = new Secret(secretResponse.metadata.name);
+  static fromSecretResponse(secretResponse: SecretResponse, oc: AxiosInstance) {
+    const secret = new Secret(secretResponse.metadata.name, oc);
     secret.namespace = secretResponse.metadata.namespace;
     secret.uid = secretResponse.metadata.uid;
     secret.resourceVersion = secretResponse.metadata.resourceVersion;
@@ -40,28 +29,12 @@ export class Secret {
     return secret;
   }
 
-  constructor(name: string) {
-    this.name = name;
-    this.oc = oc();
-  }
-
-  toChoice(): Choice {
-    return { name: this.name };
-  }
-
-  toYaml(): string {
-    return yaml.dump({
-      apiVersion: this.apiVersion,
-      data: this.data,
-      kind: this.kind,
-      metadata: {
-        creationTimestamp: this.creationTimestamp,
-        name: this.name,
-        namespace: this.namespace,
-        resourceVersion: this.resourceVersion,
-        uid: this.uid
-      }
-    });
+  getData(): typeof this.data {
+    if (!this.data) return;
+    return Object.fromEntries(
+      Object.entries(this.data)
+        .map(([k, v]) => [k, v])
+    );
   }
 
   edit(new_data: Record<string, string>) {

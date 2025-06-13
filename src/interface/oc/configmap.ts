@@ -1,9 +1,7 @@
 import { AxiosInstance } from "axios";
-import { oc } from "./oc";
-import { Choice } from "../../lib/constants";
-import yaml from "js-yaml";
+import { Resource } from "./resource";
 
-type ConfigMapResponse = {
+export type ConfigMapResponse = {
   metadata: {
     name: string;
     namespace: string;
@@ -17,20 +15,11 @@ type ConfigMapResponse = {
   data: Record<string, string>;
 };
 
-export class ConfigMap {
-  name: string;
-  namespace?: string;
-  uid?: string;
-  resourceVersion?: string;
-  creationTimestamp?: string;
-  data?: Record<string, string>;
-  apiVersion?: string;
+export class ConfigMap extends Resource {
   kind = "ConfigMap" as const;
 
-  private oc: AxiosInstance;
-
-  static fromConfigMapResponse(configMapResponse: ConfigMapResponse) {
-    const cm = new ConfigMap(configMapResponse.metadata.name);
+  static fromConfigMapResponse(configMapResponse: ConfigMapResponse, oc: AxiosInstance) {
+    const cm = new ConfigMap(configMapResponse.metadata.name, oc);
     cm.namespace = configMapResponse.metadata.namespace;
     cm.uid = configMapResponse.metadata.uid;
     cm.resourceVersion = configMapResponse.metadata.resourceVersion;
@@ -40,31 +29,11 @@ export class ConfigMap {
     return cm;
   }
 
-  constructor(name: string) {
-    this.name = name;
-    this.oc = oc();
+  getData(): typeof this.data {
+    return this.data;
   }
 
-  toChoice(): Choice {
-    return { name: this.name };
-  }
-
-  toYaml(): string {
-    return yaml.dump({
-      apiVersion: this.apiVersion,
-      data: this.data,
-      kind: this.kind,
-      metadata: {
-        creationTimestamp: this.creationTimestamp,
-        name: this.name,
-        namespace: this.namespace,
-        resourceVersion: this.resourceVersion,
-        uid: this.uid
-      }
-    });
-  }
-
-  edit(new_data: Record<string, string>) {
+  edit(new_data: typeof this.data) {
     // TODO: implement
     console.log({ new_data });
   }

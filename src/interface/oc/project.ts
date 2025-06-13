@@ -1,12 +1,11 @@
 import { Choice } from "../../lib/constants";
-import { Deployment } from "./deployment";
-import { oc } from "../oc/oc";
-import { Pod } from "./pod";
-import { ConfigMap } from "./configmap";
+import { Deployment, DeploymentResponse } from "./deployment";
+import { Pod, PodResponse } from "./pod";
+import { ConfigMap, ConfigMapResponse } from "./configmap";
 import { AxiosInstance } from "axios";
-import { Secret } from "./secret";
+import { Secret, SecretResponse } from "./secret";
 
-type ProjectResponse = {
+export type ProjectResponse = {
   metadata: {
     name: string;
   };
@@ -16,34 +15,34 @@ export class Project {
   name: string;
   private oc: AxiosInstance;
 
-  static fromProjectResponse(projectResponse: ProjectResponse) {
-    const p = new Project(projectResponse.metadata.name);
+  static fromProjectResponse(projectResponse: ProjectResponse, oc: AxiosInstance) {
+    const p = new Project(projectResponse.metadata.name, oc);
     return p;
   }
 
-  constructor(name: string) {
+  constructor(name: string, oc: typeof this.oc) {
     this.name = name;
-    this.oc = oc();
+    this.oc = oc;
   }
 
   async getPods() {
     return (await this.oc.get(`/api/v1/namespaces/${this.name}/pods`))
-      .data.items.map(Pod.fromPodResponse) as Pod[];
+      .data.items.map((r: PodResponse) => Pod.fromPodResponse(r, this.oc)) as Pod[];
   }
 
   async getDeployments() {
     return (await this.oc.get(`/apis/apps/v1/namespaces/${this.name}/deployments`))
-      .data.items.map(Deployment.fromDeploymentResponse) as Deployment[];
+      .data.items.map((r: DeploymentResponse) => Deployment.fromDeploymentResponse(r, this.oc)) as Deployment[];
   }
 
   async getConfigMaps() {
     return (await this.oc.get(`/api/v1/namespaces/${this.name}/configmaps`))
-      .data.items.map(ConfigMap.fromConfigMapResponse) as ConfigMap[];
+      .data.items.map((r: ConfigMapResponse) => ConfigMap.fromConfigMapResponse(r, this.oc)) as ConfigMap[];
   }
 
   async getSecrets() {
     return (await this.oc.get(`/api/v1/namespaces/${this.name}/secrets`))
-      .data.items.map(Secret.fromSecretResponse) as Secret[];
+      .data.items.map((r: SecretResponse) => Secret.fromSecretResponse(r, this.oc)) as Secret[];
   }
 
   toChoice(): Choice {
