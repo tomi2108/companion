@@ -45,6 +45,20 @@ export class Project {
       .data.items.map((r: SecretResponse) => Secret.fromSecretResponse(r, this.oc)) as Secret[];
   }
 
+  async createSecret(name: string, data: NonNullable<Secret["data"]>) {
+    const secret = new Secret(name, this.oc);
+    secret.setData(data);
+    secret.namespace = this.name;
+    await secret.save();
+  }
+
+  async createConfigMap(name: string, data: Secret["data"]) {
+    const configmap = new ConfigMap(name, this.oc);
+    configmap.setData(data);
+    configmap.namespace = this.name;
+    await configmap.save();
+  }
+
   toChoice(): Choice {
     return { name: this.name };
   }

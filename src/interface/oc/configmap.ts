@@ -1,5 +1,6 @@
 import { AxiosInstance } from "axios";
 import { Resource } from "./resource";
+import { removeDuplicates } from "../../lib/utils";
 
 export type ConfigMapResponse = {
   metadata: {
@@ -31,6 +32,32 @@ export class ConfigMap extends Resource {
 
   getData(): typeof this.data {
     return this.data;
+  }
+
+  setData(data: typeof this.data) {
+    if (!data) return;
+    this.data = data;
+  }
+
+  async save() {
+    const body = {
+      kind: this.kind,
+      apiVersion: this.apiVersion,
+      data: this.getData(),
+      metadata: {
+        name: this.name,
+        creationTimestamp: null
+      }
+    };
+    const params = { fieldManager: "kubectl-create", fieldValidation: "Ignore" };
+
+    if (!body.data) throw new Error(`Missing data in configmap ${this.name}`);
+    if (!this.namespace) throw new Error(`Missing namespace in configmap ${this.name}`);
+
+    const keys = Object.keys(body.data);
+    if (keys.length !== removeDuplicates(keys).length) throw new Error("Secrets cannot have duplicate keys");
+
+    await this.oc.post(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
   }
 
   edit(new_data: typeof this.data) {

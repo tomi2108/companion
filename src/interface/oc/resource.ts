@@ -9,10 +9,11 @@ export abstract class Resource {
   resourceVersion?: string;
   creationTimestamp?: string;
   data?: Record<string, string>;
-  apiVersion?: string;
+  apiVersion = "v1";
+
   abstract kind: string;
 
-  private oc: AxiosInstance;
+  protected oc: AxiosInstance;
 
   constructor(name: string, oc: typeof this.oc) {
     this.name = name;

@@ -73,3 +73,11 @@ export function tryParseJSONObject(jsonString: unknown) {
     return false;
   }
 }
+
+export function removeDuplicates<T>(arr: T[]) {
+  return Array.from(new Set(arr));
+}
+
+export function parseKeyVal(str: string) {
+  return Object.fromEntries(str.trim().split("\n").filter(Boolean).map((l) => l.split("=").filter(Boolean)).filter(Boolean));
+}

@@ -2,6 +2,7 @@ import log from "../../../lib/log";
 import { search, input } from "../../../lib/ui";
 import { promptForOcResource, promptTmpFile } from "../../../interface/prompts";
 import { Openshift } from "../../../interface/oc/oc";
+import { parseKeyVal } from "../../../lib/utils";
 
 export default {
   command: "create",
@@ -19,15 +20,14 @@ export default {
     const name = await input({ message: `Enter a name for the new ${resource}` });
     if (!name) process.exit(1);
 
-    const { changed } = await promptTmpFile(`${name}-${resource}`, "KEY=VALUE");
+    const { changed, new_content } = await promptTmpFile(`${name}-${resource}`, "KEY=VALUE");
 
-    if (changed) {
+    if (!changed) {
       log.info("Create canceled, no changes made");
       process.exit(0);
     }
-    console.log(project);
-
-    // TODO: create
-
+    const data = parseKeyVal(new_content);
+    if (resource === "secret") await project.createSecret(name, data);
+    if (resource === "configmap") await project.createConfigMap(name, data);
   }
 };
