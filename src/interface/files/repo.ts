@@ -78,10 +78,11 @@ export class Repo {
   }
 
   async switchBranchIfExists(branch: string) {
+    const active_branch = await this.getActiveBranch();
     const branches = await this.git.branchLocal();
-    if (!branches.all.includes(branch)) return { switched: false };
+    if (!branches.all.includes(branch)) return { switched: false, original_branch: active_branch };
     await this.git.checkout(branch);
-    return { switched: true };
+    return { switched: true, original_branch: active_branch };
   }
 
   async pull() {
@@ -175,12 +176,17 @@ export class Repo {
   async update() {
     await this.stash(async () => {
       // hmm...
-      const { switched: switchedM } = await this.switchBranchIfExists("master");
+      const { switched: switchedM, original_branch } = await this.switchBranchIfExists("master");
       if (switchedM) await this.pull();
+
+      await this.switchBranchIfExists(original_branch);
       const { switched: switchedR } = await this.switchBranchIfExists("release");
       if (switchedR) await this.pull();
+
+      await this.switchBranchIfExists(original_branch);
       const { switched: switchedD } = await this.switchBranchIfExists("develop");
       if (switchedD) await this.pull();
+      await this.switchBranchIfExists(original_branch);
     });
   }
 

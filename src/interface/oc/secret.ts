@@ -1,5 +1,6 @@
 import { AxiosInstance } from "axios";
 import { Resource } from "./resource";
+import { base64Decode, base64Encode } from "../jira/jira";
 
 export type SecretResponse = {
   metadata: {
@@ -33,12 +34,15 @@ export class Secret extends Resource {
     if (!this.data) return;
     return Object.fromEntries(
       Object.entries(this.data)
-        .map(([k, v]) => [k, v])
+        .map(([k, v]) => [k, base64Decode(v)])
     );
   }
 
   edit(new_data: Record<string, string>) {
-    // TODO: implement
-    console.log({ new_data });
+    const encoded = Object.fromEntries(
+      Object.entries(new_data)
+        .map(([k, v]) => [k, base64Encode(v)])
+    );
+    console.log({ encoded });
   }
 }
