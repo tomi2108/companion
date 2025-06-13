@@ -1,7 +1,7 @@
-import { openInEditor, readdirs } from "../../../lib/utils";
-import { Config } from "../../../lib/config";
-import { search } from "../../../lib/ui";
 import path from "node:path";
+import { openInEditor, readdirs } from "../../lib/utils";
+import { Config } from "../../lib/config";
+import { search } from "../../lib/ui";
 
 export default {
   command: "open",
