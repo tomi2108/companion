@@ -8,5 +8,6 @@ const args = process.argv.slice(2);
 
 cp.spawnSync(cmd, args, {
   stdio: "inherit",
+  env: process.env,
   shell: true
 });

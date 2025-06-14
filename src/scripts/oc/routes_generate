@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-name=$1
-port=$2
-insecure_policy=$3
-pathname=$4
-host=$5
-
-$OC create route edge "$name" --port="$port" --service="$name" --insecure-policy="$insecure_policy" --path="$pathname" --hostname="$host"

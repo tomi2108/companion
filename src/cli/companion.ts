@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import yargs from "yargs";
-import { setup as setupApp } from "../lib/setup";
 import deploy from "./companion/deploy";
 import env from "./companion/env";
 import pipeline from "./companion/pipeline";
@@ -19,7 +18,6 @@ yargs
   .usage("$0 <command> [subcommand]")
   .middleware(async () => {
     await Config.get().load();
-    setupApp();
   }, true)
   .command(env)
   .command(pod)

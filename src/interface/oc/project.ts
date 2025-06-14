@@ -70,6 +70,51 @@ export class Project {
     await configmap.save();
   }
 
+  // consider creating a Service class if more service operations emerge
+  async getService(name: string) {
+    const res = (await this.oc.get(`/api/v1/namespaces/${this.name}/services/${name}`)).data;
+    return { labels: res.metadata.labels, name: res.metadata.name };
+  }
+
+  // consider creating a Route class if more route operations emerge
+  async createRoute(route: {
+    serviceName: string;
+    port: number;
+    insecurePolicy: string;
+    pathname: string;
+    termination: string;
+    host: string;
+  }) {
+    const service = await this.getService(route.serviceName);
+    const body = {
+      kind: "Route",
+      apiVersion: "route.openshift.io/v1",
+      metadata: {
+        name: service.name,
+        creationTimestamp: null,
+        labels: service.labels
+      },
+      "spec": {
+        "host": route.host,
+        "path": route.pathname,
+        "to": {
+          "kind": "",
+          "name": service.name,
+          "weight": null
+        },
+        "port": {
+          "targetPort": route.port
+        },
+        "tls": {
+          "termination": route.termination,
+          "insecureEdgeTerminationPolicy": route.insecurePolicy
+        }
+      },
+      "status": {}
+    };
+    (await this.oc.post(`/apis/route.openshift.io/v1/namespaces/${this.name}/routes`, body)).data;
+  }
+
   toChoice(): Choice {
     return { name: this.name };
   }

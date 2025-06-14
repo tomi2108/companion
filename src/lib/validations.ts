@@ -27,8 +27,7 @@ export const OpenShiftConfigSchema = z.object({
       })
     ).optional(),
   username: z.string(),
-  token_cuyo: z.string(),
-  token_barracas: z.string()
+  password: z.string()
 });
 
 export const PreferencesConfigSchema = z.object({
@@ -73,6 +72,8 @@ export type JiraConfig = UserJiraConfig & {
   server: string;
 };
 export type OpenShiftConfig = UserOpenShiftConfig & {
+  auth_server_cuyo: string;
+  auth_server_barracas: string;
   server_cuyo: string;
   server_barracas: string;
   namespace_prefix?: string;
