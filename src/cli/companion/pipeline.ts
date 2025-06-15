@@ -10,12 +10,8 @@ export default {
     const projects = await new Openshift(token, "brc").getProjects();
 
     const project = await promptForOcResource(projects);
-    console.log(project);
-    // const pipes = getPipelineRuns(project);
-    // const pipe = await promptForOcResource(pipes);
-    //
-    // pipelineLogs(pipe.metadata.name);
-
-    // console.log(projects);
+    const pipelines = await project.getPipelineRuns();
+    const pipeline = await promptForOcResource(pipelines);
+    console.log(await pipeline.getLogs());
   }
 };

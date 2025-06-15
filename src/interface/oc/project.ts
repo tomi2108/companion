@@ -5,8 +5,9 @@ import { ConfigMap, ConfigMapResponse } from "./configmap";
 import { AxiosInstance } from "axios";
 import { Secret } from "./secret";
 import { filterExcludedConfigmaps, filterExcludedSecrets } from "./oc";
-import { vault } from "./vault";
+import { vault } from "../vault/vault";
 import { Config } from "../../lib/config";
+import { PipelineRun, PipelineRunResponse } from "./pipelinerun";
 
 export type ProjectResponse = {
   metadata: {
@@ -44,6 +45,12 @@ export class Project {
     const res = (await this.oc.get(`/apis/apps/v1/namespaces/${this.name}/deployments/${name}`))
       .data;
     return Deployment.fromDeploymentResponse(res, this.oc);
+  }
+
+  async getPipelineRuns() {
+    return (
+      await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.name}/pipelineruns`, { params: { limit: 50 } }))
+      .data.items.map((r: PipelineRunResponse) => PipelineRun.fromPipelineRunResponse(r, this.oc)) as PipelineRun[];
   }
 
   async getConfigMaps() {

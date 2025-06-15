@@ -1,6 +1,5 @@
 import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
-import { tryParseJSONObject } from "../../../lib/utils";
 
 export default {
   command: "logs",
@@ -15,8 +14,9 @@ export default {
     const pod = await promptForOcResource(pods);
 
     const logs = await pod.getLogs();
-    const formattedLogs = logs.split("\n").map(tryParseJSONObject).filter(Boolean);
-    // TODO: have a flag -f for formatted logs and no flag for non formatted
-    console.log(formattedLogs);
+    console.log(logs);
+    // const formattedLogs = logs.split("\n").map(tryParseJSONObject).filter(Boolean);
+    // // TODO: have a flag -f for formatted logs and no flag for non formatted
+    // console.log(formattedLogs);
   }
 };

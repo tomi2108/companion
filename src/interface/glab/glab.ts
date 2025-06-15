@@ -32,10 +32,10 @@ async function cloneProject(project: Project, full_path: string, index: number, 
   const { created } = createDirIfNotExists(clone_path);
 
   if (!created && Repo.isGitRepo(clone_path)) {
-    log.info(`(${index}/${total}) [${name}] Updating in ${clone_path}`);
+    log.info(`(${index}/${total}) [${name}]: Updating in ${clone_path}`);
     await new Repo(clone_path).update();
   } else {
-    log.info(`(${index}/${total}) [${name}] Cloning in ${clone_path}`);
+    log.info(`(${index}/${total}) [${name}]: Cloning in ${clone_path}`);
     await Repo.cloneRepo(full_path, clone_url);
   }
 }

@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { Resource } from "./resource";
 import { removeDuplicates } from "../../lib/utils";
 import { Config } from "../../lib/config";
-import { vault } from "./vault";
+import { vault } from "../vault/vault";
 import yaml from "js-yaml";
 
 export class Secret extends Resource {
