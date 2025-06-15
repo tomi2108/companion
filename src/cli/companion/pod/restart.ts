@@ -1,4 +1,4 @@
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 
 export default {
@@ -7,7 +7,8 @@ export default {
   describe: "Restart rollout for pod",
   handler: async () => {
 
-    const projects = await new Openshift().getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
 
     const deployments = await project.getDeployments();

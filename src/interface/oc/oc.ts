@@ -56,6 +56,12 @@ export class Openshift {
     return (await this.oc.get("/apis/project.openshift.io/v1/projects"))
       .data.items.map((r: ProjectResponse) => Project.fromProjectResponse(r, this.oc)) as Project[];
   }
+
+  async getProject(namespace: string) {
+    const res = (await this.oc.get(`/apis/project.openshift.io/v1/projects/${namespace}`))
+      .data;
+    return Project.fromProjectResponse(res, this.oc);
+  }
 }
 
 export function remoteSession(pod: string) {

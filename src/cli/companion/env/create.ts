@@ -1,7 +1,7 @@
 import log from "../../../lib/log";
 import { search, input } from "../../../lib/ui";
 import { promptForOcResource, promptTmpFile } from "../../../interface/prompts";
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { parseKeyVal } from "../../../lib/utils";
 
 export default {
@@ -9,8 +9,8 @@ export default {
   aliases: [],
   describe: "Create configmap or secret",
   handler: async () => {
-
-    const projects = await new Openshift().getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
 
     const choices = ["configmap", "secret"];

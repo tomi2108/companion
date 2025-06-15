@@ -1,5 +1,5 @@
 import { createDirIfNotExists } from "../../../interface/files/files";
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
@@ -19,8 +19,8 @@ export default {
       return;
     }
 
-    const oc = new Openshift();
-    const projects = await oc.getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
     const pods = await project.getPods();
     const pod = await promptForOcResource(pods);

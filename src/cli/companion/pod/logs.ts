@@ -1,4 +1,4 @@
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 import { tryParseJSONObject } from "../../../lib/utils";
 
@@ -8,8 +8,8 @@ export default {
   describe: "Tail pods's logs",
   handler: async () => {
 
-    const oc = new Openshift();
-    const projects = await oc.getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
     const pods = await project.getPods();
     const pod = await promptForOcResource(pods);

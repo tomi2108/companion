@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { Config } from "../lib/config";
 import log from "../lib/log";
-import { search, StringPromptOptions } from "../lib/ui";
+import { search, ArrayPromptOptions } from "../lib/ui";
 import { md5FromFile, openInEditor, readdirs } from "../lib/utils";
 import { createDirIfNotExists, getApp } from "./files/files";
 import { Jira } from "./jira/jira";
@@ -11,9 +11,9 @@ import { AppRepo } from "./files/app_repo";
 import { DeployRepo } from "./files/deploy_repo";
 import { Choice } from "../lib/constants";
 
-type PromptOptions = Omit<StringPromptOptions, "choices">;
+type PromptOptions<T> = Omit<ArrayPromptOptions<T>, "choices">;
 
-export async function promptForApp(promptOpts?: PromptOptions) {
+export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
   const opts = promptOpts || {};
   const dep_path = Config.get().paths.despliegues;
   if (!dep_path) {
@@ -35,7 +35,7 @@ export async function promptForApp(promptOpts?: PromptOptions) {
 export async function promptForOcResource<T extends {
   name: string;
   toChoice: () => Choice;
-}>(resources: T[], promptOpts?: PromptOptions) {
+}, K, R = K extends true ? T[] : T>(resources: T[], promptOpts?: PromptOptions<K>): Promise<R> {
   const opts = promptOpts || {};
   const resource = await search({
     choices: resources.map((r) => r.toChoice()),
@@ -43,11 +43,12 @@ export async function promptForOcResource<T extends {
     ...opts
   });
   if (!resource) return process.exit(1);
-  return resources.find((r) => r.name === resource) as T;
+  if (Array.isArray(resource)) return resource.map((r1) => resources.find((r) => r.name === r1)) as R;
+  return resources.find((r) => r.name === resource) as R;
 }
 
-export async function promptForJiraIssue(
-  promptOpts?: PromptOptions,
+export async function promptForJiraIssue<T>(
+  promptOpts?: PromptOptions<T>,
   issueOpts?: { type: string; labels: string[] }
 ) {
   const pOpts = promptOpts || {};

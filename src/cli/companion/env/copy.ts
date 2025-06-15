@@ -1,5 +1,5 @@
 import { externalEnvs } from "../../../interface/files/files";
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import log from "../../../lib/log";
 import path from "node:path";
 import fs from "node:fs";
@@ -10,7 +10,8 @@ export default {
   aliases: ["cp", "cpy"],
   describe: "Copy deployed environment to local repository",
   handler: async () => {
-    const projects = await new Openshift().getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
 
     const { app_repo: app } = await promptForApp();

@@ -1,4 +1,4 @@
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { search } from "../../../lib/ui";
 import { promptForOcResource, promptTmpFile } from "../../../interface/prompts";
 import path from "node:path";
@@ -10,7 +10,8 @@ export default {
   aliases: ["e"],
   describe: "Edit configmap or secret",
   handler: async () => {
-    const projects = await new Openshift().getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
 
     const choices = ["configmap", "secret"];

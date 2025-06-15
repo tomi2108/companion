@@ -1,4 +1,4 @@
-import { Openshift } from "../../../interface/oc/oc";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { confirm, search } from "../../../lib/ui";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Resource } from "../../../interface/oc/resource";
@@ -9,7 +9,8 @@ export default {
   aliases: [],
   describe: "Delete configmap or secret",
   handler: async () => {
-    const projects = await new Openshift().getProjects();
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
 
     const choices = ["configmap", "secret"];

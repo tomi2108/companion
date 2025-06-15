@@ -31,7 +31,7 @@ export class DeployYaml {
 
   prepareDeploy(type: MsType) {
     if (!this.env) throw new Error(`Could not determine env for ${this.file_path}`);
-    // TODO: add elasticsearch automatically as last secret
+    this.setSecret("elasticsearch");
     this.content.dynatrace.modulo = Config.get().dynatrace?.modulo ?? this.content.dynatrace.modulo ?? "NO_INFORMADO";
     this.content.dynatrace.tipo = type === "app" ? "MICROFRONTEND" : type.toUpperCase();
     this.content.dynatrace.clave_jira = Config.get().jira?.project_key ?? this.content.dynatrace.clave_jira ?? "NO_INFORMADO";
@@ -79,8 +79,26 @@ export class DeployYaml {
     this.content.image.tag = version;
   }
 
+  setSecret(name: string) {
+    const values = Object.values(this.content.secrets);
+    if (values.includes(name)) return;
+    const i = values.length;
+    this.content.secrets[`secret${i + 1}`] = name;
+  }
+
+  setConfigMap(name: string) {
+    const values = Object.values(this.content.configmaps);
+    if (values.includes(name)) return;
+    const i = values.length;
+    this.content.configmaps[`configmap${i + 1}`] = name;
+  }
+
   getVersion() {
     return this.content.image.tag;
+  }
+
+  getNamespace() {
+    return path.basename(this.file_path, ".yaml").replaceAll("values-", "");
   }
 
 }

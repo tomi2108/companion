@@ -1,8 +1,11 @@
-import { search, input } from "../../lib/ui";
+import { search, input, confirm } from "../../lib/ui";
 import log from "../../lib/log";
 import { Env, ENVS } from "../../lib/constants";
-import { promptForApp } from "../../interface/prompts";
+import { promptForApp, promptForOcResource } from "../../interface/prompts";
 import { Config } from "../../lib/config";
+import { Secret } from "../../interface/oc/secret";
+import { ConfigMap } from "../../interface/oc/configmap";
+import { getOcToken, Openshift } from "../../interface/oc/oc";
 
 export default {
   command: "deploy",
@@ -38,7 +41,6 @@ export default {
         version = await search({ choices: tags, message: "Choose a version to deploy:" });
       } else {
         log.warning(`Tags for repository ${name} not found`);
-
         version = await input({ message: "Enter version to deploy, starting with a 'v':" });
       }
 
@@ -48,11 +50,33 @@ export default {
         const deploymentFile = deploy_repo.getDeployment(env);
         if (!deploymentFile) throw new Error(`Could not find deployment file for env ${env}`);
 
+        const namespace = deploymentFile.getNamespace();
+        let secrets: Secret[] = [];
+        let configmaps: ConfigMap[] = [];
+
+        const addsSecrets = await confirm({ message: "Add secrets to the deployment?", initial: false });
+        const token = addsSecrets ? await getOcToken() : null;
+        if (addsSecrets) {
+          const project = await new Openshift(token as string).getProject(namespace);
+          const secrets_available = await project.getSecrets();
+          secrets = await promptForOcResource(secrets_available, { message: "Select secrets", multiple: true });
+        }
+
+        const addsConfigmaps = await confirm({ message: "Add configmaps to the deployment?", initial: false });
+        if (addsConfigmaps) {
+          const tokenn = token ?? await getOcToken();
+          const project = await new Openshift(tokenn).getProject(namespace);
+          const configmaps_availabie = await project.getConfigMaps();
+          configmaps = await promptForOcResource(configmaps_availabie, { message: "Select secrets", multiple: true });
+        }
+
         if (!Config.get().openshift.deployments?.exclude?.includes(name)
           && !Config.get().openshift.deployments?.exclude?.includes(env)
           && !Config.get().openshift.deployments?.exclude?.includes(type)
         ) deploymentFile.prepareDeploy(type);
 
+        secrets.forEach((s) => deploymentFile.setSecret(s.name));
+        configmaps.forEach((cm) => deploymentFile.setConfigMap(cm.name));
         deploymentFile.setVersion(version);
         deploymentFile.save();
         await deploy_repo.add(deploymentFile.file_path);
