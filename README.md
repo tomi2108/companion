@@ -91,8 +91,8 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [ ] Alertas automáticas en terminal o Slack ante incidentes críticos.
 
 ### 🛡️ Integración con Vault  
-- [ ] Lectura y escritura de secretos por entorno/proyecto
-- [ ] Reinicio de deployments afectados por un secret luego de su actualizacion
+- [x] Lectura y escritura de secretos por entorno/proyecto
+- [x] Reinicio de deployments afectados por un secret luego de su actualizacion
 
 ### 🗄️ Utilidades para MongoDB  
 - [ ] Conexión simplificada a instancias MongoDB.
