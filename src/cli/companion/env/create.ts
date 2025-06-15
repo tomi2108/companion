@@ -3,12 +3,19 @@ import { search, input } from "../../../lib/ui";
 import { promptForOcResource, promptTmpFile } from "../../../interface/prompts";
 import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { parseKeyVal } from "../../../lib/utils";
+import { Config } from "../../../lib/config";
+import path from "node:path";
+import { Repo } from "../../../interface/files/repo";
+import { SecretsYaml } from "../../../interface/files/secrets_yaml";
 
 export default {
   command: "create",
   aliases: [],
   describe: "Create configmap or secret",
   handler: async () => {
+    const vault_path = Config.get().paths.vault;
+    if (!vault_path) throw new Error("Vault path not set");
+
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
@@ -27,7 +34,29 @@ export default {
       process.exit(0);
     }
     const data = parseKeyVal(new_content);
-    if (resource === "secret") await project.createSecret(name, data);
-    if (resource === "configmap") await project.createConfigMap(name, data);
+
+    if (resource === "configmap") {
+      await project.createConfigMap(name, data);
+      return;
+    }
+
+    await project.createSecret(name, data);
+
+    const repo_path = path.join(vault_path, project.name);
+    const secrets_file = path.join(repo_path, "values.yaml");
+    const repo = new Repo(repo_path);
+    const file = new SecretsYaml(secrets_file);
+    await repo.stash(async () => {
+      await repo.update();
+      const { original_branch } = await repo.switchBranchIfExists("master");
+      if (!file.hasSecret(name)) {
+        file.addSecret(name);
+        file.save();
+        await repo.add(secrets_file);
+        await repo.commit(name);
+        await repo.push("master");
+      }
+      await repo.switchBranchIfExists(original_branch);
+    });
   }
 };

@@ -90,17 +90,11 @@ export class Deployment {
     )).filter(filterExcludedConfigmaps);
   }
 
-  async getSecrets() {
+  getSecrets() {
     if (!this.secrets_names) return;
-
-    return (await Promise.all(
-      this.secrets_names.map(async (c) =>
-        Secret.fromSecretResponse(
-          (await this.oc.get(`/api/v1/namespaces/${this.namespace}/secrets/${c}`)).data,
-          this.oc
-        )
-      )
-    )).filter(filterExcludedSecrets);
+    return this.secrets_names.map((s) =>
+      new Secret(s, this.namespace ?? "", this.oc)
+    ).filter(filterExcludedSecrets);
   }
 
   toChoice(): Choice {

@@ -1,6 +1,7 @@
 import { AxiosInstance } from "axios";
 import { Resource } from "./resource";
 import { removeDuplicates } from "../../lib/utils";
+import yaml from "js-yaml";
 
 export type ConfigMapResponse = {
   metadata: {
@@ -18,6 +19,10 @@ export type ConfigMapResponse = {
 
 export class ConfigMap extends Resource {
   kind = "ConfigMap" as const;
+  uid?: string;
+  resourceVersion?: string;
+  creationTimestamp?: string;
+  apiVersion = "v1";
 
   static fromConfigMapResponse(configMapResponse: ConfigMapResponse, oc: AxiosInstance) {
     const cm = new ConfigMap(configMapResponse.metadata.name, oc);
@@ -30,16 +35,13 @@ export class ConfigMap extends Resource {
     return cm;
   }
 
-  getData(): typeof this.data {
+  async getData(): Promise<typeof this.data> {
     return this.data;
   }
 
-  setData(data: typeof this.data) {
-    if (!data) return;
-    this.data = data;
-  }
-
-  async save() {
+  async save(namespace: string, data: typeof this.data) {
+    this.namespace = namespace;
+    this.setData(data);
     const body = {
       kind: this.kind,
       apiVersion: this.apiVersion,
@@ -60,12 +62,22 @@ export class ConfigMap extends Resource {
     await this.oc.post(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
   }
 
-  edit(new_data: typeof this.data) {
-    // TODO: implement
-    console.log({ new_data });
-  }
-
   async delete() {
     await this.oc.delete(`/api/v1/namespaces/${this.namespace}/configmaps/${this.name}`);
+  }
+
+  async toYaml(): Promise<string> {
+    return yaml.dump({
+      apiVersion: this.apiVersion,
+      data: await this.getData(),
+      kind: this.kind,
+      metadata: {
+        creationTimestamp: this.creationTimestamp,
+        name: this.name,
+        namespace: this.namespace,
+        resourceVersion: this.resourceVersion,
+        uid: this.uid
+      }
+    });
   }
 }

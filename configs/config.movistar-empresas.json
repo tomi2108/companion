@@ -74,6 +74,9 @@
       "vault": 6070
     }
   },
+  "vault": {
+    "project": "empresas"
+  },
   "dynatrace": {
     "modulo": "MIMOVISTAREMPRESAS"
   },

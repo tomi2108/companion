@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { deepMerge, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
-import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig } from "./validations";
+import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, VaultConfig } from "./validations";
 
 const config_file = path.resolve(__dirname, "../../config.json");
 
@@ -38,6 +38,10 @@ class Config {
     browser: process.env.BROWSER ?? "firefox"
   };
 
+  vault: VaultConfig = {
+    server: "https://vault.agil.movistar.com.ar"
+  } as VaultConfig;
+
   paths: PathsConfig = {} as PathsConfig;
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
 
@@ -68,6 +72,9 @@ class Config {
     const jira_user = await input({ message: "Enter Jira username" });
     const jira_token = await password({ message: "Enter Jira auth token (https://id.atlassian.com/manage-profile/security/api-tokens)" });
 
+    // TODO: find out if we need email or username...
+    const vault_token = await password({ message: "Enter Vault auth token" });
+
     const config_to_write = {
       team: preset !== "default" ? preset : null,
       openshift: {
@@ -78,6 +85,9 @@ class Config {
       gitlab: {
         username: glab_user,
         token: glab_token
+      },
+      vault: {
+        token: vault_token
       },
       jira: {
         username: jira_user,
@@ -119,7 +129,7 @@ class Config {
     }
 
     const readConfig = ConfigSchema.parse(JSON.parse(file_content));
-    (["jira", "gitlab", "openshift", "dynatrace", "paths", "preferences"] as const).forEach((key) => {
+    (["jira", "gitlab", "openshift", "vault", "dynatrace", "paths", "preferences"] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
         this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);
       }

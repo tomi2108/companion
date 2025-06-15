@@ -53,6 +53,10 @@ export const JiraConfigSchema = z.object({
   board_id: z.number().optional()
 });
 
+export const VaultConfigSchema = z.object({
+  token: z.string()
+});
+
 export const ConfigSchema = z.object({
   team: z.string().optional(),
   paths: PathsConfigSchema,
@@ -60,6 +64,7 @@ export const ConfigSchema = z.object({
   jira: JiraConfigSchema,
   dynatrace: DynatraceConfigSchema.optional(),
   openshift: OpenShiftConfigSchema,
+  vault: VaultConfigSchema,
   preferences: PreferencesConfigSchema.optional()
 });
 
@@ -67,10 +72,12 @@ type UserJiraConfig = z.infer<typeof JiraConfigSchema>;
 type UserGitlabConfig = z.infer<typeof GitlabConfigSchema>;
 type UserOpenShiftConfig = z.infer<typeof OpenShiftConfigSchema>;
 type UserDynatraceConfig = z.infer<typeof DynatraceConfigSchema>;
+type UserVaultConfig = z.infer<typeof VaultConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
   server: string;
 };
+
 export type OpenShiftConfig = UserOpenShiftConfig & {
   auth_server_cuyo: string;
   auth_server_barracas: string;
@@ -85,6 +92,11 @@ export type DynatraceConfig = UserDynatraceConfig;
 export type GitlabConfig = UserGitlabConfig & {
   server: string;
   repos: { [K in keyof PathsConfig]: number };
+};
+
+export type VaultConfig = UserVaultConfig & {
+  project: string;
+  server: string;
 };
 
 export type PreferencesConfig = z.infer<typeof PreferencesConfigSchema>;

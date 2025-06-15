@@ -34,7 +34,7 @@ export default {
     if (fs.existsSync(env_file)) fs.rmSync(env_file);
 
     for (const r of [...secrets, ...configMaps]) {
-      for (const [key, value] of Object.entries(r.getData() ?? {})) {
+      for (const [key, value] of Object.entries(await r.getData() ?? {})) {
         fs.appendFileSync(env_file, `${key}=${value}\n`);
       }
     }

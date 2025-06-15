@@ -3,8 +3,10 @@ import { Deployment, DeploymentResponse } from "./deployment";
 import { Pod, PodResponse } from "./pod";
 import { ConfigMap, ConfigMapResponse } from "./configmap";
 import { AxiosInstance } from "axios";
-import { Secret, SecretResponse } from "./secret";
+import { Secret } from "./secret";
 import { filterExcludedConfigmaps, filterExcludedSecrets } from "./oc";
+import { vault } from "./vault";
+import { Config } from "../../lib/config";
 
 export type ProjectResponse = {
   metadata: {
@@ -15,6 +17,7 @@ export type ProjectResponse = {
 export class Project {
   name: string;
   private oc: AxiosInstance;
+  private vault: ReturnType<typeof vault>;
 
   static fromProjectResponse(projectResponse: ProjectResponse, oc: AxiosInstance) {
     const p = new Project(projectResponse.metadata.name, oc);
@@ -24,6 +27,7 @@ export class Project {
   constructor(name: string, oc: typeof this.oc) {
     this.name = name;
     this.oc = oc;
+    this.vault = vault();
   }
 
   async getPods() {
@@ -50,24 +54,23 @@ export class Project {
   }
 
   async getSecrets() {
-    return (await this.oc.get(`/api/v1/namespaces/${this.name}/secrets`))
-      .data.items
-      .map((r: SecretResponse) => Secret.fromSecretResponse(r, this.oc))
+
+    return (await this.vault.list(`${Config.get().vault.project}/metadata/${this.name}`))
+      .data.keys
+      .map((r: string) => new Secret(r, this.name, this.oc))
       .filter(filterExcludedSecrets) as Secret[];
   }
 
   async createSecret(name: string, data: NonNullable<Secret["data"]>) {
-    const secret = new Secret(name, this.oc);
-    secret.setData(data);
-    secret.namespace = this.name;
-    await secret.save();
+    const secret = new Secret(name, this.name, this.oc);
+    await secret.save(this.name, data);
+    return secret;
   }
 
   async createConfigMap(name: string, data: Secret["data"]) {
     const configmap = new ConfigMap(name, this.oc);
-    configmap.setData(data);
-    configmap.namespace = this.name;
-    await configmap.save();
+    await configmap.save(this.name, data);
+    return configmap;
   }
 
   // consider creating a Service class if more service operations emerge
