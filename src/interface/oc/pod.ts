@@ -47,7 +47,7 @@ export class Pod {
     wes.onerror = () => console.warn(`Could not get logs for pod ${this.name}`);
 
     wes.onmessage = (event) => {
-      let message: string | object = base64Decode(event.data.toString().trim());
+      let message: string | object = base64Decode(event.data.toString()).trim();
       if (!opts?.raw) message = tryParseJSONObject(message);
       if (!message) return;
       if (opts?.prefix) {

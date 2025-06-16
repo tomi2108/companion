@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-(git branch | grep "nivelacion\|feature\|bugfix\|hotfix\|fix\|despliegue" | xargs git branch -D) 3> /dev/null

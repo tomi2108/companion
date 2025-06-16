@@ -6,12 +6,17 @@ import log from "../../../lib/log";
 import path from "node:path";
 import fs from "node:fs";
 import { tryParseJSONObject } from "../../../lib/utils";
+import { Argv } from "yargs";
 
 export default {
   command: "download-logs",
   aliases: ["dwnld", "download"],
   describe: "Download pod logs",
-  handler: async () => {
+  builder: (yargs: Argv) => yargs
+    .boolean("raw")
+    .alias("raw", ["r"])
+    .describe("raw", "Whether to download raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs"),
+  handler: async ({ raw }: { raw?: boolean }) => {
 
     const config_log_path = Config.get().preferences.logs_path;
     if (!config_log_path) {
@@ -26,8 +31,7 @@ export default {
     const pod = await promptForOcResource(pods);
 
     const logs = await pod.getLogs();
-    const formattedLogs = JSON.stringify(logs.split("\n").map(tryParseJSONObject).filter(Boolean), null, 2);
-    // TODO: have a flag -f for formatted logs and no flag for non formatted
+    const formattedLogs = raw ? logs : JSON.stringify(logs.split("\n").map(tryParseJSONObject).filter(Boolean), null, 2);
 
     for (const p of pods.filter((p) => p.container === pod.container)) {
       const log_path = path.join(

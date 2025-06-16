@@ -52,10 +52,14 @@ export class Repo {
     return await this.git.reset(ResetMode.HARD);
   }
 
+  async deleteBranch(name: string) {
+    return await this.git.deleteLocalBranch(name, true);
+  }
+
   async createNewBranch(name: string) {
     const branches = await this.git.branchLocal();
     // TODO: revisit this
-    if (branches.all.includes(name)) await this.git.deleteLocalBranch(name, true);
+    if (branches.all.includes(name)) this.deleteBranch(name);
     await this.git.checkoutLocalBranch(name);
   }
 
