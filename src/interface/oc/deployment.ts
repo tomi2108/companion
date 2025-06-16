@@ -3,6 +3,7 @@ import { Choice, EXCLUDED_SECRETS } from "../../lib/constants";
 import { ConfigMap } from "./configmap";
 import { Secret } from "./secret";
 import { filterExcludedConfigmaps, filterExcludedSecrets } from "./oc";
+import { Pod, PodResponse } from "./pod";
 
 export type DeploymentResponse = {
   metadata: {
@@ -75,6 +76,11 @@ export class Deployment {
         params: { fieldManager: "kubectl-rollout" }
       }
     );
+  }
+
+  async getPods() {
+    const res = await this.oc.get(`/api/v1/namespaces/${this.namespace}/pods`, { params: { labelSelector: `app.kubernetes.io/name=${this.name}` } });
+    return res.data.items.map((r: PodResponse) => Pod.fromPodResponse(r, this.oc)) as Pod[];
   }
 
   async getConfigMaps() {

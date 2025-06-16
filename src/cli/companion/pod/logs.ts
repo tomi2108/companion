@@ -6,14 +6,14 @@ export default {
   aliases: ["log"],
   describe: "Tail pods's logs",
   handler: async () => {
+    // TODO: have a flag -r for raw logs
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
-    const pods = await project.getPods();
-    const pod = await promptForOcResource(pods);
-
-    // TODO: have a flag -r for raw logs and no flag for formatted logs
-    await pod.followLogs();
+    const deployments = await project.getDeployments();
+    const deployment = await promptForOcResource(deployments);
+    const pods = await deployment.getPods();
+    pods.forEach((p) => p.followLogs());
   }
 };

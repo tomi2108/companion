@@ -47,7 +47,7 @@ export class PipelineRun {
         const pod = new Pod(podName, this.oc);
         pod.namespace = this.namespace;
         const name = data.status.taskSpec.steps[0].name;
-        await pod.followLogs({ raw: true, prefix: name });
+        pod.followLogs({ raw: true, prefix: name });
       }) ?? []);
   }
 

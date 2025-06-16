@@ -36,7 +36,7 @@ export class Pod {
     this.oc = oc;
   }
 
-  async followLogs(opts?: { raw: boolean; prefix: string }) {
+  followLogs(opts?: { raw?: boolean; prefix?: string }) {
     const host = Config.get().openshift.server_cuyo;
     const wes = new WebSocket(`wss://${host}/api/v1/namespaces/${this.namespace}/pods/${this.name}/log?&follow=true`, ["base64.binary.k8s.io"], {
       protocolVersion: 13,
@@ -47,10 +47,14 @@ export class Pod {
     wes.onerror = () => console.warn(`Could not get logs for pod ${this.name}`);
 
     wes.onmessage = (event) => {
-      const message = base64Decode(event.data.toString().trim());
-      const formatted = opts?.raw ? message : tryParseJSONObject(message);
-      const prefixed = opts?.prefix ? `[${opts.prefix}]: ${formatted}` : formatted;
-      if (message) console.log(prefixed);
+      let message: string | object = base64Decode(event.data.toString().trim());
+      if (!opts?.raw) message = tryParseJSONObject(message);
+      if (!message) return;
+      if (opts?.prefix) {
+        if (opts.raw) message = `[${opts.prefix}]: ${message}`;
+        else message = { [opts.prefix]: message };
+      }
+      if (message) console.log(message);
     };
   }
 
