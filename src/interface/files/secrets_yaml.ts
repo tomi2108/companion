@@ -39,7 +39,7 @@ export class SecretsYaml {
 
   addSecret(name: string) {
     // TODO: probably check keys have no gaps (eg: secret3 is defined but secret2 is not)
-    // and adjust everythin if they have
+    // and adjust everything if they have
     const values = Object.values(this.content);
     if (values.includes(name)) return;
     const i = values.length;

@@ -39,19 +39,16 @@ export class PipelineRun {
     this.oc = oc;
   }
 
-  async getLogs() {
-    // TODO: Look at web sockets to follow pods &follow=true
-
-    return (await Promise.all(
+  async followLogs() {
+    return await Promise.all(
       this.taskruns?.map(async (tr) => {
         const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr}`);
         const podName = data.status.podName;
         const pod = new Pod(podName, this.oc);
         pod.namespace = this.namespace;
-        const logs = await pod.getLogs();
         const name = data.status.taskSpec.steps[0].name;
-        return logs.split("\n").map((s: string) => `[${name}]: ${s}`).join("\n");
-      }) ?? [])).join("\n");
+        await pod.followLogs({ raw: true, prefix: name });
+      }) ?? []);
   }
 
   toChoice(): Choice {

@@ -12,6 +12,6 @@ export default {
     const project = await promptForOcResource(projects);
     const pipelines = await project.getPipelineRuns();
     const pipeline = await promptForOcResource(pipelines);
-    console.log(await pipeline.getLogs());
+    await pipeline.followLogs();
   }
 };

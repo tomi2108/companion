@@ -13,10 +13,7 @@ export default {
     const pods = await project.getPods();
     const pod = await promptForOcResource(pods);
 
-    const logs = await pod.getLogs();
-    console.log(logs);
-    // const formattedLogs = logs.split("\n").map(tryParseJSONObject).filter(Boolean);
-    // // TODO: have a flag -f for formatted logs and no flag for non formatted
-    // console.log(formattedLogs);
+    // TODO: have a flag -r for raw logs and no flag for formatted logs
+    await pod.followLogs();
   }
 };

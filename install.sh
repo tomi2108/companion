@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git pull
-npm uninstall -g .
+npm uninstall -g companion
 npm install
 npm run build
 # TODO: this will probably only work in linux...

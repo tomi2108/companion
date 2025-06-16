@@ -40,7 +40,7 @@ export const oc = (token: string, server: "cuyo" | "brc" = "cuyo") => {
   const s = server === "cuyo" ? oc_config.server_cuyo : oc_config.server_barracas;
 
   return axios.create({
-    baseURL: `${s}`,
+    baseURL: `https://${s}`,
     headers: { Authorization: `Bearer ${token}` }
   });
 };

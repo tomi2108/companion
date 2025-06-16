@@ -1,7 +1,7 @@
-import { cloneGroupOrProject } from "../../../interface/glab/glab";
 import { createDirIfNotExists } from "../../../interface/files/files";
 import log from "../../../lib/log";
 import { Config } from "../../../lib/config";
+import { Gitlab } from "../../../interface/glab/glab";
 
 export default {
   command: "clone",
@@ -28,7 +28,7 @@ export default {
       }
 
       createDirIfNotExists(path);
-      await cloneGroupOrProject(id, path);
+      await new Gitlab().cloneGroupOrProject(id, path);
     }
   }
 };

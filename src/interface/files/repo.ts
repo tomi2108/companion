@@ -4,12 +4,7 @@ import { ResetMode, SimpleGit } from "simple-git";
 import { Config } from "../../lib/config";
 import { MS_TYPES } from "../../lib/constants";
 import { MergeRequest } from "../glab/merge_request";
-import { git, glab } from "../glab/glab";
-
-// TODO: move somewhere
-async function getCurrentUser() {
-  return (await glab().Search.all("users", Config.get().gitlab.username))[0];
-}
+import { git, Gitlab, glab } from "../glab/glab";
 
 export class Repo {
   git: SimpleGit;
@@ -132,7 +127,7 @@ export class Repo {
 
     const commits = await this.getDiffCommits(sourceBranch, branch);
     const title = commits[0].message;
-    const assigneeId = (await getCurrentUser()).id;
+    const assigneeId = (await new Gitlab().getCurrentUser()).id;
     const description = MergeRequest.descriptionFromCommits(commits);
 
     return MergeRequest.fromMergeRequestResponse(
