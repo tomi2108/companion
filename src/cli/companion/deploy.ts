@@ -19,7 +19,7 @@ export default {
       await deploy_repo.update();
       await deploy_repo.switchBranchIfExists("master");
       // TODO: temporary until we fix repo.update
-      await deploy_repo.pull();
+      await deploy_repo.pull("master");
 
       const choices = ENVS
         .map((e) => {

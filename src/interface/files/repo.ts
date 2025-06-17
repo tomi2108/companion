@@ -84,8 +84,8 @@ export class Repo {
     return { switched: true, original_branch: active_branch };
   }
 
-  async pull() {
-    await this.git.pull();
+  async pull(branch: string) {
+    return await this.git.push(["-u", `origin/${branch}`, branch]);
   }
 
   async push(branch: string) {

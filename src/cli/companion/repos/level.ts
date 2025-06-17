@@ -47,11 +47,11 @@ export default {
         await repo.update();
         const { switched: switchedT } = await repo.switchBranchIfExists(target_branch);
         if (!switchedT) return;
-        await repo.pull();
+        await repo.pull(target_branch);
 
         const { switched: switchedS } = await repo.switchBranchIfExists(source_branch);
         if (!switchedS) return;
-        await repo.pull();
+        await repo.pull(source_branch);
 
         await repo.createNewBranch(`nivelacion/${source_branch}-${target_branch}`);
         await repo.createMr(target_branch, { title: `Nivelacion ${source_branch} - ${target_branch}` });

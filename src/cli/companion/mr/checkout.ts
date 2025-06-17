@@ -18,6 +18,6 @@ export default {
     }
 
     await repo.checkout(mr.source_branch);
-    await repo.pull();
+    await repo.pull(mr.source_branch);
   }
 };
