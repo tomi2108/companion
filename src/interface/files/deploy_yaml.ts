@@ -29,9 +29,11 @@ export class DeployYaml {
     this.env = ENVS.find((e) => path.basename(file_path).includes(e));
   }
 
-  prepareDeploy(type: MsType) {
+  async prepareDeploy(type: MsType) {
     if (!this.env) throw new Error(`Could not determine env for ${this.file_path}`);
-    this.setSecret("elasticsearch");
+
+    if (type !== "app") this.setSecret("elasticsearch");
+    if (!this.content.dynatrace) this.content.dynatrace = {};
     this.content.dynatrace.modulo = Config.get().dynatrace?.modulo ?? this.content.dynatrace.modulo ?? "NO_INFORMADO";
     this.content.dynatrace.tipo = type === "app" ? "MICROFRONTEND" : type.toUpperCase();
     this.content.dynatrace.clave_jira = Config.get().jira?.project_key ?? this.content.dynatrace.clave_jira ?? "NO_INFORMADO";

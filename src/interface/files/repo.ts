@@ -172,12 +172,15 @@ export class Repo {
       const original_branch = await this.getActiveBranch();
       const remotes = (await this.git.branch(["-r"])).all;
 
+      // TODO: update remote branches && local copies
+      await this.git.fetch(["--all"]);
       for (const r of remotes) {
-        await this.git.branch(["--track", r.slice("origin/".length), r]).catch(() => { });
+        const local = r.slice("origin/".length);
+        await this.git.branch(["--track", local, r]).catch(() => { });
+        // const { switched } = await this.switchBranchIfExists(local);
+        // if (switched) await this.git.pull();
       }
 
-      await this.git.fetch(["--all"]);
-      await this.git.pull(["--all"]);
       await this.switchBranchIfExists(original_branch);
     });
   }

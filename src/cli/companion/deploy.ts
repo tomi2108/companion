@@ -17,7 +17,9 @@ export default {
 
     await deploy_repo.stash(async () => {
       await deploy_repo.update();
-      await deploy_repo.checkout("master");
+      await deploy_repo.switchBranchIfExists("master");
+      // TODO: temporary until we fix repo.update
+      await deploy_repo.pull();
 
       const choices = ENVS
         .map((e) => {
@@ -44,8 +46,10 @@ export default {
         version = await input({ message: "Enter version to deploy, starting with a 'v':" });
       }
 
+      await deploy_repo.update();
       await deploy_repo.createNewBranch("feature/despliegue");
       await deploy_repo.reset();
+
       for (const env of selectedEnvs) {
         const deploymentFile = deploy_repo.getDeployment(env);
         if (!deploymentFile) throw new Error(`Could not find deployment file for env ${env}`);
