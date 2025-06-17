@@ -98,11 +98,6 @@ export class Repo {
     return value;
   }
 
-  // async setConfig(key: string, value: unknown) {
-  // TODO: check
-  //   await this.git.setConfig(key, value);
-  // }
-
   async getOriginUrl() {
     return this.getConfig("remote.origin.url");
   }
@@ -123,28 +118,28 @@ export class Repo {
     return (await this.git.log({ from: sourceBranch, to: targetBranch })).all;
   }
 
-  async createMr(branch: string, projectId?: number) {
+  async createMr(targetBranch: string, opts?: { projectId?: number; title?: string }) {
     const sourceBranch = await this.getActiveBranch();
     await this.push(sourceBranch);
 
-    const { id } = !projectId ? await this.getProject() : { id: projectId };
+    const { id } = !opts?.projectId ? await this.getProject() : { id: opts.projectId };
 
-    const commits = await this.getDiffCommits(sourceBranch, branch);
-    const title = commits[0].message;
+    const commits = await this.getDiffCommits(sourceBranch, targetBranch);
+    const title = opts?.title || commits[0].message;
     const assigneeId = (await new Gitlab().getCurrentUser()).id;
     const description = MergeRequest.descriptionFromCommits(commits);
 
     return MergeRequest.fromMergeRequestResponse(
-      await this.glab.MergeRequests.create(id, sourceBranch, branch, title, {
+      await this.glab.MergeRequests.create(id, sourceBranch, targetBranch, title, {
         description,
         removeSourceBranch: true,
         assigneeId
       }));
   }
 
-  async createAndMergeMr(branch: string) {
+  async createAndMergeMr(targetBranch: string) {
     const { id } = await this.getProject();
-    const mr = await this.createMr(branch, id);
+    const mr = await this.createMr(targetBranch, { projectId: id });
     setTimeout(async () => {
       // =) genius
       try {
@@ -174,17 +169,15 @@ export class Repo {
 
   async update() {
     await this.stash(async () => {
-      // hmm...
-      const { switched: switchedM, original_branch } = await this.switchBranchIfExists("master");
-      if (switchedM) await this.pull();
+      const original_branch = await this.getActiveBranch();
+      const remotes = (await this.git.branch(["-r"])).all;
 
-      await this.switchBranchIfExists(original_branch);
-      const { switched: switchedR } = await this.switchBranchIfExists("release");
-      if (switchedR) await this.pull();
+      for (const r of remotes) {
+        await this.git.branch(["--track", r.slice("origin/".length), r]).catch(() => { });
+      }
 
-      await this.switchBranchIfExists(original_branch);
-      const { switched: switchedD } = await this.switchBranchIfExists("develop");
-      if (switchedD) await this.pull();
+      await this.git.fetch(["--all"]);
+      await this.git.pull(["--all"]);
       await this.switchBranchIfExists(original_branch);
     });
   }

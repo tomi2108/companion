@@ -50,14 +50,14 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 ### 🧠 Configuraciones por Equipo/Proyecto
 - [x] Carga condicional de configuración basada en clave `"team"`
 - [x] Fallback a configuraciones por defecto si no se encuentra personalización
-- [ ] Comando interactivo `companion setup` para facilitar configuración (🚧 en progreso)
+- [x] Comando interactivo `companion setup` para facilitar configuración 
 - [x] Validación automática de esquemas de configuración.
 
 ### 🚀 Integración con OpenShift
 - [x] Login automático al clúster mediante configuración guardada
 - [x] Despliegue de aplicaciones 
 - [x] Visualización de logs en tiempo real de pods específicos
-- [x] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
+- [ ] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
 - [x] Eliminación, reinicio y monitoreo de pods y deployments
 - [ ] Forwarding de puertos para servicios específicos
 - [x] Gestión de secretos y configuración de variables de entorno
@@ -72,6 +72,7 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
 - [ ] Generación de mensajes de commit formateados con convención de equipo
 - [x] Sincronización de ramas locales con `origin` automáticamente
+- [x] Nivelación de ramas
 
 ### 📋 Integración con Jira
 - [x] Creación de tickets 
@@ -105,6 +106,7 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [ ] Generación de documentación interna 
 - [ ] Notificaciones locales o vía Slack en eventos clave
 - [x] Comando `companion upgrade` para autoactualización de la herramienta
+- [x] Comando `companion open` para abrir un repositorio en el editor 
 
 ---
 
@@ -158,10 +160,6 @@ Companion utiliza y extiende funcionalidades de herramientas oficiales y de la c
 Aquí tienes enlaces útiles para conocer más sobre ellas:
 
 ### ☁️ OpenShift
-
-- 🔗 **CLI Oficial (`oc`)**  
-  Herramienta de línea de comandos para gestionar recursos en clústeres OpenShift.  
-  [📖 Documentación CLI](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/)
 
 - 🌐 **API REST de OpenShift (Kubernetes Core)**  
   Permite interacción directa con el clúster (pods, deployments, namespaces, etc.).  
