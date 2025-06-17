@@ -89,7 +89,7 @@ export class Repo {
   }
 
   async push(branch: string) {
-    return await this.git.push(["-u", "origin", branch]);
+    return await this.git.push(["-u", `origin/${branch}`, branch]);
   }
 
   async getConfig(key: string) {
