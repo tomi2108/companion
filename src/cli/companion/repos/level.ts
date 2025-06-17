@@ -44,6 +44,7 @@ export default {
       const full_path = path.join(p.parentPath, p.name);
       const repo = new AppRepo(full_path);
       await repo.stash(async () => {
+        await repo.update();
         const { switched: switchedT } = await repo.switchBranchIfExists(target_branch);
         if (!switchedT) return;
         await repo.pull();
