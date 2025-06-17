@@ -85,7 +85,8 @@ export class Repo {
   }
 
   async pull(branch: string) {
-    return await this.git.pull(["--set-upstream", `origin/${branch}`, branch]);
+    await this.git.branch(["-u", `origin/${branch}`, branch]);
+    return await this.git.pull("origin", branch);
   }
 
   async push(branch: string) {
