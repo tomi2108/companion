@@ -8,7 +8,7 @@ import pod from "./companion/pod";
 import route from "./companion/route";
 import repos from "./companion/repos";
 import ticket from "./companion/ticket";
-import setup from "./companion/setup";
+import config from "./companion/config";
 import upgrade from "./companion/upgrade";
 import mr from "./companion/mr";
 import { Config } from "../lib/config";
@@ -19,6 +19,7 @@ yargs
   .middleware(async () => {
     await Config.get().load();
   }, true)
+  .command(config)
   .command(env)
   .command(pod)
   .command(route)
@@ -27,7 +28,6 @@ yargs
   .command(mr)
   .command(deploy)
   .command(pipeline)
-  .command(setup)
   .command(upgrade)
   .demandCommand(1, "Please specify a command")
   .strict()

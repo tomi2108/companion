@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
-import { deepMerge, removePrefix, removeSuffix } from "./utils";
+import { deepMerge, openInEditor, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
 import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, VaultConfig } from "./validations";
@@ -51,6 +51,10 @@ class Config {
   }
 
   private constructor() { }
+
+  open() {
+    openInEditor(config_file);
+  }
 
   async setup() {
     // TODO: maybe link the docs in the message on how to obtain tokens ?

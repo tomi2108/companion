@@ -1,10 +1,16 @@
-import { Config } from "../../lib/config";
+import { Argv } from "yargs";
+
+import setup from "./config/setup";
+import edit from "./config/edit";
 
 export default {
-  command: "config",
-  aliases: [],
-  describe: "Interactively setup a config",
-  handler: async () => {
-    await Config.get().setup();
-  }
+  command: "config <command>",
+  describe: "Manage companion local config",
+  aliases: ["cfg"],
+  builder: (yargs: Argv) => yargs
+    .command(edit)
+    .command(setup)
+    .demandCommand(1, "Please specify a command")
+    .help(),
+  handler: () => { }
 };
