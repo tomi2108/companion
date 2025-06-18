@@ -5,6 +5,7 @@ import { Config } from "../../lib/config";
 import { MS_TYPES } from "../../lib/constants";
 import { MergeRequest } from "../glab/merge_request";
 import { git, Gitlab, glab } from "../glab/glab";
+import { loading } from "../../lib/ui";
 
 export class Repo {
   git: SimpleGit;
@@ -64,11 +65,20 @@ export class Repo {
   }
 
   async add(file: string) {
+    const spinner = loading(`Adding file: ${file}`);
     await this.git.add(file);
+    spinner.succeed();
   }
 
   async commit(message: string) {
-    await this.git.commit(message);
+    const spinner = loading(`Commiting with message: ${message}`);
+    const c = await this.git.commit(message);
+    if (!c.commit) {
+      spinner.fail();
+      return null;
+    }
+    spinner.succeed();
+    return c;
   }
 
   async checkout(branch: string) {
@@ -139,16 +149,18 @@ export class Repo {
   }
 
   async createAndMergeMr(targetBranch: string) {
+    const spinner = loading("Building merge request");
     const { id } = await this.getProject();
     const mr = await this.createMr(targetBranch, { projectId: id });
     setTimeout(async () => {
       // =) genius
+      spinner.succeed();
       try {
         await mr.merge();
       } catch {
         await mr.merge();
       }
-    }, 40 * 1000);
+    }, 50 * 1000);
   }
 
   async getMrs() {

@@ -2,6 +2,7 @@ import { MergeRequestSchema } from "@gitbeaker/rest";
 import { openInBrowser } from "../../lib/utils";
 import { glab } from "../glab/glab";
 import { Choice } from "../../lib/constants";
+import { loading } from "../../lib/ui";
 
 export type MergeRequestResponse = MergeRequestSchema;
 
@@ -42,8 +43,10 @@ export class MergeRequest {
   }
 
   async merge() {
-    // TODO: test
-    return await this.glab.MergeRequests.merge(this.project_id, this.iid);
+    const spinner = loading("Merging merge request");
+    const mr = await this.glab.MergeRequests.merge(this.project_id, this.iid, { shouldRemoveSourceBranch: true });
+    spinner.succeed();
+    return mr;
   }
 
   async close() {

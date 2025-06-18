@@ -1,4 +1,4 @@
-import { search, input, confirm } from "../../lib/ui";
+import { search, input, confirm, loading } from "../../lib/ui";
 import log from "../../lib/log";
 import { Env, ENVS } from "../../lib/constants";
 import { promptForApp, promptForOcResource } from "../../interface/prompts";
@@ -16,6 +16,7 @@ export default {
     const { app_repo, deploy_repo } = await promptForApp();
 
     await deploy_repo.stash(async () => {
+      const versionsSpinner = loading("Getting versions");
       await deploy_repo.update();
       await deploy_repo.switchBranchIfExists("master");
       // TODO: temporary until we fix repo.update
@@ -31,12 +32,12 @@ export default {
           };
         });
 
+      versionsSpinner.succeed();
       const selectedEnvs = await search({ message: "Select environment", multiple: true, choices }) as Env[];
       if (selectedEnvs.length === 0) return process.exit(1);
 
       let version = null;
-      const { name } = await deploy_repo.getInfo();
-      const { type } = await deploy_repo.getInfo();
+      const { name, type } = await deploy_repo.getInfo();
 
       if (app_repo) {
         const tags = await app_repo.getTags();
@@ -83,10 +84,18 @@ export default {
         configmaps.forEach((cm) => deploymentFile.setConfigMap(cm.name));
         deploymentFile.setVersion(version);
         deploymentFile.save();
-        await deploy_repo.add(deploymentFile.file_path);
       }
 
-      await deploy_repo.commit(version);
+      for (const env of selectedEnvs) {
+        const deploymentFile = deploy_repo.getDeployment(env);
+        if (!deploymentFile) throw new Error(`Could not find deployment file for env ${env}`);
+        await deploy_repo.add(deploymentFile.file_path);
+      }
+      const c = await deploy_repo.commit(version);
+      if (!c) {
+        log.error("No changes made");
+        return;
+      }
       await deploy_repo.createAndMergeMr("master");
     });
   }

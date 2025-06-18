@@ -1,8 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { Config } from "../lib/config";
-import log from "../lib/log";
-import { search, ArrayPromptOptions } from "../lib/ui";
+import { search, ArrayPromptOptions, loading } from "../lib/ui";
 import { md5FromFile, openInEditor, readdirs } from "../lib/utils";
 import { createDirIfNotExists, getApp } from "./files/files";
 import { Jira } from "./jira/jira";
@@ -17,7 +16,6 @@ export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
   const opts = promptOpts || {};
   const dep_path = Config.get().paths.despliegues;
   if (!dep_path) {
-    log.error("Despliegues path not set");
     process.exit(1);
   }
   const apps = readdirs(dep_path) ?? [];
@@ -29,7 +27,10 @@ export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
   // can maybe improve this, not searching by app_name, but by origin url ?
   // think more about this and making deploy_repo in return type
   // not optional, since we are searching in Config.get().paths.despliegues;
-  return await getApp(app_name) as { app_repo: AppRepo | null; deploy_repo: DeployRepo };
+  const spinner = loading("Getting app");
+  const app = await getApp(app_name) as { app_repo: AppRepo | null; deploy_repo: DeployRepo };
+  spinner.succeed();
+  return app;
 }
 
 export async function promptForOcResource<T extends {

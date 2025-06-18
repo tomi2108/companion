@@ -31,7 +31,7 @@ export async function confirm(opts: Omit<BooleanPromptOptions, "format">) {
   return (res as { selected: boolean }).selected;
 }
 
-export function spinner(startText: string) {
+export function loading(startText: string) {
   const spinner = new Spinner().start(startText);
   const succeed = (text?: string) => spinner.succeed(text);
   const fail = (text?: string) => spinner.failed(text);
