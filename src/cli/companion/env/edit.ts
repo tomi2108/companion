@@ -34,7 +34,7 @@ export default {
         || !y.data
       ) return log.error("Invalid yaml, please sepcify 'data' key");
       const { data } = y;
-      await configmap.save(project.name, data as Record<string, string>);
+      await configmap.save(project.name, data as Record<string, string>, true);
       return log.info("Config map saved succesfully");
     }
 

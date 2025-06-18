@@ -43,23 +43,26 @@ export function loading(startText: string) {
 
 export function progressBar(total?: number, start?: number, prefix?: string) {
   const bar = new cliProgress.SingleBar({
-    format: `${prefix} [{bar}] {percentage}% | {value}/{total}`,
+    format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
     autopadding: true,
     barCompleteChar: "#"
   }, cliProgress.Presets.legacy);
 
-  if (total) bar.start(total, start ?? 0);
-
   const update = (to: number) => bar.update(to);
   const increment = (by: number) => bar.increment(by);
   const stop = () => bar.stop();
+  const setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(12 - prefix.length) });
+  const setSufix = (sufix: string) => bar.increment(0, { sufix });
 
   const setTotal = (to: number) => {
     if (!total && !bar.isActive) bar.start(to, 0);
     bar.setTotal(to);
   };
 
-  return { update, increment, stop, setTotal };
+  if (total) bar.start(total, start ?? 0);
+  setPrefix(prefix ?? "");
+
+  return { update, increment, stop, setTotal, setSufix, setPrefix };
 }
 
 export type ProgressBar = SingleBar & { setPrefix: (s: string) => void; setSufix: (s: string) => void };

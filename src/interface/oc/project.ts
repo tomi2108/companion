@@ -76,7 +76,7 @@ export class Project {
 
   async createConfigMap(name: string, data: Secret["data"]) {
     const configmap = new ConfigMap(name, this.oc);
-    await configmap.save(this.name, data);
+    await configmap.save(this.name, data, false);
     return configmap;
   }
 

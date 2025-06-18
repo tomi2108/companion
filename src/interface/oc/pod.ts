@@ -65,8 +65,46 @@ export class Pod {
     )).data;
   }
 
-  remoteSession() {
-    // TODO: implement (ssh...)
+  async remoteSession() {
+    // const host = Config.get().openshift.server_cuyo;
+    // const wes = new WebSocket(`wss://${host}/api/v1/namespaces/movistar-empresas-dev/pods/app-components-6c4db9597d-jktvc/exec?stdout=1&stdin=1&stderr=1&tty=1&command=sh&command=-i&command=-c&command=TERM%3Dxterm%20sh`, ["base64.binary.k8s.io"], {
+    //   protocolVersion: 13,
+    //   rejectUnauthorized: false,
+    //   headers: { Authorization: this.oc.defaults.headers.Authorization?.toString() }
+    // });
+    //
+    // wes.onmessage = (event) => {
+    //   const message = base64Decode(event.data.toString().trim());
+    //   if (message.trim()) console.log(message);
+    // };
+    // const hostIP = "172.16.13.92";
+    // const podIP = "10.128.2.75";
+    // const whoami = "1001580000";
+    // const hostid = "800a4b02";
+    // const token = await getOcToken();
+    //
+    // const conn = new Client();
+    // conn.on("ready", () => {
+    //   console.log("Client :: ready");
+    //
+    //   conn.shell((err, stream) => {
+    //     if (err) throw err;
+    //     stream.on("close", () => {
+    //       console.log("Stream :: close");
+    //       conn.end();
+    //     }).on("data", (data) => {
+    //       console.log("OUTPUT: " + data);
+    //     });
+    //     stream.end("ls -l\nexit\n");
+    //   });
+    //
+    // }).connect({
+    //   host: hostIP,
+    //   port: 22,
+    //   username: hostid,
+    //   debug: console.log,
+    //   password: Config.get().openshift.password
+    // });
   }
 
   toChoice(): Choice {

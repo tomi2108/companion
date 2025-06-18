@@ -39,7 +39,7 @@ export class ConfigMap extends Resource {
     return this.data;
   }
 
-  async save(namespace: string, data: typeof this.data) {
+  async save(namespace: string, data: typeof this.data, update: boolean) {
     this.namespace = namespace;
     this.setData(data);
     const body = {
@@ -59,7 +59,8 @@ export class ConfigMap extends Resource {
     const keys = Object.keys(body.data);
     if (keys.length !== removeDuplicates(keys).length) throw new Error("Secrets cannot have duplicate keys");
 
-    await this.oc.post(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
+    if (update) await this.oc.patch(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
+    else await this.oc.post(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
   }
 
   async delete() {
