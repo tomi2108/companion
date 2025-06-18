@@ -2,6 +2,7 @@ import { createDirIfNotExists } from "../../../interface/files/files";
 import log from "../../../lib/log";
 import { Config } from "../../../lib/config";
 import { Gitlab } from "../../../interface/glab/glab";
+import { multiProgressBar } from "../../../lib/ui";
 
 export default {
   command: "clone",
@@ -11,24 +12,30 @@ export default {
     const config = Config.get();
 
     const repos = config.gitlab.repos;
-    const entries = Object.entries(repos);
+    const entries = Object.entries(repos) as [keyof typeof repos, typeof repos[keyof typeof repos]][];
 
-    for (const [key, id] of entries as [keyof typeof repos, typeof repos[keyof typeof repos]][]) {
-      const path = config.paths?.[key];
-      if (!id && !path) continue;
+    const multi = multiProgressBar();
 
-      if (!id) {
-        log.warning(`Could not clone repo with path ${path} and key ${key}, an id was not specified in the config`);
-        continue;
-      }
+    await Promise.all(entries.map(
+      async ([key, id]) => {
+        const path = config.paths?.[key];
+        if (!id && !path) return;
+        if (!id) {
+          log.warning(`Could not clone repo with path ${path} and key ${key}, an id was not specified in the config`);
+          return;
+        }
+        if (!path) {
+          log.warning(`Could not clone repo with id ${id} and key ${key}, a path was not specified in the config`);
+          return;
+        }
 
-      if (!path) {
-        log.warning(`Could not clone repo with id ${id} and key ${key}, a path was not specified in the config`);
-        continue;
-      }
-
-      createDirIfNotExists(path);
-      await new Gitlab().cloneGroupOrProject(id, path);
-    }
+        const bar = multi.create(0, 0);
+        bar.setPrefix(key);
+        createDirIfNotExists(path);
+        bar.setTotal(1);
+        await new Gitlab().cloneGroupOrProject(id, path, bar);
+        bar.stop();
+      }));
+    multi.stop();
   }
 };
