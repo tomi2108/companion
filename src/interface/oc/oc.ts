@@ -20,18 +20,16 @@ export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
     redirect_uri: `${authUrl}/oauth/token/implicit`,
     "X-Csrf-Token": 1
   };
-
   try {
     await axios.get(`${authUrl}/oauth/authorize`,
       { maxRedirects: 0, params, headers: { Authorization: `Basic ${encodedString}` } });
     return "";
   } catch (err) {
-    if (axios.isAxiosError(err)) {
+    if (axios.isAxiosError(err) && err.response?.headers.location) {
       return new URLSearchParams(
         new URL(err.response?.headers.location).hash.slice(1)
       ).get("access_token") ?? "";
-    }
-    return "";
+    } else throw err;
   }
 }
 
