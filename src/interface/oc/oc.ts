@@ -29,7 +29,10 @@ export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
       return new URLSearchParams(
         new URL(err.response?.headers.location).hash.slice(1)
       ).get("access_token") ?? "";
-    } else throw err;
+    } else {
+      console.dir(err, { depth: null });
+      throw err;
+    }
   }
 }
 
