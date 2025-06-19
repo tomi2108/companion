@@ -79,7 +79,7 @@ export default {
       writeFileSync(file_to_create, yaml_content);
       await repo.add(file_to_create);
       await repo.commit(`create ${dir_name}`);
-      // await repo.createAndMergeMr("create");
+      await repo.createAndMergeMr("create");
       await repo.switchBranchIfExists("create");
     });
   }
