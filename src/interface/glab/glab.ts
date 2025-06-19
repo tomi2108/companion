@@ -65,6 +65,29 @@ export class Gitlab {
     }
   }
 
+  async createIssue({
+    title,
+    description,
+    assignee,
+    projectId
+  }: {
+    title: string;
+    description: string;
+    assignee: string;
+    projectId: number;
+  }) {
+    // TODO: ID PROJECTO HARDCODEADO, CAMBIAR
+    // const project = await this.glab.Projects.show(projectId);
+    // const options = {
+    //   title,
+    //   description,
+    //   assigneeIds: [assignee]
+    // };
+    // await this.glab.Issues.create(project.id, options);
+    console.log(description, "description", assignee, "assignee", `Issue "${title}" created successfully in project "${projectId}"`);
+
+  }
+
   async getCurrentUser() {
     return (await this.glab.Search.all("users", Config.get().gitlab.username))[0];
   }
