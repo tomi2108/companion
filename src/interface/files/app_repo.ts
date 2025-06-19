@@ -5,6 +5,7 @@ import { Repo } from "./repo";
 export class AppRepo extends Repo {
   version?: string;
   package?: string;
+  description?: string;
 
   constructor(full_path: string) {
     const package_path = path.join(full_path, "package.json");
@@ -14,6 +15,7 @@ export class AppRepo extends Repo {
     super(full_path);
 
     this.version = package_file.version;
+    this.description = package_file.description;
     this.package = package_file.name;
   }
 }

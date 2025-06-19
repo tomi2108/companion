@@ -9,6 +9,7 @@ import route from "./companion/route";
 import repos from "./companion/repos";
 import ticket from "./companion/ticket";
 import config from "./companion/config";
+import app from "./companion/app";
 import upgrade from "./companion/upgrade";
 import mr from "./companion/mr";
 import { Config } from "../lib/config";
@@ -19,6 +20,7 @@ yargs
   .middleware(async () => {
     await Config.get().load();
   }, true)
+  .command(app)
   .command(config)
   .command(env)
   .command(pod)

@@ -1,7 +1,6 @@
 import { AxiosInstance } from "axios";
 import { Resource } from "./resource";
-import { removeDuplicates } from "../../lib/utils";
-import yaml from "js-yaml";
+import { removeDuplicates, toYaml } from "../../lib/utils";
 
 export type ConfigMapResponse = {
   metadata: {
@@ -68,7 +67,7 @@ export class ConfigMap extends Resource {
   }
 
   async toYaml(): Promise<string> {
-    return yaml.dump({
+    return toYaml({
       apiVersion: this.apiVersion,
       data: await this.getData(),
       kind: this.kind,

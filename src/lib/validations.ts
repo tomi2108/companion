@@ -57,6 +57,10 @@ export const VaultConfigSchema = z.object({
   token: z.string()
 });
 
+export const ThreescaleConfigSchema = z.object({
+  products: z.record(z.string(), z.string())
+});
+
 export const ConfigSchema = z.object({
   team: z.string().optional(),
   paths: PathsConfigSchema,
@@ -65,7 +69,8 @@ export const ConfigSchema = z.object({
   dynatrace: DynatraceConfigSchema.optional(),
   openshift: OpenShiftConfigSchema,
   vault: VaultConfigSchema,
-  preferences: PreferencesConfigSchema.optional()
+  preferences: PreferencesConfigSchema.optional(),
+  threescale: ThreescaleConfigSchema.optional()
 });
 
 type UserJiraConfig = z.infer<typeof JiraConfigSchema>;
@@ -73,6 +78,10 @@ type UserGitlabConfig = z.infer<typeof GitlabConfigSchema>;
 type UserOpenShiftConfig = z.infer<typeof OpenShiftConfigSchema>;
 type UserDynatraceConfig = z.infer<typeof DynatraceConfigSchema>;
 type UserVaultConfig = z.infer<typeof VaultConfigSchema>;
+
+export type PreferencesConfig = z.infer<typeof PreferencesConfigSchema>;
+export type PathsConfig = z.infer<typeof PathsConfigSchema>;
+export type ThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
   server: string;
@@ -98,6 +107,3 @@ export type VaultConfig = UserVaultConfig & {
   project: string;
   server: string;
 };
-
-export type PreferencesConfig = z.infer<typeof PreferencesConfigSchema>;
-export type PathsConfig = z.infer<typeof PathsConfigSchema>;

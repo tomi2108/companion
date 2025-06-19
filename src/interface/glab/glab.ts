@@ -27,15 +27,20 @@ export class Gitlab {
     return await this.glab.Groups.allProjects(id);
   }
 
-  async cloneProject(project: ProjectSchema, full_path: string, bar?: ProgressBar) {
+  async cloneProject(
+    project: ProjectSchema,
+    full_path: string,
+    bar?: ProgressBar,
+    current = false
+  ) {
     const name = project.path;
     const clone_url = project.http_url_to_repo;
-    const clone_path = path.join(full_path, name);
+    const clone_path = current ? full_path : path.join(full_path, name);
 
     const { created } = createDirIfNotExists(clone_path);
 
     if (!created && Repo.isGitRepo(clone_path)) await new Repo(clone_path).update();
-    else await Repo.cloneRepo(full_path, clone_url);
+    else await Repo.cloneRepo(full_path, clone_url, current);
 
     bar?.increment(1);
     bar?.setSufix(name);
@@ -56,7 +61,7 @@ export class Gitlab {
     } catch (err) {
       const project = await this.glab.Projects.show(id);
       bar?.setTotal(1);
-      await this.cloneProject(project, full_path, bar);
+      await this.cloneProject(project, full_path, bar, true);
     }
   }
 

@@ -80,6 +80,13 @@
   "dynatrace": {
     "modulo": "MIMOVISTAREMPRESAS"
   },
+  "threescale": {
+    "products": {
+      "movistar-empresas-dev": "api_dev_mimovistarempresas",
+      "movistar-empresas-int": "api_int_mimovistarempresas",
+      "movistar-empresas-cert": "api_cert_mimovistarempresas"
+    }
+  },
   "jira": {
     "project_key": "ECR",
     "board_id": 36,

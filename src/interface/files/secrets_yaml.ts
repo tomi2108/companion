@@ -1,5 +1,6 @@
 import fs, { Dirent } from "node:fs";
 import yaml from "js-yaml";
+import { toYaml } from "../../lib/utils";
 
 export class SecretsYaml {
   file_path: string;
@@ -25,7 +26,7 @@ export class SecretsYaml {
   }
 
   toString() {
-    return yaml.dump({ "externalSecret": this.content });
+    return toYaml({ "externalSecret": this.content });
   }
 
   save() {

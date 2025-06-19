@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import fs, { cpSync, rmSync } from "node:fs";
 import path from "node:path";
 import { ResetMode, SimpleGit } from "simple-git";
 import { Config } from "../../lib/config";
@@ -16,14 +16,19 @@ export class Repo {
     return full_path && fs.existsSync(path.join(full_path, ".git"));
   }
 
-  static async cloneRepo(full_path: string, link: string) {
+  static async cloneRepo(full_path: string, link: string, current?: boolean) {
     await git(full_path).clone(link);
 
     const url = new URL(link);
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
+    const repo_path = path.join(full_path, name);
+    if (current) {
+      cpSync(repo_path, full_path, { recursive: true });
+      rmSync(repo_path, { recursive: true });
+    }
 
-    const repo = new Repo(path.join(full_path, name));
+    const repo = new Repo(current ? full_path : repo_path);
     repo.update();
     return repo;
   }

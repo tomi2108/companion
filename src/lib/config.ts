@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { deepMerge, openInEditor, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
-import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, VaultConfig } from "./validations";
+import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ThreeScaleConfig, VaultConfig } from "./validations";
 
 const config_file = path.resolve(__dirname, "../../config.json");
 
@@ -42,6 +42,7 @@ class Config {
     server: "https://vault.agil.movistar.com.ar"
   } as VaultConfig;
 
+  threescale: ThreeScaleConfig = {} as ThreeScaleConfig;
   paths: PathsConfig = {} as PathsConfig;
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
 
@@ -115,7 +116,7 @@ class Config {
     }
 
     const readConfig = ConfigSchema.parse(JSON.parse(file_content));
-    (["jira", "gitlab", "openshift", "vault", "dynatrace", "paths", "preferences"] as const).forEach((key) => {
+    (["jira", "gitlab", "openshift", "vault", "dynatrace", "paths", "preferences", "threescale"] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
         this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);
       }

@@ -1,9 +1,8 @@
 import { AxiosInstance } from "axios";
 import { Resource } from "./resource";
-import { removeDuplicates } from "../../lib/utils";
+import { removeDuplicates, toYaml } from "../../lib/utils";
 import { Config } from "../../lib/config";
 import { vault } from "../vault/vault";
-import yaml from "js-yaml";
 
 export class Secret extends Resource {
   kind = "Secret" as const;
@@ -42,7 +41,7 @@ export class Secret extends Resource {
   }
 
   async toYaml(): Promise<string> {
-    return yaml.dump({
+    return toYaml({
       data: await this.getData(),
       kind: this.kind,
       metadata: {

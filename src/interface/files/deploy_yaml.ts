@@ -4,6 +4,7 @@ import yaml from "js-yaml";
 import { Env, ENVS, MsType } from "../../lib/constants";
 import { getDeploymentOption } from "./files";
 import { Config } from "../../lib/config";
+import { toYaml } from "../../lib/utils";
 
 export class DeployYaml {
   file_path: string;
@@ -65,7 +66,7 @@ export class DeployYaml {
   }
 
   toString() {
-    return yaml.dump({ "helm-chart-master": this.content });
+    return toYaml({ "helm-chart-master": this.content });
   }
 
   save() {

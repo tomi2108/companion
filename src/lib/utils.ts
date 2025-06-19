@@ -4,6 +4,7 @@ import { Config } from "./config";
 import openEditor from "open-editor";
 import { cwd } from "node:process";
 import open from "open";
+import yaml from "js-yaml";
 
 // do not bother with typing this will probably be removed...
 export function deepMerge(obj1: any, obj2: any) {
@@ -80,4 +81,8 @@ export function removeDuplicates<T>(arr: T[]) {
 
 export function parseKeyVal(str: string) {
   return Object.fromEntries(str.trim().split("\n").filter(Boolean).map((l) => l.split("=").filter(Boolean)).filter(Boolean));
+}
+
+export function toYaml(obj: object) {
+  return yaml.dump(obj, {});
 }
