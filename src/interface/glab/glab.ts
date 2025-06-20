@@ -56,9 +56,15 @@ export class Gitlab {
       bar?.setTotal(projects.length);
       for (let index = 0; index < projects.length; index += 10) {
         const toClone = projects.slice(index, index + 10);
-        await Promise.all(toClone.map((p) => this.cloneProject(p, full_path, bar)));
+        await Promise.all(toClone.map(async (p) => await this.cloneProject(p, full_path, bar)));
       }
     } catch (err) {
+      if (
+        !err || typeof err !== "object"
+        || !("cause" in err) || !err.cause || typeof err.cause !== "object"
+        || !("response" in err.cause) || !err.cause.response || typeof err.cause.response !== "object"
+        || !("status" in err.cause.response) || err.cause.response.status !== 404
+      ) throw err;
       const project = await this.glab.Projects.show(id);
       bar?.setTotal(1);
       await this.cloneProject(project, full_path, bar, true);

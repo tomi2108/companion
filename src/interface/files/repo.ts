@@ -29,7 +29,7 @@ export class Repo {
     }
 
     const repo = new Repo(current ? full_path : repo_path);
-    repo.update();
+    await repo.update();
     return repo;
   }
 
@@ -101,7 +101,7 @@ export class Repo {
 
   async pull(branch: string) {
     await this.git.branch(["-u", `origin/${branch}`, branch]);
-    return await this.git.pull("origin", branch);
+    return await this.git.pull("origin", branch, ["--ff-only", "--no-rebase"]);
   }
 
   async push(branch: string) {
@@ -186,21 +186,21 @@ export class Repo {
   }
 
   async update() {
-    await this.stash(async () => {
-      const original_branch = await this.getActiveBranch();
-      const remotes = (await this.git.branch(["-r"])).all;
+    // TODO: test
+    await this.git.fetch(["--all", "--prune"]);
+    const remotes = (await this.git.branch(["-r"])).all;
+    for (const r of remotes) {
+      const commits = await this.git.log(["--since=\"2 weeks ago\"", r]);
+      if (commits.all.length === 0) continue;
 
-      // TODO: update remote branches && local copies
-      await this.git.fetch(["--all"]);
-      for (const r of remotes) {
-        const local = r.slice("origin/".length);
-        await this.git.branch(["--track", local, r]).catch(() => { });
-        // const { switched } = await this.switchBranchIfExists(local);
-        // if (switched) await this.git.pull();
-      }
-
+      const local = r.slice("origin/".length);
+      await this.git.branch(["--track", local, r]).catch(() => { });
+      const { original_branch } = await this.switchBranchIfExists(local);
+      await this.stash(async () => {
+        await this.pull(local);
+      });
       await this.switchBranchIfExists(original_branch);
-    });
+    }
   }
 
   async getInfo() {
