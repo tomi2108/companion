@@ -2,7 +2,7 @@ import { Config } from "../../lib/config";
 import { Choice } from "../../lib/constants";
 import { openInBrowser } from "../../lib/utils";
 import { executeScript } from "../cmd";
-import { jira } from "./jira";
+import { Jira, jira } from "./jira";
 
 export type IssueResponse = {
   id: string;
@@ -77,34 +77,49 @@ export class Issue {
     openInBrowser(`https://${Config.get().jira.server}/browse/${this.key}`);
   }
 
-  link(issue: Issue) {
-    return executeScript("jira/link", {
-      args: [this.key, issue.key]
+  async link(issue: Issue, linkType: any) {
+    // TODO: test
+    return await this.jira.issueLink({
+      inwardIssue: { id: this.id },
+      outWardIssue: { id: issue.id },
+      type: linkType
     });
   }
 
-  unlink(issue: Issue) {
-    return executeScript("jira/unlink", {
-      args: [this.key, issue.key]
+  async unlink(issue: Issue) {
+    // TODO: implement
+  }
+
+  async logWork(work: string) {
+    // TODO: test maybe make 'work' a :number in hours ?
+    return await this.jira.addWorklog(this.id, { timeSpent: work });
+  }
+
+  async createChild(labels?: string[]) {
+    // TODO: probably recieve more fields for title, description etc
+    // should ideally return the created issue wrapped in a new Issue()
+    // maybe with Issue.fromIssueResponse()
+    return await this.jira.addNewIssue({
     });
   }
 
-  createChild(labels?: string[]) {
-    return executeScript("jira/create", {
-      args: [this.key, ...Issue.formatLabels(labels ?? [])]
-    });
+  async addToCurrentSprint() {
+    // TODO: test
+    const sprint = await new Jira().getCurrentSprint();
+    if (!sprint) throw new Error("There is no active sprint");
+    return await this.jira.addIssueToSprint(this.id, sprint.id);
   }
 
-  assign(user: string) {
-    return executeScript("jira/assign", {
-      args: [this.key, user]
-    });
+  async assign(user: string) {
+    // TODO: test
+    return await this.jira.updateAssignee(this.key, user);
   }
 
-  estimate(estimacion: string) {
-    return executeScript("jira/estimate", {
-      args: [this.key, estimacion]
-    });
+  async estimate(estimacion: string) {
+    // TODO: test
+    const board_id = Config.get().jira.board_id;
+    if (!board_id) throw new Error("Board id not set");
+    return await this.jira.estimateIssueForBoard(this.id, board_id, estimacion);
   }
 
   toChoice(): Choice {

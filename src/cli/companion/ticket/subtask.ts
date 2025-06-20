@@ -4,14 +4,12 @@ import { Config } from "../../../lib/config";
 import { Jira } from "../../../interface/jira/jira";
 
 export default {
-  command: "create",
-  describe: "Create jira ticket",
+  command: "subtask",
+  aliases: ["sub"],
+  describe: "Create jira subtask",
   handler: async () => {
     const labels = Config.get().jira.labels;
-    const parent_issue = await promptForJiraIssue(
-      { message: "Select parent ticket" },
-      { type: "Feature", labels: [] }
-    );
+    const parent_issue = await promptForJiraIssue({ message: "Select parent ticket" });
 
     parent_issue.createChild(labels);
 

@@ -50,7 +50,7 @@ export async function promptForOcResource<T extends {
 
 export async function promptForJiraIssue<T>(
   promptOpts?: PromptOptions<T>,
-  issueOpts?: { type: string; labels: string[] }
+  issueOpts?: { type?: string; labels?: string[] }
 ) {
   const pOpts = promptOpts || {};
   const iOpts = issueOpts || {};

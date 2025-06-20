@@ -49,7 +49,7 @@ export class Jira {
   }
 
   async getIssues({ labels, type, status }: { labels?: string[]; type?: string; status?: string[] }) {
-    const board = await this.getBoard();
+    const board_id = String(Config.get().jira.board_id);
     const query = [
       type && `issuetype=${type}`,
       labels && labels.length > 0 && `labels in (${labels.map((l) => `'${l}'`).join(",")})`,
@@ -57,7 +57,7 @@ export class Jira {
     ].filter(Boolean).join(" AND ");
 
     const res = await this.jira.getIssuesForBoard(
-      board.id,
+      board_id,
       0,
       100,
       query,
@@ -67,6 +67,19 @@ export class Jira {
 
     const issues = res.issues as IssueResponse[];
     return issues.map(Issue.fromIssueResponse);
+  }
+
+  async getIssueLinkTypes() {
+    return (await this.jira.listIssueLinkTypes()).issueLinkTypes as { name: string; inward: string }[];
+  }
+
+  async getIssueTypes() {
+    return await this.jira.listIssueTypes();
+  }
+
+  async getCurrentSprint() {
+    const board_id = String(Config.get().jira.board_id);
+    return (await this.jira.getAllSprints(board_id, 0, 1, "active")).values?.[0] ?? null;
   }
 }
 

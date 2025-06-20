@@ -10,6 +10,8 @@ import move from "./ticket/move";
 import open from "./ticket/open";
 import unlink from "./ticket/unlink";
 import view from "./ticket/view";
+import worklog from "./ticket/worklog";
+import subtask from "./ticket/subtask";
 
 export default {
   command: "ticket <command>",
@@ -25,8 +27,10 @@ export default {
     .command(link)
     .command(move)
     .command(open)
+    .command(subtask)
     .command(unlink)
     .command(view)
+    .command(worklog)
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }
