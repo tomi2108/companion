@@ -1,4 +1,3 @@
-import { executeScript, clearConsole } from "../cmd";
 import { EXCLUDED_SECRETS } from "../../lib/constants";
 import { Config } from "../../lib/config";
 import axios, { AxiosInstance } from "axios";
@@ -63,11 +62,6 @@ export class Openshift {
       .data;
     return Project.fromProjectResponse(res, this.oc);
   }
-}
-
-export function remoteSession(pod: string) {
-  clearConsole();
-  return executeScript("oc/remote_session", { args: [pod] });
 }
 
 export const filterExcludedSecrets = (s: Secret) => !EXCLUDED_SECRETS.includes(s.name);

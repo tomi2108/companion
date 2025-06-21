@@ -1,7 +1,6 @@
 import { Config } from "../../lib/config";
 import { Choice } from "../../lib/constants";
 import { openInBrowser } from "../../lib/utils";
-import { executeScript } from "../cmd";
 import { Jira, jira } from "./jira";
 
 export type IssueResponse = {
@@ -68,9 +67,7 @@ export class Issue {
   }
 
   view() {
-    return executeScript("jira/view", {
-      args: [this.key]
-    });
+    // TODO: implement
   }
 
   openInBrowser() {
