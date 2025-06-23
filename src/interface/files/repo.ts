@@ -174,6 +174,16 @@ export class Repo {
       .map(MergeRequest.fromMergeRequestResponse);
   }
 
+  async createIssue({ title, description }: {
+    title: string;
+    description: string;
+  }) {
+    const project = await this.getProject();
+    const assigneeId = (await new Gitlab().getCurrentUser()).id;
+    const options = { description, assigneeId };
+    await this.glab.Issues.create(project.id, title, options);
+  }
+
   async getProject() {
     const { name, pathname } = await this.getInfo();
     // TODO: should probably find a better way

@@ -1,6 +1,7 @@
 import { Spinner } from "@topcli/spinner";
 import { prompt } from "enquirer";
 import cliProgress, { SingleBar } from "cli-progress";
+import { Choice } from "./constants";
 
 type ExtractFromPrompt<T> = Omit<Extract<Parameters<typeof prompt>[0], { type: T }>, "type" | "name">;
 
@@ -84,4 +85,46 @@ export function multiProgressBar() {
   const stop = () => multi.stop();
 
   return { create, stop };
+}
+
+type SubMenusOptions = {
+  choices: (Choice & { children: Choice[] })[];
+  message?: string;
+};
+
+export async function submenus(opts: SubMenusOptions) {
+  let category: string | null = null;
+  let app: string | null = null;
+
+  while (!app) {
+    if (!category) {
+      category = ((await prompt(
+        {
+          type: "select",
+          name: "selected",
+          message: opts.message ?? "",
+          choices: opts.choices
+        }
+      )) as { selected: string }).selected;
+    } else {
+      const selectedCategory = opts.choices.find((choice) => choice.name === category) as SubMenusOptions["choices"][number];
+
+      const res = ((await prompt(
+        {
+          type: "select",
+          name: "selected",
+          message: `Select from ${category}`,
+          choices: [
+            ...selectedCategory.children,
+            { name: "Back" }
+          ]
+        }
+      )) as { selected: string }).selected;
+
+      if (res === "Back") category = null;
+      else app = res;
+    }
+  }
+
+  return app;
 }
