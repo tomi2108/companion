@@ -1,136 +1,64 @@
-// import { getApp } from "../../../interface/files/files";
-import inquirer from "inquirer";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
+import path from "node:path";
 import { readdirs } from "../../../lib/utils";
-import { input, search } from "../../../lib/ui";
-import { Gitlab } from "../../../interface/glab/glab";
+import { input, loading, search } from "../../../lib/ui";
+import { getOcToken, Openshift } from "../../../interface/oc/oc";
+import { promptForOcResource } from "../../../interface/prompts";
+import { Repo } from "../../../interface/files/repo";
+import { AppRepo } from "../../../interface/files/app_repo";
+import { Dirent } from "node:fs";
 
 export default {
   command: "create",
-  aliases: "c",
+  aliases: ["c"],
   describe: "Create GitLab issues for app deployment",
   handler: async () => {
     const argocd_path = Config.get().paths.argocd;
     const ms_repos_path = Config.get().paths.backend;
     const mf_repos_path = Config.get().paths.frontend;
-    const glab_user = Config.get().gitlab.username;
 
-    if (!argocd_path || !ms_repos_path || !mf_repos_path || !glab_user) {
-      log.error("Required paths or GitLab user not set in configuration");
-      process.exit(1);
-    }
+    if (!argocd_path) log.error("Argocd path not set in configuration");
+    if (!ms_repos_path) log.error("Backend path not set in configuration");
+    if (!mf_repos_path) log.error("Frontend path not set in configuration");
+    if (!argocd_path || !ms_repos_path || !mf_repos_path) process.exit(1);
 
-    const appsFronts = readdirs(mf_repos_path)?.map((dir) => dir.name) ?? [];
-    const microservices = readdirs(ms_repos_path)?.map((dir) => dir.name) ?? [];
-
-    const choices = [
-      {
-        name: "Apps Fronts",
-        value: "fronts",
-        children: appsFronts
-      },
-      {
-        name: "Microservices",
-        value: "microservices",
-        children: microservices
-      }
+    const apps = [
+      ...readdirs(mf_repos_path) ?? [],
+      ...readdirs(ms_repos_path) ?? []
     ];
-    let category: string | null = null;
-    let app: string | null = null;
+    const choices = apps.map((dir) => ({ name: dir.name }));
+    const app = await search({ choices, message: "Select a category" });
+    const dirent = apps.find((a) => a.name === app) as Dirent<string>;
+    const app_repo = new AppRepo(path.join(dirent?.parentPath, dirent?.name));
 
-    while (!app) {
-      if (!category) {
-        const categoryResponse = await inquirer.prompt([
-          {
-            type: "list",
-            name: "category",
-            message: "Select a category",
-            choices: [
-              ...choices.map((choice) => ({
-                name: choice.name,
-                value: choice.value
-              })),
-              { name: "Exit", value: "exit" }
-            ]
-          }
-        ]);
+    const token = await getOcToken();
+    const projects = await new Openshift(token).getProjects();
+    const project = await promptForOcResource(projects);
 
-        if (categoryResponse.category === "exit") {
-          log.info("Exiting...");
-          process.exit(0);
-        }
-
-        category = categoryResponse.category;
-      } else {
-        const selectedCategory = choices.find((choice) => choice.value === category);
-
-        if (!selectedCategory) {
-          log.error("Invalid category selected");
-          process.exit(1);
-        }
-
-        const appResponse = await inquirer.prompt([
-          {
-            type: "list",
-            name: "app",
-            message: `Select an app from ${selectedCategory.name}`,
-            choices: [
-              ...selectedCategory.children.map((child) => ({
-                name: child,
-                value: child
-              })),
-              { name: "Back", value: "back" }
-            ]
-          }
-        ]);
-
-        if (appResponse.app === "back") {
-          category = null; // Regresar al paso anterior
-        } else {
-          app = appResponse.app;
-        }
-      }
-    }
-    const envs = ["dev", "int", "cert", "prod"];
-    const env = await search({
-      choices: envs,
-      message: "Pick environment"
-    });
-
-    if (!env) {
-      log.error("No environment selected");
-      process.exit(1);
+    let version: string | null = null;
+    if (app_repo) {
+      const versions = loading("Getting versions");
+      const tags = await app_repo.getTags();
+      versions.succeed();
+      version = await search({ choices: tags, message: "Choose a version to create:" });
+    } else {
+      log.warning(`Tags for repository ${name} not found`);
+      version = await input({ message: "Enter version to create, starting with a 'v':" });
     }
 
-    const version = await input({
-      message: "Enter version:"
-    });
+    const title = `${app}-${project.name}`;
+    const description = `platform:openshift
+        project:${Config.get().openshift.project}
+        namespace:${project.name}
+        deployment:${app}
+        version:${version}`;
 
-    if (!version) {
-      log.error("No version entered");
-      process.exit(1);
-    }
-
-    const namespace = env === "prod" ? "movistar-empresas" : `movistar-empresas-${env}`;
-    const title = `${app}-${env}`;
-    const description = `
-        platform: openshift
-        project: empresas
-        namespace: ${namespace}
-        deployment: ${app}
-        version: ${version}
-        `;
-
-    const gitlab = new Gitlab();
-
-    await gitlab.createIssue({
+    const spinner = loading(`Creating issues for: ${app}`);
+    await new Repo(argocd_path).createIssue({
       title,
-      description,
-      assignee: glab_user,
-      projectId: 6986
+      description
     });
-    console.log(`Creating issues for app: ${app}`);
-    // const { app_repo } = await getApp(deployment.name);
+    spinner.succeed();
   }
 };
