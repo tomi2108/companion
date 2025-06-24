@@ -23,6 +23,8 @@ export class Repo {
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
     const repo_path = path.join(full_path, name);
+    // TODO: would be cool to clone directly in full_path similar to "git clone {{url}} ."
+    // copying and deleting seems wrong
     if (current) {
       cpSync(repo_path, full_path, { recursive: true });
       rmSync(repo_path, { recursive: true });

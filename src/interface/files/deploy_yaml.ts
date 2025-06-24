@@ -33,7 +33,9 @@ export class DeployYaml {
   async prepareDeploy(type: MsType) {
     if (!this.env) throw new Error(`Could not determine env for ${this.file_path}`);
 
+    // TODO: declare Config.openshift.deployments.secrets as a string[] and add all that appear there
     if (type !== "app") this.setSecret("elasticsearch");
+
     if (!this.content.dynatrace) this.content.dynatrace = {};
     this.content.dynatrace.modulo = Config.get().dynatrace?.modulo ?? this.content.dynatrace.modulo ?? "NO_INFORMADO";
     this.content.dynatrace.tipo = type === "app" ? "MICROFRONTEND" : type.toUpperCase();

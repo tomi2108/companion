@@ -13,6 +13,9 @@ export default {
     const activeBranch = await repo.getActiveBranch();
     const targetBranches = branches.filter((b) => b !== activeBranch);
     const targetBranch = await search({ choices: targetBranches, message: "Choose target branch" });
+    // TODO: prompt for adding a reviewer, add Config.gitlab.default_reviewer
+    // TODO: remove "Build" command, instead have only the "create" command and
+    // prompt if the user wants to also merge the mr
     await repo.createAndMergeMr(targetBranch);
   }
 };
