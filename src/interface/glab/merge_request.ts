@@ -54,7 +54,7 @@ export class MergeRequest {
   }
 
   async approve() {
-    // TODO: test
+    // TODO: fix this
     return await this.glab.MergeRequests.accept(this.project_id, this.iid);
   }
 

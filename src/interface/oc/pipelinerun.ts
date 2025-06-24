@@ -12,8 +12,14 @@ export type PipelineRunResponse = {
       type: string;
       reason: string;
     }[];
-    childReferences: { name: string }[];
+    childReferences: TaskRun[];
   };
+};
+
+type TaskRun = {
+  kind: "TaskRun";
+  name: string;
+  pipelineTaskName: string;
 };
 
 export class PipelineRun {
@@ -21,7 +27,7 @@ export class PipelineRun {
   namespace?: string;
   reason?: string;
   status?: string;
-  taskruns?: string[];
+  taskruns?: TaskRun[];
 
   private oc: AxiosInstance;
 
@@ -30,7 +36,7 @@ export class PipelineRun {
     p.status = run.status.conditions[0].type;
     p.reason = run.status.conditions[0].reason;
     p.namespace = run.metadata.namespace;
-    p.taskruns = run.status.childReferences.map((t) => t.name);
+    p.taskruns = run.status.childReferences;
     return p;
   }
 
@@ -42,16 +48,15 @@ export class PipelineRun {
   async followLogs() {
     return await Promise.all(
       this.taskruns?.map(async (tr) => {
-        const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr}`);
+        const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr.name}`);
         const podName = data.status.podName;
         const pod = new Pod(podName, this.oc);
         pod.namespace = this.namespace;
-        const name = data.status.taskSpec.steps[0].name;
-        pod.followLogs({ raw: true, prefix: name });
+        pod.followLogs({ raw: true, prefix: tr.pipelineTaskName });
       }) ?? []);
   }
 
   toChoice(): Choice {
-    return { name: this.name, hint: `[${this.status ?? "Unknown status"}] (${this.reason ?? "Unknown reason"})` };
+    return { name: this.name, hint: `(${this.reason ?? "Unknown reason"})` };
   }
 }
