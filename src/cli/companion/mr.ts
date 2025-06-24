@@ -1,6 +1,5 @@
 import { Argv } from "yargs";
 import create from "./mr/create";
-import build from "./mr/build";
 import merge from "./mr/merge";
 import checkout from "./mr/checkout";
 import diff from "./mr/diff";
@@ -14,7 +13,6 @@ export default {
   aliases: [],
   builder: (yargs: Argv) => yargs
     .command(approve)
-    .command(build)
     .command(checkout)
     .command(close)
     .command(create)

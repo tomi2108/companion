@@ -69,6 +69,7 @@
     }
   },
   "gitlab": {
+    "default_reviewer": "tosanche",
     "repos": {
       "backend": 6058,
       "frontend": 6057,

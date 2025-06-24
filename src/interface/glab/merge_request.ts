@@ -31,7 +31,6 @@ export class MergeRequest {
   }
 
   static descriptionFromCommits(commits: readonly { message: string }[]) {
-    // TODO: test
     return commits.map((c) => `- ${c.message}`).join("\n\n");
   }
 

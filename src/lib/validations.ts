@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { ENVS, MS_TYPES } from "./constants";
+import { MS_TYPES } from "./constants";
 
 export const PathsConfigSchema = z.object({
   despliegues: z.string().optional(),
@@ -13,19 +13,18 @@ export const PathsConfigSchema = z.object({
 export const OpenShiftConfigSchema = z.object({
   default_ms_type: z.enum(MS_TYPES).optional(),
   deployments: z.record(
-    z.enum(MS_TYPES), z.record(z.enum(ENVS), z.object().optional()).optional()
+    z.enum(MS_TYPES), z.record(z.string(), z.object().optional()).optional()
     //                            TODO: type this ^^ yaml content
   ).or(
     z.record(
-      z.enum(ENVS), z.record(z.enum(MS_TYPES), z.object().optional()).optional()
+      z.string(), z.record(z.enum(MS_TYPES), z.object().optional()).optional()
       //                            TODO: type this ^^ yaml content
     )
-  )
-    .and(
-      z.object({
-        exclude: z.array(z.string()).optional()
-      })
-    ).optional(),
+  ).and(
+    z.object({
+      exclude: z.array(z.string()).optional()
+    })
+  ).optional(),
   username: z.string(),
   password: z.string()
 });
@@ -42,7 +41,8 @@ export const DynatraceConfigSchema = z.object({
 
 export const GitlabConfigSchema = z.object({
   token: z.string(),
-  username: z.string()
+  username: z.string(),
+  default_reviewer: z.string().optional()
 });
 
 export const JiraConfigSchema = z.object({

@@ -1,5 +1,6 @@
 import { Repo } from "../../../interface/files/repo";
-import { search } from "../../../lib/ui";
+import { Config } from "../../../lib/config";
+import { search, confirm, loading } from "../../../lib/ui";
 import { getCurrentPath } from "../../../lib/utils";
 
 export default {
@@ -13,9 +14,18 @@ export default {
     const activeBranch = await repo.getActiveBranch();
     const targetBranches = branches.filter((b) => b !== activeBranch);
     const targetBranch = await search({ choices: targetBranches, message: "Choose target branch" });
-    // TODO: prompt for adding a reviewer, add Config.gitlab.default_reviewer
-    // TODO: remove "Build" command, instead have only the "create" command and
-    // prompt if the user wants to also merge the mr
+    const default_reviewer = Config.get().gitlab.default_reviewer;
+    const add_reviewer = await confirm({ initial: false, message: `Add default reviewer? (${default_reviewer})` });
+    const merge = await confirm({ message: "Merge?" });
+    // TODO: add reviewer
+    if (!merge) {
+      const spinner = loading("Building merge request");
+      const mr = await repo.createMr(targetBranch);
+      spinner.succeed();
+      const open = await confirm({ message: `Open ${mr.title} in browser?` });
+      if (open) mr.openInBrowser();
+    }
+
     await repo.createAndMergeMr(targetBranch);
   }
 };
