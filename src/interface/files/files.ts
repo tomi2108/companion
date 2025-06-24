@@ -4,7 +4,7 @@ import { readdirs } from "../../lib/utils";
 import { Repo } from "./repo";
 import { DeployRepo } from "./deploy_repo";
 import { AppRepo } from "./app_repo";
-import { Env, MsType } from "../../lib/constants";
+import { MsType } from "../../lib/constants";
 import { Config } from "../../lib/config";
 
 function getAppPaths() {
@@ -71,20 +71,21 @@ export function internalEnvs(full_path: string) {
   fs.writeFileSync(full_path, replaced);
 }
 
-export function getDeploymentOption(path: string, type: MsType, env: Env, y: any) {
+export function getDeploymentOption(path: string, type: MsType, namespace: string, y: any) {
+  // TODO:                                                                   type this ^^
   const keys = path.split(".");
   const deployments = Config.get().openshift?.deployments as any;
 
-  const env_type_value = accessObj(deployments?.[env]?.[type], keys);
+  const env_type_value = accessObj(deployments?.[namespace]?.[type], keys);
   if (env_type_value !== null && env_type_value !== undefined) return env_type_value;
 
-  const type_env_value = accessObj(deployments?.[type]?.[env], keys);
+  const type_env_value = accessObj(deployments?.[type]?.[namespace], keys);
   if (type_env_value !== null && type_env_value !== undefined) return type_env_value;
 
   const type_value = accessObj(deployments?.[type], keys);
   if (type_value !== null && type_value !== undefined) return type_value;
 
-  const env_value = accessObj(deployments?.[env], keys);
+  const env_value = accessObj(deployments?.[namespace], keys);
   if (env_value !== null && env_value !== undefined) return env_value;
 
   const deployment_value = accessObj(deployments, keys);

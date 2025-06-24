@@ -1,14 +1,14 @@
 import fs, { Dirent } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
-import { Env, ENVS, MsType } from "../../lib/constants";
+import { ENVS, MsType } from "../../lib/constants";
 import { getDeploymentOption } from "./files";
 import { Config } from "../../lib/config";
 import { toYaml } from "../../lib/utils";
 
 export class DeployYaml {
   file_path: string;
-  env?: Env;
+  namespace: string;
   // TODO: type content
   content: any;
 
@@ -27,14 +27,13 @@ export class DeployYaml {
 
     this.content = yaml_content;
     this.file_path = file_path;
-    this.env = ENVS.find((e) => path.basename(file_path).includes(e));
+    this.namespace = this.getNamespace();
   }
 
   async prepareDeploy(type: MsType) {
-    if (!this.env) throw new Error(`Could not determine env for ${this.file_path}`);
-
-    // TODO: declare Config.openshift.deployments.secrets as a string[] and add all that appear there
-    if (type !== "app") this.setSecret("elasticsearch");
+    const secrets_to_add = getDeploymentOption("secrets", type, this.namespace, this.content) ?? [];
+    // TODO: remove casting
+    (secrets_to_add as string[]).forEach(this.setSecret);
 
     if (!this.content.dynatrace) this.content.dynatrace = {};
     this.content.dynatrace.modulo = Config.get().dynatrace?.modulo ?? this.content.dynatrace.modulo ?? "NO_INFORMADO";
@@ -44,26 +43,26 @@ export class DeployYaml {
     this.content.dynatrace.masivo_critico = "NO";
     this.content.dynatrace.issue_jira = "NO_INFORMADO";
 
-    this.content.route.enabled = getDeploymentOption("route.enabled", type, this.env, this.content);
+    this.content.route.enabled = getDeploymentOption("route.enabled", type, this.namespace, this.content);
 
-    this.content.resources.limits.cpu = getDeploymentOption("resources.limits.cpu", type, this.env, this.content);
-    this.content.resources.limits.memory = getDeploymentOption("resources.limits.memory", type, this.env, this.content);
+    this.content.resources.limits.cpu = getDeploymentOption("resources.limits.cpu", type, this.namespace, this.content);
+    this.content.resources.limits.memory = getDeploymentOption("resources.limits.memory", type, this.namespace, this.content);
 
-    this.content.resources.requests.cpu = getDeploymentOption("resources.requests.cpu", type, this.env, this.content);
-    this.content.resources.requests.memory = getDeploymentOption("resources.requests.memory", type, this.env, this.content);
+    this.content.resources.requests.cpu = getDeploymentOption("resources.requests.cpu", type, this.namespace, this.content);
+    this.content.resources.requests.memory = getDeploymentOption("resources.requests.memory", type, this.namespace, this.content);
 
-    this.content.autoscaling.enabled = getDeploymentOption("autoscaling.enabled", type, this.env, this.content);
-    this.content.autoscaling.minReplicas = getDeploymentOption("autoscaling.minReplicas", type, this.env, this.content);
-    this.content.autoscaling.maxReplicas = getDeploymentOption("autoscaling.maxReplicas", type, this.env, this.content);
+    this.content.autoscaling.enabled = getDeploymentOption("autoscaling.enabled", type, this.namespace, this.content);
+    this.content.autoscaling.minReplicas = getDeploymentOption("autoscaling.minReplicas", type, this.namespace, this.content);
+    this.content.autoscaling.maxReplicas = getDeploymentOption("autoscaling.maxReplicas", type, this.namespace, this.content);
 
-    this.content.readinessProbe.enabled = getDeploymentOption("readinessProbe.enabled", type, this.env, this.content);
+    this.content.readinessProbe.enabled = getDeploymentOption("readinessProbe.enabled", type, this.namespace, this.content);
 
-    this.content.configmapENV.ELK_LOGS = getDeploymentOption("configmapENV.ELK_LOGS", type, this.env, this.content);
-    this.content.configmapENV.ELK_LOGS_DEBUG = getDeploymentOption("configmapENV.ELK_LOGS_DEBUG", type, this.env, this.content);
-    this.content.configmapENV.STDOUT_LOGS = getDeploymentOption("configmapENV.STDOUT_LOGS", type, this.env, this.content);
+    this.content.configmapENV.ELK_LOGS = getDeploymentOption("configmapENV.ELK_LOGS", type, this.namespace, this.content);
+    this.content.configmapENV.ELK_LOGS_DEBUG = getDeploymentOption("configmapENV.ELK_LOGS_DEBUG", type, this.namespace, this.content);
+    this.content.configmapENV.STDOUT_LOGS = getDeploymentOption("configmapENV.STDOUT_LOGS", type, this.namespace, this.content);
 
     this.content.labels.lproduct = Config.get().openshift.product ?? this.content.labels.lproduct;
-    this.content.labels.lenvironment = this.env;
+    this.content.labels.lenvironment = this.getEnv();
     return this.content;
   }
 
@@ -74,10 +73,6 @@ export class DeployYaml {
   save() {
     const string = this.toString();
     fs.writeFileSync(this.file_path, string);
-  }
-
-  isEnv(env: Env) {
-    return this.env === env;
   }
 
   setVersion(version: string) {
@@ -106,6 +101,9 @@ export class DeployYaml {
     return path.basename(this.file_path, ".yaml").replaceAll("values-", "");
   }
 
+  getEnv() {
+    return ENVS.find((e) => path.basename(this.file_path).includes(e));
+  }
 }
 
 export class InvalidDeployYaml extends Error {

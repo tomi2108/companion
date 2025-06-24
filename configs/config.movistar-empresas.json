@@ -8,6 +8,9 @@
       "exclude": [
         "app-shell"
       ],
+      "secrets": [
+        "elasticsearch"
+      ],
       "configmapENV": {
         "ELK_LOGS_DEBUG": "off",
         "ELK_LOGS": "on",
@@ -35,6 +38,7 @@
         "enabled": true
       },
       "app": {
+        "secrets": [],
         "readinessProbe": {
           "enabled": false
         },
@@ -42,7 +46,7 @@
           "enabled": false
         }
       },
-      "cert": {
+      "movistar-empresas-cert": {
         "autoscaling": {
           "enabled": true,
           "minReplicas": 3,

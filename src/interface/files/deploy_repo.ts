@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Env } from "../../lib/constants";
 import { DeployYaml } from "./deploy_yaml";
 import { Repo } from "./repo";
 
@@ -26,8 +25,8 @@ export class DeployRepo extends Repo {
     return res;
   }
 
-  getDeployment(env: Env) {
-    return this.deployments.find((d) => d.isEnv(env));
+  getDeployment(namespace: string) {
+    return this.deployments.find((d) => d.namespace === namespace);
   }
 
 }
