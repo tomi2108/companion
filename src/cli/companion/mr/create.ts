@@ -23,7 +23,7 @@ export default {
       const mr = await repo.createMr(targetBranch, { reviewer: add_reviewer ? default_reviewer : undefined });
       spinner.succeed();
       const open = await confirm({ message: `Open ${mr.title} in browser?` });
-      if (open) mr.openInBrowser();
+      if (open) return mr.openInBrowser();
     }
 
     await repo.createAndMergeMr(targetBranch);
