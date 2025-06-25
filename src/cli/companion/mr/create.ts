@@ -17,10 +17,10 @@ export default {
     const default_reviewer = Config.get().gitlab.default_reviewer;
     const add_reviewer = await confirm({ initial: false, message: `Add default reviewer? (${default_reviewer})` });
     const merge = await confirm({ message: "Merge?" });
-    // TODO: add reviewer
+
     if (!merge) {
       const spinner = loading("Building merge request");
-      const mr = await repo.createMr(targetBranch);
+      const mr = await repo.createMr(targetBranch, { reviewer: add_reviewer ? default_reviewer : undefined });
       spinner.succeed();
       const open = await confirm({ message: `Open ${mr.title} in browser?` });
       if (open) mr.openInBrowser();

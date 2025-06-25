@@ -66,7 +66,6 @@ export class Repo {
 
   async createNewBranch(name: string) {
     const branches = await this.git.branchLocal();
-    // TODO: revisit this
     if (branches.all.includes(name)) this.deleteBranch(name);
     await this.git.checkoutLocalBranch(name);
   }
@@ -136,7 +135,8 @@ export class Repo {
     return (await this.git.log({ from: sourceBranch, to: targetBranch })).all;
   }
 
-  async createMr(targetBranch: string, opts?: { projectId?: number; title?: string }) {
+  async createMr(targetBranch: string, opts?: { projectId?: number; title?: string; reviewer?: string }) {
+    const gitlab = new Gitlab();
     const sourceBranch = await this.getActiveBranch();
     await this.push(sourceBranch);
 
@@ -144,12 +144,16 @@ export class Repo {
 
     const commits = await this.getDiffCommits(sourceBranch, targetBranch);
     const title = opts?.title || commits[0].message;
-    const assigneeId = (await new Gitlab().getCurrentUser()).id;
+    const assigneeId = (await gitlab.getUser(Config.get().gitlab.username)).id;
     const description = MergeRequest.descriptionFromCommits(commits);
+
+    const reviewerIds = [];
+    if (opts?.reviewer) reviewerIds.push((await gitlab.getUser(opts.reviewer)).id);
 
     return MergeRequest.fromMergeRequestResponse(
       await this.glab.MergeRequests.create(id, sourceBranch, targetBranch, title, {
         description,
+        reviewerIds,
         removeSourceBranch: true,
         assigneeId
       }));
@@ -160,14 +164,16 @@ export class Repo {
     const { id } = await this.getProject();
     const mr = await this.createMr(targetBranch, { projectId: id });
     setTimeout(async () => {
-      // =) genius
       spinner.succeed();
+      // genius =)
       try {
         await mr.merge();
       } catch {
-        await mr.merge();
+        setTimeout(async () => {
+          await mr.merge();
+        }, 10 * 1000);
       }
-    }, 50 * 1000);
+    }, 45 * 1000);
   }
 
   async getMrs() {
@@ -181,7 +187,7 @@ export class Repo {
     description: string;
   }) {
     const project = await this.getProject();
-    const assigneeId = (await new Gitlab().getCurrentUser()).id;
+    const assigneeId = (await new Gitlab().getUser(Config.get().gitlab.username)).id;
     const options = { description, assigneeId };
     await this.glab.Issues.create(project.id, title, options);
   }

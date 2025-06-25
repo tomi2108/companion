@@ -45,7 +45,6 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 ### 🔧 Inicialización de Entornos
 - [x] Generación automática de estructura de carpetas para el proyecto
 - [x] Carga de configuraciones según equipo (ej. frontend, backend, devops)
-- [ ] Validación de requisitos del sistema (git, node, oc, glab, etc.) 
 
 ### 🧠 Configuraciones por Equipo/Proyecto
 - [x] Carga condicional de configuración basada en clave `"team"`
@@ -68,9 +67,8 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [x] Clonación inteligente de repositorios del grupo del proyecto
 - [x] Creación y asignación automática de *merge requests*
 - [x] Revisión del estado de pipelines asociados a una MR o branch
-- [ ] Asignación de revisores automáticamente según reglas del equipo
+- [x] Asignación de revisores automáticamente según reglas del equipo
 - [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
-- [ ] Generación de mensajes de commit formateados con convención de equipo
 - [x] Sincronización de ramas locales con `origin` automáticamente
 - [x] Nivelación de ramas
 
@@ -83,13 +81,6 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 - [ ] Filtro de tickets por sprint, tipo o estado desde la CLI (🚧 en progreso)
 - [ ] Transiciones de estado automatizadas según evento (ej. push a `main`)
 - [x] Comando para estimar tickets 
-
-### 📈 Integración con Dynatrace  
-- [ ] Consulta de *health status* por aplicación o servicio. 
-- [ ] Búsqueda de problemas activos y eventos recientes.  
-- [ ] Visualización de métricas clave en tiempo real (CPU, RAM, latencia, etc.).
-- [ ] Asociación de despliegues a versiones monitoreadas en Dynatrace. 
-- [ ] Alertas automáticas en terminal o Slack ante incidentes críticos.
 
 ### 🛡️ Integración con Vault  
 - [x] Lectura y escritura de secretos por entorno/proyecto
@@ -184,14 +175,6 @@ Aquí tienes enlaces útiles para conocer más sobre ellas:
 - 🌐 **API REST de Jira (Cloud)**  
   Permite crear, actualizar y buscar tickets, usuarios, sprints, etc.  
   [📚 Referencia API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)
-
----
-
-### 📈 Dynatrace
-
-- 🌐 **API REST de Dynatrace**  
-  Accede a métricas, health status, eventos, entidades, alertas y más.  
-  [📚 Referencia API](https://www.dynatrace.com/support/help/dynatrace-api/)
 
 ---
 

@@ -71,8 +71,8 @@ export class Gitlab {
     }
   }
 
-  async getCurrentUser() {
-    return (await this.glab.Search.all("users", Config.get().gitlab.username))[0];
+  async getUser(username: string) {
+    return (await this.glab.Search.all("users", username))[0];
   }
 }
 

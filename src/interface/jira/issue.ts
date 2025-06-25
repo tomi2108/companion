@@ -85,14 +85,16 @@ export class Issue {
 
   async unlink(issue: Issue) {
     // TODO: implement
+    console.log("issue:", issue);
   }
 
   async logWork(work: string) {
-    // TODO: test maybe make 'work' a :number in hours ?
+    // TODO: test, maybe make 'work' a :number in hours ?
     return await this.jira.addWorklog(this.id, { timeSpent: work });
   }
 
   async createChild(labels?: string[]) {
+    console.log("labels:", labels);
     // TODO: probably recieve more fields for title, description etc
     // should ideally return the created issue wrapped in a new Issue()
     // maybe with Issue.fromIssueResponse()
