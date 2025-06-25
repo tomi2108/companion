@@ -25,9 +25,7 @@ export class Secret extends Resource {
     return this.data;
   }
 
-  async save(namespace: string, data: typeof this.data) {
-    this.namespace = namespace;
-    this.setData(data);
+  async save() {
     if (!this.data) throw new Error(`Missing data in secret ${this.name}`);
     if (!this.namespace) throw new Error(`Missing namespace in secret ${this.name}`);
 

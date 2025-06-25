@@ -36,12 +36,12 @@ export default {
     const data = parseKeyVal(new_content);
 
     if (resource === "configmap") {
-      await project.createConfigMap(name, data);
+      const cm = await project.createConfigMap(name, data);
+      log.success(`${cm.name} created`);
       return;
     }
 
     await project.createSecret(name, data);
-
     const repo_path = path.join(vault_path, project.name);
     const secrets_file = path.join(repo_path, "values.yaml");
     const repo = new Repo(repo_path);

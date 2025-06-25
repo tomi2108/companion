@@ -29,7 +29,7 @@ export class ConfigMap extends Resource {
     cm.uid = configMapResponse.metadata.uid;
     cm.resourceVersion = configMapResponse.metadata.resourceVersion;
     cm.creationTimestamp = configMapResponse.metadata.creationTimestamp;
-    cm.apiVersion = configMapResponse.metadata.managedFields[0].apiVersion;
+    cm.apiVersion = configMapResponse.metadata.managedFields?.[0].apiVersion;
     cm.data = configMapResponse.data;
     return cm;
   }
@@ -38,19 +38,17 @@ export class ConfigMap extends Resource {
     return this.data;
   }
 
-  async save(namespace: string, data: typeof this.data, update: boolean) {
-    this.namespace = namespace;
-    this.setData(data);
+  async save(opts?: { update?: boolean }) {
     const body = {
       kind: this.kind,
       apiVersion: this.apiVersion,
-      data: this.getData(),
+      data: await this.getData(),
       metadata: {
         name: this.name,
         creationTimestamp: null
       }
     };
-    const params = { fieldManager: "kubectl-create", fieldValidation: "Ignore" };
+    const params = { fieldValidation: "Ignore" };
 
     if (!body.data) throw new Error(`Missing data in configmap ${this.name}`);
     if (!this.namespace) throw new Error(`Missing namespace in configmap ${this.name}`);
@@ -58,7 +56,7 @@ export class ConfigMap extends Resource {
     const keys = Object.keys(body.data);
     if (keys.length !== removeDuplicates(keys).length) throw new Error("Secrets cannot have duplicate keys");
 
-    if (update) await this.oc.patch(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
+    if (opts?.update) await this.oc.put(`/api/v1/namespaces/${this.namespace}/configmaps/${this.name}`, body, { params });
     else await this.oc.post(`/api/v1/namespaces/${this.namespace}/configmaps`, body, { params });
   }
 

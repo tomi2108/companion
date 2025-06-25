@@ -34,8 +34,10 @@ export default {
         || !y.data
       ) return log.error("Invalid yaml, please sepcify 'data' key");
       const { data } = y;
-      await configmap.save(project.name, data as Record<string, string>, true);
-      return log.info("Config map saved succesfully");
+      configmap.namespace = project.name;
+      configmap.setData(data as Record<string, string>);
+      await configmap.save({ update: true });
+      return log.success("Config map saved succesfully");
     }
 
     const secrets = await project.getSecrets();
@@ -51,8 +53,10 @@ export default {
       || !y.data
     ) return log.error("Invalid yaml, please sepcify 'data' key");
     const { data } = y;
-    await secret.save(project.name, data as Record<string, string>);
-    log.info("Secret saved succesfully");
+
+    secret.setData(data as Record<string, string>);
+    await secret.save();
+    log.success("Secret saved succesfully");
     const restarts = await confirm({
       initial: true, message: `Do you want to restart every deployment affected by ${secret.name}?`
     });

@@ -12,7 +12,7 @@ export abstract class Resource {
 
   abstract getData(): Promise<typeof this.data>;
 
-  abstract save(namespace: string, data: typeof this.data, update: boolean): void;
+  abstract save(opts?: { update?: boolean }): void;
   abstract delete(): Promise<void>;
 
   constructor(name: string, oc: typeof this.oc) {

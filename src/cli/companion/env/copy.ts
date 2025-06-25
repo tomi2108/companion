@@ -28,7 +28,7 @@ export default {
     const deployment = await project.getDeployment(name);
 
     const configMaps = await deployment.getConfigMaps() ?? [];
-    const secrets = await deployment.getSecrets() ?? [];
+    const secrets = deployment.getSecrets() ?? [];
 
     const env_file = path.join(app.full_path, ".env");
     if (fs.existsSync(env_file)) fs.rmSync(env_file);

@@ -61,7 +61,6 @@ export class Project {
   }
 
   async getSecrets() {
-
     return (await this.vault.list(`${Config.get().vault.project}/metadata/${this.name}`))
       .data.keys
       .map((r: string) => new Secret(r, this.name, this.oc))
@@ -70,13 +69,16 @@ export class Project {
 
   async createSecret(name: string, data: NonNullable<Secret["data"]>) {
     const secret = new Secret(name, this.name, this.oc);
-    await secret.save(this.name, data);
+    secret.setData(data);
+    await secret.save();
     return secret;
   }
 
   async createConfigMap(name: string, data: Secret["data"]) {
     const configmap = new ConfigMap(name, this.oc);
-    await configmap.save(this.name, data, false);
+    configmap.namespace = this.name;
+    configmap.setData(data);
+    await configmap.save();
     return configmap;
   }
 

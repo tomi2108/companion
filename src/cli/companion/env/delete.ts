@@ -6,7 +6,7 @@ import log from "../../../lib/log";
 
 export default {
   command: "delete",
-  aliases: [],
+  aliases: ["del", "rm"],
   describe: "Delete configmap or secret",
   handler: async () => {
     const token = await getOcToken();
@@ -31,7 +31,7 @@ export default {
     const confirmed = await confirm({ message: `Are you sure you want to delete ${r.name}?` });
     if (confirmed) {
       await r.delete();
-      return log.info(`Deleted ${r.name} correctly`);
+      return log.success(`Deleted ${r.name} correctly`);
     }
     log.info("Delete canceled");
   }

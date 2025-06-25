@@ -14,6 +14,7 @@ export default {
     .boolean("all")
     .alias("all", ["a"])
     .describe("all", "Whether to clean all repositories at once"),
+  // TODO: Add frontend and backend flags, look at 'repo level'
   handler: async ({ all }: { all?: boolean }) => {
     const paths = [
       ...readdirs(Config.get().paths.despliegues) ?? [],
