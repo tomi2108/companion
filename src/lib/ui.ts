@@ -1,6 +1,6 @@
 import { Spinner } from "@topcli/spinner";
 import { prompt } from "enquirer";
-import cliProgress, { SingleBar } from "cli-progress";
+import { SingleBar, MultiBar, Presets } from "cli-progress";
 import { Choice } from "./constants";
 
 type ExtractFromPrompt<T> = Omit<Extract<Parameters<typeof prompt>[0], { type: T }>, "type" | "name">;
@@ -43,11 +43,11 @@ export function loading(startText: string) {
 }
 
 export function progressBar(total?: number, start?: number, prefix?: string) {
-  const bar = new cliProgress.SingleBar({
+  const bar = new SingleBar({
     format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
     autopadding: true,
     barCompleteChar: "#"
-  }, cliProgress.Presets.legacy);
+  }, Presets.legacy);
 
   const update = (to: number) => bar.update(to);
   const increment = (by: number) => bar.increment(by);
@@ -69,11 +69,11 @@ export function progressBar(total?: number, start?: number, prefix?: string) {
 export type ProgressBar = SingleBar & { setPrefix: (s: string) => void; setSufix: (s: string) => void };
 
 export function multiProgressBar() {
-  const multi = new cliProgress.MultiBar({
+  const multi = new MultiBar({
     format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
     autopadding: true,
     barCompleteChar: "#"
-  }, cliProgress.Presets.legacy);
+  }, Presets.legacy);
 
   const create = (total?: number, start?: number) => {
     const bar = multi.create(total ?? 0, start ?? 0, { prefix: "", sufix: "" }) as ProgressBar;
