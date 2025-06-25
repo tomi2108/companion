@@ -3,7 +3,7 @@
     "target": "esnext",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -11,5 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": false,
     "noEmitOnError": false
-  }
+  },
+  "include": [
+    "./src"
+  ]
 }

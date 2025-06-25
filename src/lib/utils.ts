@@ -2,8 +2,8 @@ import fs from "node:fs";
 import crypto from "node:crypto";
 import { Config } from "./config";
 import openEditor from "open-editor";
-import { cwd } from "node:process";
 import open from "open";
+import { cwd } from "node:process";
 import yaml from "js-yaml";
 
 // do not bother with typing this will probably be removed...
