@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint --fix ./**/*.ts",
     "build": "tsc --project ./tsconfig.json",
-    "test": "vitest --coverage --watch=false",
+    "test": "vitest --coverage.enabled=true --coverage.reporter=lcov --watch=false",
     "precommit": "tsc --project ./tsconfig.json && lint-staged && npm run test",
     "clean": "rm -rf package-lock.json node_modules dist",
     "prepare": "husky"

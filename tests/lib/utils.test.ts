@@ -18,10 +18,9 @@ const fsReadFileMock = fs.readFileSync as Mock;
 const configGetMock = Config.get as Mock;
 const cryptoCreateHashMock = crypto.createHash as Mock;
 
+beforeEach(vi.clearAllMocks);
+
 describe("utils", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   it("deepMerge merges nested objects", () => {
     const a = { x: 1, y: { z: 2 } };
