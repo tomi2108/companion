@@ -48,11 +48,7 @@ export default {
     }
 
     const title = `${app}-${project.name}`;
-    const description = `platform:openshift
-        project:${Config.get().openshift.project}
-        namespace:${project.name}
-        deployment:${app}
-        version:${version}`;
+    const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${app}\r\nversion:${version}`;
 
     const spinner = loading(`Creating issues for: ${app}`);
     await new Repo(argocd_path).createIssue({
