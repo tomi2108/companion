@@ -28,20 +28,20 @@ export default {
       ...readdirs(ms_repos_path) ?? []
     ];
     const choices = apps.map((dir) => ({ name: dir.name }));
-    const app = await search({ choices, message: "Select a category" });
+    const app = await search({ choices, message: "Select an app" });
     const dirent = apps.find((a) => a.name === app) as Dirent<string>;
     const app_repo = new AppRepo(path.join(dirent?.parentPath, dirent?.name));
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptForOcResource(projects, { message: "Select a project" });
 
     let version: string | null = null;
     if (app_repo) {
       const versions = loading("Getting versions");
       const tags = await app_repo.getTags();
       versions.succeed();
-      version = await search({ choices: tags, message: "Choose a version to create:" });
+      version = await search({ choices: tags, message: "Select a version to create:" });
     } else {
       log.warning(`Tags for repository ${name} not found`);
       version = await input({ message: "Enter version to create, starting with a 'v':" });
