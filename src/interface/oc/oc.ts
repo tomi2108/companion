@@ -16,12 +16,14 @@ export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
     client_id: "openshift-challenging-client",
     code_challenge_method: "S256",
     response_type: "token",
-    redirect_uri: `${authUrl}/oauth/token/implicit`,
-    "X-Csrf-Token": 1
+    redirect_uri: `${authUrl}/oauth/token/implicit`
+  };
+  const headers = {
+    Authorization: `Basic ${encodedString}`,
+    "X-CSRF-Token": "1"
   };
   try {
-    await axios.get(`${authUrl}/oauth/authorize`,
-      { maxRedirects: 0, params, headers: { Authorization: `Basic ${encodedString}` } });
+    await axios.get(`${authUrl}/oauth/authorize`, { maxRedirects: 0, params, headers });
     return "";
   } catch (err) {
     if (axios.isAxiosError(err) && err.response?.headers.location) {
