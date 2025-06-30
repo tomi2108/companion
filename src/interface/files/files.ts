@@ -6,6 +6,7 @@ import { DeployRepo } from "./deploy_repo";
 import { AppRepo } from "./app_repo";
 import { MsType } from "../../lib/constants";
 import { Config } from "../../lib/config";
+import { DeployYamlContent } from "./deploy_yaml";
 
 function getAppPaths() {
   return [Config.get().paths.frontend, Config.get().paths.backend]
@@ -71,8 +72,8 @@ export function internalEnvs(full_path: string) {
   fs.writeFileSync(full_path, replaced);
 }
 
-export function getDeploymentOption(path: string, type: MsType, namespace: string, y: any) {
-  // TODO:                                                                   type this ^^
+// do not bother typing this, adds no value
+export function getDeploymentOption(path: string, type: MsType, namespace: string, y: DeployYamlContent): any {
   const keys = path.split(".");
   const deployments = Config.get().openshift?.deployments as any;
 

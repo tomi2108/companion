@@ -6,7 +6,7 @@ import open from "open";
 import { cwd } from "node:process";
 import yaml from "js-yaml";
 
-// do not bother with typing this will probably be removed...
+// do not bother with typing this, adds no value
 export function deepMerge(obj1: any, obj2: any) {
   for (const key in obj2) {
     if (Object.prototype.hasOwnProperty.call(obj2, key) && obj2[key] !== undefined && obj2[key] !== null) {

@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 import { MS_TYPES } from "./constants";
+import { YamlContentSchema } from "../interface/files/deploy_yaml";
 
 export const PathsConfigSchema = z.object({
   despliegues: z.string().optional(),
@@ -13,18 +14,17 @@ export const PathsConfigSchema = z.object({
 export const OpenShiftConfigSchema = z.object({
   default_ms_type: z.enum(MS_TYPES).optional(),
   deployments: z.record(
-    z.enum(MS_TYPES), z.record(z.string(), z.object().optional()).optional()
-    //                            TODO: type this ^^ yaml content
+    z.enum(MS_TYPES), z.record(z.string(), YamlContentSchema.partial().optional()).optional()
   ).or(
     z.record(
-      z.string(), z.record(z.enum(MS_TYPES), z.object().optional()).optional()
-      //                            TODO: type this ^^ yaml content
+      z.string(), z.record(z.enum(MS_TYPES), YamlContentSchema.partial().optional()).optional()
     )
-  ).and(
-    z.object({
-      exclude: z.array(z.string()).optional()
-    })
-  ).optional(),
+  ).or(YamlContentSchema.partial())
+    .and(
+      z.object({
+        exclude: z.array(z.string()).optional()
+      })
+    ).optional(),
   username: z.string(),
   password: z.string()
 });

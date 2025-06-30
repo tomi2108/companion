@@ -1,3 +1,4 @@
+import { z } from "zod/v4";
 import fs, { Dirent } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
@@ -6,18 +7,62 @@ import { getDeploymentOption } from "./files";
 import { Config } from "../../lib/config";
 import { toYaml } from "../../lib/utils";
 
+export const YamlContentSchema = z.object({
+  image: z.object({
+    tag: z.string()
+  }),
+  dynatrace: z.object({
+    modulo: z.string(),
+    tipo: z.string(),
+    clave_jira: z.string(),
+    issue_jira: z.string(),
+    masivo_critico: z.string()
+  }).optional(),
+  route: z.object({
+    enabled: z.boolean()
+  }),
+  resources: z.object({
+    limits: z.object({
+      cpu: z.string(),
+      memory: z.string()
+    }),
+    requests: z.object({
+      cpu: z.string(),
+      memory: z.string()
+    })
+  }),
+  autoscaling: z.object({
+    enabled: z.boolean(),
+    minReplicas: z.number(),
+    maxReplicas: z.number()
+  }),
+  readinessProbe: z.object({
+    enabled: z.boolean()
+  }),
+  configmapENV: z.object({
+    ELK_LOGS: z.string().optional(),
+    ELK_LOGS_DEBUG: z.string().optional(),
+    STDOUT_LOGS: z.string().optional()
+  }),
+  labels: z.object({
+    lproduct: z.string().optional(),
+    lenvironment: z.string().optional()
+  }),
+  configmaps: z.record(z.string(), z.string()),
+  secrets: z.record(z.string(), z.string())
+});
+
+export type DeployYamlContent = z.infer<typeof YamlContentSchema>;
+
 export class DeployYaml {
   file_path: string;
   namespace: string;
-  // TODO: type content
-  content: any;
+  content: DeployYamlContent;
 
   static isDeployYamlFile(file: Dirent) {
     return file.isFile()
       && ENVS.some((e) => file.name.includes(e))
       && file.name.includes("values-");
-    // TODO: probably look for "helm-chart"
-    // && fs.readFileSync(file.);
   }
 
   constructor(file_path: string) {
@@ -25,23 +70,23 @@ export class DeployYaml {
     const yaml_content = (yaml.load(file_content) as { "helm-chart-master": any })?.["helm-chart-master"];
     if (!yaml_content) throw new InvalidDeployYaml(file_path);
 
-    this.content = yaml_content;
+    this.content = YamlContentSchema.parse(yaml_content);
     this.file_path = file_path;
     this.namespace = this.getNamespace();
   }
 
   async prepareDeploy(type: MsType) {
     const secrets_to_add = getDeploymentOption("secrets", type, this.namespace, this.content) ?? [];
-    // TODO: remove casting
-    (secrets_to_add as string[]).forEach(this.setSecret);
+    secrets_to_add.forEach(this.setSecret);
 
-    if (!this.content.dynatrace) this.content.dynatrace = {};
-    this.content.dynatrace.modulo = Config.get().dynatrace?.modulo ?? this.content.dynatrace.modulo ?? "NO_INFORMADO";
-    this.content.dynatrace.tipo = type === "app" ? "MICROFRONTEND" : type.toUpperCase();
-    this.content.dynatrace.clave_jira = Config.get().jira?.project_key ?? this.content.dynatrace.clave_jira ?? "NO_INFORMADO";
-    // TODO: vincular con Jira ?
-    this.content.dynatrace.masivo_critico = "NO";
-    this.content.dynatrace.issue_jira = "NO_INFORMADO";
+    if (!this.content.dynatrace) this.content.dynatrace = {
+      modulo: Config.get().dynatrace?.modulo ?? "NO_INFORMADO",
+      tipo: type === "app" ? "MICROFRONTEND" : type.toUpperCase(),
+      // TODO: vincular con Jira ?
+      clave_jira: Config.get().jira?.project_key ?? "NO_INFORMADO",
+      issue_jira: "NO_INFORMADO",
+      masivo_critico: "NO"
+    };
 
     this.content.route.enabled = getDeploymentOption("route.enabled", type, this.namespace, this.content);
 
