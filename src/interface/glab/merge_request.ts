@@ -43,9 +43,14 @@ export class MergeRequest {
 
   async merge() {
     const spinner = loading("Merging merge request");
-    const mr = await this.glab.MergeRequests.merge(this.project_id, this.iid, { shouldRemoveSourceBranch: true });
-    spinner.succeed();
-    return mr;
+    try {
+      const mr = await this.glab.MergeRequests.merge(this.project_id, this.iid, { shouldRemoveSourceBranch: true });
+      spinner.succeed();
+      return mr;
+    } catch (err) {
+      spinner.fail();
+      throw err;
+    }
   }
 
   async close() {
