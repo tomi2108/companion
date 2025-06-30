@@ -41,9 +41,11 @@ export default {
       const matches = needed_envs.matchAll(/process\.env\..*/g).toArray().map((m) => m[0].replace("process.env.", ""));
       const keys = matches.map((m) => m.split(" ")[0].replaceAll(",", ""));
 
+      const missing = [];
       for (const key of keys) {
-        if (!env[key]) log.error(`Missing ${key} in ${deployment.name} in ${deployment.namespace}`);
+        if (!env[key]) missing.push(key);
       }
+      console.log({ [deployment.name]: missing });
     }
   }
 };
