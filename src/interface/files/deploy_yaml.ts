@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import { ENVS, MsType } from "../../lib/constants";
 import { getDeploymentOption } from "./files";
 import { Config } from "../../lib/config";
-import { toYaml } from "../../lib/utils";
+import { deepMerge, toYaml } from "../../lib/utils";
 
 export const YamlContentSchema = z.object({
   image: z.object({
@@ -70,7 +70,7 @@ export class DeployYaml {
     const yaml_content = (yaml.load(file_content) as { "helm-chart-master": any })?.["helm-chart-master"];
     if (!yaml_content) throw new InvalidDeployYaml(file_path);
 
-    this.content = YamlContentSchema.parse(yaml_content);
+    this.content = deepMerge(YamlContentSchema.parse(yaml_content), yaml_content);
     this.file_path = file_path;
     this.namespace = this.getNamespace();
   }
