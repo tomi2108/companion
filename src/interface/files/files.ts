@@ -52,7 +52,7 @@ export function accessObj(obj: Record<string, unknown> | undefined, keys: string
   if (!obj) return;
   const val = obj?.[keys?.[0]];
   if (val === null || val === undefined) return null;
-  if (typeof val !== "object") return val;
+  if (typeof val !== "object" || Array.isArray(val)) return val;
   return accessObj(val as Record<string, unknown>, keys.slice(1));
 }
 
