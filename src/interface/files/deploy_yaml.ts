@@ -23,12 +23,12 @@ export const YamlContentSchema = z.object({
   }),
   resources: z.object({
     limits: z.object({
-      cpu: z.string(),
-      memory: z.string()
+      cpu: z.string().or(z.number()),
+      memory: z.string().or(z.number())
     }),
     requests: z.object({
-      cpu: z.string(),
-      memory: z.string()
+      cpu: z.string().or(z.number()),
+      memory: z.string().or(z.number())
     })
   }),
   autoscaling: z.object({
@@ -48,8 +48,8 @@ export const YamlContentSchema = z.object({
     lproduct: z.string().optional(),
     lenvironment: z.string().optional()
   }),
-  configmaps: z.record(z.string(), z.string()),
-  secrets: z.record(z.string(), z.string())
+  configmaps: z.record(z.string(), z.string()).optional(),
+  secrets: z.record(z.string(), z.string()).optional()
 });
 
 export type DeployYamlContent = z.infer<typeof YamlContentSchema>;
@@ -125,22 +125,24 @@ export class DeployYaml {
   }
 
   private fillGaps(key: "secrets" | "configmaps") {
-    const values = Object.values(this.content[key]);
+    const values = Object.values(this.content[key] ?? {});
     this.content[key] = Object.fromEntries(values.map((v, i) => [`${key.slice(0, -1) + i}`, v]));
   }
 
   setSecret(name: string) {
-    const values = Object.values(this.content.secrets);
+    const values = Object.values(this.content.secrets ?? {});
     if (values.includes(name)) return;
     const i = values.length;
+    if (!this.content.secrets) this.content.secrets = {};
     this.content.secrets[`secret${i + 1}`] = name;
     this.fillGaps("secrets");
   }
 
   setConfigMap(name: string) {
-    const values = Object.values(this.content.configmaps);
+    const values = Object.values(this.content.configmaps ?? {});
     if (values.includes(name)) return;
     const i = values.length;
+    if (!this.content.configmaps) this.content.configmaps = {};
     this.content.configmaps[`configmap${i + 1}`] = name;
     this.fillGaps("configmaps");
   }
