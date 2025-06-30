@@ -1,5 +1,6 @@
 import { Argv } from "yargs";
 import copy from "./env/copy";
+import health from "./env/health";
 import create from "./env/create";
 import deleteCmd from "./env/delete";
 import edit from "./env/edit";
@@ -13,6 +14,7 @@ export default {
     .command(create)
     .command(deleteCmd)
     .command(edit)
+    .command(health)
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }
