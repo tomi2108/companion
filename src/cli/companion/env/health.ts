@@ -39,13 +39,15 @@ export default {
       // TODO : probably make file a team config
       const needed_envs = fs.readFileSync(path.join(app.full_path, "src/configuration/environment.ts")).toString().trim();
       const matches = needed_envs.matchAll(/process\.env\..*/g).toArray().map((m) => m[0].replace("process.env.", ""));
-      const keys = matches.map((m) => m.split(" ")[0].replaceAll(",", ""));
+      const keys = matches.map((m) => m.split(" ")[0].replaceAll(",", ""))
+        // TODO : probably make ignores a team config
+        .filter((k) => !["PORT", "BAU_PORT", "DB_PORT"].includes(k));
 
       const missing = [];
       for (const key of keys) {
         if (!env[key]) missing.push(key);
       }
-      console.log({ [deployment.name]: missing });
+      if (missing.length > 0) console.log({ [deployment.name]: missing });
     }
   }
 };
