@@ -124,11 +124,17 @@ export class DeployYaml {
     this.content.image.tag = version;
   }
 
+  private fillGaps(key: "secrets" | "configmaps") {
+    const values = Object.values(this.content[key]);
+    this.content[key] = Object.fromEntries(values.map((v, i) => [`${key.slice(0, -1) + i}`, v]));
+  }
+
   setSecret(name: string) {
     const values = Object.values(this.content.secrets);
     if (values.includes(name)) return;
     const i = values.length;
     this.content.secrets[`secret${i + 1}`] = name;
+    this.fillGaps("secrets");
   }
 
   setConfigMap(name: string) {
@@ -136,6 +142,7 @@ export class DeployYaml {
     if (values.includes(name)) return;
     const i = values.length;
     this.content.configmaps[`configmap${i + 1}`] = name;
+    this.fillGaps("configmaps");
   }
 
   getVersion() {
