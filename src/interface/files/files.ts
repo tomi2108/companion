@@ -90,7 +90,7 @@ export function getDeploymentOption(path: string, type: MsType, namespace: strin
   if (env_value !== null && env_value !== undefined) return env_value;
 
   const deployment_value = accessObj(deployments, keys);
-  if (env_value !== null && env_value !== undefined) return deployment_value;
+  if (deployment_value !== null && deployment_value !== undefined) return deployment_value;
 
   return accessObj(y, keys);
 }
