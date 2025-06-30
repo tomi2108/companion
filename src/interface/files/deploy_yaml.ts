@@ -77,7 +77,7 @@ export class DeployYaml {
 
   async prepareDeploy(type: MsType) {
     const secrets_to_add = getDeploymentOption("secrets", type, this.namespace, this.content) ?? [];
-    secrets_to_add.forEach(this.setSecret);
+    secrets_to_add.forEach((s: string) => this.setSecret(s));
 
     if (!this.content.dynatrace) this.content.dynatrace = {
       modulo: Config.get().dynatrace?.modulo ?? "NO_INFORMADO",
@@ -126,14 +126,14 @@ export class DeployYaml {
 
   private fillGaps(key: "secrets" | "configmaps") {
     const values = Object.values(this.content[key] ?? {});
-    this.content[key] = Object.fromEntries(values.map((v, i) => [`${key.slice(0, -1) + i}`, v]));
+    this.content[key] = Object.fromEntries(values.map((v, i) => [`${key.slice(0, -1) + (i + 1)}`, v]));
   }
 
   setSecret(name: string) {
-    const values = Object.values(this.content.secrets ?? {});
+    if (!this.content.secrets) this.content.secrets = {};
+    const values = Object.values(this.content.secrets);
     if (values.includes(name)) return;
     const i = values.length;
-    if (!this.content.secrets) this.content.secrets = {};
     this.content.secrets[`secret${i + 1}`] = name;
     this.fillGaps("secrets");
   }
