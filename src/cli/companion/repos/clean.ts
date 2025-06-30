@@ -5,6 +5,7 @@ import path from "node:path";
 import { Repo } from "../../../interface/files/repo";
 import { Argv } from "yargs";
 import log from "../../../lib/log";
+import { Dirent } from "node:fs";
 
 export default {
   command: "clean",
@@ -13,17 +14,34 @@ export default {
   builder: (yargs: Argv) => yargs
     .boolean("all")
     .alias("all", ["a"])
-    .describe("all", "Whether to clean all repositories at once"),
-  // TODO: Add frontend and backend flags, look at 'repo level'
-  handler: async ({ all }: { all?: boolean }) => {
-    const paths = [
-      ...readdirs(Config.get().paths.despliegues) ?? [],
-      ...readdirs(Config.get().paths.frontend) ?? [],
-      ...readdirs(Config.get().paths.backend) ?? []
-    ];
+    .describe("all", "Whether to run the script for all repositories")
+    .boolean("frontend")
+    .alias("frontend", ["f"])
+    .describe("frontend", "Whether to run the script for all frontend repositories")
+    .boolean("backend")
+    .alias("backend", ["b"])
+    .describe("backend", "Whether to run the script for all backend repositories")
+    .boolean("despliegues")
+    .alias("despliegues", ["d"])
+    .describe("despliegues", "Whether to run the script for all despliegues repositories")
+    .conflicts("all", ["frontend", "backend", "despliegues"]),
+  handler: async ({
+    all,
+    frontend,
+    backend,
+    despliegues
+  }: { all?: boolean; frontend?: boolean; backend?: boolean; despliegues?: boolean }) => {
+    let paths: Dirent[] = [];
+    if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];
+    if (all || backend) paths = [...paths, ...readdirs(Config.get().paths.backend) ?? []];
+    if (all || despliegues) paths = [...paths, ...readdirs(Config.get().paths.despliegues) ?? []];
 
-    if (!all) {
-      const choices = paths.map((p) => ({ name: path.join(p.path, p.name) }));
+    if (paths.length === 0) {
+      const choices = [
+        ...readdirs(Config.get().paths.frontend) ?? [],
+        ...readdirs(Config.get().paths.backend) ?? [],
+        ...readdirs(Config.get().paths.despliegues) ?? []
+      ].map((p) => ({ name: path.join(p.path, p.name) }));
 
       const choice = await search({ choices, message: "Select project" });
       const repo = new Repo(choice);
@@ -35,25 +53,25 @@ export default {
       const spinner = loading(`Cleaning ${name}`);
       await deleteBranches(repo);
       spinner.succeed(`Succesfully cleaned ${name}`);
-
-    } else {
-      const sure = await confirm({ message: "Are you sure you want to clean ALL repositories?" });
-      if (!sure) return;
-
-      const bar = progressBar(paths.length, 0, "cleaning");
-      for (let index = 0; index < paths.length; index += 10) {
-        const toClean = paths.slice(index, index + 10);
-        await Promise.all(toClean.map(async (p) => {
-          bar.setSufix(p.name);
-          const repo = new Repo(path.join(p.path, p.name));
-          await deleteBranches(repo);
-          bar.increment(1);
-        }
-        ));
-      }
-      bar.stop();
-      log.success("Succesfully cleaned all repositories");
+      return;
     }
+
+    const sure = await confirm({ message: "Are you sure you want to clean repositories?" });
+    if (!sure) return;
+
+    const bar = progressBar(paths.length, 0, "cleaning");
+    for (let index = 0; index < paths.length; index += 10) {
+      const toClean = paths.slice(index, index + 10);
+      await Promise.all(toClean.map(async (p) => {
+        bar.setSufix(p.name);
+        const repo = new Repo(path.join(p.path, p.name));
+        await deleteBranches(repo);
+        bar.increment(1);
+      }
+      ));
+    }
+    bar.stop();
+    log.success("Succesfully cleaned repositories");
   }
 };
 

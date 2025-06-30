@@ -58,7 +58,6 @@ class Config {
   }
 
   async setup() {
-    // TODO: maybe link the docs in the message on how to obtain tokens ?
     const presets = this.getAvailablePresets();
 
     const preset = await search({
@@ -70,15 +69,30 @@ class Config {
     const oc_password = await password({ message: "Enter Openshift password" });
 
     const glab_user = await input({ message: "Enter Gitlab username" });
-    const glab_token = await password({ message: "Enter Gitlab auth token" });
+    const glab_token = await password({ message: `Enter Gitlab auth token (${this.gitlab.server}/-/user_settings/personal_access_tokens)` });
 
     const jira_user = await input({ message: "Enter Jira username" });
     const jira_token = await password({ message: "Enter Jira auth token (https://id.atlassian.com/manage-profile/security/api-tokens)" });
 
-    const vault_token = await password({ message: "Enter Vault auth token" });
+    const vault_token = await password({ message: `Enter Vault auth token (${this.vault.server}/ui/vault/secrets)` });
+
+    const backend = await input({ message: "Where do you store backend repositories?" });
+    const frontend = await input({ message: "Where do you store frontend repositories?" });
+    const despliegues = await input({ message: "Where do you store despliegues repositories?" });
+    const threescale = await input({ message: "Where do you store threescale repositories?" });
+    const argocd = await input({ message: "Where do you store argocd repositories?" });
+    const vault = await input({ message: "Where do you store vault repositories?" });
 
     const config_to_write = {
       team: preset !== "default" ? preset : null,
+      paths: {
+        backend,
+        frontend,
+        despliegues,
+        threescale,
+        argocd,
+        vault
+      },
       openshift: {
         username: oc_user,
         password: oc_password
@@ -101,8 +115,6 @@ class Config {
   }
 
   async load() {
-    // TODO: offer different locations for config file ... ? may be we dont really need this
-
     let file_content = "";
     try {
       file_content = fs.readFileSync(config_file).toString();
@@ -114,8 +126,8 @@ class Config {
         process.exit(0);
       } else throw err;
     }
-
     const readConfig = ConfigSchema.parse(JSON.parse(file_content));
+
     (["jira", "gitlab", "openshift", "vault", "dynatrace", "paths", "preferences", "threescale"] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
         this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);

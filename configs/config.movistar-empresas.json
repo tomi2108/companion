@@ -75,7 +75,7 @@
       "frontend": 6057,
       "despliegues": 6069,
       "argocd": 431,
-      "3scale": 4825,
+      "threescale": 4825,
       "vault": 6070
     }
   },

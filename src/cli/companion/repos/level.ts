@@ -20,8 +20,7 @@ export default {
     .boolean("backend")
     .alias("backend", ["b"])
     .describe("backend", "Whether to run the script for all backend repositories")
-    .conflicts("all", ["frontend", "backend"])
-    .conflicts("frontend", "backend"),
+    .conflicts("all", ["frontend", "backend"]),
   handler: async ({ all, frontend, backend }: { all?: boolean; frontend?: boolean; backend?: boolean }) => {
     let paths: Dirent[] = [];
     if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];

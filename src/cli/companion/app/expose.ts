@@ -14,9 +14,9 @@ export default {
   aliases: ["e"],
   describe: "Expose app in 3scale",
   handler: async () => {
-    const repo_path = Config.get().paths["3scale"];
+    const repo_path = Config.get().paths.threescale;
     if (!repo_path) {
-      log.error("3scale path not set");
+      log.error("threescale path not set");
       process.exit(1);
     }
 
@@ -31,7 +31,7 @@ export default {
 
     const system_name = Config.get().threescale.products[namespace];
     if (!system_name) {
-      log.error(`No system_name defined in 3scale config for namespace ${namespace}`);
+      log.error(`No system_name defined in threescale config for namespace ${namespace}`);
       process.exit(1);
     }
 

@@ -5,7 +5,7 @@ export const PathsConfigSchema = z.object({
   despliegues: z.string().optional(),
   frontend: z.string().optional(),
   backend: z.string().optional(),
-  "3scale": z.string().optional(),
+  threescale: z.string().optional(),
   argocd: z.string().optional(),
   vault: z.string().optional()
 });
