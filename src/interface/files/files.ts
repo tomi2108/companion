@@ -31,12 +31,14 @@ export async function getApp(app_name: string) {
     deploy_repo = new DeployRepo(d);
     const { name } = await deploy_repo.getInfo();
     if (app_name === name) break;
+    deploy_repo = null;
   }
 
   for (const d of getAppPaths()) {
     app_repo = new AppRepo(d ?? "");
     const { name } = await app_repo.getInfo();
     if (app_name === name) break;
+    app_repo = null;
   }
 
   return { deploy_repo, app_repo };
