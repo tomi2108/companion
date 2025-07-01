@@ -14,7 +14,10 @@ export default {
       ...readdirs(Config.get().paths.backend) ?? []
     ].map((p) => ({ name: path.join(p.path, p.name) }));
 
-    const p = await search({ choices, message: "Select project" });
-    openInEditor(p);
+    const selectedProjects = await search({ choices, multiple: true, message: "Select projects to open" });
+    if (selectedProjects.length === 0) return process.exit(1);
+    for (const project of selectedProjects) {
+      openInEditor(project);
+    }
   }
 };
