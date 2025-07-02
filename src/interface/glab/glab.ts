@@ -5,6 +5,7 @@ import { Repo } from "../files/repo";
 import { Config } from "../../lib/config";
 import simpleGit from "simple-git";
 import { ProgressBar } from "../../lib/ui";
+import log from "../../lib/log";
 
 export const git = (full_path: string) => simpleGit({
   baseDir: full_path
@@ -65,9 +66,20 @@ export class Gitlab {
         || !("response" in err.cause) || !err.cause.response || typeof err.cause.response !== "object"
         || !("status" in err.cause.response) || err.cause.response.status !== 404
       ) throw err;
-      const project = await this.glab.Projects.show(id);
-      bar?.setTotal(1);
-      await this.cloneProject(project, full_path, bar, true);
+
+      try {
+        const project = await this.glab.Projects.show(id);
+        bar?.setTotal(1);
+        await this.cloneProject(project, full_path, bar, true);
+      } catch (err) {
+        if (
+          !err || typeof err !== "object"
+          || !("cause" in err) || !err.cause || typeof err.cause !== "object"
+          || !("response" in err.cause) || !err.cause.response || typeof err.cause.response !== "object"
+          || !("status" in err.cause.response) || err.cause.response.status !== 404
+        ) throw err;
+        log.warning(`Could not clone repo ${id}`);
+      }
     }
   }
 
