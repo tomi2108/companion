@@ -1,11 +1,19 @@
 import path from "node:path";
 import fs from "node:fs";
+import os from "node:os";
 import { deepMerge, openInEditor, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
 import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ThreeScaleConfig, VaultConfig } from "./validations";
 
-const config_file = path.resolve(__dirname, "../../config.json");
+const homeDir = os.homedir();
+
+function getConfigPath() {
+  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "companion", "config.json");
+  else if (process.platform === "darwin" || process.platform === "linux") return path.join(homeDir, ".config", "companion", "config.json");
+  throw new Error("Unknown platform");
+}
+const config_file = process.env.COMPANION_CONFIG ?? getConfigPath();
 
 class Config {
   static config: Config | null = null;
