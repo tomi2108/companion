@@ -17,6 +17,9 @@
   "bin": {
     "companion": "./dist/cli/app.js"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "description": "",
   "dependencies": {
     "@gitbeaker/rest": "42.5.0",
