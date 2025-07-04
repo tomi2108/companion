@@ -35,9 +35,8 @@ export default {
           log.warning(`Could not find deploy repo for ${deployment.name}`);
           return;
         }
-        const [current_version, last_version] = await Promise.all([
+        const [last_version, current_version] = await Promise.all([
           (async () => {
-            await app_repo.update();
             return (await app_repo.getTags())[0];
           })(),
           (async () => {
