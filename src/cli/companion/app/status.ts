@@ -55,6 +55,6 @@ export default {
       }));
     }
     spinner.succeed();
-    console.log(table.toString());
+    console.log(table.sort((a, b) => (a as string[])[0].localeCompare((b as string[])[0])).toString());
   }
 };
