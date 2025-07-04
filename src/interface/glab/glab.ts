@@ -6,6 +6,7 @@ import { Config } from "../../lib/config";
 import simpleGit from "simple-git";
 import { ProgressBar } from "../../lib/ui";
 import log from "../../lib/log";
+import { isGitRepo } from "../../lib/utils";
 
 export const git = (full_path: string) => simpleGit({
   baseDir: full_path
@@ -40,7 +41,7 @@ export class Gitlab {
 
     const { created } = createDirIfNotExists(clone_path);
 
-    if (!created && Repo.isGitRepo(clone_path)) await new Repo(clone_path).update();
+    if (!created && isGitRepo(clone_path)) await new Repo(clone_path).update();
     else await Repo.cloneRepo(full_path, clone_url, current);
 
     bar?.increment(1);

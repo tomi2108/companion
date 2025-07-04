@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { readdirs } from "../../lib/utils";
-import { Repo } from "./repo";
+import { isGitRepo, readdirs } from "../../lib/utils";
 import { DeployRepo } from "./deploy_repo";
 import { AppRepo } from "./app_repo";
 import { MsType } from "../../lib/constants";
@@ -12,7 +11,7 @@ function getAppPaths() {
   return [Config.get().paths.frontend, Config.get().paths.backend]
     .filter(Boolean)
     .flatMap((p) => readdirs(p)?.map((d) => path.join(d.path, d.name)))
-    .filter((s) => s && Repo.isGitRepo(s));
+    .filter((s) => s && isGitRepo(s));
 }
 
 function getDeplymentPaths() {
@@ -20,7 +19,7 @@ function getDeplymentPaths() {
   if (!dep_path) throw new Error("Despliegues path not set");
   return readdirs(dep_path)
     ?.map((d) => path.join(d.path, d.name))
-    .filter(Repo.isGitRepo);
+    .filter(isGitRepo);
 }
 
 export async function getApp(app_name: string) {

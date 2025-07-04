@@ -1,4 +1,4 @@
-import fs, { cpSync, rmSync } from "node:fs";
+import { cpSync, rmSync } from "node:fs";
 import path from "node:path";
 import { ResetMode, SimpleGit } from "simple-git";
 import { Config } from "../../lib/config";
@@ -6,15 +6,12 @@ import { MS_TYPES } from "../../lib/constants";
 import { MergeRequest } from "../glab/merge_request";
 import { git, Gitlab, glab } from "../glab/glab";
 import { loading } from "../../lib/ui";
+import { isGitRepo } from "../../lib/utils";
 
 export class Repo {
   git: SimpleGit;
   glab: ReturnType<typeof glab>;
   full_path: string;
-
-  static isGitRepo(full_path: string) {
-    return full_path && fs.existsSync(path.join(full_path, ".git"));
-  }
 
   static async cloneRepo(full_path: string, link: string, current?: boolean) {
     await git(full_path).clone(link);
@@ -36,7 +33,7 @@ export class Repo {
   }
 
   constructor(full_path: string) {
-    if (Repo.isGitRepo(full_path)) {
+    if (isGitRepo(full_path)) {
       this.git = git(full_path);
       this.glab = glab();
       this.full_path = full_path;

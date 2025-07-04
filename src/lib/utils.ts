@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import crypto from "node:crypto";
 import { Config } from "./config";
 import openEditor from "open-editor";
@@ -89,3 +90,8 @@ export function toYaml(obj: object) {
 
 // TODO: not the best, find another way to filter out micro_front_end deployments
 export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");
+
+export function isGitRepo(full_path: string) {
+  return full_path && fs.existsSync(path.join(full_path, ".git"));
+}
+
