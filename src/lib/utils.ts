@@ -86,3 +86,6 @@ export function parseKeyVal(str: string) {
 export function toYaml(obj: object) {
   return yaml.dump(obj, {});
 }
+
+// TODO: not the best, find another way to filter out micro_front_end deployments
+export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");

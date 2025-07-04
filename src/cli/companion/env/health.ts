@@ -5,6 +5,8 @@ import fs from "node:fs";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Argv } from "yargs";
 import { getApp } from "../../../interface/files/files";
+import Table from "cli-table3";
+import { filterFrontendDeployments } from "../../../lib/utils";
 
 export default {
   command: "health",
@@ -18,7 +20,7 @@ export default {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
-    let deployments = (await project.getDeployments()).filter((e) => !e.name.startsWith("app-"));
+    let deployments = (await project.getDeployments()).filter((e) => !filterFrontendDeployments(e));
 
     if (!all) {
       const deployment = await promptForOcResource(deployments);
@@ -43,11 +45,19 @@ export default {
         // TODO : probably make ignores a team config
         .filter((k) => !["PORT", "BAU_PORT", "DB_PORT"].includes(k));
 
-      const missing = [];
+      const missing = new Table({
+        head: [deployment.name],
+        style: {
+          compact: true
+        },
+        colWidths: [50]
+      });
+
       for (const key of keys) {
-        if (!env[key]) missing.push(key);
+        if (!env[key]) missing.push([key]);
       }
-      if (missing.length > 0) console.log({ [deployment.name]: missing });
+
+      if (missing.length > 0) console.log(missing.toString());
     }
   }
 };

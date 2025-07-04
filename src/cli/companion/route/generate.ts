@@ -4,7 +4,7 @@ import { promptForOcResource } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
 import { search } from "../../../lib/ui";
-import { kebabToCamel } from "../../../lib/utils";
+import { filterFrontendDeployments, kebabToCamel } from "../../../lib/utils";
 
 export default {
   command: "generate",
@@ -30,8 +30,7 @@ export default {
 
     const port = 8080;
     if (type === "frontend") {
-      // TODO: not the best, find another way to filter out micro_front_end deployments
-      const frontend_deployments = deployments.filter((e) => e.name.startsWith("app-"));
+      const frontend_deployments = deployments.filter(filterFrontendDeployments);
       const env = frontend_deployments[0].env;
       const host = host_template.replaceAll("{{env}}", env as string);
 
