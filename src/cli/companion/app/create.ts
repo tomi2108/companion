@@ -1,13 +1,11 @@
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
-import path from "node:path";
 import { readdirs } from "../../../lib/utils";
 import { input, loading, search } from "../../../lib/ui";
 import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Repo } from "../../../interface/files/repo";
-import { AppRepo } from "../../../interface/files/app_repo";
-import { Dirent } from "node:fs";
+import { getApp } from "../../../interface/files/files";
 
 export default {
   command: "create",
@@ -27,14 +25,20 @@ export default {
       ...readdirs(mf_repos_path) ?? [],
       ...readdirs(ms_repos_path) ?? []
     ];
+
     const choices = apps.map((dir) => ({ name: dir.name }));
     const app = await search({ choices, message: "Select an app" });
-    const dirent = apps.find((a) => a.name === app) as Dirent<string>;
-    const app_repo = new AppRepo(path.join(dirent?.parentPath, dirent?.name));
-
+    const { app_repo, deploy_repo } = await getApp(app);
+    if (!app_repo) {
+      log.error(`Could not find app repo for ${app}`);
+      process.exit(1);
+    }
+    const exisingNamespaces = deploy_repo?.deployments.map((d) => d.namespace) ?? [];
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects, { message: "Select a project" });
+    const project = await promptForOcResource(
+      projects.filter((p) => !exisingNamespaces.includes(p.name)),
+      { message: "Select a project" });
 
     let version: string | null = null;
     if (app_repo) {
