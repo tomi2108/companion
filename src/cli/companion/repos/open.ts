@@ -16,7 +16,9 @@ export default {
 
     const selectedProjects = await search({ choices, multiple: true, message: "Select projects to open" });
     if (selectedProjects.length === 0) return process.exit(1);
+
     for (const project of selectedProjects) {
+      process.cwd = () => project;
       openInEditor(project);
     }
   }
