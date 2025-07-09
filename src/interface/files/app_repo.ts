@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import cp from "node:child_process";
 import { Repo } from "./repo";
+import { Project } from "../oc/project";
 
 export class AppRepo extends Repo {
   version?: string;
@@ -17,6 +19,92 @@ export class AppRepo extends Repo {
     this.version = package_file.version;
     this.description = package_file.description;
     this.package = package_file.name;
+  }
+
+  getEnv(): Record<string, string> {
+    const env_file = path.join(this.full_path, ".env");
+    if (!fs.existsSync(env_file)) return {};
+    const content = fs.readFileSync(env_file).toString().trim();
+    return Object.fromEntries(content.split("\n").map((l) => l.trim().split("=")));
+  }
+
+  addEnv(key: string, value: string | number) {
+    const env_file = path.join(this.full_path, ".env");
+    fs.appendFileSync(env_file, `${key}=${value}\n`);
+  }
+
+  removeEnv(key: string) {
+    this.setEnv({ ...this.getEnv(), [key]: undefined });
+  }
+
+  setEnv(newEnv: Record<string, string | number | undefined>) {
+    const env_file = path.join(this.full_path, ".env");
+    if (fs.existsSync(env_file)) fs.rmSync(env_file);
+    Object.entries(newEnv).forEach(([key, value]) =>
+      value ? fs.appendFileSync(env_file, `${key}=${value}\n`) : null
+    );
+  }
+
+  async copyEnv(project: Project) {
+    const { name } = await this.getInfo();
+    const deployment = await project.getDeployment(name);
+    const configMaps = await deployment.getConfigMaps() ?? [];
+    const secrets = deployment.getSecrets() ?? [];
+
+    const env_file = path.join(this.full_path, ".env");
+    if (fs.existsSync(env_file)) fs.rmSync(env_file);
+    for (const r of [...secrets, ...configMaps]) {
+      for (const [key, value] of Object.entries(await r.getData() ?? {})) {
+        this.addEnv(key, value);
+      }
+    }
+  }
+
+  install() {
+    return new Promise((resolve, reject) => {
+      const child = cp.spawn("npm", ["install"], {
+        stdio: "inherit",
+        cwd: this.full_path
+      });
+
+      child.on("error", reject);
+      child.on("exit", (code) => {
+        if (code === 0) resolve(undefined);
+        else reject(new Error(`Error installing ${this.full_path}`));
+      });
+    });
+  }
+
+  start(port: number, opts?: { prefix?: string }) {
+    const ts_node_dev_path = path.join(this.full_path, "node_modules", "ts-node-dev", "lib", "bin.js");
+    const app_path = path.join(this.full_path, "src", "app.ts");
+
+    const child = cp.spawn(ts_node_dev_path, [app_path], {
+      stdio: "pipe",
+      cwd: this.full_path,
+      env: {
+        PORT: String(port)
+      }
+    });
+
+    return {
+      process, promise: new Promise((resolve, reject) => {
+        const pre = opts?.prefix ? `[${opts.prefix}]: ` : "";
+        child.stdout.on("data", (message) => {
+          console.log(pre, message.toString().trim());
+        });
+
+        child.stderr.on("data", (message) => {
+          console.error(pre, message.toString().trim());
+        });
+
+        child.on("error", reject);
+        child.on("exit", (code) => {
+          if (code === 0) resolve(undefined);
+          else reject(new Error(`Error starting ${this.full_path}`));
+        });
+      })
+    };
   }
 }
 

@@ -2,6 +2,7 @@ import { Argv } from "yargs";
 import expose from "./app/expose";
 import create from "./app/create";
 import status from "./app/status";
+import start from "./app/start";
 
 export default {
   command: "app <command>",
@@ -11,6 +12,7 @@ export default {
     .command(expose)
     .command(create)
     .command(status)
+    .command(start)
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }

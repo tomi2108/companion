@@ -6,7 +6,7 @@ import edit from "./config/edit";
 export default {
   command: "config <command>",
   describe: "Manage companion local config",
-  aliases: ["cfg"],
+  aliases: ["cfg", "conf"],
   builder: (yargs: Argv) => yargs
     .command(edit)
     .command(setup)

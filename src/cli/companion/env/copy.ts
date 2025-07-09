@@ -2,7 +2,6 @@ import { externalEnvs } from "../../../interface/files/files";
 import { getOcToken, Openshift } from "../../../interface/oc/oc";
 import log from "../../../lib/log";
 import path from "node:path";
-import fs from "node:fs";
 import { promptForApp, promptForOcResource } from "../../../interface/prompts";
 
 export default {
@@ -21,25 +20,12 @@ export default {
       process.exit(1);
     }
 
-    const { name } = await app.getInfo();
     if (!app.full_path) log.error(`Could not find path for ${name}, is the repository cloned?`);
     if (!app || !app.full_path) process.exit(1);
 
-    const deployment = await project.getDeployment(name);
-
-    const configMaps = await deployment.getConfigMaps() ?? [];
-    const secrets = deployment.getSecrets() ?? [];
-
+    await app.copyEnv(project);
     const env_file = path.join(app.full_path, ".env");
-    if (fs.existsSync(env_file)) fs.rmSync(env_file);
-
-    for (const r of [...secrets, ...configMaps]) {
-      for (const [key, value] of Object.entries(await r.getData() ?? {})) {
-        fs.appendFileSync(env_file, `${key}=${value}\n`);
-      }
-    }
-
     externalEnvs(env_file);
-    log.success(`Copied envs for ${deployment.name} from namespace ${deployment.namespace}`);
+    log.success(`Copied envs for ${app.package} from namespace ${project.name}`);
   }
 };

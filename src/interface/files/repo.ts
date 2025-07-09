@@ -92,14 +92,14 @@ export class Repo {
   async switchBranchIfExists(branch: string) {
     const active_branch = await this.getActiveBranch();
     const branches = await this.git.branchLocal();
-    if (!branches.all.includes(branch)) return { switched: false, original_branch: active_branch };
+    if (!branches.all.includes(branch) || active_branch === branch) return { switched: false, original_branch: active_branch };
     await this.git.checkout(branch);
     return { switched: true, original_branch: active_branch };
   }
 
   async pull(branch: string) {
     await this.git.branch(["-u", `origin/${branch}`, branch]);
-    return await this.git.pull("origin", branch, ["--ff-only", "--no-rebase"]);
+    return await this.git.pull("origin", branch, ["--no-rebase"]);
   }
 
   async push(branch: string) {
@@ -113,7 +113,7 @@ export class Repo {
   }
 
   async getOriginUrl() {
-    return this.getConfig("remote.origin.url");
+    return await this.getConfig("remote.origin.url");
   }
 
   async getActiveBranch() {
