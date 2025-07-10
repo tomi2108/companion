@@ -2,6 +2,7 @@ import { AxiosInstance } from "axios";
 import { Choice } from "../../lib/constants";
 import { Pod } from "./pod";
 import chalk from "chalk";
+import { TaskRun } from "./taskrun";
 
 export type PipelineRunResponse = {
   metadata: {
@@ -13,14 +14,11 @@ export type PipelineRunResponse = {
       type: string;
       reason: string;
     }[];
-    childReferences: TaskRun[];
+    childReferences: {
+      name: string;
+      pipelineTaskName: string;
+    }[];
   };
-};
-
-type TaskRun = {
-  kind: "TaskRun";
-  name: string;
-  pipelineTaskName: string;
 };
 
 export class PipelineRun {
@@ -28,7 +26,10 @@ export class PipelineRun {
   namespace?: string;
   reason?: string;
   status?: string;
-  taskruns?: TaskRun[];
+  children?: {
+    name: string;
+    pipelineTaskName: string;
+  }[];
 
   private oc: AxiosInstance;
 
@@ -37,7 +38,7 @@ export class PipelineRun {
     p.status = run.status.conditions?.[0]?.type;
     p.reason = run.status.conditions?.[0]?.reason;
     p.namespace = run.metadata.namespace;
-    p.taskruns = run.status.childReferences;
+    p.children = run.status.childReferences;
     return p;
   }
 
@@ -46,8 +47,21 @@ export class PipelineRun {
     this.oc = oc;
   }
 
+  async getTaskRuns() {
+    if (!this.children) return [];
+    return await Promise.all(
+      this.children.map(async ({ name }) =>
+        TaskRun.fromTaskRunRsponse(
+          (await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${name}`)).data,
+          this.oc
+        )
+      )
+    );
+  }
+
   async followLogs() {
-    if (!this.taskruns) throw new Error(`No task runs for PipelineRun ${this.name}`);
+    const trs = await this.getTaskRuns();
+    if (trs.length === 0) return;
     const colors = [
       chalk.blue,
       chalk.red,
@@ -57,16 +71,18 @@ export class PipelineRun {
       chalk.cyan
     ];
 
-    for (let i = 0; i < this.taskruns.length; i++) {
-      const tr = this.taskruns[i] as TaskRun;
-      const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr.name}`);
-      const podName = data.status.podName;
-      const steps = data.status.steps.map((s: { container: string }) => s.container);
-      const pod = new Pod(podName, this.oc);
+    for (let i = 0; i < trs.length; i++) {
+      const tr = trs[i];
+      const prefix = this.children?.[i]?.pipelineTaskName ?? "";
+      if (!tr?.podName || !tr.steps) continue;
+      const pod = new Pod(tr.podName, this.oc);
       pod.namespace = this.namespace;
       const color = colors[i % colors.length];
-      for (const step of steps) {
-        await pod.followLogs({ raw: true, prefix: color?.(tr.pipelineTaskName), container: step });
+      for (const step of tr.steps) {
+        await pod.followLogs({
+          raw: true, prefix: color?.(prefix),
+          container: step
+        });
       }
     }
   }
