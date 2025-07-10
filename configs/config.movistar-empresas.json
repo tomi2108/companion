@@ -1,5 +1,8 @@
 {
   "openshift": {
+    "mock_secrets": [
+      "apiinternosmock"
+    ],
     "namespace_prefix": "movistar-empresas",
     "project": "empresas",
     "product": "mimovistarempresas",

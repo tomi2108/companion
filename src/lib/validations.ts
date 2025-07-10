@@ -13,6 +13,7 @@ export const PathsConfigSchema = z.object({
 
 export const OpenShiftConfigSchema = z.object({
   default_ms_type: z.enum(MS_TYPES).optional(),
+  mock_secrets: z.array(z.string()).optional(),
   deployments: z.record(
     z.enum(MS_TYPES), z.record(z.string(), YamlContentSchema.partial().optional()).optional()
   ).or(

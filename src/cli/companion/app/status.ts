@@ -6,6 +6,7 @@ import Table from "cli-table3";
 import log from "../../../lib/log";
 import { filterFrontendDeployments } from "../../../lib/utils";
 import { loading } from "../../../lib/ui";
+import { Config } from "../../../lib/config";
 
 export default {
   command: "status",
@@ -18,7 +19,7 @@ export default {
     const deployments = (await project.getDeployments()).filter((e) => !filterFrontendDeployments(e));
 
     const table = new Table({
-      head: ["App", "Current version", "Last version"],
+      head: ["App", "Current version", "Last version", "Mocked"],
       colWidths: [50]
     });
 
@@ -26,6 +27,7 @@ export default {
     for (let index = 0; index < deployments.length; index += 20) {
       const toProcess = deployments.slice(index, index + 20);
       await Promise.all(toProcess.map(async (deployment) => {
+        const secrets = deployment.getSecrets() ?? [];
         const { app_repo, deploy_repo } = await getApp(deployment.name);
         if (!app_repo) {
           log.warning(`Could not find app repo for ${deployment.name}`);
@@ -35,7 +37,7 @@ export default {
           log.warning(`Could not find deploy repo for ${deployment.name}`);
           return;
         }
-        const [last_version, current_version] = await Promise.all([
+        const [last, current] = await Promise.all([
           (async () => {
             return (await app_repo.getTags())[0];
           })(),
@@ -49,9 +51,13 @@ export default {
             return deployment_file.getVersion();
           })()
         ]);
-        if (!last_version) return;
-        const color = current_version === last_version ? "green" : "red";
-        table.push([deployment.name, chalk[color](current_version), chalk[color](last_version)]);
+        if (!last) return;
+        const color = current === last ? "green" : "red";
+        const current_version = chalk[color](current);
+        const last_version = chalk[color](last);
+        const mockSecrets = Config.get().openshift.mock_secrets ?? [];
+        const mocked = secrets.some((s) => mockSecrets.includes(s.name)) ? chalk.green("yes") : chalk.red("no");
+        table.push([deployment.name, current_version, last_version, mocked]);
       }));
     }
     spinner.succeed();

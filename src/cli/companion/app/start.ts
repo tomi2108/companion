@@ -7,6 +7,7 @@ import { search } from "../../../lib/ui";
 import { readdirs } from "../../../lib/utils";
 import { AppRepo } from "../../../interface/files/app_repo";
 import chalk from "chalk";
+import { ChildProcessWithoutNullStreams } from "node:child_process";
 
 export default {
   command: "start",
@@ -27,7 +28,7 @@ export default {
     const choices = apps.map((d) => d.name);
     const app = await search({ choices, message: "Choose app" });
 
-    const port = 3000;
+    const port = 8080;
     const toStart = { [app]: port };
 
     async function getEnv(app: string) {
@@ -48,16 +49,15 @@ export default {
         const host = URL.canParse(value) ? new URL(value).hostname : null;
         if (!host) return;
         const found = choices.find((c) => host.split(".")[0] === c);
-        const next_port = port + Object.values(toStart).length;
-        if (found) {
-          const already_added = toStart[found];
-          repo.removeEnv(key);
-          if (!already_added) {
-            toStart[found] = next_port;
-            await getEnv(found);
-            repo.addEnv(key, `http://localhost:${next_port}`);
-          } else repo.addEnv(key, `http://localhost:${already_added}`);
-        }
+        if (!found) return;
+        const already_added = toStart[found];
+        repo.removeEnv(key);
+        if (!already_added) {
+          const next_port = port + Object.values(toStart).length;
+          toStart[found] = next_port;
+          repo.addEnv(key, `http://localhost:${next_port}`);
+          await getEnv(found);
+        } else repo.addEnv(key, `http://localhost:${already_added}`);
       });
       await Promise.all(children);
     }
@@ -69,14 +69,14 @@ export default {
       chalk.red,
       chalk.yellow,
       chalk.magenta,
-      chalk.green
+      chalk.green,
+      chalk.cyan
     ];
 
-    const children: NodeJS.Process[] = [];
+    const children: ChildProcessWithoutNullStreams[] = [];
     const promises = Object.entries(toStart).map(async ([app, port], i) => {
       const repo = new AppRepo(path.join(backend, app));
       await repo.install();
-      console.log(`Started ${app} in port ${port}`);
       const { promise, process } = repo.start(port, { prefix: colors[i % colors.length](app) });
       children.push(process);
       await promise;
@@ -84,8 +84,9 @@ export default {
 
     try {
       await Promise.all(promises);
-    } catch {
-      children.forEach((c) => c.exit());
+    } catch (err) {
+      console.error(err);
+      children.forEach((c) => c.kill("SIGTERM"));
     }
   }
 };

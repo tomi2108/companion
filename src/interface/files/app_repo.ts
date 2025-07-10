@@ -3,6 +3,7 @@ import path from "node:path";
 import cp from "node:child_process";
 import { Repo } from "./repo";
 import { Project } from "../oc/project";
+import { tryParseJSONObject } from "../../lib/utils";
 
 export class AppRepo extends Repo {
   version?: string;
@@ -63,7 +64,7 @@ export class AppRepo extends Repo {
   install() {
     return new Promise((resolve, reject) => {
       const child = cp.spawn("npm", ["install"], {
-        stdio: "inherit",
+        stdio: "pipe",
         cwd: this.full_path
       });
 
@@ -88,10 +89,11 @@ export class AppRepo extends Repo {
     });
 
     return {
-      process, promise: new Promise((resolve, reject) => {
+      process: child, promise: new Promise((resolve, reject) => {
         const pre = opts?.prefix ? `[${opts.prefix}]: ` : "";
         child.stdout.on("data", (message) => {
-          console.log(pre, message.toString().trim());
+          const parsedMessage = tryParseJSONObject(message);
+          if (parsedMessage) console.log(pre, parsedMessage);
         });
 
         child.stderr.on("data", (message) => {
