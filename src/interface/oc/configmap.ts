@@ -21,7 +21,7 @@ export class ConfigMap extends Resource {
   uid?: string;
   resourceVersion?: string;
   creationTimestamp?: string;
-  apiVersion = "v1";
+  apiVersion?: string = "v1";
 
   static fromConfigMapResponse(configMapResponse: ConfigMapResponse, oc: AxiosInstance) {
     const cm = new ConfigMap(configMapResponse.metadata.name, oc);
@@ -29,7 +29,7 @@ export class ConfigMap extends Resource {
     cm.uid = configMapResponse.metadata.uid;
     cm.resourceVersion = configMapResponse.metadata.resourceVersion;
     cm.creationTimestamp = configMapResponse.metadata.creationTimestamp;
-    cm.apiVersion = configMapResponse.metadata.managedFields?.[0].apiVersion;
+    cm.apiVersion = configMapResponse.metadata.managedFields?.[0]?.apiVersion;
     cm.data = configMapResponse.data;
     return cm;
   }

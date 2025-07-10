@@ -31,7 +31,7 @@ export default {
     const port = 8080;
     if (type === "frontend") {
       const frontend_deployments = deployments.filter(filterFrontendDeployments);
-      const env = frontend_deployments[0].env;
+      const env = frontend_deployments?.[0]?.env;
       const host = host_template.replaceAll("{{env}}", env as string);
 
       for (const deployment of frontend_deployments) {

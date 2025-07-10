@@ -14,6 +14,10 @@ export default {
     parent_issue.createChild(labels);
 
     const issue = (await new Jira().getIssues({ labels: labels }))[0];
+    if (!issue) {
+      console.error("Could not find created issue");
+      process.exit(1);
+    }
     const estimacion = await input({ message: "Input estimate for the ticket" });
     issue.estimate(estimacion);
 

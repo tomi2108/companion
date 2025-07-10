@@ -33,8 +33,8 @@ export class PipelineRun {
 
   static fromPipelineRunResponse(run: PipelineRunResponse, oc: AxiosInstance) {
     const p = new PipelineRun(run.metadata.name, oc);
-    p.status = run.status.conditions[0].type;
-    p.reason = run.status.conditions[0].reason;
+    p.status = run.status.conditions?.[0]?.type;
+    p.reason = run.status.conditions?.[0]?.reason;
     p.namespace = run.metadata.namespace;
     p.taskruns = run.status.childReferences;
     return p;

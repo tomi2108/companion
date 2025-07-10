@@ -10,7 +10,7 @@ import { DeployYamlContent } from "./deploy_yaml";
 function getAppPaths() {
   return [Config.get().paths.frontend, Config.get().paths.backend]
     .filter(Boolean)
-    .flatMap((p) => readdirs(p)?.map((d) => path.join(d.path, d.name)))
+    .flatMap((p) => readdirs(p)?.map((d) => path.join(d.parentPath, d.name)))
     .filter((s) => s && isGitRepo(s));
 }
 
@@ -18,7 +18,7 @@ function getDeplymentPaths() {
   const dep_path = Config.get().paths.despliegues;
   if (!dep_path) throw new Error("Despliegues path not set");
   return readdirs(dep_path)
-    ?.map((d) => path.join(d.path, d.name))
+    ?.map((d) => path.join(d.parentPath, d.name))
     .filter(isGitRepo);
 }
 
@@ -51,7 +51,10 @@ export function createDirIfNotExists(dir: string) {
 
 export function accessObj(obj: Record<string, unknown> | undefined, keys: string[]) {
   if (!obj) return;
-  const val = obj?.[keys?.[0]];
+  const key = keys[0];
+  // TODO: maybe return val... test
+  if (!key) return null;
+  const val = obj?.[key];
   if (val === null || val === undefined) return null;
   if (typeof val !== "object" || Array.isArray(val)) return val;
   return accessObj(val as Record<string, unknown>, keys.slice(1));

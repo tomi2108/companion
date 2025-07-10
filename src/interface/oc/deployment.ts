@@ -47,8 +47,8 @@ export class Deployment {
     d.namespace = deployment.metadata.namespace;
     d.restartedAt = deployment.spec.template.metadata.annotations["kubectl.kubernetes.io/restartedAt"];
     d.env = deployment.spec.template.metadata.labels["app.environment"];
-    d.secrets_names = deployment.spec.template.spec.containers[0].envFrom.map((e) => "secretRef" in e ? e.secretRef.name : null).filter((s): s is string => Boolean(s));
-    d.configmaps_names = deployment.spec.template.spec.containers[0].envFrom.map((e) => "configMapRef" in e ? e.configMapRef.name : null).filter((s): s is string => Boolean(s));
+    d.secrets_names = deployment.spec.template.spec.containers[0]?.envFrom.map((e) => "secretRef" in e ? e.secretRef.name : null).filter((s): s is string => Boolean(s));
+    d.configmaps_names = deployment.spec.template.spec.containers[0]?.envFrom.map((e) => "configMapRef" in e ? e.configMapRef.name : null).filter((s): s is string => Boolean(s));
     return d;
   }
 

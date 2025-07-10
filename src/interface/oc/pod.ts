@@ -25,7 +25,7 @@ export class Pod {
   static fromPodResponse(pod: PodResponse, oc: AxiosInstance) {
     const p = new Pod(pod.metadata.name, oc);
     p.status = pod.status.phase;
-    p.container = pod.status.containerStatuses[0].name;
+    p.container = pod.status.containerStatuses[0]?.name;
     p.namespace = pod.metadata.namespace;
     return p;
   }

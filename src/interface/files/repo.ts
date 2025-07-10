@@ -140,12 +140,15 @@ export class Repo {
     const { id } = !opts?.projectId ? await this.getProject() : { id: opts.projectId };
 
     const commits = await this.getDiffCommits(sourceBranch, targetBranch);
-    const title = opts?.title || commits[0].message;
-    const assigneeId = (await gitlab.getUser(Config.get().gitlab.username)).id;
+    const title = opts?.title || commits?.[0]?.message || `Merge '${sourceBranch}' into ${targetBranch}`;
+    const assigneeId = (await gitlab.getUser(Config.get().gitlab.username))?.id;
     const description = MergeRequest.descriptionFromCommits(commits);
 
-    const reviewerIds = [];
-    if (opts?.reviewer) reviewerIds.push((await gitlab.getUser(opts.reviewer)).id);
+    const reviewerIds: number[] = [];
+    if (opts?.reviewer) {
+      const reviewerId = (await gitlab.getUser(opts.reviewer))?.id;
+      if (reviewerId !== undefined) reviewerIds.push(reviewerId);
+    }
 
     return MergeRequest.fromMergeRequestResponse(
       await this.glab.MergeRequests.create(id, sourceBranch, targetBranch, title, {
@@ -184,7 +187,7 @@ export class Repo {
     description: string;
   }) {
     const project = await this.getProject();
-    const assigneeId = (await new Gitlab().getUser(Config.get().gitlab.username)).id;
+    const assigneeId = (await new Gitlab().getUser(Config.get().gitlab.username))?.id;
     const options = { description, assigneeId };
     await this.glab.Issues.create(project.id, title, options);
   }

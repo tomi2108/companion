@@ -77,7 +77,8 @@ export default {
     const promises = Object.entries(toStart).map(async ([app, port], i) => {
       const repo = new AppRepo(path.join(backend, app));
       await repo.install();
-      const { promise, process } = repo.start(port, { prefix: colors[i % colors.length](app) });
+      const color = colors[i % colors.length];
+      const { promise, process } = repo.start(port, { prefix: color ? color(app) : app });
       children.push(process);
       await promise;
     });

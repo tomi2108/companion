@@ -61,6 +61,11 @@ export default {
       }));
     }
     spinner.succeed();
-    console.log(table.sort((a, b) => (a as string[])[0].localeCompare((b as string[])[0])).toString());
+    const sortedTable = table.sort((a, b) => {
+      const nameA = typeof a === "string" ? a[0] : "";
+      const nameB = typeof b === "string" ? b[0] : "";
+      return nameA.localeCompare(nameB);
+    });
+    console.log(sortedTable.toString());
   }
 };

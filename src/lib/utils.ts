@@ -48,7 +48,7 @@ export function md5FromFile(file_path: string) {
 }
 
 export function kebabToCamel(str: string) {
-  return str.replace(/-./g, (x) => x[1].toUpperCase());
+  return str.replace(/-./g, (x) => x[1]?.toUpperCase() ?? "");
 }
 
 export async function openInBrowser(url: string) {
