@@ -4,7 +4,7 @@ import os from "node:os";
 import { deepMerge, openInEditor, removePrefix, removeSuffix } from "./utils";
 import { input, password, search, confirm } from "./ui";
 import log from "./log";
-import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ThreeScaleConfig, VaultConfig } from "./validations";
+import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, ThreeScaleConfig, VaultConfig } from "./validations";
 
 const homeDir = os.homedir();
 
@@ -53,6 +53,7 @@ class Config {
   threescale: ThreeScaleConfig = {} as ThreeScaleConfig;
   paths: PathsConfig = {} as PathsConfig;
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
+  repos: ReposConfig = {} as ReposConfig;
 
   static get() {
     if (this.config === null) this.config = new Config();
@@ -136,7 +137,17 @@ class Config {
     }
     const readConfig = ConfigSchema.parse(JSON.parse(file_content));
 
-    (["jira", "gitlab", "openshift", "vault", "dynatrace", "paths", "preferences", "threescale"] as const).forEach((key) => {
+    ([
+      "jira",
+      "gitlab",
+      "openshift",
+      "vault",
+      "dynatrace",
+      "paths",
+      "preferences",
+      "threescale",
+      "repos"
+    ] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
         this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);
       }

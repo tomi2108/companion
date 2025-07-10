@@ -5,6 +5,7 @@ import path from "node:path";
 import yaml from "js-yaml";
 import log from "../../../lib/log";
 import { Config } from "../../../lib/config";
+import { setTimeout } from "node:timers/promises";
 
 export default {
   command: "edit",
@@ -62,12 +63,9 @@ export default {
     });
     if (!restarts) return;
 
-    // TODO: probably check every 30s if pipeline is done and then execute this
-    //
+    await setTimeout(10 * 1000);
     const deployments = await project.getDeployments();
-    for (const d of deployments) {
-      if (!d.getSecrets()?.some((s) => s.name === secret.name)) continue;
-      await d.restart();
-    }
+    const toRestart = deployments.filter((d) => d.getSecrets()?.some((s) => s.name === secret.name));
+    await Promise.all(toRestart.map((d) => d.restart()));
   }
 };

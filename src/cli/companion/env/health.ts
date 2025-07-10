@@ -7,6 +7,7 @@ import { Argv } from "yargs";
 import { getApp } from "../../../interface/files/files";
 import Table from "cli-table3";
 import { filterFrontendDeployments } from "../../../lib/utils";
+import { Config } from "../../../lib/config";
 
 export default {
   command: "health",
@@ -34,12 +35,18 @@ export default {
         continue;
       }
 
+      const env_path = Config.get().repos.environment_path ?? "src/configuration/environment.ts";
+      const env_full_path = path.join(app.full_path, env_path);
+      if (!fs.existsSync(env_full_path)) {
+        log.error(`Could not find env file for ${deployment.name}`);
+        continue;
+      }
+
       const configMaps = await deployment.getConfigMaps() ?? [];
       const secrets = deployment.getSecrets() ?? [];
       const resources = await Promise.all([...secrets, ...configMaps].map((r) => r.getData()));
       const env = resources.filter((r) => r !== undefined).reduce((acc, curr) => ({ ...acc, ...curr }));
-      // TODO : probably make file a team config
-      const needed_envs = fs.readFileSync(path.join(app.full_path, "src/configuration/environment.ts")).toString().trim();
+      const needed_envs = fs.readFileSync(env_full_path).toString().trim();
       const matches = needed_envs.matchAll(/process\.env\..*/g).toArray().map((m) => m[0].replace("process.env.", ""));
       const keys = matches.map((m) => m.split(" ")?.[0]?.replaceAll(",", "") ?? "")
         // TODO : probably make ignores a team config

@@ -58,5 +58,6 @@ export default {
       }
       await repo.switchBranchIfExists(original_branch);
     });
+
   }
 };

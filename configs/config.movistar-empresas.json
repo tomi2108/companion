@@ -102,5 +102,8 @@
       "ECR-Replacement",
       "ECR-Raplacement"
     ]
+  },
+  "repos": {
+    "environment_path": "src/configuration/environment.ts"
   }
 }
