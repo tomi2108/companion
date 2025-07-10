@@ -11,7 +11,6 @@ import ticket from "./companion/ticket";
 import config from "./companion/config";
 import app from "./companion/app";
 import upgrade from "./companion/upgrade";
-import chat from "./companion/chat";
 import mr from "./companion/mr";
 import { Config } from "../lib/config";
 
@@ -32,7 +31,6 @@ yargs
   .command(deploy)
   .command(pipeline)
   .command(upgrade)
-  .command(chat)
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()

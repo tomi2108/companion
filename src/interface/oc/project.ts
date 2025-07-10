@@ -1,4 +1,4 @@
-import { Choice, EXCLUDED_SECRETS } from "../../lib/constants";
+import { Choice } from "../../lib/constants";
 import { Deployment, DeploymentResponse } from "./deployment";
 import { Pod, PodResponse } from "./pod";
 import { ConfigMap, ConfigMapResponse } from "./configmap";

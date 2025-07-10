@@ -1,15 +1,10 @@
-import { Jira } from "../../../interface/jira/jira";
 import { promptForJiraIssue } from "../../../interface/prompts";
-import { search } from "../../../lib/ui";
 
 export default {
   command: "unlink",
   describe: "Unlink tickets",
   handler: async () => {
     const issue = await promptForJiraIssue();
-    const types = await new Jira().getIssueLinkTypes();
-    const choices = types.map((e) => ({ name: e.name, hint: e.inward }));
-    const type = await search({ choices, message: "" });
     const issue2 = await promptForJiraIssue();
     issue.unlink(issue2);
   }

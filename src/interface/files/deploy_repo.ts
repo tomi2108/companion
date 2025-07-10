@@ -19,7 +19,7 @@ export class DeployRepo extends Repo {
     return yaml_files.map((f) => new DeployYaml(f));
   }
 
-  async pull(branch: string) {
+  override async pull(branch: string) {
     const res = await super.pull(branch);
     this.deployments = this.updateDeployments(this.full_path);
     return res;

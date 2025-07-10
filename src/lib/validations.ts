@@ -80,14 +80,13 @@ type UserOpenShiftConfig = z.infer<typeof OpenShiftConfigSchema>;
 type UserDynatraceConfig = z.infer<typeof DynatraceConfigSchema>;
 type UserVaultConfig = z.infer<typeof VaultConfigSchema>;
 
-export type PreferencesConfig = z.infer<typeof PreferencesConfigSchema>;
-export type PathsConfig = z.infer<typeof PathsConfigSchema>;
-export type ThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
+type UserPreferencesConfig = z.infer<typeof PreferencesConfigSchema>;
+type UserPathsConfig = z.infer<typeof PathsConfigSchema>;
+type UserThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
   server: string;
 };
-
 export type OpenShiftConfig = UserOpenShiftConfig & {
   auth_server_cuyo: string;
   auth_server_barracas: string;
@@ -98,13 +97,18 @@ export type OpenShiftConfig = UserOpenShiftConfig & {
   project?: string;
   product: string;
 };
-export type DynatraceConfig = UserDynatraceConfig;
 export type GitlabConfig = UserGitlabConfig & {
   server: string;
   repos: { [K in keyof PathsConfig]: number };
 };
-
 export type VaultConfig = UserVaultConfig & {
   project: string;
   server: string;
 };
+
+export type PreferencesConfig = UserPreferencesConfig & {
+  editor: string;
+};
+export type DynatraceConfig = UserDynatraceConfig;
+export type PathsConfig = UserPathsConfig;
+export type ThreeScaleConfig = UserThreeScaleConfig;

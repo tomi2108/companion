@@ -58,7 +58,7 @@ export async function openInBrowser(url: string) {
 }
 
 export async function openInEditor(full_path: string, opts?: { wait?: boolean }) {
-  await openEditor([{ file: full_path }], { wait: opts?.wait, editor: Config.get().preferences.editor });
+  await openEditor([{ file: full_path }], { wait: opts?.wait ?? false, editor: Config.get().preferences.editor });
 }
 
 export function getCurrentPath() {

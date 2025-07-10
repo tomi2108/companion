@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios";
-import { Choice, EXCLUDED_SECRETS } from "../../lib/constants";
+import { Choice } from "../../lib/constants";
 import { ConfigMap } from "./configmap";
 import { Secret } from "./secret";
 import { filterExcludedConfigmaps, filterExcludedSecrets } from "./oc";

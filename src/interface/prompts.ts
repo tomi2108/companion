@@ -56,7 +56,11 @@ export async function promptForJiraIssue<T>(
   const iOpts = issueOpts || {};
   const jira = new Jira();
 
-  const issues = await jira.getIssues({ labels: Config.get().jira.labels, status: ["Finalizado", "En curso"], ...iOpts });
+  const issues = await jira.getIssues({
+    labels: Config.get().jira.labels ?? [],
+    status: ["Finalizado", "En curso"], ...iOpts
+  });
+
   const choices = issues.map((i) => i.toChoice());
   const choice = await search({ choices, message: "Select an issue:", ...pOpts });
 
