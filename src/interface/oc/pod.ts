@@ -35,40 +35,48 @@ export class Pod {
     this.oc = oc;
   }
 
-  followLogs(opts?: { raw?: boolean; prefix?: string }) {
+  async followLogs(opts?: { raw?: boolean; prefix?: string; container?: string }) {
     const url = new URL(this.oc.defaults.baseURL ?? "");
     const host = url.hostname;
     const port = url.port;
-    const ws = new WebSocket(`wss://${host}:${port}/api/v1/namespaces/${this.namespace}/pods/${this.name}/log?&follow=true`, ["base64.binary.k8s.io"], {
+    const wsUrl = new URL(`wss://${host}:${port}/api/v1/namespaces/${this.namespace}/pods/${this.name}/log`);
+    wsUrl.searchParams.set("follow", "true");
+    if (opts?.container) wsUrl.searchParams.set("container", opts.container);
+    const ws = new WebSocket(wsUrl.toString(), ["base64.binary.k8s.io"], {
       protocolVersion: 13,
       rejectUnauthorized: false,
       headers: { Authorization: this.oc.defaults.headers.Authorization?.toString() }
     });
 
-    ws.onerror = () => console.warn(`Could not get logs for pod ${this.name}`);
+    return new Promise((resolve, reject) => {
+      ws.onclose = resolve;
+      ws.onerror = reject;
+      ws.onmessage = (event) => {
+        let message: string | object = base64Decode(event.data.toString()).trim();
+        if (!opts?.raw) message = tryParseJSONObject(message);
+        if (!message) return;
+        if (opts?.prefix) {
+          if (opts.raw) message = (message as string)
+            .trim()
+            .replaceAll("\r", "\n")
+            .split("\n")
+            .map((s) => `[${opts.prefix}]: ${s}`)
+            .join("\n");
 
-    ws.onmessage = (event) => {
-      let message: string | object = base64Decode(event.data.toString()).trim();
-      if (!opts?.raw) message = tryParseJSONObject(message);
-      if (!message) return;
-      if (opts?.prefix) {
-        if (opts.raw) message = (message as string)
-          .trim()
-          .replaceAll("\r", "\n")
-          .split("\n")
-          .map((s) => `[${opts.prefix}]: ${s}`)
-          .join("\n");
-
-        else message = { [opts.prefix]: message };
-      }
-      if (message) console.log(message);
-    };
+          else message = { [opts.prefix]: message };
+        }
+        if (message) console.log(message);
+      };
+    });
   }
 
-  async getLogs() {
+  async getLogs(opts?: { container?: string }) {
+    const params = { container: this.container ?? "" };
+    if (opts?.container) params.container = opts.container;
+
     return (await this.oc.get(
       `/api/v1/namespaces/${this.namespace}/pods/${this.name}/log`,
-      { params: { container: this.container } }
+      { params }
     )).data;
   }
 

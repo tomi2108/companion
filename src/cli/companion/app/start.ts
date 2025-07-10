@@ -8,12 +8,17 @@ import { readdirs } from "../../../lib/utils";
 import { AppRepo } from "../../../interface/files/app_repo";
 import chalk from "chalk";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
+import { Argv } from "yargs";
 
 export default {
   command: "start",
   aliases: [],
   describe: "Start app and all sub-apps locally",
-  handler: async () => {
+  builder: (yargs: Argv) => yargs
+    .boolean("raw")
+    .alias("raw", ["r"])
+    .describe("raw", "Whether to show raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs"),
+  handler: async ({ raw }: { raw?: boolean }) => {
     const backend = Config.get().paths.backend ?? "";
     if (!backend) {
       log.error("Backend path not set");
@@ -63,7 +68,6 @@ export default {
     }
 
     await getEnv(app);
-    console.log(toStart);
     const colors = [
       chalk.blue,
       chalk.red,
@@ -78,12 +82,13 @@ export default {
       const repo = new AppRepo(path.join(backend, app));
       await repo.install();
       const color = colors[i % colors.length];
-      const { promise, process } = repo.start(port, { prefix: color ? color(app) : app });
+      const { promise, process } = repo.start(port, { raw, prefix: color?.(app)});
       children.push(process);
       await promise;
     });
 
     try {
+      console.log(toStart);
       await Promise.all(promises);
     } catch (err) {
       console.error(err);

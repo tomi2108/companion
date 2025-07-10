@@ -76,7 +76,7 @@ export class AppRepo extends Repo {
     });
   }
 
-  start(port: number, opts?: { prefix?: string }) {
+  start(port: number, opts?: { prefix?: string; raw?: boolean }) {
     const ts_node_dev_path = path.join(this.full_path, "node_modules", "ts-node-dev", "lib", "bin.js");
     const app_path = path.join(this.full_path, "src", "app.ts");
 
@@ -91,9 +91,10 @@ export class AppRepo extends Repo {
     return {
       process: child, promise: new Promise((resolve, reject) => {
         const pre = opts?.prefix ? `[${opts.prefix}]: ` : "";
-        child.stdout.on("data", (message) => {
-          const parsedMessage = tryParseJSONObject(message);
-          if (parsedMessage) console.log(pre, parsedMessage);
+        child.stdout.on("data", (data) => {
+          let message = data.toString().trim();
+          if (!opts?.raw) message = tryParseJSONObject(message);
+          if (message) console.log(pre, message);
         });
 
         child.stderr.on("data", (message) => {

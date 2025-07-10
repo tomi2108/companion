@@ -1,6 +1,7 @@
 import { AxiosInstance } from "axios";
 import { Choice } from "../../lib/constants";
 import { Pod } from "./pod";
+import chalk from "chalk";
 
 export type PipelineRunResponse = {
   metadata: {
@@ -46,15 +47,40 @@ export class PipelineRun {
   }
 
   async followLogs() {
-    return await Promise.all(
-      this.taskruns?.map(async (tr) => {
-        const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr.name}`);
-        const podName = data.status.podName;
-        const pod = new Pod(podName, this.oc);
-        pod.namespace = this.namespace;
-        pod.followLogs({ raw: true, prefix: tr.pipelineTaskName });
-      }) ?? []);
+    if (!this.taskruns) throw new Error(`No task runs for PipelineRun ${this.name}`);
+    const colors = [
+      chalk.blue,
+      chalk.red,
+      chalk.yellow,
+      chalk.magenta,
+      chalk.green,
+      chalk.cyan
+    ];
+
+    for (let i = 0; i < this.taskruns.length; i++) {
+      const tr = this.taskruns[i] as TaskRun;
+      const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr.name}`);
+      const podName = data.status.podName;
+      const steps = data.status.steps.map((s: { container: string }) => s.container);
+      const pod = new Pod(podName, this.oc);
+      pod.namespace = this.namespace;
+      const color = colors[i % colors.length];
+      for (const step of steps) {
+        await pod.followLogs({ raw: true, prefix: color?.(tr.pipelineTaskName), container: step });
+      }
+    }
   }
+
+  // async followLogs() {
+  //   return await Promise.all(
+  //     this.taskruns?.map(async (tr) => {
+  //       const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr.name}`);
+  //       const podName = data.status.podName;
+  //       const pod = new Pod(podName, this.oc);
+  //       pod.namespace = this.namespace;
+  //       pod.followLogs({ raw: true, prefix: tr.pipelineTaskName });
+  //     }) ?? []);
+  // }
 
   toChoice(): Choice {
     return { name: this.name, hint: `(${this.reason ?? "Unknown reason"})` };

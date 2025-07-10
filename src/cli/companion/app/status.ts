@@ -62,8 +62,8 @@ export default {
     }
     spinner.succeed();
     const sortedTable = table.sort((a, b) => {
-      const nameA = typeof a === "string" ? a[0] : "";
-      const nameB = typeof b === "string" ? b[0] : "";
+      const nameA = Array.isArray(a) && typeof a[0] === "string" ? a[0] : "";
+      const nameB = Array.isArray(b) && typeof b[0] === "string" ? b[0] : "";
       return nameA.localeCompare(nameB);
     });
     console.log(sortedTable.toString());
