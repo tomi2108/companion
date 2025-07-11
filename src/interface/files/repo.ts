@@ -7,6 +7,7 @@ import { MergeRequest } from "../glab/merge_request";
 import { git, Gitlab, glab } from "../glab/glab";
 import { loading } from "../../lib/ui";
 import { isGitRepo } from "../../lib/utils";
+import { setTimeout } from "node:timers/promises";
 
 export class Repo {
   git: SimpleGit;
@@ -45,12 +46,13 @@ export class Repo {
     return (await this.git.tags({ "--sort": "-v:refname" })).all;
   }
 
-  async stash(callback: () => Promise<void> | void) {
+  async stash<T>(callback: () => Promise<T> | T) {
     const { total: stash_before } = await this.git.stashList();
     await this.git.stash(["--include-untracked"]);
     const { total: stash_after } = await this.git.stashList();
-    await callback();
+    const res = await callback();
     if (stash_after !== stash_before) await this.git.stash(["pop"]);
+    return res;
   }
 
   async reset() {
@@ -163,17 +165,15 @@ export class Repo {
     const spinner = loading("Building merge request");
     const { id } = await this.getProject();
     const mr = await this.createMr(targetBranch, { projectId: id });
-    setTimeout(async () => {
-      spinner.succeed();
-      // genius =)
-      try {
-        await mr.merge();
-      } catch {
-        setTimeout(async () => {
-          await mr.merge();
-        }, 10 * 1000);
-      }
-    }, 45 * 1000);
+    await setTimeout(45 * 1000);
+    spinner.succeed();
+    // genius =)
+    try {
+      await mr.merge();
+    } catch {
+      setTimeout(10 * 1000);
+      await mr.merge();
+    }
   }
 
   async getMrs() {

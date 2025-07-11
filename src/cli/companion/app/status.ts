@@ -4,7 +4,6 @@ import { promptForOcResource } from "../../../interface/prompts";
 import chalk from "chalk";
 import Table from "cli-table3";
 import log from "../../../lib/log";
-import { filterFrontendDeployments } from "../../../lib/utils";
 import { loading } from "../../../lib/ui";
 import { Config } from "../../../lib/config";
 
@@ -16,7 +15,7 @@ export default {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
-    const deployments = (await project.getDeployments()).filter((e) => !filterFrontendDeployments(e));
+    const deployments = await project.getDeployments();
 
     const table = new Table({
       head: ["App", "Current version", "Last version", "Mocked"],
@@ -39,6 +38,7 @@ export default {
         }
         const [last, current] = await Promise.all([
           (async () => {
+            // TODO: for frontend repos look at -beta... -rc based on project
             return (await app_repo.getTags())[0];
           })(),
           (async () => {

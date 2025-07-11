@@ -69,3 +69,5 @@ export class Openshift {
 export const filterExcludedSecrets = (s: Secret) => !EXCLUDED_SECRETS.includes(s.name);
 //                                      (cm :Configmap)
 export const filterExcludedConfigmaps = () => true;
+// TODO: not the best, find another way to filter out micro_front_end deployments
+export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");

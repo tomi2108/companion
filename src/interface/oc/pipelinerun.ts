@@ -43,7 +43,6 @@ export class PipelineRun {
   private oc: AxiosInstance;
 
   static fromPipelineRunResponse(run: PipelineRunResponse, oc: AxiosInstance) {
-    console.dir(run, { depth: null });
     const p = new PipelineRun(run.metadata.name, oc);
     p.created = new Date(run.metadata.creationTimestamp);
     p.reason = run.status.conditions?.[0]?.reason;

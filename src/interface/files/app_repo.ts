@@ -109,6 +109,13 @@ export class AppRepo extends Repo {
       })
     };
   }
+
+  async findPipeline(project: Project, q: string) {
+    const { name } = await this.getInfo();
+    const pipelines = await project.getPipelineRuns();
+    const pipeline = pipelines.find((p) => p.name.includes(q) && p.name.includes(name));
+    return pipeline;
+  }
 }
 
 class InvalidAppRepo extends Error {

@@ -1,4 +1,4 @@
-import { getOcToken, Openshift } from "../../../interface/oc/oc";
+import { filterFrontendDeployments, getOcToken, Openshift } from "../../../interface/oc/oc";
 import log from "../../../lib/log";
 import path from "node:path";
 import fs from "node:fs";
@@ -6,7 +6,6 @@ import { promptForOcResource } from "../../../interface/prompts";
 import { Argv } from "yargs";
 import { getApp } from "../../../interface/files/files";
 import Table from "cli-table3";
-import { filterFrontendDeployments } from "../../../lib/utils";
 import { Config } from "../../../lib/config";
 
 export default {

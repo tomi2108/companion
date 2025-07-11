@@ -17,7 +17,7 @@ export default {
 
     const { app_repo, deploy_repo } = await promptForApp();
 
-    await deploy_repo.stash(async () => {
+    const deployed = await deploy_repo.stash(async () => {
       const versionsSpinner = loading("Getting versions");
       await deploy_repo.update();
       await deploy_repo.switchBranchIfExists("master");
@@ -92,7 +92,9 @@ export default {
         return;
       }
       await deploy_repo.createAndMergeMr("master");
+      return true;
     });
+    if (!deployed) return;
 
     const token = await getOcToken("brc");
     const projects = await new Openshift(token, "brc").getProjects();
@@ -103,23 +105,19 @@ export default {
       return;
     }
 
-    const info = await app_repo?.getInfo();
-    if (!info) {
-      log.error(`Could not get name for repo ${app_repo?.full_path}`);
-      return;
-    }
-
-    const pipelines = await project.getPipelineRuns();
-    const pipeline = pipelines.find((p) => p.name.includes("sync") && p.name.includes(info.name));
+    const pipeline = await app_repo?.findPipeline(project, "sync");
     if (!pipeline) {
-      log.error(`Could not find sync pipeline for ${info.name}`);
+      log.error("Could not find sync pipeline");
       return;
     }
 
-    while (await pipeline.status() !== PipelineStatus.succeeded) {
-      console.log("Waiting...");
-      setTimeout(30 * 1000);
-    }
-    console.log("pipeline endedSuccessfully");
+    const spinner = loading("Running pipeline");
+    while (await pipeline.status() === PipelineStatus.running) setTimeout(30 * 1000);
+
+    const status = await pipeline.status();
+    console.log(status);
+    if (status === PipelineStatus.succeeded) spinner.succeed("Pipeline succeeded");
+    else spinner.fail("Pipeline failed");
+
   }
 };

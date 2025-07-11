@@ -1,10 +1,10 @@
 import axios from "axios";
-import { getOcToken, Openshift } from "../../../interface/oc/oc";
+import { filterFrontendDeployments, getOcToken, Openshift } from "../../../interface/oc/oc";
 import { promptForOcResource } from "../../../interface/prompts";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
 import { search } from "../../../lib/ui";
-import { filterFrontendDeployments, kebabToCamel } from "../../../lib/utils";
+import { kebabToCamel } from "../../../lib/utils";
 
 export default {
   command: "generate",

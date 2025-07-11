@@ -88,9 +88,6 @@ export function toYaml(obj: object) {
   return yaml.dump(obj, {});
 }
 
-// TODO: not the best, find another way to filter out micro_front_end deployments
-export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");
-
 export function isGitRepo(full_path: string) {
   return full_path && fs.existsSync(path.join(full_path, ".git"));
 }
