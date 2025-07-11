@@ -83,7 +83,6 @@ export default {
     while (await pipeline.status() === PipelineStatus.running) setTimeout(30 * 1000);
 
     const status = await pipeline.status();
-    console.log(status);
     if (status === PipelineStatus.succeeded) spinner.succeed("Pipeline succeeded");
     else spinner.fail("Pipeline failed");
   }
