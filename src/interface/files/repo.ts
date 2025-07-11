@@ -41,9 +41,10 @@ export class Repo {
     } else throw new InvalidRepo(full_path);
   }
 
-  async getTags() {
+  async getTags(opts?: { sortByLastCreated: boolean }) {
+    const sort = opts?.sortByLastCreated ? "-creatordate" : "-v:refname";
     await this.git.fetch(["--tags"]);
-    return (await this.git.tags({ "--sort": "-v:refname" })).all;
+    return (await this.git.tags({ "--sort": sort })).all;
   }
 
   async stash<T>(callback: () => Promise<T> | T) {
