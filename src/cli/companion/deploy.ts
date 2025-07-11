@@ -6,6 +6,8 @@ import { Secret } from "../../interface/oc/secret";
 import { ConfigMap } from "../../interface/oc/configmap";
 import { getOcToken, Openshift } from "../../interface/oc/oc";
 import { DeployYaml } from "../../interface/files/deploy_yaml";
+import { setTimeout } from "node:timers/promises";
+import { PipelineStatus } from "../../interface/oc/pipelinerun";
 
 export default {
   command: "deploy",
@@ -91,5 +93,33 @@ export default {
       }
       await deploy_repo.createAndMergeMr("master");
     });
+
+    const token = await getOcToken("brc");
+    const projects = await new Openshift(token, "brc").getProjects();
+
+    const project = projects.find((p) => p.name === "cd-paas");
+    if (!project) {
+      log.error("Could not find cd-paas project");
+      return;
+    }
+
+    const info = await app_repo?.getInfo();
+    if (!info) {
+      log.error(`Could not get name for repo ${app_repo?.full_path}`);
+      return;
+    }
+
+    const pipelines = await project.getPipelineRuns();
+    const pipeline = pipelines.find((p) => p.name.includes("sync") && p.name.includes(info.name));
+    if (!pipeline) {
+      log.error(`Could not find sync pipeline for ${info.name}`);
+      return;
+    }
+
+    while (await pipeline.status() !== PipelineStatus.succeeded) {
+      console.log("Waiting...");
+      setTimeout(30 * 1000);
+    }
+    console.log("pipeline endedSuccessfully");
   }
 };

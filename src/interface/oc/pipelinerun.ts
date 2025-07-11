@@ -8,11 +8,12 @@ export type PipelineRunResponse = {
   metadata: {
     name: string;
     namespace: string;
+    creationTimestamp: string;
   };
   status: {
     conditions: {
       type: string;
-      reason: string;
+      reason: PipelineStatus;
     }[];
     childReferences: {
       name: string;
@@ -21,11 +22,19 @@ export type PipelineRunResponse = {
   };
 };
 
+export const PipelineStatus = {
+  succeeded: "Succeeded",
+  failed: "Failed",
+  running: "Running"
+} as const;
+
+type PipelineStatus = typeof PipelineStatus[keyof typeof PipelineStatus];
+
 export class PipelineRun {
   name: string;
   namespace?: string;
   reason?: string;
-  status?: string;
+  created?: Date;
   children?: {
     name: string;
     pipelineTaskName: string;
@@ -34,8 +43,9 @@ export class PipelineRun {
   private oc: AxiosInstance;
 
   static fromPipelineRunResponse(run: PipelineRunResponse, oc: AxiosInstance) {
+    console.dir(run, { depth: null });
     const p = new PipelineRun(run.metadata.name, oc);
-    p.status = run.status.conditions?.[0]?.type;
+    p.created = new Date(run.metadata.creationTimestamp);
     p.reason = run.status.conditions?.[0]?.reason;
     p.namespace = run.metadata.namespace;
     p.children = run.status.childReferences;
@@ -87,16 +97,10 @@ export class PipelineRun {
     }
   }
 
-  // async followLogs() {
-  //   return await Promise.all(
-  //     this.taskruns?.map(async (tr) => {
-  //       const { data } = await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/taskruns/${tr.name}`);
-  //       const podName = data.status.podName;
-  //       const pod = new Pod(podName, this.oc);
-  //       pod.namespace = this.namespace;
-  //       pod.followLogs({ raw: true, prefix: tr.pipelineTaskName });
-  //     }) ?? []);
-  // }
+  async status(): Promise<PipelineStatus> {
+    const data: PipelineRunResponse = (await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/pipelineruns/${this.name}`)).data;
+    return data.status.conditions[0]?.reason ?? PipelineStatus.failed;
+  }
 
   toChoice(): Choice {
     return { name: this.name, hint: `(${this.reason ?? "Unknown reason"})` };
