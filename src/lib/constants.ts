@@ -1,8 +1,8 @@
-export const MS_TYPES = ["fcd", "int", "dao", "app"] as const;
+export const APP_TYPES = ["fcd", "int", "dao", "bau", "app"] as const;
 export const ENVS = ["dev", "int", "cert"] as const;
 export const EXCLUDED_SECRETS = ["elasticsearch"];
 
-export type MsType = typeof MS_TYPES[number];
+export type AppType = typeof APP_TYPES[number];
 export type Env = typeof ENVS[number];
 
 export type Version = VersionNumber | VersionBeta | VersionNumber;

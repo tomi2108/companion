@@ -2,7 +2,7 @@ import { cpSync, rmSync } from "node:fs";
 import path from "node:path";
 import { ResetMode, SimpleGit } from "simple-git";
 import { Config } from "../../lib/config";
-import { MS_TYPES } from "../../lib/constants";
+import { APP_TYPES } from "../../lib/constants";
 import { MergeRequest } from "../glab/merge_request";
 import { git, Gitlab, glab } from "../glab/glab";
 import { loading } from "../../lib/ui";
@@ -39,6 +39,10 @@ export class Repo {
       this.glab = glab();
       this.full_path = full_path;
     } else throw new InvalidRepo(full_path);
+  }
+
+  async init(initialBranch: string) {
+    return await this.git.init(["--initial-branch", initialBranch]);
   }
 
   async getTags(opts?: { sortByLastCreated: boolean }) {
@@ -227,8 +231,9 @@ export class Repo {
     const url = new URL(origin_url);
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
-    let type = Config.get().openshift.default_ms_type || MS_TYPES[0];
-    MS_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
+    let type = Config.get().openshift.default_ms_type || APP_TYPES[0];
+    // TODO: Not the best idea, find a better way
+    APP_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
     return { name, pathname, type };
   }
 

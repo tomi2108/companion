@@ -1,9 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
-import cp from "node:child_process";
+import cp, { StdioOptions } from "node:child_process";
 import { Repo } from "./repo";
 import { Project } from "../oc/project";
 import { tryParseJSONObject } from "../../lib/utils";
+
+export type Dependency = {
+  name: string;
+  version?: string;
+};
+
+function dependencyToString(d: Dependency) {
+  if (!d.version) return d.name;
+  return `${d.name}@${d.version}`;
+}
 
 export class AppRepo extends Repo {
   version?: string;
@@ -61,12 +71,31 @@ export class AppRepo extends Repo {
     }
   }
 
-  install() {
+  private async npmRun(cmd: string, stdio?: StdioOptions) {
     return new Promise((resolve, reject) => {
-      const child = cp.spawn("npm", ["install"], {
-        stdio: "pipe",
-        cwd: this.full_path
+      const child = cp.spawn("npm",
+        ["run", cmd],
+        {
+          stdio,
+          cwd: this.full_path
+        });
+      child.on("error", reject);
+      child.on("exit", (code) => {
+        if (code === 0) resolve(undefined);
+        else reject(new Error(`Error running npm run ${cmd} in ${this.full_path}`));
       });
+    });
+  }
+
+  install(libs?: Dependency[]) {
+    const dependencies = libs ?? [];
+    return new Promise((resolve, reject) => {
+      const child = cp.spawn("npm",
+        ["install", ...dependencies.map(dependencyToString)],
+        {
+          stdio: "pipe",
+          cwd: this.full_path
+        });
 
       child.on("error", reject);
       child.on("exit", (code) => {
@@ -76,7 +105,15 @@ export class AppRepo extends Repo {
     });
   }
 
-  start(port: number, opts?: { prefix?: string; raw?: boolean }) {
+  async build() {
+    return await this.npmRun("build", "inherit");
+  }
+
+  async test() {
+    return await this.npmRun("test", "inherit");
+  }
+
+  dev(port: number, opts?: { prefix?: string; raw?: boolean }) {
     const ts_node_dev_path = path.join(this.full_path, "node_modules", "ts-node-dev", "lib", "bin.js");
     const app_path = path.join(this.full_path, "src", "app.ts");
 

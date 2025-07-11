@@ -73,6 +73,7 @@ export default {
     const status = await pipeline.status();
     if (status === PipelineStatus.succeeded) {
       spinner.succeed("Pipeline succeeded");
+      await app_repo?.update();
       const tags = await app_repo.getTags({ sortByLastCreated: true });
       const last_version = tags?.[0];
       if (!tags || !last_version) {

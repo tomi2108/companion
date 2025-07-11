@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { MS_TYPES } from "./constants";
+import { APP_TYPES } from "./constants";
 import { YamlContentSchema } from "../interface/files/deploy_yaml";
 
 export const PathsConfigSchema = z.object({
@@ -12,13 +12,13 @@ export const PathsConfigSchema = z.object({
 });
 
 export const OpenShiftConfigSchema = z.object({
-  default_ms_type: z.enum(MS_TYPES).optional(),
+  default_ms_type: z.enum(APP_TYPES).optional(),
   mock_secrets: z.array(z.string()).optional(),
   deployments: z.record(
-    z.enum(MS_TYPES), z.record(z.string(), YamlContentSchema.partial().optional()).optional()
+    z.enum(APP_TYPES), z.record(z.string(), YamlContentSchema.partial().optional()).optional()
   ).or(
     z.record(
-      z.string(), z.record(z.enum(MS_TYPES), YamlContentSchema.partial().optional()).optional()
+      z.string(), z.record(z.enum(APP_TYPES), YamlContentSchema.partial().optional()).optional()
     )
   ).or(YamlContentSchema.partial())
     .and(

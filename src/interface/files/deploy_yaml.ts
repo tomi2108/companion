@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import fs, { Dirent } from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
-import { ENVS, MsType } from "../../lib/constants";
+import { ENVS, AppType } from "../../lib/constants";
 import { getDeploymentOption } from "./files";
 import { Config } from "../../lib/config";
 import { deepMerge, toYaml } from "../../lib/utils";
@@ -75,7 +75,7 @@ export class DeployYaml {
     this.namespace = this.getNamespace();
   }
 
-  async prepareDeploy(type: MsType) {
+  async prepareDeploy(type: AppType) {
     const secrets_to_add = getDeploymentOption("secrets", type, this.namespace, this.content) ?? [];
     secrets_to_add.forEach((s: string) => this.setSecret(s));
 

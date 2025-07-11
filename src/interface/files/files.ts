@@ -3,7 +3,7 @@ import path from "node:path";
 import { isGitRepo, readdirs } from "../../lib/utils";
 import { DeployRepo } from "./deploy_repo";
 import { AppRepo } from "./app_repo";
-import { MsType } from "../../lib/constants";
+import { AppType } from "../../lib/constants";
 import { Config } from "../../lib/config";
 import { DeployYamlContent } from "./deploy_yaml";
 
@@ -77,7 +77,7 @@ export function internalEnvs(full_path: string) {
 }
 
 // do not bother typing this, adds no value
-export function getDeploymentOption(path: string, type: MsType, namespace: string, y: DeployYamlContent): any {
+export function getDeploymentOption(path: string, type: AppType, namespace: string, y: DeployYamlContent): any {
   const keys = path.split(".");
   const deployments = Config.get().openshift?.deployments as any;
 
@@ -99,3 +99,17 @@ export function getDeploymentOption(path: string, type: MsType, namespace: strin
   return accessObj(y, keys);
 }
 
+export function replace(from: string, to: string, file: string) {
+  let content = fs.readFileSync(file).toString();
+  content = content.toString();
+  const updatedContent = content.replace(new RegExp(from, "g"), to);
+  fs.writeFileSync(file, updatedContent);
+}
+
+export function removeLine(line: number, file: string) {
+  const content = fs.readFileSync(file).toString();
+  const lines = content.split("\n");
+  lines.splice(line - 1, 1);
+  const updatedContent = lines.join("\n");
+  fs.writeFileSync(file, updatedContent);
+}

@@ -82,7 +82,7 @@ export default {
       const repo = new AppRepo(path.join(backend, app));
       await repo.install();
       const color = colors[i % colors.length];
-      const { promise, process } = repo.start(port, { raw, prefix: color?.(app)});
+      const { promise, process } = repo.dev(port, { raw, prefix: color?.(app)});
       children.push(process);
       await promise;
     });
