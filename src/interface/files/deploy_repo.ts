@@ -2,6 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { DeployYaml } from "./deploy_yaml";
 import { Repo } from "./repo";
+import { Secret } from "../oc/secret";
+import { ConfigMap } from "../oc/configmap";
+import { Config } from "../../lib/config";
+import log from "../../lib/log";
 
 export class DeployRepo extends Repo {
   deployments: DeployYaml[];
@@ -27,6 +31,50 @@ export class DeployRepo extends Repo {
 
   getDeployment(namespace: string) {
     return this.deployments.find((d) => d.namespace === namespace);
+  }
+
+  async deploy(namespaces: {
+    name: string;
+    secrets: Secret[];
+    configmaps: ConfigMap[];
+  }[], version: string) {
+    return await this.stash(async () => {
+      await this.update();
+      await this.switchBranchIfExists("master");
+
+      const { name, type } = await this.getInfo();
+
+      await this.createNewBranch("feature/despliegue");
+      await this.reset();
+
+      for (const namespace of namespaces) {
+        const deploymentFile = this.getDeployment(namespace.name) as DeployYaml;
+
+        if (!Config.get().openshift.deployments?.exclude?.includes(name)
+          && !Config.get().openshift.deployments?.exclude?.includes(namespace.name)
+          && !Config.get().openshift.deployments?.exclude?.includes(type)
+        ) deploymentFile.prepareDeploy(type);
+
+        namespace.secrets.forEach((s) => deploymentFile.setSecret(s.name));
+        namespace.configmaps.forEach((cm) => deploymentFile.setConfigMap(cm.name));
+        deploymentFile.setVersion(version);
+        deploymentFile.save();
+      }
+
+      for (const namespace of namespaces) {
+        const deploymentFile = this.getDeployment(namespace.name) as DeployYaml;
+        await this.add(deploymentFile.file_path);
+      }
+
+      const c = await this.commit(version);
+      if (!c) {
+        log.error("No changes made");
+        return false;
+      }
+      await this.createAndMergeMr("master");
+      return true;
+    });
+
   }
 
 }
