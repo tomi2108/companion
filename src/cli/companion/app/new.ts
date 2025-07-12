@@ -201,7 +201,7 @@ export default {
 
     const glab = new Gitlab();
     const project = await glab.getProject(backend_id);
-    const glab_repo = await glab.createProject({ name, path: project.path });
+    const glab_repo = await glab.createAppProject({ name, path: project.path });
     const origin = glab_repo.http_url_to_repo;
     await app_repo.addOrigin(origin);
     await app_repo.push("master");

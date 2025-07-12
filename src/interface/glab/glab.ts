@@ -88,16 +88,26 @@ export class Gitlab {
     }
   }
 
-  async createProject({ name, path }: {
+  async createAppProject({ name, path }: {
     name: string;
     path: string;
   }) {
-    return await this.glab.Projects.create({
+    const project = await this.glab.Projects.create({
       defaultBranch: "master",
       removeSourceBranchAfterMerge: true,
       name,
       path
     });
+    // TODO: Make link and token team config
+    await this.glab.ProjectHooks.add(
+      project.id,
+      "http://nodejs18-event-listener-ci-paas.apps.ocpnp.brcrh.tcloud.ar ",
+      {
+        mergeRequestsEvents: true,
+        token: "1234567"
+      }
+    );
+    return project;
   }
 
   async getUser(username: string) {
