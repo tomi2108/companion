@@ -5,8 +5,9 @@ import { APP_TYPES, AppType } from "../../../lib/constants";
 import path from "node:path";
 import fs from "node:fs";
 import { Repo } from "../../../interface/files/repo";
-import { createDirIfNotExists, removeLine, replace } from "../../../interface/files/files";
+import { createDirIfNotExists, insertLine, removeLine, replace } from "../../../interface/files/files";
 import { AppRepo, Dependency } from "../../../interface/files/app_repo";
+import { Gitlab } from "../../../interface/glab/glab";
 
 const Connections = {
   apigw: "apigw",
@@ -36,6 +37,7 @@ export default {
   aliases: ["n"],
   describe: "Create a new app from template",
   handler: async () => {
+    const config = Config.get();
     const type = await search({ choices: [...APP_TYPES], message: "Choose app type" }) as AppType;
     let connection: Connection | null = null;
 
@@ -53,11 +55,11 @@ export default {
     const name = await input({ message: "Enter name" });
     const description = await input({ message: "Enter description" });
 
-    const backend_path = Config.get().paths.backend;
-    if (!backend_path) {
-      log.error("Backend path not set");
-      process.exit(1);
-    }
+    const backend_path = config.paths.backend;
+    const backend_id = config.gitlab.repos.backend;
+    if (!backend_id) log.error("Backend id not set");
+    if (!backend_path) log.error("Backend path not set");
+    if (!backend_id || !backend_path) process.exit(1);
 
     const full_path = path.join(backend_path, name);
     createDirIfNotExists(full_path);
@@ -188,10 +190,20 @@ export default {
     replaceDescription(path.join(swagger, "docs", "specification.yaml"));
 
     if (type !== "int") removeLine(7, path.join(full_path, "jest.config.js"));
+    if (type === "bau") insertLine(1, server, "import \"../configuration/db\";");
 
     const app_repo = new AppRepo(new_repo.full_path);
     await app_repo.install(dependencies);
     await app_repo.build();
     await app_repo.test();
+    await app_repo.add(".");
+    await app_repo.commit("initial commit");
+
+    const glab = new Gitlab();
+    const project = await glab.getProject(backend_id);
+    const glab_repo = await glab.createProject({ name, path: project.path });
+    const origin = glab_repo.http_url_to_repo;
+    await app_repo.addOrigin(origin);
+    await app_repo.push("master");
   }
 };

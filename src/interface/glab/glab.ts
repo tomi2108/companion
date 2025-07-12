@@ -25,6 +25,10 @@ export class Gitlab {
     this.glab = glab();
   }
 
+  async getProject(id: number) {
+    return await this.glab.Groups.show(id);
+  }
+
   async getProjects(id: number) {
     return await this.glab.Groups.allProjects(id);
   }
@@ -82,6 +86,18 @@ export class Gitlab {
         log.warning(`Could not clone repo ${id}`);
       }
     }
+  }
+
+  async createProject({ name, path }: {
+    name: string;
+    path: string;
+  }) {
+    return await this.glab.Projects.create({
+      defaultBranch: "master",
+      removeSourceBranchAfterMerge: true,
+      name,
+      path
+    });
   }
 
   async getUser(username: string) {

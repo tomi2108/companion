@@ -119,6 +119,10 @@ export class Repo {
     return value;
   }
 
+  async addOrigin(remoteRepo: string) {
+    this.git.addRemote("origin", remoteRepo);
+  }
+
   async getOriginUrl() {
     return await this.getConfig("remote.origin.url");
   }

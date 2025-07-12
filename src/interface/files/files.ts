@@ -107,9 +107,13 @@ export function replace(from: string, to: string, file: string) {
 }
 
 export function removeLine(line: number, file: string) {
-  const content = fs.readFileSync(file).toString();
-  const lines = content.split("\n");
+  const lines = fs.readFileSync(file).toString().split("\n");
   lines.splice(line - 1, 1);
-  const updatedContent = lines.join("\n");
-  fs.writeFileSync(file, updatedContent);
+  fs.writeFileSync(file, lines.join("\n"));
+}
+
+export function insertLine(line: number, file: string, content: string) {
+  const lines = fs.readFileSync(file).toString().split("\n");
+  lines.splice(line - 1, 0, content);
+  fs.writeFileSync(file, lines.join("\n"));
 }

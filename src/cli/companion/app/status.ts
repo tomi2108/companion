@@ -18,6 +18,9 @@ export default {
     const deployments = await project.getDeployments();
 
     const table = new Table({
+      style: {
+        compact: true
+      },
       head: ["App", "Current version", "Last version", "Mocked"],
       colWidths: [50]
     });
