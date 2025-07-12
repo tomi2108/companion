@@ -1,6 +1,6 @@
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
-import { input, search } from "../../../lib/ui";
+import { input, loading, search } from "../../../lib/ui";
 import { APP_TYPES, AppType } from "../../../lib/constants";
 import path from "node:path";
 import fs from "node:fs";
@@ -37,6 +37,7 @@ export default {
   aliases: ["n"],
   describe: "Create a new app from template",
   handler: async () => {
+    const glab = new Gitlab();
     const config = Config.get();
     const type = await search({ choices: [...APP_TYPES], message: "Choose app type" }) as AppType;
     let connection: Connection | null = null;
@@ -81,11 +82,13 @@ export default {
 
     // TODO: probably make global config, not team config under Config.gitlab.ms_template_link
     const ms_template_link = "https://gitlab-ee.agil.movistar.com.ar/mimovistarempresas/backend/movistarempresas-template.git";
+    const clone_spinner = loading("Cloning template");
     const new_repo = await Repo.cloneRepo(full_path, ms_template_link, true);
+    clone_spinner.succeed();
 
+    const init_spinner = loading("Initializing repository");
     fs.rmSync(path.join(new_repo.full_path, ".git"), { recursive: true });
     await new_repo.init("master");
-
     const dao_files = [
       path.join(models, "SequelizeExample.ts"),
       path.join(configuration, "dao_db.ts"),
@@ -168,6 +171,9 @@ export default {
 
     const replaceName = (file: string) => replace("{{name}}", name, file);
     const replaceDescription = (file: string) => replace("{{description}}", description, file);
+    const replaceAuthor = (file: string) => replace("{{author}}", config.gitlab.username, file);
+
+    replaceAuthor(path.join(full_path, "package.json"));
 
     replaceName(path.join(full_path, "package.json"));
     replaceDescription(path.join(full_path, "package.json"));
@@ -191,19 +197,33 @@ export default {
 
     if (type !== "int") removeLine(7, path.join(full_path, "jest.config.js"));
     if (type === "bau") insertLine(1, server, "import \"../configuration/db\";");
+    init_spinner.succeed();
 
     const app_repo = new AppRepo(new_repo.full_path);
+    const install_spinner = loading("Installing dependencies");
     await app_repo.install(dependencies);
+    install_spinner.succeed();
+
     await app_repo.build();
     await app_repo.test();
     await app_repo.add(".");
     await app_repo.commit("initial commit");
 
-    const glab = new Gitlab();
+    const creating_spinner = loading("Creating GitLab repository");
     const glab_repo = await glab.createAppProject({ name, groupId: backend_id, description });
-    console.log(glab_repo);
     const origin = glab_repo.http_url_to_repo;
     await app_repo.addOrigin(origin);
+    creating_spinner.succeed();
+
     await app_repo.push("master");
+
+    const replaceUrl = (file: string) => replace("{{url}}", origin, file);
+    await app_repo.createNewBranch("initial_deploy");
+    replaceUrl(path.join(full_path, "package.json"));
+    replaceUrl(path.join(full_path, "README.md"));
+    await app_repo.add("README.md");
+    await app_repo.add("package.json");
+    await app_repo.commit("feat: initial deploy");
+    await app_repo.createAndMergeMr("master");
   }
 };

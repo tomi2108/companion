@@ -52,7 +52,6 @@ export function createDirIfNotExists(dir: string) {
 export function accessObj(obj: Record<string, unknown> | undefined, keys: string[]) {
   if (!obj) return;
   const key = keys[0];
-  // TODO: maybe return val... test
   if (!key) return null;
   const val = obj?.[key];
   if (val === null || val === undefined) return null;

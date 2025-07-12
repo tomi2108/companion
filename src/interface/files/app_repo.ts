@@ -87,7 +87,7 @@ export class AppRepo extends Repo {
     });
   }
 
-  install(libs?: Dependency[]) {
+  async install(libs?: Dependency[]) {
     const dependencies = libs ?? [];
     return new Promise((resolve, reject) => {
       const child = cp.spawn("npm",
