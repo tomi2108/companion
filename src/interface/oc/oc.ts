@@ -4,6 +4,11 @@ import axios, { AxiosInstance } from "axios";
 import { Project, ProjectResponse } from "./project";
 import { Secret } from "./secret";
 import { base64Encode } from "../jira/jira";
+import log from "../../lib/log";
+import { AppRepo } from "../files/app_repo";
+import { PipelineRun, PipelineStatus } from "./pipelinerun";
+import { loading } from "../../lib/ui";
+import { setTimeout } from "node:timers/promises";
 
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
   const oc_config = Config.get().openshift;
@@ -71,3 +76,35 @@ export const filterExcludedSecrets = (s: Secret) => !EXCLUDED_SECRETS.includes(s
 export const filterExcludedConfigmaps = () => true;
 // TODO: not the best, find another way to filter out micro_front_end deployments
 export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");
+
+export async function findCIPipeline(app_repo: AppRepo) {
+  const token = await getOcToken("brc");
+  const projects = await new Openshift(token, "brc").getProjects();
+  const ci_paas = projects.find((p) => p.name === "ci-paas");
+  if (!ci_paas) {
+    log.error("Could not find ci-paas project");
+    return null;
+  }
+  return await app_repo.findPipeline(ci_paas, "ci");
+}
+
+export async function findSyncPipeline(app_repo: AppRepo) {
+  const token = await getOcToken("brc");
+  const projects = await new Openshift(token, "brc").getProjects();
+  const cd_paas = projects.find((p) => p.name === "cd-paas");
+  if (!cd_paas) {
+    log.error("Could not find cd-paas project");
+    return null;
+  }
+  return await app_repo.findPipeline(cd_paas, "sync");
+}
+
+export async function waitForPipeline(pipeline: PipelineRun, loadingText?: string) {
+  const spinner = loading(loadingText ?? "Running pipeline");
+  while (await pipeline.status() === PipelineStatus.running) setTimeout(15 * 1000);
+  const status = await pipeline.status();
+  if (status === PipelineStatus.succeeded) {
+    spinner.succeed("Pipeline succeeded");
+  } else spinner.fail("Pipeline failed");
+  return status;
+}

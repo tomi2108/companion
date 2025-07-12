@@ -1,6 +1,5 @@
-import { setTimeout } from "node:timers/promises";
 import { Repo } from "../../../interface/files/repo";
-import { getOcToken, Openshift } from "../../../interface/oc/oc";
+import { findCIPipeline, getOcToken, Openshift, waitForPipeline } from "../../../interface/oc/oc";
 import { PipelineStatus } from "../../../interface/oc/pipelinerun";
 import { Config } from "../../../lib/config";
 import log from "../../../lib/log";
@@ -23,14 +22,14 @@ export default {
     const targetBranch = await search({ choices: targetBranches, message: "Choose target branch" });
     const default_reviewer = Config.get().gitlab.default_reviewer;
     const add_reviewer = await confirm({ initial: false, message: `Add default reviewer? (${default_reviewer})` });
-    const merge = await confirm({ message: "Merge?" });
-    const { name } = await repo.getInfo();
-
-    const { deploy_repo, app_repo } = await getApp(name);
+    let merge = false;
     let deploys = false;
-    let deploy_projects: Project[] | null = null;
+    let deploy_projects: Project[] = [];
+    if (!add_reviewer) merge = await confirm({ message: "Merge?" });
 
-    if (app_repo && deploy_repo) {
+    const { name } = await repo.getInfo();
+    const { deploy_repo, app_repo } = await getApp(name);
+    if (merge && app_repo && deploy_repo) {
       deploys = await confirm({ message: "Deploy?" });
       if (deploys) {
         const token = await getOcToken();
@@ -51,36 +50,22 @@ export default {
 
     if (!deploys || !app_repo || !deploy_repo || deploy_projects?.length === 0) return;
 
-    const token = await getOcToken("brc");
-    const projects = await new Openshift(token, "brc").getProjects();
-
-    const ci_paas = projects.find((p) => p.name === "ci-paas");
-    if (!ci_paas) {
-      log.error("Could not find cd-paas project");
-      return;
-    }
-
-    const pipeline = await app_repo.findPipeline(ci_paas, "ci");
-
+    const pipeline = await findCIPipeline(app_repo);
     if (!pipeline) {
       log.error("Could not find ci pipeline");
       return;
     }
+    const status = await waitForPipeline(pipeline, "Running CI pipeline");
+    if (status === PipelineStatus.failed) process.exit(1);
 
-    const spinner = loading("Running pipeline");
-    while (await pipeline.status() === PipelineStatus.running) setTimeout(30 * 1000);
+    await app_repo?.update();
+    const tags = await app_repo.getTags({ sortByLastCreated: true });
+    const last_version = tags?.[0];
+    if (!tags || !last_version) {
+      log.error("Could not find version to deploy");
+      return;
+    }
 
-    const status = await pipeline.status();
-    if (status === PipelineStatus.succeeded) {
-      spinner.succeed("Pipeline succeeded");
-      await app_repo?.update();
-      const tags = await app_repo.getTags({ sortByLastCreated: true });
-      const last_version = tags?.[0];
-      if (!tags || !last_version) {
-        log.error("Could not find version to deploy");
-        return;
-      }
-      deploy_repo.deploy(projects.map((p) => ({ configmaps: [], secrets: [], name: p.name })), last_version);
-    } else spinner.fail("Pipeline failed");
+    deploy_repo.deploy(deploy_projects.map((p) => ({ configmaps: [], secrets: [], name: p.name })), last_version);
   }
 };

@@ -3,9 +3,7 @@ import log from "../../lib/log";
 import { promptForApp, promptForOcResource } from "../../interface/prompts";
 import { Secret } from "../../interface/oc/secret";
 import { ConfigMap } from "../../interface/oc/configmap";
-import { getOcToken, Openshift } from "../../interface/oc/oc";
-import { setTimeout } from "node:timers/promises";
-import { PipelineStatus } from "../../interface/oc/pipelinerun";
+import { findSyncPipeline, getOcToken, Openshift, waitForPipeline } from "../../interface/oc/oc";
 
 export default {
   command: "deploy",
@@ -61,29 +59,15 @@ export default {
       namespaces.push({ name: namespace, secrets, configmaps });
     }
 
+    if (!app_repo) return;
     const deployed = await deploy_repo.deploy(namespaces, version);
     if (!deployed) return;
 
-    const token = await getOcToken("brc");
-    const projects = await new Openshift(token, "brc").getProjects();
-
-    const project = projects.find((p) => p.name === "cd-paas");
-    if (!project) {
-      log.error("Could not find cd-paas project");
-      return;
-    }
-
-    const pipeline = await app_repo?.findPipeline(project, "sync");
+    const pipeline = await findSyncPipeline(app_repo);
     if (!pipeline) {
       log.error("Could not find sync pipeline");
       return;
     }
-
-    const spinner = loading("Running pipeline");
-    while (await pipeline.status() === PipelineStatus.running) setTimeout(30 * 1000);
-
-    const status = await pipeline.status();
-    if (status === PipelineStatus.succeeded) spinner.succeed("Pipeline succeeded");
-    else spinner.fail("Pipeline failed");
+    await waitForPipeline(pipeline);
   }
 };
