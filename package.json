@@ -6,7 +6,7 @@
     "lint": "eslint . --fix",
     "build": "tsc --project ./tsconfig.json ; tsc-alias -p tsconfig.json",
     "test": "vitest --coverage",
-    "precommit": "tsc --project ./tsconfig.json && lint-staged && npm run test",
+    "precommit": "npm run build && lint-staged && npm run test",
     "clean": "rm -rf package-lock.json node_modules dist",
     "prepare": "husky"
   },
