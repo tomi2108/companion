@@ -3,12 +3,17 @@
     "node": true,
     "es2021": true
   },
+  "ignorePatterns": [
+    "dist"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
   ],
   "plugins": [
-    "@stylistic"
+    "@stylistic",
+    "import",
+    "unused-imports"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -16,6 +21,22 @@
     "sourceType": "module"
   },
   "rules": {
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "unused-imports/no-unused-imports": "error",
     "@stylistic/arrow-parens": 2,
     "@stylistic/brace-style": 2,
     "@stylistic/comma-dangle": 2,

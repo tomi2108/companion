@@ -1,0 +1,112 @@
+import { setTimeout } from "node:timers/promises";
+
+import { Config } from "@lib/config";
+import { EXCLUDED_SECRETS } from "@lib/constants";
+import log from "@lib/log";
+import { loading } from "@lib/ui";
+import axios, { AxiosInstance } from "axios";
+
+import { PipelineRun, PipelineStatus } from "./pipelinerun";
+import { Project, ProjectResponse } from "./project";
+import { Secret } from "./secret";
+import { AppRepo } from "../files/app_repo";
+import { base64Encode } from "../files/files";
+
+export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
+  const oc_config = Config.get().openshift;
+
+  const authUrl = s === "cuyo" ? oc_config.auth_server_cuyo : oc_config.auth_server_barracas;
+  const string = `${oc_config.username}:${oc_config.password}`;
+  const encodedString = base64Encode(string);
+
+  const params = {
+    client_id: "openshift-challenging-client",
+    code_challenge_method: "S256",
+    response_type: "token",
+    redirect_uri: `${authUrl}/oauth/token/implicit`
+  };
+  const headers = {
+    Authorization: `Basic ${encodedString}`,
+    "X-CSRF-Token": "1"
+  };
+  try {
+    await axios.get(`${authUrl}/oauth/authorize`, { maxRedirects: 0, params, headers });
+    return "";
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response?.headers.location) {
+      return new URLSearchParams(
+        new URL(err.response?.headers.location).hash.slice(1)
+      ).get("access_token") ?? "";
+    } else {
+      console.dir(err, { depth: null });
+      throw err;
+    }
+  }
+}
+
+export const oc = (token: string, server: "cuyo" | "brc" = "cuyo") => {
+  const oc_config = Config.get().openshift;
+  const s = server === "cuyo" ? oc_config.server_cuyo : oc_config.server_barracas;
+
+  return axios.create({
+    baseURL: `https://${s}`,
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export class Openshift {
+  private oc: AxiosInstance;
+
+  constructor(token: string, s: "cuyo" | "brc" = "cuyo") {
+    this.oc = oc(token, s);
+  }
+
+  async getProjects() {
+    return (await this.oc.get("/apis/project.openshift.io/v1/projects"))
+      .data.items.map((r: ProjectResponse) => Project.fromProjectResponse(r, this.oc)) as Project[];
+  }
+
+  async getProject(namespace: string) {
+    const res = (await this.oc.get(`/apis/project.openshift.io/v1/projects/${namespace}`))
+      .data;
+    return Project.fromProjectResponse(res, this.oc);
+  }
+}
+
+export const filterExcludedSecrets = (s: Secret) => !EXCLUDED_SECRETS.includes(s.name);
+//                                      (cm :Configmap)
+export const filterExcludedConfigmaps = () => true;
+// TODO: not the best, find another way to filter out micro_front_end deployments
+export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");
+
+export async function findCIPipeline(app_repo: AppRepo) {
+  const token = await getOcToken("brc");
+  const projects = await new Openshift(token, "brc").getProjects();
+  const ci_paas = projects.find((p) => p.name === "ci-paas");
+  if (!ci_paas) {
+    log.error("Could not find ci-paas project");
+    return null;
+  }
+  return await app_repo.findPipeline(ci_paas, "ci");
+}
+
+export async function findSyncPipeline(app_repo: AppRepo) {
+  const token = await getOcToken("brc");
+  const projects = await new Openshift(token, "brc").getProjects();
+  const cd_paas = projects.find((p) => p.name === "cd-paas");
+  if (!cd_paas) {
+    log.error("Could not find cd-paas project");
+    return null;
+  }
+  return await app_repo.findPipeline(cd_paas, "sync");
+}
+
+export async function waitForPipeline(pipeline: PipelineRun, loadingText?: string) {
+  const spinner = loading(loadingText ?? "Running pipeline");
+  while (await pipeline.status() === PipelineStatus.running) setTimeout(15 * 1000);
+  const status = await pipeline.status();
+  if (status === PipelineStatus.succeeded) {
+    spinner.succeed("Pipeline succeeded");
+  } else spinner.fail("Pipeline failed");
+  return status;
+}

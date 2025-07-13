@@ -1,11 +1,13 @@
-import "../mocks/config";
-import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
-import * as utils from "../../src/lib/utils";
-import fs from "node:fs";
+import "@mocks/config";
 import crypto from "node:crypto";
-import { Config } from "../../src/lib/config";
-import openEditor from "open-editor";
+import fs from "node:fs";
+
 import open from "open";
+import openEditor from "open-editor";
+import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
+
+import { Config } from "../../lib/config";
+import * as utils from "../../lib/utils";
 
 vi.mock("node:fs");
 vi.mock("node:crypto");
@@ -47,7 +49,7 @@ describe("utils", () => {
     ]);
     const result = utils.readdirs("/some/path");
     expect(result).toHaveLength(1);
-    expect(result?.[0].name).toBe("dir");
+    expect(result?.[0]?.name).toBe("dir");
   });
 
   it("readfiles returns file names", () => {

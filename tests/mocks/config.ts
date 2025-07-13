@@ -18,7 +18,7 @@ export const mockConfigData = {
   }
 };
 
-vi.mock("../../src/lib/config", () => ({
+vi.mock("../../lib/config", () => ({
   Config: {
     get: vi.fn(() => mockConfigData)
   }

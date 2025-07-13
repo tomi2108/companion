@@ -3,7 +3,22 @@
     "target": "esnext",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@cli/*": [
+        "cli/companion/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@interface/*": [
+        "interface/*"
+      ],
+      "@mocks/*": [
+        "tests/mocks/*"
+      ]
+    },
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -27,8 +42,5 @@
     "noUncheckedIndexedAccess": true,
     "noEmit": false,
     "noEmitOnError": false
-  },
-  "include": [
-    "./src"
-  ]
+  }
 }
