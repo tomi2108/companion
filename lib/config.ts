@@ -30,7 +30,7 @@ class Config {
     server_barracas: "api.ocpnp.brcrh.tcloud.ar:6443"
   } as OpenShiftConfig;
 
-  gitlab: GitlabConfig = { server: "https://gitlab.com" } as GitlabConfig;
+  gitlab: GitlabConfig = { server: "https://gitlab-ee.agil.movistar.com.ar" } as GitlabConfig;
 
   jira: JiraConfig = {
     server: "ar-telefonicahispam.atlassian.net",

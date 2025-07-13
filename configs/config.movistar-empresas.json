@@ -74,7 +74,7 @@
   "gitlab": {
     "default_reviewer": "tosanche",
     "repos": {
-      "backend": 110858481,
+      "backend": 6058,
       "frontend": 6057,
       "despliegues": 6069,
       "argocd": 431,
