@@ -1,8 +1,7 @@
+import { Jira, jira } from "@jira";
 import { Config } from "@lib/config";
 import { Choice } from "@lib/constants";
 import { openInBrowser } from "@lib/utils";
-
-import { Jira, jira } from "./jira";
 
 export type IssueResponse = {
   id: string;

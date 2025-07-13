@@ -1,10 +1,9 @@
 import { Choice } from "@lib/constants";
+import { filterExcludedConfigmaps, filterExcludedSecrets } from "@oc";
+import { ConfigMap } from "@oc/configmap";
+import { Pod, PodResponse } from "@oc/pod";
+import { Secret } from "@oc/secret";
 import { AxiosInstance } from "axios";
-
-import { ConfigMap } from "./configmap";
-import { filterExcludedConfigmaps, filterExcludedSecrets } from "./oc";
-import { Pod, PodResponse } from "./pod";
-import { Secret } from "./secret";
 
 export type DeploymentResponse = {
   metadata: {

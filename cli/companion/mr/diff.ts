@@ -1,5 +1,5 @@
-import { Repo } from "@interface/files/repo";
-import { git } from "@interface/glab/glab";
+import { Repo } from "@files/repo";
+import { git } from "@glab";
 import { promptForMr } from "@interface/prompts";
 import log from "@lib/log";
 import { getCurrentPath } from "@lib/utils";

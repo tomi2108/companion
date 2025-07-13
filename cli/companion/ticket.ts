@@ -1,18 +1,18 @@
-import { Argv } from "yargs";
 
-import assign from "./ticket/assign";
-import comment from "./ticket/comment";
-import create from "./ticket/create";
-import deleteCmd from "./ticket/delete";
-import edit from "./ticket/edit";
-import estimate from "./ticket/estimate";
-import link from "./ticket/link";
-import move from "./ticket/move";
-import open from "./ticket/open";
-import subtask from "./ticket/subtask";
-import unlink from "./ticket/unlink";
-import view from "./ticket/view";
-import worklog from "./ticket/worklog";
+import assign from "@cli/ticket/assign";
+import comment from "@cli/ticket/comment";
+import create from "@cli/ticket/create";
+import deleteCmd from "@cli/ticket/delete";
+import edit from "@cli/ticket/edit";
+import estimate from "@cli/ticket/estimate";
+import link from "@cli/ticket/link";
+import move from "@cli/ticket/move";
+import open from "@cli/ticket/open";
+import subtask from "@cli/ticket/subtask";
+import unlink from "@cli/ticket/unlink";
+import view from "@cli/ticket/view";
+import worklog from "@cli/ticket/worklog";
+import { Argv } from "yargs";
 
 export default {
   command: "ticket <command>",

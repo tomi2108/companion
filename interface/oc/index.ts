@@ -1,16 +1,15 @@
 import { setTimeout } from "node:timers/promises";
 
+import { base64Encode } from "@files";
+import { AppRepo } from "@files/app_repo";
 import { Config } from "@lib/config";
 import { EXCLUDED_SECRETS } from "@lib/constants";
 import log from "@lib/log";
 import { loading } from "@lib/ui";
+import { PipelineRun, PipelineStatus } from "@oc/pipelinerun";
+import { Project, ProjectResponse } from "@oc/project";
+import { Secret } from "@oc/secret";
 import axios, { AxiosInstance } from "axios";
-
-import { PipelineRun, PipelineStatus } from "./pipelinerun";
-import { Project, ProjectResponse } from "./project";
-import { Secret } from "./secret";
-import { AppRepo } from "../files/app_repo";
-import { base64Encode } from "../files/files";
 
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
   const oc_config = Config.get().openshift;

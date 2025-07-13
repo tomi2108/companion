@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { AppRepo, Dependency } from "@interface/files/app_repo";
-import { createDirIfNotExists, insertLine, removeLine, replace } from "@interface/files/files";
-import { Repo } from "@interface/files/repo";
-import { Gitlab } from "@interface/glab/glab";
+import { createDirIfNotExists, insertLine, removeLine, replace } from "@files";
+import { AppRepo, Dependency } from "@files/app_repo";
+import { Repo } from "@files/repo";
+import { Gitlab } from "@glab";
 import { Config } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log";

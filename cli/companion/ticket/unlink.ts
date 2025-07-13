@@ -1,4 +1,5 @@
 import { promptForJiraIssue } from "@interface/prompts";
+
 export default {
   command: "unlink",
   describe: "Unlink tickets",

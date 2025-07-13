@@ -21,6 +21,13 @@
     "sourceType": "module"
   },
   "rules": {
+    "import/no-deprecated": "error",
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/enforce-node-protocol-usage": [
+      "error",
+      "always"
+    ],
     "import/order": [
       "error",
       {

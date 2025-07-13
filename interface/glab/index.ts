@@ -1,14 +1,13 @@
 import path from "node:path";
 
+import { createDirIfNotExists } from "@files";
+import { Repo } from "@files/repo";
 import { Gitlab as Glab, ProjectSchema } from "@gitbeaker/rest";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { ProgressBar } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 import simpleGit from "simple-git";
-
-import { createDirIfNotExists } from "../files/files";
-import { Repo } from "../files/repo";
 
 export const git = (full_path: string) => simpleGit({
   baseDir: full_path

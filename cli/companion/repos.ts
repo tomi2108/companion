@@ -1,9 +1,8 @@
+import clean from "@cli/repos/clean";
+import clone from "@cli/repos/clone";
+import level from "@cli/repos/level";
+import open from "@cli/repos/open";
 import { Argv } from "yargs";
-
-import clean from "./repos/clean";
-import clone from "./repos/clone";
-import level from "./repos/level";
-import open from "./repos/open";
 
 export default {
   command: "repos <command>",

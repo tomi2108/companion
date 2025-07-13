@@ -1,5 +1,5 @@
-import { getOcToken, Openshift } from "@interface/oc/oc";
 import { promptForOcResource } from "@interface/prompts";
+import { getOcToken, Openshift } from "@oc";
 
 export default {
   command: "pipeline",

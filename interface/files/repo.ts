@@ -2,14 +2,13 @@ import { cpSync, rmSync } from "node:fs";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 
+import { git, Gitlab, glab } from "@glab";
+import { MergeRequest } from "@glab/merge_request";
 import { Config } from "@lib/config";
 import { APP_TYPES } from "@lib/constants";
 import { loading } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 import { ResetMode, SimpleGit } from "simple-git";
-
-import { git, Gitlab, glab } from "../glab/glab";
-import { MergeRequest } from "../glab/merge_request";
 
 export class Repo {
   git: SimpleGit;

@@ -1,13 +1,13 @@
 import path from "node:path";
 
-import { Repo } from "@interface/files/repo";
-import { SecretsYaml } from "@interface/files/secrets_yaml";
-import { getOcToken, Openshift } from "@interface/oc/oc";
+import { Repo } from "@files/repo";
+import { SecretsYaml } from "@files/secrets_yaml";
 import { promptForOcResource, promptTmpFile } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { input, search } from "@lib/ui";
 import { parseKeyVal } from "@lib/utils";
+import { getOcToken, Openshift } from "@oc";
 
 export default {
   command: "create",
@@ -59,6 +59,5 @@ export default {
       }
       await repo.switchBranchIfExists(original_branch);
     });
-
   }
 };

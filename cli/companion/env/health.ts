@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { getApp } from "@interface/files/files";
-import { filterFrontendDeployments, getOcToken, Openshift } from "@interface/oc/oc";
+import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
+import { filterFrontendDeployments, getOcToken, Openshift } from "@oc";
 import Table from "cli-table3";
 import { Argv } from "yargs";
 

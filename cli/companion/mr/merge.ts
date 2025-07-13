@@ -1,12 +1,12 @@
-import { getApp } from "@interface/files/files";
-import { Repo } from "@interface/files/repo";
-import { findCIPipeline, getOcToken, Openshift, waitForPipeline } from "@interface/oc/oc";
-import { PipelineStatus } from "@interface/oc/pipelinerun";
-import { Project } from "@interface/oc/project";
+import { getApp } from "@files";
+import { Repo } from "@files/repo";
 import { promptForMr, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
 import { confirm } from "@lib/ui";
 import { getCurrentPath } from "@lib/utils";
+import { findCIPipeline, getOcToken, Openshift, waitForPipeline } from "@oc";
+import { PipelineStatus } from "@oc/pipelinerun";
+import { Project } from "@oc/project";
 
 export default {
   command: "merge",

@@ -1,9 +1,9 @@
-import { getApp } from "@interface/files/files";
-import { getOcToken, Openshift } from "@interface/oc/oc";
+import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading } from "@lib/ui";
+import { getOcToken, Openshift } from "@oc";
 import chalk from "chalk";
 import Table from "cli-table3";
 

@@ -3,7 +3,7 @@ import { Choice } from "@lib/constants";
 import { loading } from "@lib/ui";
 import { openInBrowser } from "@lib/utils";
 
-import { glab } from "./glab";
+import { glab } from ".";
 
 export type MergeRequestResponse = MergeRequestSchema;
 

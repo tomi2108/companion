@@ -1,9 +1,8 @@
-import { base64Encode } from "@interface/files/files";
+import { base64Encode } from "@files";
+import { Issue, IssueResponse } from "@jira/issue";
 import { Config } from "@lib/config";
 import axios, { AxiosInstance } from "axios";
 import JiraCli from "jira-client";
-
-import { Issue, IssueResponse } from "./issue";
 
 export const jira = () => new JiraCli({
   host: Config.get().jira.server,

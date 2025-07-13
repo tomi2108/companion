@@ -1,7 +1,6 @@
+import edit from "@cli/config/edit";
+import setup from "@cli/config/setup";
 import { Argv } from "yargs";
-
-import edit from "./config/edit";
-import setup from "./config/setup";
 
 export default {
   command: "config <command>",

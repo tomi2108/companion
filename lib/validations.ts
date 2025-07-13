@@ -1,7 +1,6 @@
-import { YamlContentSchema } from "@interface/files/deploy_yaml";
+import { YamlContentSchema } from "@files/deploy_yaml";
+import { APP_TYPES } from "@lib/constants";
 import { z } from "zod/v4";
-
-import { APP_TYPES } from "./constants";
 
 export const PathsConfigSchema = z.object({
   despliegues: z.string().optional(),

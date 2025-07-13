@@ -1,13 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { DeployYaml } from "@files/deploy_yaml";
+import { Repo } from "@files/repo";
 import { Config } from "@lib/config";
 import log from "@lib/log";
-
-import { DeployYaml } from "./deploy_yaml";
-import { Repo } from "./repo";
-import { ConfigMap } from "../oc/configmap";
-import { Secret } from "../oc/secret";
+import { ConfigMap } from "@oc/configmap";
+import { Secret } from "@oc/secret";
 
 export class DeployRepo extends Repo {
   deployments: DeployYaml[];

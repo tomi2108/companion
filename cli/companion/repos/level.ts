@@ -1,7 +1,7 @@
-import { Dirent } from "fs";
+import { Dirent } from "node:fs";
 import path from "node:path";
 
-import { AppRepo } from "@interface/files/app_repo";
+import { AppRepo } from "@files/app_repo";
 import { Config } from "@lib/config";
 import { input, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";

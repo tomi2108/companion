@@ -1,11 +1,11 @@
-import { getApp } from "@interface/files/files";
-import { Repo } from "@interface/files/repo";
-import { getOcToken, Openshift } from "@interface/oc/oc";
+import { getApp } from "@files";
+import { Repo } from "@files/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
+import { getOcToken, Openshift } from "@oc";
 
 export default {
   command: "create",

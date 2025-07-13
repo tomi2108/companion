@@ -1,15 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { AppRepo } from "./files/app_repo";
-import { DeployRepo } from "./files/deploy_repo";
-import { createDirIfNotExists, getApp } from "./files/files";
-import { Repo } from "./files/repo";
-import { Jira } from "./jira/jira";
-import { Config } from "../lib/config";
-import { Choice } from "../lib/constants";
-import { ArrayPromptOptions, loading, search } from "../lib/ui";
-import { md5FromFile, openInEditor, readdirs } from "../lib/utils";
+import { createDirIfNotExists, getApp } from "@files";
+import { AppRepo } from "@files/app_repo";
+import { DeployRepo } from "@files/deploy_repo";
+import { Repo } from "@files/repo";
+import { Jira } from "@jira";
+import { Config } from "@lib/config";
+import { Choice } from "@lib/constants";
+import { ArrayPromptOptions, loading, search } from "@lib/ui";
+import { md5FromFile, openInEditor, readdirs } from "@lib/utils";
 
 type PromptOptions<T> = Omit<ArrayPromptOptions<T>, "choices">;
 

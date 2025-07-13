@@ -1,9 +1,8 @@
+import download from "@cli/pod/download";
+import logs from "@cli/pod/logs";
+import remote_session from "@cli/pod/remote_session";
+import restart from "@cli/pod/restart";
 import { Argv } from "yargs";
-
-import download from "./pod/download";
-import logs from "./pod/logs";
-import remote_session from "./pod/remote_session";
-import restart from "./pod/restart";
 
 export default {
   command: "pod <command>",

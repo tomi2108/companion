@@ -1,4 +1,4 @@
-import { base64Decode } from "@interface/files/files";
+import { base64Decode } from "@files";
 import { Choice } from "@lib/constants";
 import { tryParseJSONObject } from "@lib/utils";
 import { AxiosInstance } from "axios";
@@ -42,17 +42,18 @@ export class Pod {
     const wsUrl = new URL(`wss://${host}:${port}/api/v1/namespaces/${this.namespace}/pods/${this.name}/log`);
     wsUrl.searchParams.set("follow", "true");
     if (opts?.container) wsUrl.searchParams.set("container", opts.container);
-    const ws = new WebSocket(wsUrl.toString(), ["base64.binary.k8s.io"], {
-      protocolVersion: 13,
-      rejectUnauthorized: false,
-      headers: { Authorization: this.oc.defaults.headers.Authorization?.toString() }
-    });
 
     return new Promise((resolve, reject) => {
-      ws.onclose = resolve;
-      ws.onerror = reject;
-      ws.onmessage = (event) => {
-        let message: string | object = base64Decode(event.data.toString()).trim();
+      const ws = new WebSocket(wsUrl.toString(), ["base64.binary.k8s.io"], {
+        protocolVersion: 13,
+        rejectUnauthorized: false,
+        headers: { Authorization: this.oc.defaults.headers.Authorization?.toString() }
+      });
+      ws.on("close", resolve);
+      ws.on("error", reject);
+      ws.on("message", (data) => {
+        console.log(data);
+        let message: string | object = base64Decode(data.toString()).trim();
         if (!opts?.raw) message = tryParseJSONObject(message);
         if (!message) return;
         if (opts?.prefix) {
@@ -66,7 +67,7 @@ export class Pod {
           else message = { [opts.prefix]: message };
         }
         if (message) console.log(message);
-      };
+      });
     });
   }
 

@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 
+import { base64Encode } from "@files/index";
 import { http, HttpResponse, ws } from "msw";
 
 export const mockPods = [
@@ -19,17 +20,14 @@ export const mockPods = [
   }
 ];
 
-const link = ws.link("*/api/v1/namespaces/:namespace/pods/:pod/log");
+const link = ws.link("wss://api.ocpnp.cuyorh.tcloud.ar:6443/api/v1/namespaces/:namespace/pods/:pod/log");
 export const podsHandlers = [
-  http.get("*/api/v1/namespaces/:namespace/pods", ({ request }) => {
-    if (request.headers.get("Authorization") === "Bearer mock_token") return HttpResponse.json({ items: mockPods });
-    return new HttpResponse("Unauthorized", { status: 401 });
+  link.addEventListener("connection", ({ client }) => {
+    client.send(base64Encode("Log"));
+    client.close();
   }),
 
-  link.addEventListener("connection", () => {
-  }),
-
-  http.get("*/api/v1/namespaces/:namespace/pods/:pod/log", ({ request }) => {
+  http.get("https://api.ocpnp.cuyorh.tcloud.ar:6443/api/v1/namespaces/:namespace/pods/:pod/log", ({ request }) => {
     const key = request.headers.get("sec-websocket-key");
     const subprotocol = request.headers.get("sec-websocket-protocol");
     if (!key || !subprotocol) return new HttpResponse({}, { status: 400 });
@@ -47,5 +45,11 @@ export const podsHandlers = [
       }
     });
     return new HttpResponse("Unauthorized", { status: 401 });
+  }),
+
+  http.get("*/api/v1/namespaces/:namespace/pods", ({ request }) => {
+    if (request.headers.get("Authorization") === "Bearer mock_token") return HttpResponse.json({ items: mockPods });
+    return new HttpResponse("Unauthorized", { status: 401 });
   })
+
 ] as const;

@@ -1,7 +1,6 @@
-
-import { getOcToken, Openshift } from "@interface/oc/oc";
 import { promptForApp, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
+import { getOcToken, Openshift } from "@oc";
 
 export default {
   command: "copy",

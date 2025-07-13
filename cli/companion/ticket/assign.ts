@@ -1,5 +1,5 @@
-import { Jira } from "@interface/jira/jira";
 import { promptForJiraIssue } from "@interface/prompts";
+import { Jira } from "@jira";
 import { search } from "@lib/ui";
 
 export default {

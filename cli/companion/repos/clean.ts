@@ -1,7 +1,7 @@
 import { Dirent } from "node:fs";
 import path from "node:path";
 
-import { Repo } from "@interface/files/repo";
+import { Repo } from "@files/repo";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { confirm, loading, progressBar, search } from "@lib/ui";

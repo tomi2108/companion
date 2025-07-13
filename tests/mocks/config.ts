@@ -1,3 +1,4 @@
+import { Config } from "@lib/config";
 import { vi } from "vitest";
 
 export const mockConfigData = {
@@ -18,8 +19,14 @@ export const mockConfigData = {
   }
 };
 
-vi.mock("../../lib/config", () => ({
+const mockGet = vi.fn().mockReturnValue(mockConfigData);
+
+vi.mock("@lib/config", () => ({
   Config: {
-    get: vi.fn(() => mockConfigData)
+    get: mockGet
   }
 }));
+
+export const mockConfig = (cfg: Partial<Config>) => {
+  mockGet.mockReturnValueOnce({ ...mockConfigData, cfg });
+};

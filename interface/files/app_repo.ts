@@ -2,11 +2,10 @@ import cp, { StdioOptions } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-import { Project } from "@interface/oc/project";
+import { Repo } from "@files/repo";
 import { Config } from "@lib/config";
 import { tryParseJSONObject } from "@lib/utils";
-
-import { Repo } from "./repo";
+import { Project } from "@oc/project";
 
 export type Dependency = {
   name: string;

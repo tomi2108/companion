@@ -1,8 +1,8 @@
-import { getOcToken, Openshift } from "@interface/oc/oc";
-import { Resource } from "@interface/oc/resource";
 import { promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
+import { getOcToken, Openshift } from "@oc";
+import { Resource } from "@oc/resource";
 
 export default {
   command: "delete",

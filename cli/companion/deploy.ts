@@ -1,9 +1,9 @@
-import { ConfigMap } from "@interface/oc/configmap";
-import { findSyncPipeline, getOcToken, Openshift, waitForPipeline } from "@interface/oc/oc";
-import { Secret } from "@interface/oc/secret";
 import { promptForApp, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
 import { confirm, input, loading, search } from "@lib/ui";
+import { findSyncPipeline, getOcToken, Openshift, waitForPipeline } from "@oc";
+import { ConfigMap } from "@oc/configmap";
+import { Secret } from "@oc/secret";
 
 export default {
   command: "deploy",

@@ -1,11 +1,11 @@
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 
-import { getOcToken, Openshift } from "@interface/oc/oc";
 import { promptForOcResource, promptTmpFile } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
+import { getOcToken, Openshift } from "@oc";
 import yaml from "js-yaml";
 
 export default {

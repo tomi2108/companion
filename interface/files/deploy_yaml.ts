@@ -7,7 +7,7 @@ import { deepMerge, toYaml } from "@lib/utils";
 import yaml from "js-yaml";
 import { z } from "zod/v4";
 
-import { getDeploymentOption } from "./files";
+import { getDeploymentOption } from ".";
 
 export const YamlContentSchema = z.object({
   image: z.object({

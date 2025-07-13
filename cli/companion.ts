@@ -1,19 +1,18 @@
 #!/usr/bin/env node
 
+import app from "@cli/app";
+import config from "@cli/config";
+import deploy from "@cli/deploy";
+import env from "@cli/env";
+import mr from "@cli/mr";
+import pipeline from "@cli/pipeline";
+import pod from "@cli/pod";
+import repos from "@cli/repos";
+import route from "@cli/route";
+import ticket from "@cli/ticket";
+import upgrade from "@cli/upgrade";
 import { Config } from "@lib/config";
 import yargs from "yargs";
-
-import app from "./companion/app";
-import config from "./companion/config";
-import deploy from "./companion/deploy";
-import env from "./companion/env";
-import mr from "./companion/mr";
-import pipeline from "./companion/pipeline";
-import pod from "./companion/pod";
-import repos from "./companion/repos";
-import route from "./companion/route";
-import ticket from "./companion/ticket";
-import upgrade from "./companion/upgrade";
 
 yargs
   .scriptName("companion")

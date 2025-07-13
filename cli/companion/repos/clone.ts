@@ -1,5 +1,5 @@
-import { createDirIfNotExists } from "@interface/files/files";
-import { Gitlab } from "@interface/glab/glab";
+import { createDirIfNotExists } from "@files";
+import { Gitlab } from "@glab";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { multiProgressBar } from "@lib/ui";

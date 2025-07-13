@@ -9,6 +9,36 @@
       "@cli/*": [
         "cli/companion/*"
       ],
+      "@oc": [
+        "interface/oc/index"
+      ],
+      "@oc/*": [
+        "interface/oc/*"
+      ],
+      "@jira": [
+        "interface/jira/index"
+      ],
+      "@jira/*": [
+        "interface/jira/*"
+      ],
+      "@glab": [
+        "interface/glab/index"
+      ],
+      "@glab/*": [
+        "interface/glab/*"
+      ],
+      "@vault": [
+        "interface/vault/index"
+      ],
+      "@vault/*": [
+        "interface/vault/*"
+      ],
+      "@files": [
+        "interface/files/index"
+      ],
+      "@files/*": [
+        "interface/files/*"
+      ],
       "@lib/*": [
         "lib/*"
       ],

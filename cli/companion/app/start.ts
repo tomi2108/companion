@@ -1,13 +1,13 @@
 import { ChildProcessWithoutNullStreams } from "node:child_process";
 import path from "node:path";
 
-import { AppRepo } from "@interface/files/app_repo";
-import { getOcToken, Openshift } from "@interface/oc/oc";
+import { AppRepo } from "@files/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
+import { getOcToken, Openshift } from "@oc";
 import chalk from "chalk";
 import { Argv } from "yargs";
 
