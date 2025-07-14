@@ -21,6 +21,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "no-inner-declarations": "off",
     "import/no-deprecated": "error",
     "import/no-cycle": "error",
     "import/no-duplicates": "error",

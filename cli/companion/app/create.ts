@@ -1,5 +1,5 @@
 import { getApp } from "@files";
-import { Repo } from "@files/repo";
+import { createArgoIssue } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
@@ -33,11 +33,11 @@ export default {
       log.error(`Could not find app repo for ${app}`);
       process.exit(1);
     }
-    const exisingNamespaces = deploy_repo?.deployments.map((d) => d.namespace) ?? [];
+    const existingNamespaces = deploy_repo?.deployments.map((d) => d.namespace) ?? [];
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(
-      projects.filter((p) => !exisingNamespaces.includes(p.name)),
+      projects.filter((p) => !existingNamespaces.includes(p.name)),
       { message: "Select a project" });
 
     let version: string | null = null;
@@ -51,14 +51,6 @@ export default {
       version = await input({ message: "Enter version to create, starting with a 'v':" });
     }
 
-    const title = `${app}-${project.name}`;
-    const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${app}\r\nversion:${version}`;
-
-    const spinner = loading(`Creating issues for: ${app}`);
-    await new Repo(argocd_path).createIssue({
-      title,
-      description
-    });
-    spinner.succeed();
+    await createArgoIssue(app, version, project);
   }
 };

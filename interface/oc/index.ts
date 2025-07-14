@@ -100,6 +100,18 @@ export async function findSyncPipeline(app_repo: AppRepo) {
   return await app_repo.findPipeline(cd_paas, "sync");
 }
 
+export async function findArgoPipeline(app_repo: AppRepo) {
+  const token = await getOcToken("brc");
+  const projects = await new Openshift(token, "brc").getProjects();
+  const cd_paas = projects.find((p) => p.name === "cd-paas");
+  if (!cd_paas) {
+    log.error("Could not find cd-paas project");
+    return null;
+  }
+  // TODO: look at pipeline name
+  return await app_repo.findPipeline(cd_paas, "");
+}
+
 export async function waitForPipeline(pipeline: PipelineRun, loadingText?: string) {
   const spinner = loading(loadingText ?? "Running pipeline");
   while (await pipeline.status() === PipelineStatus.running) setTimeout(15 * 1000);
@@ -109,3 +121,4 @@ export async function waitForPipeline(pipeline: PipelineRun, loadingText?: strin
   } else spinner.fail("Pipeline failed");
   return status;
 }
+

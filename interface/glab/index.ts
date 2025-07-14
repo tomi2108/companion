@@ -5,8 +5,9 @@ import { Repo } from "@files/repo";
 import { Gitlab as Glab, ProjectSchema } from "@gitbeaker/rest";
 import { Config } from "@lib/config";
 import log from "@lib/log";
-import { ProgressBar } from "@lib/ui";
+import { loading, ProgressBar } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
+import { Project } from "@oc/project";
 import simpleGit from "simple-git";
 
 export const git = (full_path: string) => simpleGit({
@@ -119,3 +120,16 @@ export class Gitlab {
   }
 }
 
+export async function createArgoIssue(appName: string, version: string, project: Project) {
+  const argocd_path = Config.get().paths.argocd;
+  if (!argocd_path) throw new Error("Argo cd path not set");
+  const title = `${appName}-${project.name}`;
+  const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${appName}\r\nversion:${version}`;
+
+  const spinner = loading(`Creating issues for: ${appName}`);
+  await new Repo(argocd_path).createIssue({
+    title,
+    description
+  });
+  spinner.succeed();
+}
