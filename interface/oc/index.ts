@@ -14,7 +14,10 @@ import axios, { AxiosInstance } from "axios";
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
   const oc_config = Config.get().openshift;
 
-  const authUrl = s === "cuyo" ? oc_config.auth_server_cuyo : oc_config.auth_server_barracas;
+  const authUrl = {
+    cuyo: oc_config.auth_server_cuyo,
+    brc: oc_config.auth_server_barracas
+  }[s];
   const string = `${oc_config.username}:${oc_config.password}`;
   const encodedString = base64Encode(string);
 
@@ -45,7 +48,10 @@ export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
 
 export const oc = (token: string, server: "cuyo" | "brc" = "cuyo") => {
   const oc_config = Config.get().openshift;
-  const s = server === "cuyo" ? oc_config.server_cuyo : oc_config.server_barracas;
+  const s = {
+    cuyo: oc_config.server_cuyo,
+    brc: oc_config.server_barracas
+  }[server];
 
   return axios.create({
     baseURL: `https://${s}`,
