@@ -269,6 +269,7 @@ export default {
         if (status === PipelineStatus.failed) log.error(`Argo pipeline failed for project ${project.name}`);
       }
 
+      // TODO: clone only deploy repo created
       await glab.cloneGroupOrProject(deploy_id, deploy_path);
       const { deploy_repo } = await getApp(name);
       if (!deploy_repo) {
