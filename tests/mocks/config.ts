@@ -32,7 +32,8 @@ export const mockConfigData = {
 
 const mockGet = vi.fn().mockReturnValue(mockConfigData);
 
-vi.mock("@lib/config", () => ({
+vi.mock("@lib/config", async () => ({
+  ...await vi.importActual("@lib/config"),
   Config: {
     get: mockGet
   }

@@ -5,6 +5,7 @@ import { mockConfig } from "@mocks/config";
 
 import create from "@cli/env/create";
 import { promptTmpFile } from "@interface/prompts";
+import { ConfigError } from "@lib/config";
 import { input, search } from "@lib/ui";
 
 vi.mock("@interface/prompts", async () => ({
@@ -56,6 +57,12 @@ describe("create command", () => {
     await create.handler();
     expect(process.exit).toHaveBeenCalledWith(0);
   });
+
+  it("should throw if no vault path is set", async () => {
+    mockConfig({ paths: { vault: undefined } });
+    await expect(create.handler()).rejects.toThrow(new ConfigError("paths.vault"));
+  });
+
   // it("should create a secret and update secrets.yaml", async () => {
   //   // Mock user inputs
   //   promptForOcResource.mockResolvedValue({ name: "project1" });
@@ -106,10 +113,5 @@ describe("create command", () => {
   //   expect(mockGit.push).not.toHaveBeenCalled();
   // });
   //
-  // it("should throw an error if vault_path is not set", async () => {
-  //   Config.get.mockReturnValue({ paths: { vault: undefined } });
-  //
-  //   await expect(create.handler()).rejects.toThrow("Vault path not set");
-  // });
   //
 });
