@@ -53,7 +53,7 @@ export class Project {
       await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.name}/pipelineruns`, { params: { limit: 50 } }))
       .data.items
       .map((r: PipelineRunResponse) => PipelineRun.fromPipelineRunResponse(r, this.oc))
-      .sort((a: PipelineRun, b: PipelineRun) => b.created?.getTime() ?? 0 - (a.created?.getTime() ?? 0)) as PipelineRun[];
+      .sort((a: PipelineRun, b: PipelineRun) => (b.created as unknown as number) - (a.created as unknown as number)) as PipelineRun[];
   }
 
   async getConfigMaps() {
