@@ -59,20 +59,20 @@ export class AppRepo extends Repo {
 
   externalEnvs() {
     if (!fs.existsSync(this.env_file)) return;
-    const file_content = fs.readFileSync(this.full_path).toString();
+    const file_content = fs.readFileSync(this.env_file).toString();
     const replaced = file_content
       .replace(new RegExp(`.${Config.get().openshift.namespace_prefix}`, "g"), `-${Config.get().openshift.namespace_prefix}`)
       .replace(/\.svc\.cluster\.local:8080/g, ".apps.ocpnp.cuyorh.tcloud.ar");
-    fs.writeFileSync(this.full_path, replaced);
+    fs.writeFileSync(this.env_file, replaced);
   }
 
   internalEnvs() {
     if (!fs.existsSync(this.env_file)) return;
-    const file_content = fs.readFileSync(this.full_path).toString();
+    const file_content = fs.readFileSync(this.env_file).toString();
     const replaced = file_content
       .replaceAll(new RegExp(`-${Config.get().openshift.namespace_prefix}`, "g"), `.${Config.get().openshift.namespace_prefix}`)
       .replaceAll(/\.apps\.ocpnp\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
-    fs.writeFileSync(this.full_path, replaced);
+    fs.writeFileSync(this.env_file, replaced);
   }
 
   async copyEnv(project: Project) {
