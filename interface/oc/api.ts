@@ -1,8 +1,9 @@
+import axios from "axios";
+
 import { base64Encode } from "@files/utils";
 import { Config } from "@lib/config";
 import { EXCLUDED_SECRETS } from "@lib/constants";
 import { Secret } from "@oc/secret";
-import axios from "axios";
 
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
   const oc_config = Config.get().openshift;

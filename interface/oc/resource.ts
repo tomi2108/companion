@@ -1,5 +1,6 @@
-import { Choice } from "@lib/constants";
 import { AxiosInstance } from "axios";
+
+import { Choice } from "@lib/constants";
 
 export abstract class Resource {
   name: string;

@@ -1,4 +1,6 @@
 
+import { Argv } from "yargs";
+
 import assign from "@cli/ticket/assign";
 import comment from "@cli/ticket/comment";
 import create from "@cli/ticket/create";
@@ -12,7 +14,6 @@ import subtask from "@cli/ticket/subtask";
 import unlink from "@cli/ticket/unlink";
 import view from "@cli/ticket/view";
 import worklog from "@cli/ticket/worklog";
-import { Argv } from "yargs";
 
 export default {
   command: "ticket <command>",

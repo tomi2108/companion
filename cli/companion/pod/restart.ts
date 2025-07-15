@@ -1,7 +1,8 @@
+import { Argv } from "yargs";
+
 import { promptForOcResource } from "@interface/prompts";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import { Argv } from "yargs";
 
 export default {
   command: "restart",

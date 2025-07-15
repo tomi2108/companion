@@ -1,12 +1,12 @@
 import { Dirent } from "node:fs";
 import path from "node:path";
+import { Argv } from "yargs";
 
 import { Repo } from "@files/repo";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { confirm, loading, progressBar, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
-import { Argv } from "yargs";
 
 export default {
   command: "clean",

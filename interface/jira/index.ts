@@ -1,8 +1,9 @@
+import axios, { AxiosInstance } from "axios";
+
 import { base64Encode } from "@files/utils";
 import { jira } from "@jira/api";
 import { Issue, IssueResponse } from "@jira/issue";
 import { Config } from "@lib/config";
-import axios, { AxiosInstance } from "axios";
 
 export class Jira {
   private jira: ReturnType<typeof jira>;

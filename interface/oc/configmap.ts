@@ -1,6 +1,7 @@
+import { AxiosInstance } from "axios";
+
 import { removeDuplicates, toYaml } from "@lib/utils";
 import { Resource } from "@oc/resource";
-import { AxiosInstance } from "axios";
 
 export type ConfigMapResponse = {
   metadata: {

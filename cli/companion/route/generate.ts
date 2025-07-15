@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
@@ -5,7 +7,6 @@ import { search } from "@lib/ui";
 import { kebabToCamel } from "@lib/utils";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
-import axios from "axios";
 
 export default {
   command: "generate",

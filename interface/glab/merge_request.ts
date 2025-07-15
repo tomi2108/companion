@@ -1,4 +1,5 @@
 import { MergeRequestSchema } from "@gitbeaker/rest";
+
 import { glab } from "@glab/api";
 import { openInBrowser } from "@lib/config";
 import { Choice } from "@lib/constants";

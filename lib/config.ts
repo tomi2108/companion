@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-
-import log from "@lib/log";
-import { input, password, search, confirm } from "@lib/ui";
-import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 import open from "open";
 import openEditor from "open-editor";
+
+import log from "@lib/log";
+import { confirm, input, password, search } from "@lib/ui";
+import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 
 import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, ThreeScaleConfig, VaultConfig } from "./validations";
 

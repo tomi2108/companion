@@ -1,6 +1,7 @@
-import { Spinner } from "@topcli/spinner";
-import { SingleBar, MultiBar, Presets } from "cli-progress";
+import { MultiBar, Presets, SingleBar } from "cli-progress";
 import { prompt } from "enquirer";
+
+import { Spinner } from "@topcli/spinner";
 
 import { Choice } from "./constants";
 

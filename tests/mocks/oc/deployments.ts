@@ -1,4 +1,7 @@
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
+
+import { withAuth } from "@mocks/middleware";
+import { json } from "@mocks/utils";
 
 export const mockDeployments = [
   {
@@ -32,13 +35,11 @@ export const mockDeployments = [
 ] as const;
 
 export const deploymentsHandlers = [
-  http.get("*/apis/apps/v1/namespaces/:namespace/deployments", ({ request }) => {
-    if (request.headers.get("Authorization") === "Bearer mock_token") return HttpResponse.json({ items: mockDeployments });
-    return new HttpResponse("Unauthorized", { status: 401 });
-  }),
+  http.get("*/apis/apps/v1/namespaces/:namespace/deployments", withAuth(() => {
+    return json({ items: mockDeployments });
+  })),
 
-  http.get("*/apis/apps/v1/namespaces/:namespace/deployments/:deployment", ({ request }) => {
-    if (request.headers.get("Authorization") === "Bearer mock_token") return HttpResponse.json(mockDeployments[0]);
-    return new HttpResponse("Unauthorized", { status: 401 });
-  })
+  http.get("*/apis/apps/v1/namespaces/:namespace/deployments/:deployment", withAuth(() => {
+    return json(mockDeployments[0]);
+  }))
 ];

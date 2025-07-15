@@ -1,9 +1,8 @@
+import yaml from "js-yaml";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { cwd } from "node:process";
-
-import yaml from "js-yaml";
 
 // do not bother with typing this, adds no value
 export function deepMerge(obj1: any, obj2: any) {

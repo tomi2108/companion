@@ -1,8 +1,9 @@
+import { AxiosInstance } from "axios";
+import WebSocket from "ws";
+
 import { base64Decode } from "@files/utils";
 import { Choice } from "@lib/constants";
 import { tryParseJSONObject } from "@lib/utils";
-import { AxiosInstance } from "axios";
-import WebSocket from "ws";
 
 export type PodResponse = {
   metadata: {

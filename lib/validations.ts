@@ -1,6 +1,7 @@
+import { z } from "zod/v4";
+
 import { YamlContentSchema } from "@files/validations";
 import { APP_TYPES } from "@lib/constants";
-import { z } from "zod/v4";
 
 export const PathsConfigSchema = z.object({
   despliegues: z.string().optional(),

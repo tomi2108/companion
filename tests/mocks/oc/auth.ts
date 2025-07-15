@@ -1,5 +1,7 @@
 import { http, HttpResponse } from "msw";
 
+import { bad_request } from "@mocks/utils";
+
 export const mockOCToken = "mock_token";
 export const authHandlers = [
   http.get("*/oauth/authorize", ({ request }) => {
@@ -8,6 +10,6 @@ export const authHandlers = [
       status: 302,
       headers: { Location: `${redirectUri}#access_token=${mockOCToken}&token_type=bearer&expires_in=3600` }
     });
-    return new HttpResponse("Bad Request", { status: 400 });
+    return bad_request;
   })
 ];

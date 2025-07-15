@@ -1,3 +1,4 @@
+import yaml from "js-yaml";
 import fs, { Dirent } from "node:fs";
 import path from "node:path";
 
@@ -6,7 +7,6 @@ import { DeployYamlContent, YamlContentSchema } from "@files/validations";
 import { Config } from "@lib/config";
 import { AppType, ENVS } from "@lib/constants";
 import { deepMerge, toYaml } from "@lib/utils";
-import yaml from "js-yaml";
 
 export class DeployYaml {
   file_path: string;

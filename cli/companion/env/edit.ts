@@ -1,3 +1,4 @@
+import yaml from "js-yaml";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 
@@ -7,7 +8,6 @@ import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import yaml from "js-yaml";
 
 export default {
   command: "edit",

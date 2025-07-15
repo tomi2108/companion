@@ -1,5 +1,7 @@
+import chalk from "chalk";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
 import path from "node:path";
+import { Argv } from "yargs";
 
 import { AppRepo } from "@files/app_repo";
 import { promptForOcResource } from "@interface/prompts";
@@ -9,8 +11,6 @@ import { search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import chalk from "chalk";
-import { Argv } from "yargs";
 
 export default {
   command: "start",

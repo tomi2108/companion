@@ -1,10 +1,8 @@
-import "@mocks/config";
 import crypto from "node:crypto";
 import fs from "node:fs";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
-import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
-
-import * as utils from "../../lib/utils";
+import * as utils from "@lib/utils";
 
 vi.mock("node:fs");
 vi.mock("node:crypto");

@@ -1,6 +1,7 @@
+import { AxiosInstance } from "axios";
+
 import { oc } from "@oc/api";
 import { Project, ProjectResponse } from "@oc/project";
-import { AxiosInstance } from "axios";
 
 export class Openshift {
   private oc: AxiosInstance;

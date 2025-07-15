@@ -33,10 +33,37 @@
       "error",
       {
         "groups": [
-          "builtin",
-          "external",
+          [
+            "external",
+            "builtin"
+          ],
           "internal"
         ],
+        "pathGroups": [
+          {
+            "pattern": "@gitbeaker/**",
+            "group": "external"
+          },
+          {
+            "pattern": "@mocks/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@*",
+            "group": "internal"
+          },
+          {
+            "pattern": "@*/**",
+            "group": "internal"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": [
+          "builtin",
+          "object"
+        ],
+        "distinctGroup": true,
+        "named": true,
         "newlines-between": "always",
         "alphabetize": {
           "order": "asc",

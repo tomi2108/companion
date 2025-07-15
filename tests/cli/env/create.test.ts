@@ -1,20 +1,18 @@
 import { beforeEach, describe } from "node:test";
+import { expect, it, vi } from "vitest";
 
 import { mockConfig } from "@mocks/config";
-import { it, vi } from "vitest";
 
-vi.mock("@lib/ui", () => ({
-  search: vi.fn().mockImplementation(({ choices }) => choices[0].name),
-  input: vi.fn().mockReturnValue("name")
-}));
+import create from "@cli/env/create";
+import { promptTmpFile } from "@interface/prompts";
+import { input, search } from "@lib/ui";
 
-vi.mock("@interface/prompts", () => ({
-  ...vi.importActual("@interface/prompts"),
-  promptTmpFile: vi.fn().mockReturnValue({ changed: true, new_content: "env=key" })
+vi.mock("@interface/prompts", async () => ({
+  ...await vi.importActual("@interface/prompts"),
+  promptTmpFile: vi.fn()
 }));
 
 vi.mock("simple-git", () => ({
-  __esModule: true,
   default: vi.fn().mockReturnValue({
     clone: vi.fn(),
     add: vi.fn(),
@@ -36,26 +34,28 @@ vi.mock("simple-git", () => ({
   })
 }));
 
+vi.mock("@lib/ui");
+
 beforeEach(() => {
   vi.clearAllMocks();
-  mockConfig({ paths: { vault: "/path/to/vault" } });
+  mockConfig();
 });
 
 describe("create command", () => {
-
   it("should create a configmap", async () => {
-    // await create.handler();
-
-    // expect(getOcToken).toHaveBeenCalled();
-    // expect(Openshift).toHaveBeenCalledWith(expect.any(String));
-    // expect(Openshift.prototype.getProjects).toHaveBeenCalled();
-    // expect(promptForOcResource).toHaveBeenCalledWith([{ name: "project1" }, { name: "project2" }]);
-    // expect(search).toHaveBeenCalledWith({ message: "Choose type of resource to create", choices: ["configmap", "secret"] });
-    // expect(input).toHaveBeenCalledWith({ message: "Enter a name for the new configmap" });
-    // expect(promptTmpFile).toHaveBeenCalledWith("my-configmap-configmap", "KEY=VALUE");
-    // expect(parseKeyVal).toHaveBeenCalledWith("key1=value1\nkey2=value2");
+    vi.mocked(promptTmpFile).mockImplementation(async () => ({ changed: true, new_content: "env=key" }));
+    vi.mocked(search).mockImplementation(async ({ choices }) => typeof choices[0] === "string" ? choices[0] : choices[0]?.name ?? "");
+    vi.mocked(input).mockImplementationOnce(async () => "name");
+    await create.handler();
   });
 
+  it("should cancel if no changes are made", async () => {
+    vi.mocked(promptTmpFile).mockResolvedValue({ changed: false, new_content: "" });
+    vi.mocked(search).mockImplementation(async ({ choices }) => typeof choices[0] === "string" ? choices[0] : choices[0]?.name ?? "");
+    vi.mocked(input).mockImplementationOnce(async () => "name");
+    await create.handler();
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
   // it("should create a secret and update secrets.yaml", async () => {
   //   // Mock user inputs
   //   promptForOcResource.mockResolvedValue({ name: "project1" });
@@ -112,14 +112,4 @@ describe("create command", () => {
   //   await expect(create.handler()).rejects.toThrow("Vault path not set");
   // });
   //
-  // it("should cancel if no changes are made", async () => {
-  //   search.mockResolvedValue("configmap");
-  //   input.mockResolvedValue("my-configmap");
-  //   promptTmpFile.mockResolvedValue({ changed: false, new_content: "" });
-  //
-  //   await create.handler();
-  //
-  //   expect(Openshift.prototype.createConfigMap).not.toHaveBeenCalled();
-  //   expect(Openshift.prototype.createSecret).not.toHaveBeenCalled();
-  // });
 });

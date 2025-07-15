@@ -1,8 +1,8 @@
+import yaml from "js-yaml";
 import fs, { Dirent } from "node:fs";
+import { z } from "zod/v4";
 
 import { toYaml } from "@lib/utils";
-import yaml from "js-yaml";
-import { z } from "zod/v4";
 
 const YamlContentSchema = z.record(z.string(), z.string());
 type Content = z.infer<typeof YamlContentSchema>;

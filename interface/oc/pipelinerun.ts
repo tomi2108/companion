@@ -1,8 +1,9 @@
+import { AxiosInstance } from "axios";
+import chalk from "chalk";
+
 import { Choice } from "@lib/constants";
 import { Pod } from "@oc/pod";
 import { TaskRun } from "@oc/taskrun";
-import { AxiosInstance } from "axios";
-import chalk from "chalk";
 
 export type PipelineRunResponse = {
   metadata: {

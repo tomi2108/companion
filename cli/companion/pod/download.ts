@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { Argv } from "yargs";
 
 import { createDirIfNotExists } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
@@ -8,7 +9,6 @@ import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import { Argv } from "yargs";
 
 export default {
   command: "download-logs",

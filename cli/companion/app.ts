@@ -1,9 +1,10 @@
+import { Argv } from "yargs";
+
 import create from "@cli/app/create";
 import expose from "@cli/app/expose";
 import newCmd from "@cli/app/new";
 import start from "@cli/app/start";
 import status from "@cli/app/status";
-import { Argv } from "yargs";
 
 export default {
   command: "app <command>",

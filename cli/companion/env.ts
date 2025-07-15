@@ -1,9 +1,10 @@
+import { Argv } from "yargs";
+
 import copy from "@cli/env/copy";
 import create from "@cli/env/create";
 import deleteCmd from "@cli/env/delete";
 import edit from "@cli/env/edit";
 import health from "@cli/env/health";
-import { Argv } from "yargs";
 
 export default {
   command: "env <command>",

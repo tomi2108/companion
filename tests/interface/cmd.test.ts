@@ -1,5 +1,6 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
+
 import { clearConsole } from "@interface/cmd";
-import { describe, test, expect, vi, beforeEach } from "vitest";
 
 vi.mock("node:child_process", () => ({
   default: {

@@ -1,6 +1,7 @@
 import { Gitlab } from "@gitbeaker/rest";
-import { Config } from "@lib/config";
 import simpleGit from "simple-git";
+
+import { Config } from "@lib/config";
 
 export const git = (full_path: string) => simpleGit({
   baseDir: full_path

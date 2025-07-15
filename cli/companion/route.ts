@@ -1,5 +1,6 @@
-import generate from "@cli/route/generate";
 import { Argv } from "yargs";
+
+import generate from "@cli/route/generate";
 
 export default {
   command: "route <command>",

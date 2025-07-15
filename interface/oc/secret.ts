@@ -1,8 +1,9 @@
+import { AxiosInstance } from "axios";
+
 import { Config } from "@lib/config";
 import { removeDuplicates, toYaml } from "@lib/utils";
 import { Resource } from "@oc/resource";
 import { vault } from "@vault";
-import { AxiosInstance } from "axios";
 
 export class Secret extends Resource {
   kind = "Secret" as const;

@@ -1,5 +1,7 @@
+import Table from "cli-table3";
 import fs from "node:fs";
 import path from "node:path";
+import { Argv } from "yargs";
 
 import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
@@ -7,8 +9,6 @@ import { Config } from "@lib/config";
 import log from "@lib/log";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
-import Table from "cli-table3";
-import { Argv } from "yargs";
 
 export default {
   command: "health",

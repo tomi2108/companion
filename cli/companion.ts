@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import yargs from "yargs";
+
 import app from "@cli/app";
 import config from "@cli/config";
 import deploy from "@cli/deploy";
@@ -12,7 +14,6 @@ import route from "@cli/route";
 import ticket from "@cli/ticket";
 import upgrade from "@cli/upgrade";
 import { Config } from "@lib/config";
-import yargs from "yargs";
 
 yargs
   .scriptName("companion")
