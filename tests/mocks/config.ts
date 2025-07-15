@@ -8,6 +8,10 @@ export const mockConfigData = {
     oc_config_path: "/mock/kube/config"
   },
   paths: { vault: "/path/to/vault" },
+  gitlab: {
+    token: "mock_gitlab_token",
+    server: "https://mock_gitlab_server"
+  },
   openshift: {
     auth_server_cuyo: "https://mock_auth_server_cuyo",
     auth_server_barracas: "https://mock_auth_server_barracas",
@@ -15,7 +19,8 @@ export const mockConfigData = {
     server_barracas: "mock_server_barracas"
   },
   vault: {
-    server: "mock_vault_sever"
+    server: "http://mock_vault_sever",
+    project: "mock_vault_project"
   },
   jira: {
     project_key: "PROJ",
@@ -42,3 +47,5 @@ vi.mock("@lib/config", async () => ({
 export const mockConfig = (cfg?: Partial<Config>) => {
   mockGet.mockReturnValue({ ...mockConfigData, ...cfg });
 };
+
+export const clearMockConfig = () => mockGet.mockReturnValue(mockConfigData);
