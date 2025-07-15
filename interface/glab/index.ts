@@ -1,27 +1,32 @@
 import path from "node:path";
 
-import { createDirIfNotExists } from "@files";
 import { Repo } from "@files/repo";
-import { Gitlab as Glab, ProjectSchema } from "@gitbeaker/rest";
+import { createDirIfNotExists } from "@files/utils";
+import { ProjectSchema } from "@gitbeaker/rest";
+import { glab } from "@glab/api";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading, ProgressBar } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 import { Project } from "@oc/project";
-import simpleGit from "simple-git";
-
-export const git = (full_path: string) => simpleGit({
-  baseDir: full_path
-});
-
-export const glab = () => new Glab({
-  token: Config.get().gitlab.token,
-  host: Config.get().gitlab.server
-});
 
 export class Gitlab {
 
   private glab: ReturnType<typeof glab>;
+
+  async createArgoIssue(appName: string, version: string, project: Project) {
+    const argocd_path = Config.get().paths.argocd;
+    if (!argocd_path) throw new Error("Argo cd path not set");
+    const title = `${appName}-${project.name}`;
+    const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${appName}\r\nversion:${version}`;
+
+    const spinner = loading(`Creating issues for: ${appName}`);
+    await new Repo(argocd_path).createIssue({
+      title,
+      description
+    });
+    spinner.succeed();
+  }
 
   constructor() {
     this.glab = glab();
@@ -114,22 +119,5 @@ export class Gitlab {
     );
     return project;
   }
-
-  async getUser(username: string) {
-    return (await this.glab.Search.all("users", username))[0];
-  }
 }
 
-export async function createArgoIssue(appName: string, version: string, project: Project) {
-  const argocd_path = Config.get().paths.argocd;
-  if (!argocd_path) throw new Error("Argo cd path not set");
-  const title = `${appName}-${project.name}`;
-  const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${appName}\r\nversion:${version}`;
-
-  const spinner = loading(`Creating issues for: ${appName}`);
-  await new Repo(argocd_path).createIssue({
-    title,
-    description
-  });
-  spinner.succeed();
-}

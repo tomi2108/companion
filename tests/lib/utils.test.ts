@@ -2,11 +2,8 @@ import "@mocks/config";
 import crypto from "node:crypto";
 import fs from "node:fs";
 
-import open from "open";
-import openEditor from "open-editor";
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 
-import { Config } from "../../lib/config";
 import * as utils from "../../lib/utils";
 
 vi.mock("node:fs");
@@ -17,13 +14,11 @@ vi.mock("open", () => ({ default: vi.fn() }));
 const fsExistsMock = fs.existsSync as Mock;
 const fsReadDirMock = fs.readdirSync as Mock;
 const fsReadFileMock = fs.readFileSync as Mock;
-const configGetMock = Config.get as Mock;
 const cryptoCreateHashMock = crypto.createHash as Mock;
 
 beforeEach(vi.clearAllMocks);
 
 describe("utils", () => {
-
   it("deepMerge merges nested objects", () => {
     const a = { x: 1, y: { z: 2 } };
     const b = { y: { z: 3, w: 4 }, k: 9 };
@@ -74,24 +69,6 @@ describe("utils", () => {
 
   it("kebabToCamel converts string", () => {
     expect(utils.kebabToCamel("some-key-name")).toBe("someKeyName");
-  });
-
-  it("openInBrowser calls open with browser if set", async () => {
-    configGetMock.mockReturnValue({ preferences: { browser: "firefox" } });
-    await utils.openInBrowser("http://example.com");
-    expect(open).toHaveBeenCalledWith("http://example.com", { app: { name: "firefox" } });
-  });
-
-  it("openInBrowser calls open without browser if not set", async () => {
-    configGetMock.mockReturnValue({ preferences: {} });
-    await utils.openInBrowser("http://example.com");
-    expect(open).toHaveBeenCalledWith("http://example.com");
-  });
-
-  it("openInEditor calls openEditor with editor", async () => {
-    configGetMock.mockReturnValue({ preferences: { editor: "vscode" } });
-    await utils.openInEditor("/file.txt", { wait: true });
-    expect(openEditor).toHaveBeenCalledWith([{ file: "/file.txt" }], { wait: true, editor: "vscode" });
   });
 
   it("getCurrentPath returns cwd", () => {

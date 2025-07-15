@@ -13,11 +13,6 @@ vi.mock("@interface/prompts", () => ({
   promptTmpFile: vi.fn().mockReturnValue({ changed: true, new_content: "env=key" })
 }));
 
-vi.mock("node:fs", () => ({
-  readFileSync: vi.fn(),
-  writeFileSync: vi.fn()
-}));
-
 vi.mock("simple-git", () => ({
   __esModule: true,
   default: vi.fn().mockReturnValue({
@@ -38,43 +33,6 @@ vi.mock("simple-git", () => ({
     checkoutLocalBranch: vi.fn(),
     pull: vi.fn(),
     branchLocal: vi.fn().mockResolvedValue({ current: "master", all: ["master"] })
-  })
-}));
-
-vi.mock("../glab/glab", () => ({
-  git: vi.fn().mockReturnValue({
-    clone: vi.fn(),
-    add: vi.fn(),
-    commit: vi.fn().mockResolvedValue({ commit: "fake-commit" }),
-    push: vi.fn(),
-    fetch: vi.fn().mockResolvedValue({}),
-    branch: vi.fn(),
-    log: vi.fn().mockResolvedValue({ all: [] }),
-    getConfig: vi.fn().mockResolvedValue({ value: "https://gitlab.com/group/project.git" }),
-    addRemote: vi.fn(),
-    checkout: vi.fn(),
-    stash: vi.fn().mockImplementation(async (_, callback) => callback && await callback()),
-    stashList: vi.fn().mockResolvedValue({ total: 0 }),
-    reset: vi.fn(),
-    deleteLocalBranch: vi.fn(),
-    checkoutLocalBranch: vi.fn(),
-    pull: vi.fn(),
-    branchLocal: vi.fn().mockResolvedValue({ current: "master", all: ["master"] })
-  }),
-  Gitlab: vi.fn().mockReturnValue({
-    getUser: vi.fn().mockResolvedValue({ id: 1 })
-  }),
-  glab: vi.fn().mockReturnValue({
-    MergeRequests: {
-      create: vi.fn().mockResolvedValue({}),
-      all: vi.fn().mockResolvedValue([])
-    },
-    Issues: {
-      create: vi.fn()
-    },
-    Projects: {
-      search: vi.fn().mockResolvedValue([{ id: 1, path_with_namespace: "group/project" }])
-    }
   })
 }));
 

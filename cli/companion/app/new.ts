@@ -1,17 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { createDirIfNotExists, getApp, insertLine, removeLine, replace } from "@files";
+import { getApp } from "@files";
 import { AppRepo, Dependency } from "@files/app_repo";
 import { Repo } from "@files/repo";
-import { createArgoIssue, Gitlab } from "@glab";
+import { createDirIfNotExists, insertLine, removeLine, replace } from "@files/utils";
+import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
-import { findArgoPipeline, findCIPipeline, findSyncPipeline, getOcToken, Openshift, waitForPipeline } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
+import { findArgoPipeline, findCIPipeline, findSyncPipeline, waitForPipeline } from "@oc/utils";
 
 const Connections = {
   apigw: "apigw",
@@ -259,8 +262,8 @@ export default {
       }
 
       for (const project of projects_to_deploy) {
-        await createArgoIssue(name, initial_version, project);
-        const argo_pipeline = await findArgoPipeline(app_repo);
+        await new Gitlab().createArgoIssue(name, initial_version, project);
+        const argo_pipeline = await findArgoPipeline(app_repo, project);
         if (!argo_pipeline) {
           log.error("Could not find argo pipeline");
           process.exit(1);

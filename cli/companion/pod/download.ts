@@ -1,12 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { createDirIfNotExists } from "@files";
+import { createDirIfNotExists } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import { Argv } from "yargs";
 
 export default {

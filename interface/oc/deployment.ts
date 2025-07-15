@@ -1,5 +1,5 @@
 import { Choice } from "@lib/constants";
-import { filterExcludedConfigmaps, filterExcludedSecrets } from "@oc";
+import { filterExcludedConfigmaps, filterExcludedSecrets } from "@oc/api";
 import { ConfigMap } from "@oc/configmap";
 import { Pod, PodResponse } from "@oc/pod";
 import { Secret } from "@oc/secret";

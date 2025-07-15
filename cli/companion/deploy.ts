@@ -1,9 +1,11 @@
 import { promptForApp, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
 import { confirm, input, loading, search } from "@lib/ui";
-import { findSyncPipeline, getOcToken, Openshift, waitForPipeline } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
+import { findSyncPipeline, waitForPipeline } from "@oc/utils";
 
 export default {
   command: "deploy",

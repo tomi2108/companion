@@ -5,7 +5,8 @@ import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
-import { filterFrontendDeployments, getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { filterFrontendDeployments, getOcToken } from "@oc/api";
 import Table from "cli-table3";
 import { Argv } from "yargs";
 

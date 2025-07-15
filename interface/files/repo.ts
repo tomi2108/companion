@@ -2,8 +2,9 @@ import { cpSync, rmSync } from "node:fs";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 
-import { git, Gitlab, glab } from "@glab";
+import { git, glab } from "@glab/api";
 import { MergeRequest } from "@glab/merge_request";
+import { GitlabUser } from "@glab/user";
 import { Config } from "@lib/config";
 import { APP_TYPES } from "@lib/constants";
 import { loading } from "@lib/ui";
@@ -145,7 +146,6 @@ export class Repo {
   }
 
   async createMr(targetBranch: string, opts?: { projectId?: number; title?: string; reviewer?: string }) {
-    const gitlab = new Gitlab();
     const sourceBranch = await this.getActiveBranch();
     await this.push(sourceBranch);
 
@@ -153,12 +153,12 @@ export class Repo {
 
     const commits = await this.getDiffCommits(sourceBranch, targetBranch);
     const title = opts?.title || commits?.[0]?.message || `Merge '${sourceBranch}' into ${targetBranch}`;
-    const assigneeId = (await gitlab.getUser(Config.get().gitlab.username))?.id;
+    const assigneeId = await new GitlabUser(Config.get().gitlab.username).getId();
     const description = MergeRequest.descriptionFromCommits(commits);
 
     const reviewerIds: number[] = [];
     if (opts?.reviewer) {
-      const reviewerId = (await gitlab.getUser(opts.reviewer))?.id;
+      const reviewerId = await new GitlabUser(opts.reviewer).getId();
       if (reviewerId !== undefined) reviewerIds.push(reviewerId);
     }
 
@@ -197,7 +197,7 @@ export class Repo {
     description: string;
   }) {
     const project = await this.getProject();
-    const assigneeId = (await new Gitlab().getUser(Config.get().gitlab.username))?.id;
+    const assigneeId = await new GitlabUser(Config.get().gitlab.username).getId();
     const options = { description, assigneeId };
     await this.glab.Issues.create(project.id, title, options);
   }

@@ -1,4 +1,4 @@
-import { base64Decode } from "@files";
+import { base64Decode } from "@files/utils";
 import { Choice } from "@lib/constants";
 import { tryParseJSONObject } from "@lib/utils";
 import { AxiosInstance } from "axios";

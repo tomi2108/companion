@@ -3,7 +3,8 @@ import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading } from "@lib/ui";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import chalk from "chalk";
 import Table from "cli-table3";
 

@@ -1,5 +1,6 @@
 import { promptForOcResource } from "@interface/prompts";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 
 export default {
   command: "remote-session",

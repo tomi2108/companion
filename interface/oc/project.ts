@@ -1,5 +1,6 @@
 import { Config } from "@lib/config";
 import { Choice } from "@lib/constants";
+import { filterExcludedConfigmaps, filterExcludedSecrets } from "@oc/api";
 import { ConfigMap, ConfigMapResponse } from "@oc/configmap";
 import { Deployment, DeploymentResponse } from "@oc/deployment";
 import { PipelineRun, PipelineRunResponse } from "@oc/pipelinerun";
@@ -7,8 +8,6 @@ import { Pod, PodResponse } from "@oc/pod";
 import { Secret } from "@oc/secret";
 import { vault } from "@vault";
 import { AxiosInstance } from "axios";
-
-import { filterExcludedConfigmaps, filterExcludedSecrets } from ".";
 
 export type ProjectResponse = {
   metadata: {

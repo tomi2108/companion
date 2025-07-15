@@ -4,9 +4,11 @@ import { promptForMr, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
 import { confirm } from "@lib/ui";
 import { getCurrentPath } from "@lib/utils";
-import { findCIPipeline, getOcToken, Openshift, waitForPipeline } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
 import { Project } from "@oc/project";
+import { findCIPipeline, waitForPipeline } from "@oc/utils";
 
 export default {
   command: "merge",

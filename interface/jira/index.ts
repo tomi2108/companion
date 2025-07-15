@@ -1,18 +1,11 @@
-import { base64Encode } from "@files";
+import { base64Encode } from "@files/utils";
+import { jira } from "@jira/api";
 import { Issue, IssueResponse } from "@jira/issue";
 import { Config } from "@lib/config";
 import axios, { AxiosInstance } from "axios";
-import JiraCli from "jira-client";
-
-export const jira = () => new JiraCli({
-  host: Config.get().jira.server,
-  protocol: "https",
-  username: Config.get().jira.username,
-  password: Config.get().jira.token
-});
 
 export class Jira {
-  private jira: JiraCli;
+  private jira: ReturnType<typeof jira>;
   private api: AxiosInstance;
 
   constructor() {
@@ -76,10 +69,5 @@ export class Jira {
 
   async getIssueTypes() {
     return await this.jira.listIssueTypes();
-  }
-
-  async getCurrentSprint() {
-    const board_id = String(Config.get().jira.board_id);
-    return (await this.jira.getAllSprints(board_id, 0, 1, "active")).values?.[0] ?? null;
   }
 }

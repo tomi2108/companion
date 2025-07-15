@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 
-import { base64Encode } from "@files/index";
+import { base64Encode } from "@files/utils";
 import { http, HttpResponse, ws } from "msw";
 
 export const mockPods = [

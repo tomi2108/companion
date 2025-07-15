@@ -2,10 +2,23 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import log from "./log";
-import { input, password, search, confirm } from "./ui";
-import { deepMerge, openInEditor, removePrefix, removeSuffix } from "./utils";
+import log from "@lib/log";
+import { input, password, search, confirm } from "@lib/ui";
+import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
+import open from "open";
+import openEditor from "open-editor";
+
 import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, ThreeScaleConfig, VaultConfig } from "./validations";
+
+export async function openInBrowser(url: string) {
+  const browser = Config.get().preferences.browser;
+  if (browser) open(url, { app: { name: browser } });
+  else open(url);
+}
+
+export async function openInEditor(full_path: string, opts?: { wait?: boolean }) {
+  await openEditor([{ file: full_path }], { wait: opts?.wait ?? false, editor: Config.get().preferences.editor });
+}
 
 const homeDir = os.homedir();
 

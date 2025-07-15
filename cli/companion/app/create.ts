@@ -1,11 +1,12 @@
 import { getApp } from "@files";
-import { createArgoIssue } from "@glab";
+import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 
 export default {
   command: "create",
@@ -51,6 +52,6 @@ export default {
       version = await input({ message: "Enter version to create, starting with a 'v':" });
     }
 
-    await createArgoIssue(app, version, project);
+    await new Gitlab().createArgoIssue(app, version, project);
   }
 };

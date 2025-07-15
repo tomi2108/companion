@@ -1,4 +1,4 @@
-import { YamlContentSchema } from "@files/deploy_yaml";
+import { YamlContentSchema } from "@files/validations";
 import { APP_TYPES } from "@lib/constants";
 import { z } from "zod/v4";
 

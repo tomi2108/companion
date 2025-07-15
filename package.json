@@ -5,9 +5,10 @@
   "scripts": {
     "lint": "eslint . --fix",
     "build": "tsc --project ./tsconfig.json ; tsc-alias -p tsconfig.json",
-    "test": "vitest --coverage",
-    "precommit": "npm run build && lint-staged && npm run test",
+    "test": "vitest --coverage --reporter=verbose",
+    "precommit": "npm run build && lint-staged && npm run circular-dependencies && npm run test",
     "clean": "rm -rf package-lock.json node_modules dist",
+    "circular-dependencies": "madge --circular .",
     "prepare": "husky"
   },
   "keywords": [],
@@ -58,6 +59,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "husky": "9.1.7",
     "lint-staged": "16.1.0",
+    "madge": "^8.0.0",
     "mock-stdin": "1.0.0",
     "msw": "2.10.4",
     "tsc-alias": "1.8.16",

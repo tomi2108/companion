@@ -1,14 +1,16 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { createDirIfNotExists, getApp } from "@files";
+import { getApp } from "@files";
 import { Repo } from "@files/repo";
+import { createDirIfNotExists } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { toYaml } from "@lib/utils";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 
 export default {
   command: "expose",

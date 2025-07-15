@@ -1,4 +1,4 @@
-import { createDirIfNotExists } from "@files";
+import { createDirIfNotExists } from "@files/utils";
 import { Gitlab } from "@glab";
 import { Config } from "@lib/config";
 import log from "@lib/log";

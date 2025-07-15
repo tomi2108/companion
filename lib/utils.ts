@@ -4,10 +4,6 @@ import path from "node:path";
 import { cwd } from "node:process";
 
 import yaml from "js-yaml";
-import open from "open";
-import openEditor from "open-editor";
-
-import { Config } from "./config";
 
 // do not bother with typing this, adds no value
 export function deepMerge(obj1: any, obj2: any) {
@@ -51,16 +47,6 @@ export function md5FromFile(file_path: string) {
 
 export function kebabToCamel(str: string) {
   return str.replace(/-./g, (x) => x[1]?.toUpperCase() ?? "");
-}
-
-export async function openInBrowser(url: string) {
-  const browser = Config.get().preferences.browser;
-  if (browser) open(url, { app: { name: browser } });
-  else open(url);
-}
-
-export async function openInEditor(full_path: string, opts?: { wait?: boolean }) {
-  await openEditor([{ file: full_path }], { wait: opts?.wait ?? false, editor: Config.get().preferences.editor });
 }
 
 export function getCurrentPath() {

@@ -3,7 +3,8 @@ import { Config } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { kebabToCamel } from "@lib/utils";
-import { filterFrontendDeployments, getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { filterFrontendDeployments, getOcToken } from "@oc/api";
 import axios from "axios";
 
 export default {

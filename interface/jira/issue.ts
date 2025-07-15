@@ -1,7 +1,8 @@
-import { Jira, jira } from "@jira";
-import { Config } from "@lib/config";
+import { jira } from "@jira/api";
+import { Config, openInBrowser } from "@lib/config";
 import { Choice } from "@lib/constants";
-import { openInBrowser } from "@lib/utils";
+
+import { Board } from "./board";
 
 export type IssueResponse = {
   id: string;
@@ -104,7 +105,9 @@ export class Issue {
 
   async addToCurrentSprint() {
     // TODO: test
-    const sprint = await new Jira().getCurrentSprint();
+    const board_id = Config.get().jira.board_id;
+    if (!board_id) throw new Error("No board id set");
+    const sprint = await new Board(board_id).getCurrentSprint();
     if (!sprint) throw new Error("There is no active sprint");
     return await this.jira.addIssueToSprint(this.id, sprint.id);
   }

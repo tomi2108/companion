@@ -7,7 +7,8 @@ import { Config } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import chalk from "chalk";
 import { Argv } from "yargs";
 

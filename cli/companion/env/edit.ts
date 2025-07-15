@@ -5,7 +5,8 @@ import { promptForOcResource, promptTmpFile } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
-import { getOcToken, Openshift } from "@oc";
+import { Openshift } from "@oc";
+import { getOcToken } from "@oc/api";
 import yaml from "js-yaml";
 
 export default {
