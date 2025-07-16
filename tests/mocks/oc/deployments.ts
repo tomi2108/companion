@@ -3,12 +3,9 @@ import { http } from "msw";
 import { withAuth } from "@mocks/middleware";
 import { json } from "@mocks/utils";
 
-export const mockDeployments = [
+const generateDeployment = (name: string, namespace: string) => (
   {
-    metadata: {
-      name: "mockDeployment",
-      namespace: "mockNamespace"
-    },
+    metadata: { name, namespace },
     spec: {
       template: {
         spec: {
@@ -32,6 +29,11 @@ export const mockDeployments = [
       }
     }
   }
+);
+
+export const mockDeployments = [
+  generateDeployment("app-mock", "mockNamespace"),
+  generateDeployment("fcd-mocked", "mockNamespace")
 ] as const;
 
 export const deploymentsHandlers = [

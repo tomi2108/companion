@@ -4,13 +4,13 @@ import { beforeEach, describe } from "node:test";
 import { afterEach, expect, it, vi } from "vitest";
 
 import { clearMockConfig, mockConfig } from "@mocks/config";
+import { mockInput, mockSearch } from "@mocks/ui";
 
 import create from "@cli/env/create";
 import { InvalidRepo } from "@files/repo";
 import { InvalidSecretYaml } from "@files/secrets_yaml";
 import { promptTmpFile } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import { input, search } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 
 vi.mock("@interface/prompts", async () => ({
@@ -18,37 +18,8 @@ vi.mock("@interface/prompts", async () => ({
   promptTmpFile: vi.fn()
 }));
 
-vi.mock("simple-git", () => ({
-  default: vi.fn().mockReturnValue({
-    clone: vi.fn(),
-    add: vi.fn(),
-    commit: vi.fn().mockResolvedValue({ commit: "fake-commit" }),
-    push: vi.fn(),
-    fetch: vi.fn().mockResolvedValue({}),
-    branch: vi.fn().mockResolvedValue({ all: [] }),
-    log: vi.fn().mockResolvedValue({ all: [] }),
-    getConfig: vi.fn().mockResolvedValue({ value: "https://gitlab.com/group/project.git" }),
-    addRemote: vi.fn(),
-    checkout: vi.fn(),
-    stash: vi.fn().mockImplementation(async (_, callback) => callback && await callback()),
-    stashList: vi.fn().mockResolvedValue({ total: 0 }),
-    reset: vi.fn(),
-    deleteLocalBranch: vi.fn(),
-    checkoutLocalBranch: vi.fn(),
-    pull: vi.fn(),
-    branchLocal: vi.fn().mockResolvedValue({ current: "master", all: ["master"] })
-  })
-}));
-
-vi.mock("@lib/ui", async () => ({
-  ...await vi.importActual("@lib/ui"),
-  search: vi.fn(),
-  input: vi.fn()
-}));
-
 beforeEach(() => {
   vi.clearAllMocks();
-  mockConfig();
 });
 
 afterEach(() => {
@@ -56,24 +27,27 @@ afterEach(() => {
 });
 
 function mockConfigMapCreation() {
-  vi.mocked(promptTmpFile).mockImplementation(async () => ({ changed: true, new_content: "env=key" }));
-  vi.mocked(search).mockImplementation(async ({ choices }) => typeof choices[0] === "string" ? choices[0] : choices[0]?.name ?? "");
-  vi.mocked(input).mockImplementationOnce(async () => "name");
+  vi.mocked(promptTmpFile).mockResolvedValue({ changed: true, new_content: "env=key" });
+  mockSearch(
+    async ({ choices }) =>
+      typeof choices[0] === "string" ? choices[0] : choices[0]?.name ?? ""
+  );
+  mockInput("name");
 }
 
 function mockSecretCreation() {
-  vi.mocked(promptTmpFile).mockImplementation(async () => ({ changed: true, new_content: "env=key" }));
-  vi.mocked(search).mockImplementation(
+  vi.mocked(promptTmpFile).mockResolvedValue({ changed: true, new_content: "env=key" });
+  mockSearch(
     async ({ choices }) => {
       if (choices.includes("secret")) return "secret";
       return typeof choices[0] === "string" ? choices[0] : choices[0]?.name ?? "";
     }
   );
-  vi.mocked(input).mockImplementationOnce(async () => "name");
+  mockInput("name");
   vi.mocked(readFileSync).mockReturnValue(yaml.dump({ externalSecret: { secret1: "secret1" } }));
 }
 
-describe("create command", () => {
+describe("CLI - env create command", () => {
   it("should create a configmap", async () => {
     mockConfigMapCreation();
     await create.handler();

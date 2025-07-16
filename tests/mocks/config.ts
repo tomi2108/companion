@@ -16,7 +16,8 @@ export const mockConfigData = {
     auth_server_cuyo: "https://mock_auth_server_cuyo",
     auth_server_barracas: "https://mock_auth_server_barracas",
     server_cuyo: "mock_server_cuyo",
-    server_barracas: "mock_server_barracas"
+    server_barracas: "mock_server_barracas",
+    mf_host_template: "template"
   },
   vault: {
     server: "http://mock_vault_sever",
@@ -44,8 +45,26 @@ vi.mock("@lib/config", async () => ({
   }
 }));
 
-export const mockConfig = (cfg?: Partial<Config>) => {
-  mockGet.mockReturnValue({ ...mockConfigData, ...cfg });
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Array<infer U> ? Array<DeepPartial<U>> : T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+function mergeWithOverride(a: any, b: any): any {
+  return {
+    ...a,
+    ...Object.fromEntries(
+      Object.entries(b).map(([key, bVal]) => [
+        key,
+        typeof bVal === "object" && bVal !== null && !Array.isArray(bVal) && typeof a?.[key] === "object"
+          ? mergeWithOverride(a[key], bVal)
+          : bVal
+      ])
+    )
+  };
+}
+
+export const mockConfig = (cfg?: DeepPartial<Config>) => {
+  mockGet.mockReturnValue(mergeWithOverride(mockConfigData, cfg));
 };
 
 export const clearMockConfig = () => mockGet.mockReturnValue(mockConfigData);

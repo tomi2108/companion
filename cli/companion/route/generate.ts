@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { promptForOcResource } from "@interface/prompts";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { kebabToCamel } from "@lib/utils";
@@ -12,12 +12,8 @@ export default {
   command: "generate",
   describe: "Generate OpenShift routes",
   handler: async () => {
-
     const host_template = Config.get().openshift.mf_host_template;
-    if (!host_template) {
-      log.error("config.openshift.mf_host_template not found");
-      process.exit(1);
-    }
+    if (!host_template) throw new ConfigError("openshift.mf_host_template");
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();

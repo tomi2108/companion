@@ -53,7 +53,6 @@ export class Pod {
       ws.on("close", resolve);
       ws.on("error", reject);
       ws.on("message", (data) => {
-        console.log(data);
         let message: string | object = base64Decode(data.toString()).trim();
         if (!opts?.raw) message = tryParseJSONObject(message);
         if (!message) return;
