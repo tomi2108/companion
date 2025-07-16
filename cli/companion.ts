@@ -18,8 +18,16 @@ import { Config } from "@lib/config";
 yargs
   .scriptName("companion")
   .usage("$0 <command> [subcommand]")
-  .middleware(async () => {
+  .boolean("prod")
+  .alias("prod", ["p"])
+  .describe("prod", "Wheter to use the production servers")
+  .middleware(async ({ prod }: { prod?: boolean }) => {
     await Config.get().load();
+
+    if (prod) {
+      Config.get().openshift.server_cuyo = "api.ocpprod.cuyorh.tcloud.ar:6443";
+      Config.get().openshift.auth_server_cuyo = "https://oauth-openshift.apps.ocpprod.cuyorh.tcloud.ar";
+    }
   }, true)
   .command(app)
   .command(config)
