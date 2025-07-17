@@ -117,7 +117,7 @@ export class DeployYaml {
   }
 
   getEnv() {
-    return ENVS.find((e) => path.basename(this.file_path).includes(e));
+    return ENVS.find((e) => path.basename(this.file_path).includes(e)) ?? "prod";
   }
 }
 

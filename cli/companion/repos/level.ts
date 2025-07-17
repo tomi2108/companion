@@ -4,7 +4,7 @@ import { Argv } from "yargs";
 
 import { AppRepo } from "@files/app_repo";
 import { Config } from "@lib/config";
-import { input, search } from "@lib/ui";
+import { input, progressBar, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
 
 export default {
@@ -40,9 +40,12 @@ export default {
     const source_branch = await input({ message: "Input source branch" });
     const target_branch = await input({ message: "Input target branch" });
 
+    const bar = progressBar(paths.length);
     for (const p of paths) {
       const full_path = path.join(p.parentPath, p.name);
       const repo = new AppRepo(full_path);
+      const { name } = await repo.getInfo();
+      bar.setSufix(name);
       await repo.stash(async () => {
         await repo.update();
         const { switched: switchedT } = await repo.switchBranchIfExists(target_branch);
@@ -56,6 +59,8 @@ export default {
         await repo.createNewBranch(`nivelacion/${source_branch}-${target_branch}`);
         await repo.createMr(target_branch, { title: `Nivelacion ${source_branch} - ${target_branch}` });
       });
+      bar.increment(1);
     }
+    bar.stop();
   }
 };
