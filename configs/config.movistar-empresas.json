@@ -49,6 +49,26 @@
           "enabled": false
         }
       },
+      "movistar-empresas": {
+        "autoscaling": {
+          "enabled": true,
+          "minReplicas": 3,
+          "maxReplicas": 6
+        },
+        "resources": {
+          "limits": {
+            "cpu": "100m",
+            "memory": "256Mi"
+          },
+          "requests": {
+            "cpu": "30m",
+            "memory": "256Mi"
+          }
+        },
+        "configmapENV": {
+          "STDOUT_LOGS": "off"
+        }
+      },
       "movistar-empresas-cert": {
         "autoscaling": {
           "enabled": true,
