@@ -36,6 +36,7 @@
     "open": "10.1.2",
     "open-editor": "5.1.0",
     "simple-git": "3.27.0",
+    "sonarqube-web-api-client": "^0.11.1",
     "ssh2": "1.16.0",
     "ws": "8.18.2",
     "yargs": "17.7.2",

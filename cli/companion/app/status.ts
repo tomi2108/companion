@@ -3,6 +3,7 @@ import Table from "cli-table3";
 
 import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
+import { SonarQube } from "@interface/sonar/api";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading } from "@lib/ui";
@@ -14,6 +15,8 @@ export default {
   aliases: [],
   describe: "Show app status",
   handler: async () => {
+    const sonar = new SonarQube();
+    const sonar_projects = await sonar.getProjects();
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
@@ -23,8 +26,13 @@ export default {
       style: {
         compact: true
       },
-      head: ["App", "Current version", "Last version", "Mocked"],
-      colWidths: [50]
+      head: [
+        "App",
+        "Current version",
+        "Last version",
+        "Mocked",
+        "TODOS"
+      ]
     });
 
     const spinner = loading("Gathering status");
@@ -57,12 +65,16 @@ export default {
           })()
         ]);
         if (!last) return;
+
+        const sonar_project = sonar_projects.find((p) => p.key.includes(deployment.name));
+        const todos = (await sonar.getCodeSmells(sonar_project.key)).filter((i) => i.message.includes("TODO"));
+
         const color = current === last ? "green" : "red";
         const current_version = chalk[color](current);
         const last_version = chalk[color](last);
         const mockSecrets = Config.get().openshift.mock_secrets ?? [];
         const mocked = secrets.some((s) => mockSecrets.includes(s.name)) ? chalk.green("yes") : chalk.red("no");
-        table.push([deployment.name, current_version, last_version, mocked]);
+        table.push([deployment.name, current_version, last_version, mocked, todos.length]);
       }));
     }
     spinner.succeed();

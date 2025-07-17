@@ -43,6 +43,7 @@ export default {
       try {
         await repo.copyEnv(project);
         repo.internalEnvs();
+        // TODO: Checkout repo deploy_repo
         await repo.switchBranchIfExists("master");
         await repo.pull("master");
       } catch (err) {

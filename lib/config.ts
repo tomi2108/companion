@@ -8,7 +8,7 @@ import log from "@lib/log";
 import { confirm, input, password, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 
-import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, ThreeScaleConfig, VaultConfig } from "./validations";
+import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, SonarConfig, ThreeScaleConfig, VaultConfig } from "./validations";
 
 export async function openInBrowser(url: string) {
   const browser = Config.get().preferences.browser;
@@ -59,6 +59,10 @@ class Config {
   vault: VaultConfig = {
     server: "https://vault.agil.movistar.com.ar"
   } as VaultConfig;
+
+  sonar: SonarConfig = {
+    server: "https://sonarqube.agil.movistar.com.ar"
+  } as SonarConfig;
 
   threescale: ThreeScaleConfig = {} as ThreeScaleConfig;
   paths: PathsConfig = {} as PathsConfig;
@@ -156,6 +160,7 @@ class Config {
       "paths",
       "preferences",
       "threescale",
+      "sonar",
       "repos"
     ] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {

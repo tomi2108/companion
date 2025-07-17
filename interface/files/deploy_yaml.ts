@@ -15,7 +15,7 @@ export class DeployYaml {
 
   static isDeployYamlFile(file: Dirent) {
     return file.isFile()
-      && ENVS.some((e) => file.name.includes(e))
+      // && ENVS.some((e) => file.name.includes(e))
       && file.name.includes("values-");
   }
 
@@ -24,7 +24,14 @@ export class DeployYaml {
     const yaml_content = (yaml.load(file_content) as { "helm-chart-master": any })?.["helm-chart-master"];
     if (!yaml_content) throw new InvalidDeployYaml(file_path);
 
-    this.content = deepMerge(YamlContentSchema.parse(yaml_content), yaml_content);
+    this.content
+      = deepMerge(YamlContentSchema.parse(yaml_content, {
+        error: () => {
+          console.log(yaml_content);
+          return file_path;
+        }
+      }), yaml_content);
+
     this.file_path = file_path;
     this.namespace = this.getNamespace();
   }
