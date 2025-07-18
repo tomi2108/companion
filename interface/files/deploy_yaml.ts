@@ -43,7 +43,6 @@ export class DeployYaml {
     if (!this.content.dynatrace) this.content.dynatrace = {
       modulo: Config.get().dynatrace?.modulo ?? "NO_INFORMADO",
       tipo: type === "app" ? "MICROFRONTEND" : type.toUpperCase(),
-      // TODO: vincular con Jira ?
       clave_jira: Config.get().jira?.project_key ?? "NO_INFORMADO",
       issue_jira: "NO_INFORMADO",
       masivo_critico: "NO"
