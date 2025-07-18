@@ -2,6 +2,7 @@ import { Argv } from "yargs";
 
 import clean from "@cli/repos/clean";
 import clone from "@cli/repos/clone";
+import install from "@cli/repos/install";
 import level from "@cli/repos/level";
 import open from "@cli/repos/open";
 
@@ -14,6 +15,7 @@ export default {
     .command(clean)
     .command(open)
     .command(level)
+    .command(install)
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }
