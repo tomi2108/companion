@@ -13,6 +13,9 @@ export default {
   aliases: [],
   describe: "Install/update dependencies",
   builder: (yargs: Argv) => yargs
+    .boolean("dev")
+    .alias("dev", ["d"])
+    .describe("dev", "Install as dev dependency")
     .boolean("all")
     .alias("all", ["a"])
     .describe("all", "Whether to run the script for all repositories")
@@ -23,8 +26,12 @@ export default {
     .alias("backend", ["b"])
     .describe("backend", "Whether to run the script for all backend repositories")
     .conflicts("all", ["frontend", "backend"]),
-
-  handler: async ({ all, frontend, backend }: { all?: boolean; frontend?: boolean; backend?: boolean }) => {
+  handler: async ({ all, frontend, backend, dev }: {
+    all?: boolean;
+    frontend?: boolean;
+    backend?: boolean;
+    dev?: boolean;
+  }) => {
     let paths: Dirent[] = [];
     if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];
     if (all || backend) paths = [...paths, ...readdirs(Config.get().paths.backend) ?? []];
@@ -37,33 +44,40 @@ export default {
       const selected = choices.find((p) => choice === path.join(p.parentPath, p.name));
       if (selected) paths = [selected];
     }
-    const nameLib = await input({ message: "Enter name dependency" });
-    const versionLib = await input({ message: "Enter Versión" });
+
+    const name = await input({ message: "Enter dependency name" });
+    const version = await input({ message: "Enter version" });
     const sourceBranch = await input({ message: "Source branch" });
+
     const bar = progressBar(paths.length, 0, "Installing");
-    for (const p of paths) {
-      const full_path = path.join(p.parentPath, p.name);
-      bar.setSufix(p.name);
-      const app_repo = new AppRepo(full_path);
-      await app_repo.stash(async () => {
-        const {switched} = await app_repo.switchBranchIfExists(sourceBranch);
 
-        if (!switched) {
-          log.warning("Source branch don't exist");
-          return process.exit(1);
-        }
-        const new_branch_name = `bump/${nameLib}-${versionLib}`;
-        await app_repo.createNewBranch(new_branch_name);
-        await app_repo.switchBranchIfExists(new_branch_name);
-        await app_repo.install([{name: nameLib, version: versionLib}]);
-        await app_repo.add("package.json");
-        await app_repo.commit(`feat: bump ${nameLib} to ${versionLib}`);
-        await app_repo.createAndMergeMr(sourceBranch);
-        await app_repo.switchBranchIfExists(sourceBranch);
-        await app_repo.deleteBranch(new_branch_name);
-      });
-      bar.increment(1);
+    for (let i = 0; i < paths.length; i += 10) {
+      const toUpdate = paths.slice(i, i + 10);
+      await Promise.all(
+        toUpdate.map(async (p) => {
+          bar.setSufix(p.name);
+          const full_path = path.join(p.parentPath, p.name);
+          const app_repo = new AppRepo(full_path);
+          await app_repo.stash(async () => {
+            const { switched } = await app_repo.switchBranchIfExists(sourceBranch);
+            if (!switched) {
+              log.warning(`Source branch not found for ${p.name}`);
+              return process.exit(1);
+            }
+            const new_branch_name = `bump/${name}-${version}`;
+            await app_repo.createNewBranch(new_branch_name);
+            await app_repo.switchBranchIfExists(new_branch_name);
+            await app_repo.install([{ name, version }], { dev });
+            await app_repo.add("package.json");
+            await app_repo.commit(`feat: bump ${name} to ${version}`);
+            await app_repo.createAndMergeMr(sourceBranch);
+            await app_repo.switchBranchIfExists(sourceBranch);
+            await app_repo.deleteBranch(new_branch_name);
+            bar.increment(1);
+          });
+        })
+      );
     }
-
     bar.stop();
-  }};
+  }
+};

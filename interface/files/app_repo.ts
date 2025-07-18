@@ -23,9 +23,14 @@ export class AppRepo extends Repo {
   description?: string;
   env_file: string;
 
+  static isAppRepo(full_path: string) {
+    const package_path = path.join(full_path, "package.json");
+    return fs.existsSync(package_path);
+  }
+
   constructor(full_path: string) {
     const package_path = path.join(full_path, "package.json");
-    if (!fs.existsSync(package_path)) throw new InvalidAppRepo(full_path);
+    if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
 
     const package_file = JSON.parse(fs.readFileSync(package_path).toString());
     super(full_path);
@@ -105,11 +110,15 @@ export class AppRepo extends Repo {
     });
   }
 
-  async install(libs?: Dependency[]) {
+  async install(libs?: Dependency[], opts?: { dev?: boolean }) {
     const dependencies = libs ?? [];
     return new Promise((resolve, reject) => {
       const child = cp.spawn("npm",
-        ["install", ...dependencies.map(dependencyToString)],
+        [
+          "install",
+          opts?.dev ? "-D" : "",
+          ...dependencies.map(dependencyToString)
+        ],
         {
           stdio: "pipe",
           cwd: this.full_path

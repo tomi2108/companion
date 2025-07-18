@@ -1,5 +1,6 @@
 import { AxiosInstance } from "axios";
 import chalk from "chalk";
+import { setTimeout } from "node:timers/promises";
 
 import { Choice } from "@lib/constants";
 import { Pod } from "@oc/pod";
@@ -90,16 +91,18 @@ export class PipelineRun {
       const color = colors[i % colors.length];
       for (const step of tr.steps) {
         await pod.followLogs({
-          raw: true, prefix: color?.(prefix),
+          raw: true,
+          prefix: color?.(prefix),
           container: step
         });
+        setTimeout(15 * 1000); // give some time for next pod to start
       }
     }
   }
 
   async status(): Promise<PipelineStatus> {
     const data: PipelineRunResponse = (await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/pipelineruns/${this.name}`)).data;
-    return data.status.conditions[0]?.reason ?? PipelineStatus.failed;
+    return data.status.conditions?.[0]?.reason ?? PipelineStatus.failed;
   }
 
   toChoice(): Choice {

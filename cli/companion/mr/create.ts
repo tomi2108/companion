@@ -1,4 +1,5 @@
 import { getApp } from "@files";
+import { AppRepo } from "@files/app_repo";
 import { Repo } from "@files/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
@@ -31,7 +32,7 @@ export default {
 
     const { name } = await repo.getInfo();
     const { deploy_repo, app_repo } = await getApp(name);
-    if (merge && app_repo && deploy_repo) {
+    if (merge && AppRepo.isAppRepo(full_path)) {
       deploys = await confirm({ message: "Deploy?" });
       if (deploys) {
         const token = await getOcToken();

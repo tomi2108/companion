@@ -39,43 +39,41 @@ export class DeployRepo extends Repo {
     secrets: Secret[];
     configmaps: ConfigMap[];
   }[], version: string) {
-    return await this.stash(async () => {
-      await this.update();
-      await this.switchBranchIfExists("master");
+    const targetBranch = "master";
+    const sourceBranch = "feature/despliegue";
+    await this.update();
+    await this.switchBranchIfExists(targetBranch);
+    const { name, type } = await this.getInfo();
+    await this.createNewBranch(sourceBranch);
+    await this.reset();
 
-      const { name, type } = await this.getInfo();
+    for (const namespace of namespaces) {
+      const deploymentFile = this.getDeployment(namespace.name) as DeployYaml;
 
-      await this.createNewBranch("feature/despliegue");
-      await this.reset();
+      if (!Config.get().openshift.deployments?.exclude?.includes(name)
+        && !Config.get().openshift.deployments?.exclude?.includes(namespace.name)
+        && !Config.get().openshift.deployments?.exclude?.includes(type)
+      ) deploymentFile.prepareDeploy(type);
 
-      for (const namespace of namespaces) {
-        const deploymentFile = this.getDeployment(namespace.name) as DeployYaml;
+      namespace.secrets.forEach((s) => deploymentFile.setSecret(s.name));
+      namespace.configmaps.forEach((cm) => deploymentFile.setConfigMap(cm.name));
+      deploymentFile.setVersion(version);
+      deploymentFile.save();
+    }
 
-        if (!Config.get().openshift.deployments?.exclude?.includes(name)
-          && !Config.get().openshift.deployments?.exclude?.includes(namespace.name)
-          && !Config.get().openshift.deployments?.exclude?.includes(type)
-        ) deploymentFile.prepareDeploy(type);
+    for (const namespace of namespaces) {
+      const deploymentFile = this.getDeployment(namespace.name) as DeployYaml;
+      await this.add(deploymentFile.file_path);
+    }
 
-        namespace.secrets.forEach((s) => deploymentFile.setSecret(s.name));
-        namespace.configmaps.forEach((cm) => deploymentFile.setConfigMap(cm.name));
-        deploymentFile.setVersion(version);
-        deploymentFile.save();
-      }
-
-      for (const namespace of namespaces) {
-        const deploymentFile = this.getDeployment(namespace.name) as DeployYaml;
-        await this.add(deploymentFile.file_path);
-      }
-
-      const c = await this.commit(version);
-      if (!c) {
-        log.error("No changes made");
-        return false;
-      }
-      await this.createAndMergeMr("master");
-      return true;
-    });
-
+    const c = await this.commit(version);
+    if (!c) {
+      log.error("No changes made");
+      return false;
+    }
+    await this.createAndMergeMr(targetBranch);
+    await this.switchBranchIfExists(targetBranch);
+    await this.deleteBranch(sourceBranch);
+    return true;
   }
-
 }

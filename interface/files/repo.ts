@@ -214,7 +214,6 @@ export class Repo {
   }
 
   async update() {
-    // TODO: test
     await this.git.fetch(["--all", "--prune"]);
     const remotes = (await this.git.branch(["-r"])).all;
     for (const r of remotes) {
