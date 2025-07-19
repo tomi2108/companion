@@ -93,6 +93,10 @@
   },
   "gitlab": {
     "default_reviewer": "tosanche",
+    "ci_webhook": {
+      "url": "http://nodejs18-event-listener-ci-paas.apps.ocpnp.brcrh.tcloud.ar",
+      "token": "1234567"
+    },
     "repos": {
       "backend": 6058,
       "frontend": 6057,
@@ -125,5 +129,12 @@
   },
   "repos": {
     "environment_path": "src/configuration/environment.ts"
+  },
+  "envs": {
+    "health_exclusions": [
+      "PORT",
+      "BAU_PORT",
+      "DB_PORT"
+    ]
   }
 }

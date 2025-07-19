@@ -8,7 +8,7 @@ import log from "@lib/log";
 import { confirm, input, password, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 
-import { ConfigSchema, DynatraceConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, SonarConfig, ThreeScaleConfig, VaultConfig } from "./validations";
+import { ConfigSchema, DynatraceConfig, EnvsConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, SonarConfig, ThreeScaleConfig, VaultConfig } from "./validations";
 
 export async function openInBrowser(url: string) {
   const browser = Config.get().preferences.browser;
@@ -43,7 +43,10 @@ class Config {
     server_barracas: "api.ocpnp.brcrh.tcloud.ar:6443"
   } as OpenShiftConfig;
 
-  gitlab: GitlabConfig = { server: "https://gitlab-ee.agil.movistar.com.ar" } as GitlabConfig;
+  gitlab: GitlabConfig = {
+    server: "https://gitlab-ee.agil.movistar.com.ar",
+    ms_template_id: 6399
+  } as GitlabConfig;
 
   jira: JiraConfig = {
     server: "ar-telefonicahispam.atlassian.net",
@@ -68,6 +71,7 @@ class Config {
   paths: PathsConfig = {} as PathsConfig;
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
   repos: ReposConfig = {} as ReposConfig;
+  envs: EnvsConfig = {} as EnvsConfig;
 
   static get() {
     if (this.config === null) this.config = new Config();
@@ -161,6 +165,7 @@ class Config {
       "preferences",
       "threescale",
       "sonar",
+      "envs",
       "repos"
     ] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {

@@ -32,8 +32,12 @@ export class Gitlab {
     this.glab = glab();
   }
 
-  async getProject(id: number) {
+  async getGroup(id: number) {
     return await this.glab.Groups.show(id);
+  }
+
+  async getProject(id: number) {
+    return await this.glab.Projects.show(id);
   }
 
   async getProjects(id: number) {
@@ -80,7 +84,7 @@ export class Gitlab {
       ) throw err;
 
       try {
-        const project = await this.glab.Projects.show(id);
+        const project = await this.getProject(id);
         bar?.setTotal(1);
         await this.cloneProject(project, full_path, bar, true);
       } catch (err) {
@@ -107,14 +111,14 @@ export class Gitlab {
       namespaceId: groupId,
       description
     });
-    // TODO: Make link and token team config
-    await this.glab.ProjectHooks.add(
+    const config = Config.get();
+    if (config.gitlab.ci_webhook) await this.glab.ProjectHooks.add(
       project.id,
-      "http://nodejs18-event-listener-ci-paas.apps.ocpnp.brcrh.tcloud.ar ",
+      config.gitlab.ci_webhook.url,
       {
         mergeRequestsEvents: true,
         pushEvents: false,
-        token: "1234567"
+        token: config.gitlab.ci_webhook.token
       }
     );
     return project;

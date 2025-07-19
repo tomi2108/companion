@@ -29,15 +29,13 @@ export default {
     const port = 8080;
     if (type === "frontend") {
       const frontend_deployments = deployments.filter(filterFrontendDeployments);
-      const env = frontend_deployments?.[0]?.env;
-      const host = host_template.replaceAll("{{env}}", env as string);
+      const env = frontend_deployments?.[0]?.env as string;
+      const host = host_template.replaceAll("{{env}}", env);
 
       for (const deployment of frontend_deployments) {
         const serviceName = deployment.name;
 
-        // works only if mf starts with app-, should change when the TODO above is changed probably
         const camelCaseName = kebabToCamel(serviceName.slice(4));
-
         const pathname = `/app/${camelCaseName}`;
         const insecurePolicy = "Redirect";
         const termination = "edge";

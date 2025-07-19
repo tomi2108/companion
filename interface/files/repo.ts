@@ -204,9 +204,6 @@ export class Repo {
 
   async getProject() {
     const { name, pathname } = await this.getInfo();
-    // TODO: should probably find a better way
-    // of getting gitlab info of a project based on
-    // git workspace
     const matches = await this.glab.Projects.search(name);
     const project = matches.find((r) => pathname === r.path_with_namespace);
     if (!project?.id) throw new Error("Could not find project");

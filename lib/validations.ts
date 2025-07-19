@@ -44,7 +44,11 @@ export const DynatraceConfigSchema = z.object({
 export const GitlabConfigSchema = z.object({
   token: z.string(),
   username: z.string(),
-  default_reviewer: z.string().optional()
+  default_reviewer: z.string().optional(),
+  ci_webhook: z.object({
+    url: z.string(),
+    token: z.string()
+  }).optional()
 });
 
 export const JiraConfigSchema = z.object({
@@ -71,6 +75,10 @@ export const ReposConfigSchema = z.object({
   environment_path: z.string().optional()
 });
 
+export const EnvsConfigSchema = z.object({
+  health_exclusions: z.array(z.string()).optional()
+});
+
 export const ConfigSchema = z.object({
   team: z.string().optional(),
   paths: PathsConfigSchema,
@@ -82,7 +90,8 @@ export const ConfigSchema = z.object({
   preferences: PreferencesConfigSchema.optional(),
   threescale: ThreescaleConfigSchema.optional(),
   repos: ReposConfigSchema.optional(),
-  sonar: SonarConfigSchema.optional()
+  sonar: SonarConfigSchema.optional(),
+  envs: EnvsConfigSchema.optional()
 });
 
 type UserJiraConfig = z.infer<typeof JiraConfigSchema>;
@@ -95,6 +104,7 @@ type UserPreferencesConfig = z.infer<typeof PreferencesConfigSchema>;
 type UserPathsConfig = z.infer<typeof PathsConfigSchema>;
 type UserThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 type UserReposConfig = z.infer<typeof ReposConfigSchema>;
+type UserEnvsConfig = z.infer<typeof EnvsConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
   server: string;
@@ -110,6 +120,7 @@ export type OpenShiftConfig = UserOpenShiftConfig & {
   product: string;
 };
 export type GitlabConfig = UserGitlabConfig & {
+  ms_template_id: number;
   server: string;
   repos: { [K in keyof PathsConfig]: number };
 };
@@ -127,3 +138,4 @@ export type DynatraceConfig = UserDynatraceConfig;
 export type ReposConfig = UserReposConfig;
 export type PathsConfig = UserPathsConfig;
 export type ThreeScaleConfig = UserThreeScaleConfig;
+export type EnvsConfig = UserEnvsConfig;

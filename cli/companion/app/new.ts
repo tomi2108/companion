@@ -104,8 +104,8 @@ export default {
       const apigw_setupTests = path.join(tests, "apigw_setupTest.ts");
       const digit3_setupTests = path.join(tests, "digit3_setupTest.ts");
 
-      // TODO: probably make global config, not team config under Config.gitlab.ms_template_link
-      const ms_template_link = "https://gitlab-ee.agil.movistar.com.ar/mimovistarempresas/backend/movistarempresas-template.git";
+      const ms_template_id = config.gitlab.ms_template_id;
+      const ms_template_link = (await glab.getProject(ms_template_id)).http_url_to_repo;
       const clone_spinner = loading("Cloning template");
       const new_repo = await Repo.cloneRepo(full_path, ms_template_link, true);
       clone_spinner.succeed();

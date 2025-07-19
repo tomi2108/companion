@@ -53,9 +53,10 @@ export default {
       const env = resources.filter((r) => r !== undefined).reduce((acc, curr) => ({ ...acc, ...curr }));
       const needed_envs = fs.readFileSync(env_full_path).toString().trim();
       const matches = needed_envs.matchAll(/process\.env\..*/g).toArray().map((m) => m[0].replace("process.env.", ""));
-      const keys = matches.map((m) => m.split(" ")?.[0]?.replaceAll(",", "") ?? "")
-        // TODO : probably make ignores a team config
-        .filter((k) => !["PORT", "BAU_PORT", "DB_PORT"].includes(k));
+      const envs_exclusions = Config.get().envs.health_exclusions ?? [];
+      const keys = matches
+        .map((m) => m.split(" ")?.[0]?.replaceAll(",", "") ?? "")
+        .filter((k) => !envs_exclusions.includes(k));
 
       const missing = new Table({
         head: [deployment.name],
