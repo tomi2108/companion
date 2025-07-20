@@ -47,8 +47,9 @@ export default {
       const { name } = await repo.getInfo();
       bar.setSufix(name);
       await repo.stash(async () => {
+        const temporary_branch = `nivelacion/${source_branch}-${target_branch}`;
         await repo.update();
-        const { switched: switchedT } = await repo.switchBranchIfExists(target_branch);
+        const { switched: switchedT, original_branch } = await repo.switchBranchIfExists(target_branch);
         if (!switchedT) return;
         await repo.pull(target_branch);
 
@@ -56,8 +57,10 @@ export default {
         if (!switchedS) return;
         await repo.pull(source_branch);
 
-        await repo.createNewBranch(`nivelacion/${source_branch}-${target_branch}`);
+        await repo.createNewBranch(temporary_branch);
         await repo.createMr(target_branch, { title: `Nivelacion ${source_branch} - ${target_branch}` });
+        await repo.switchBranchIfExists(original_branch);
+        await repo.deleteBranch(temporary_branch);
       });
       bar.increment(1);
     }
