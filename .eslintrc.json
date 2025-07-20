@@ -11,7 +11,7 @@
     "plugin:de-morgan/recommended-legacy",
     "plugin:@typescript-eslint/recommended",
     "plugin:math/recommended-legacy",
-    "plugin:promise/recommended",
+    "plugin:promise/recommended"
   ],
   "plugins": [
     "promise",

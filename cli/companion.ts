@@ -14,10 +14,13 @@ import route from "@cli/route";
 import ticket from "@cli/ticket";
 import upgrade from "@cli/upgrade";
 import { Config } from "@lib/config";
+import { storage } from "@lib/log";
 
 yargs
   .scriptName("companion")
   .usage("$0 <command> [subcommand]")
+  .boolean("debug")
+  .describe("debug", "Run on debug mode")
   .boolean("prod")
   .alias("prod", ["p"])
   .describe("prod", "Wheter to use the production servers")
@@ -29,6 +32,11 @@ yargs
       Config.get().openshift.auth_server_cuyo = "https://oauth-openshift.apps.ocpprod.cuyorh.tcloud.ar";
     }
   }, true)
+  .middleware(({ $0, _: args, debug }) => {
+    const command = `${$0} ${args.join(" ")}`;
+    const startTime = new Date().getTime();
+    storage.enterWith({ command, startTime, debug: debug ?? false });
+  })
   .command(app)
   .command(config)
   .command(env)
