@@ -68,7 +68,7 @@ export class DeployRepo extends Repo {
 
     const c = await this.commit(version);
     if (!c) {
-      log.error("No changes made");
+      log.warning("No changes made");
       return false;
     }
     await this.createAndMergeMr(targetBranch);

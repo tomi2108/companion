@@ -34,8 +34,8 @@ export default {
       const deployment_file = deploy_repo?.getDeployment(project.name);
       const version = deployment_file?.getVersion();
 
-      if (!app || !app.full_path) log.error(`Could not find app for ${deployment.name}`);
-      if (!deploy_repo || !version || !deployment_file) log.error(`Could not find version for ${deployment.name}`);
+      if (!app || !app.full_path) log.warning(`Could not find app for ${deployment.name}`);
+      if (!deploy_repo || !version || !deployment_file) log.warning(`Could not find version for ${deployment.name}`);
       if (!app || !app.full_path || !deploy_repo || !version || !deployment_file) continue;
       const active_branch = await app.getActiveBranch();
       await app.checkout(version);
@@ -43,7 +43,7 @@ export default {
       const env_path = Config.get().repos.environment_path ?? "src/configuration/environment.ts";
       const env_full_path = path.join(app.full_path, env_path);
       if (!fs.existsSync(env_full_path)) {
-        log.error(`Could not find env file for ${deployment.name}`);
+        log.warning(`Could not find env file for ${deployment.name}`);
         continue;
       }
 

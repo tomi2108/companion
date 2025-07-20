@@ -5,7 +5,7 @@ import { getApp } from "@files";
 import { Repo } from "@files/repo";
 import { createDirIfNotExists } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { toYaml } from "@lib/utils";
@@ -18,10 +18,7 @@ export default {
   describe: "Expose app in 3scale",
   handler: async () => {
     const repo_path = Config.get().paths.threescale;
-    if (!repo_path) {
-      log.error("threescale path not set");
-      process.exit(1);
-    }
+    if (!repo_path) return log.error("threescale path not set");
 
     const repo = new Repo(repo_path);
     const token = await getOcToken();
@@ -33,10 +30,7 @@ export default {
     const namespace = project.name;
 
     const system_name = Config.get().threescale.products[namespace];
-    if (!system_name) {
-      log.error(`No system_name defined in threescale config for namespace ${namespace}`);
-      process.exit(1);
-    }
+    if (!system_name) throw new ConfigError(`threescale.products.${namespace}`);
 
     const { app_repo } = await getApp(deployment.name);
 

@@ -7,7 +7,7 @@ import { Repo } from "@files/repo";
 import { createDirIfNotExists, insertLine, removeLine, replace } from "@files/utils";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
@@ -53,10 +53,9 @@ export default {
     const argocd_path = config.paths.argocd;
     const deploy_id = config.gitlab.repos.despliegues;
     const deploy_path = config.paths.despliegues;
-    if (!deploy_id) log.error("Deploy repo id not set");
-    if (!deploy_path) log.error("Deploy repo path not set");
-    if (!argocd_path) log.error("Argocd path not set in configuration");
-    if (!argocd_path || !deploy_path || !deploy_id) process.exit(1);
+    if (!deploy_id) throw new ConfigError("gitlab.repos.despliegues");
+    if (!deploy_path) throw new ConfigError("paths.despliegues");
+    if (!argocd_path) throw new ConfigError("paths.argocd");
 
     const dependencies = dependenciesMap[type];
     const name = await input({ message: "Enter name" });
@@ -68,8 +67,8 @@ export default {
     if (type === "app") {
       const frontend_path = config.paths.frontend;
       const frontend_id = config.gitlab.repos.frontend;
-      if (!frontend_id) log.error("Frontend id not set");
-      if (!frontend_path) log.error("Frontend path not set");
+      if (!frontend_path) throw new ConfigError("paths.frontend");
+      if (!frontend_id) throw new ConfigError("gitlab.repos.frontend");
       if (!frontend_id || !frontend_path) process.exit(1);
       // TODO: Implement microfront creation
       log.error("App creation not implemented yet");
@@ -78,8 +77,8 @@ export default {
 
       const backend_path = config.paths.backend;
       const backend_id = config.gitlab.repos.backend;
-      if (!backend_id) log.error("Backend id not set");
-      if (!backend_path) log.error("Backend path not set");
+      if (!backend_path) throw new ConfigError("paths.backend");
+      if (!backend_id) throw new ConfigError("gitlab.repos.backend");
       if (!backend_id || !backend_path) process.exit(1);
 
       if (type === "int") {
@@ -251,23 +250,14 @@ export default {
       await app_repo.createAndMergeMr("master");
 
       const ci_pipeline = await findCIPipeline(app_repo);
-      if (!ci_pipeline) {
-        log.error("Could not find ci pipeline");
-        process.exit(1);
-      }
+      if (!ci_pipeline) return log.error("Could not find ci pipeline");
       const ci_status = await waitForPipeline(ci_pipeline);
-      if (ci_status === PipelineStatus.failed) {
-        log.error("CI pipeline failed");
-        process.exit(1);
-      }
+      if (ci_status === PipelineStatus.failed) return log.error("CI pipeline failed");
 
       for (const project of projects_to_deploy) {
         await new Gitlab().createArgoIssue(name, initial_version, project);
         const argo_pipeline = await findArgoPipeline(app_repo, project);
-        if (!argo_pipeline) {
-          log.error("Could not find argo pipeline");
-          process.exit(1);
-        }
+        if (!argo_pipeline) return log.error("Could not find argo pipeline");
         const status = await waitForPipeline(argo_pipeline);
         if (status === PipelineStatus.failed) log.error(`Argo pipeline failed for project ${project.name}`);
       }
@@ -275,22 +265,13 @@ export default {
       // TODO: clone only deploy repo created
       await glab.cloneGroupOrProject(deploy_id, deploy_path);
       const { deploy_repo } = await getApp(name);
-      if (!deploy_repo) {
-        log.error("Could not find deploy repo");
-        process.exit(1);
-      }
+      if (!deploy_repo) return log.error("Could not find deploy repo");
 
       await deploy_repo.deploy(projects_to_deploy.map((p) => ({ name: p.name, configmaps: [], secrets: [] })), initial_version);
       const sync_pipeline = await findSyncPipeline(app_repo);
-      if (!sync_pipeline) {
-        log.error("Could not find sync pipeline");
-        process.exit(1);
-      }
+      if (!sync_pipeline) return log.error("Could not find sync pipeline");
       const cd_status = await waitForPipeline(sync_pipeline);
-      if (cd_status === PipelineStatus.failed) {
-        log.error("CI pipeline failed");
-        process.exit(1);
-      }
+      if (cd_status === PipelineStatus.failed) return log.error("CI pipeline failed");
 
       if (type === "fcd") {
         // TODO : expose in 3scale

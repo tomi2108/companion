@@ -66,10 +66,7 @@ export default {
     if (!deployed) return;
 
     const pipeline = await findSyncPipeline(app_repo);
-    if (!pipeline) {
-      log.error("Could not find sync pipeline");
-      return;
-    }
+    if (!pipeline) return log.error("Could not find sync pipeline");
     await waitForPipeline(pipeline);
   }
 };

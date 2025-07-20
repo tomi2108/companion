@@ -23,7 +23,7 @@ export async function findCIPipeline(app_repo: AppRepo) {
   const projects = await new Openshift(token, "brc").getProjects();
   const ci_paas = projects.find((p) => p.name === "ci-paas");
   if (!ci_paas) {
-    log.error("Could not find ci-paas project");
+    log.warning("Could not find ci-paas project");
     return null;
   }
   return await app_repo.findPipeline(ci_paas, "ci");
@@ -34,7 +34,7 @@ export async function findSyncPipeline(app_repo: AppRepo) {
   const projects = await new Openshift(token, "brc").getProjects();
   const cd_paas = projects.find((p) => p.name === "cd-paas");
   if (!cd_paas) {
-    log.error("Could not find cd-paas project");
+    log.warning("Could not find cd-paas project");
     return null;
   }
   return await app_repo.findPipeline(cd_paas, "sync");
@@ -45,7 +45,7 @@ export async function findArgoPipeline(app_repo: AppRepo, project: Project) {
   const projects = await new Openshift(token, "brc").getProjects();
   const cd_paas = projects.find((p) => p.name === "cd-paas");
   if (!cd_paas) {
-    log.error("Could not find cd-paas project");
+    log.warning("Could not find cd-paas project");
     return null;
   }
   return await app_repo.findPipeline(cd_paas, project.name);

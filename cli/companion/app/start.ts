@@ -26,10 +26,7 @@ export default {
     .describe("raw", "Whether to show raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs"),
   handler: async ({ raw }: { raw?: boolean }) => {
     const backend = Config.get().paths.backend ?? "";
-    if (!backend) {
-      log.error("Backend path not set");
-      return process.exit(1);
-    }
+    if (!backend) return log.error("Backend path not set");
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
@@ -51,9 +48,7 @@ export default {
         await repo.switchBranchIfExists("master");
         await repo.pull("master");
       } catch (err) {
-        log.error(`Could not start ${app}`);
         if (err instanceof Error) log.error(err.message);
-        process.exit(1);
       }
 
       const env = repo.getEnv();

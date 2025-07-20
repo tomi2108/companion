@@ -37,20 +37,14 @@ export default {
     if (!deploys || !app_repo || !deploy_repo || deploy_projects?.length === 0) return;
 
     const pipeline = await findCIPipeline(app_repo);
-    if (!pipeline) {
-      log.error("Could not find ci pipeline");
-      return;
-    }
+    if (!pipeline) return log.error("Could not find ci pipeline");
 
     const status = await waitForPipeline(pipeline, "Running CI pipeline");
     if (status === PipelineStatus.failed) process.exit(1);
 
     await app_repo?.update();
     const last_version = (await app_repo.getTags({ sortByLastCreated: true }))?.[0];
-    if (!last_version) {
-      log.error("Could not find version to deploy");
-      return;
-    }
+    if (!last_version) return log.error("Could not find version to deploy");
     deploy_repo.deploy(deploy_projects.map((p) => ({ configmaps: [], secrets: [], name: p.name })), last_version);
   }
 };

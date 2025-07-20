@@ -12,10 +12,7 @@ export default {
     const repo = new Repo(full_path);
     const mr = await promptForMr(repo);
 
-    if (!mr.source_branch) {
-      log.error("Could not find source_branch");
-      process.exit(1);
-    }
+    if (!mr.source_branch) return log.error("Could not find source_branch");
 
     await repo.checkout(mr.source_branch);
     await repo.pull(mr.source_branch);

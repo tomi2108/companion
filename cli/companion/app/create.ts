@@ -1,7 +1,7 @@
 import { getApp } from "@files";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
@@ -17,10 +17,9 @@ export default {
     const ms_repos_path = Config.get().paths.backend;
     const mf_repos_path = Config.get().paths.frontend;
 
-    if (!argocd_path) log.error("Argocd path not set in configuration");
-    if (!ms_repos_path) log.error("Backend path not set in configuration");
-    if (!mf_repos_path) log.error("Frontend path not set in configuration");
-    if (!argocd_path || !ms_repos_path || !mf_repos_path) process.exit(1);
+    if (!argocd_path) throw new ConfigError("paths.argocd");
+    if (!ms_repos_path) throw new ConfigError("paths.backend");
+    if (!mf_repos_path) throw new ConfigError("paths.frontend");
 
     const apps = [
       ...readdirs(mf_repos_path) ?? [],
@@ -30,10 +29,7 @@ export default {
     const choices = apps.map((dir) => ({ name: dir.name }));
     const app = await search({ choices, message: "Select an app" });
     const { app_repo, deploy_repo } = await getApp(app);
-    if (!app_repo) {
-      log.error(`Could not find app repo for ${app}`);
-      process.exit(1);
-    }
+    if (!app_repo) return log.error(`Could not find app repo for ${app}`);
     const existingNamespaces = deploy_repo?.deployments.map((d) => d.namespace) ?? [];
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();

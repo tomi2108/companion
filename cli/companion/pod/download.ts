@@ -4,7 +4,7 @@ import { Argv } from "yargs";
 
 import { createDirIfNotExists } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Openshift } from "@oc";
@@ -21,10 +21,7 @@ export default {
   handler: async ({ raw }: { raw?: boolean }) => {
 
     const config_log_path = Config.get().preferences.logs_path;
-    if (!config_log_path) {
-      log.error("config.preferences.logs_path not found");
-      return;
-    }
+    if (!config_log_path) throw new ConfigError("preferences.logs_path");
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();

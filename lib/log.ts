@@ -27,6 +27,7 @@ function info(message: string) {
 
 function error(message: string) {
   console.log(getLogItem(message, "ERROR"));
+  process.exit(1);
 }
 
 function warning(message: string) {
