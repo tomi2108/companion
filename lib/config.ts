@@ -202,7 +202,9 @@ type DotNestedKeys<T> = (T extends object ?
 
 class ConfigError extends Error {
   constructor(key: DotNestedKeys<Omit<Config, "config">>) {
-    super(`${key} not set`);
+    const msg = `${key} not set`;
+    log.error(`ConfigError: ${msg}`);
+    super(msg);
   }
 }
 
