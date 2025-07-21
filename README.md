@@ -168,10 +168,6 @@ Aquí tienes enlaces útiles para conocer más sobre ellas:
 
 ### 📋 Jira
 
-- 🔗 **Jira CLI (no oficial)**  
-  Cliente de terminal para trabajar con tickets, filtros y estados de Jira.  
-  [📖 Proyecto en GitHub](https://github.com/ankitpokhrel/jira-cli)
-
 - 🌐 **API REST de Jira (Cloud)**  
   Permite crear, actualizar y buscar tickets, usuarios, sprints, etc.  
   [📚 Referencia API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)
