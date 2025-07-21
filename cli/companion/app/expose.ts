@@ -69,8 +69,9 @@ export default {
     const yaml_content = toYaml(file_content);
 
     await repo.stash(async () => {
-      await repo.createNewBranch(`create-${dir_name}`);
       await repo.update();
+      const new_branch = `create-${dir_name}-${project.name}`;
+      await repo.createNewBranch(new_branch);
 
       createDirIfNotExists(dir_to_create);
       writeFileSync(file_to_create, yaml_content);
@@ -78,6 +79,7 @@ export default {
       await repo.commit(`create ${dir_name}`);
       await repo.createAndMergeMr("create");
       await repo.switchBranchIfExists("create");
+      await repo.deleteBranch(new_branch);
     });
   }
 };
