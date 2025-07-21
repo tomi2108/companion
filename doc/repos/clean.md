@@ -15,6 +15,8 @@ companion repos clean --frontend
 companion repos clean
 ```
 
+## Arguments
+
 | Argument | Alias | Type | Description |
 | ------------- | -------------- | -------------- | -------------- |
 | --all | -a | Boolean | Cleans all repositories (frontend, backend, and deployment). |

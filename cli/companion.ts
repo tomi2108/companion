@@ -2,16 +2,16 @@
 
 import yargs from "yargs";
 
-import app from "@cli/app";
-import config from "@cli/config";
+import app from "@cli/app/index";
+import config from "@cli/config/index";
 import deploy from "@cli/deploy";
-import env from "@cli/env";
-import mr from "@cli/mr";
+import env from "@cli/env/index";
+import mr from "@cli/mr/index";
 import pipeline from "@cli/pipeline";
-import pod from "@cli/pod";
-import repos from "@cli/repos";
-import route from "@cli/route";
-import ticket from "@cli/ticket";
+import pod from "@cli/pod/index";
+import repos from "@cli/repos/index";
+import route from "@cli/route/index";
+import ticket from "@cli/ticket/index";
 import upgrade from "@cli/upgrade";
 import { Config } from "@lib/config";
 import { storage } from "@lib/log";

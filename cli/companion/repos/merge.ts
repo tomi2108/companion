@@ -8,9 +8,9 @@ import { input, progressBar, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
 
 export default {
-  command: "level",
+  command: "Merge",
   aliases: [],
-  describe: "Level two branches",
+  describe: "Merge two branches with an in between branch",
   builder: (yargs: Argv) => yargs
     .boolean("all")
     .alias("all", ["a"])
