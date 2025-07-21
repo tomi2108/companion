@@ -4,10 +4,9 @@ import { AppRepo } from "@files/app_repo";
 import log from "@lib/log";
 import { loading } from "@lib/ui";
 import { Openshift } from "@oc";
-
-import { getOcToken } from "./api";
-import { PipelineRun, PipelineStatus } from "./pipelinerun";
-import { Project } from "./project";
+import { getOcToken } from "@oc/api";
+import { PipelineRun, PipelineStatus } from "@oc/pipelinerun";
+import { Project } from "@oc/project";
 
 export async function waitForPipeline(pipeline: PipelineRun, loadingText?: string) {
   const spinner = loading(loadingText ?? "Running pipeline");

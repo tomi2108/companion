@@ -1,8 +1,7 @@
 import { http } from "msw";
 
 import { withAuth } from "@mocks/middleware";
-
-import { bad_request, ok } from "../utils";
+import { bad_request, ok } from "@mocks/utils";
 
 export const configmapHandlers = [
   http.post("*/api/v1/namespaces/:project/configmaps", withAuth(async ({ request }) => {

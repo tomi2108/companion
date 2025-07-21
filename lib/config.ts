@@ -7,8 +7,20 @@ import openEditor from "open-editor";
 import log from "@lib/log";
 import { confirm, input, password, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
-
-import { ConfigSchema, DynatraceConfig, EnvsConfig, GitlabConfig, JiraConfig, OpenShiftConfig, PathsConfig, PreferencesConfig, ReposConfig, SonarConfig, ThreeScaleConfig, VaultConfig } from "./validations";
+import {
+  ConfigSchema,
+  DynatraceConfig,
+  EnvsConfig,
+  GitlabConfig,
+  JiraConfig,
+  OpenShiftConfig,
+  PathsConfig,
+  PreferencesConfig,
+  ReposConfig,
+  SonarConfig,
+  ThreeScaleConfig,
+  VaultConfig
+} from "@lib/validations";
 
 export async function openInBrowser(url: string) {
   const browser = Config.get().preferences.browser;

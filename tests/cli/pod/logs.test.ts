@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, it, vi } from "vitest";
 
 import { server } from "@mocks/msw";
 
-vi.mock("../../../lib/ui", () => ({
+vi.mock("@lib/ui", () => ({
   search: vi.fn().mockImplementation(({ choices }) => choices[0].name)
 }));
 

@@ -1,9 +1,8 @@
 import { MultiBar, Presets, SingleBar } from "cli-progress";
 import { prompt } from "enquirer";
 
+import { Choice } from "@lib/constants";
 import { Spinner } from "@topcli/spinner";
-
-import { Choice } from "./constants";
 
 type ExtractFromPrompt<T> = Omit<Extract<Parameters<typeof prompt>[0], { type: T }>, "type" | "name">;
 
