@@ -4,10 +4,6 @@ Cleans Git repositories by deleting branches matching specific patterns (e.g., `
 
 ## Usage
 
-Run the command in a terminal from the project root. The command can be invoked with various flags to specify which repositories to clean.
-
-### Example
-
 ```bash
 # Clean all repositories
 companion repos clean --all
@@ -28,6 +24,6 @@ companion repos clean
 
 ## Notes
 
-- The --all flag conflicts with --frontend, --backend, and --despliegues. You cannot combine --all with any of the specific repository flags.
+- The `--all` flag conflicts with `--frontend`, `--backend`, and `--despliegues`. You cannot combine `--al`l with any of the specific repository flags.
 - If no flags are provided, the command prompts the user to select a single repository to clean.
 - The command requires confirmation before proceeding with cleaning to prevent accidental branch deletion.
