@@ -8,7 +8,7 @@ import { input, progressBar, search } from "@lib/ui";
 import { readdirs } from "@lib/utils";
 
 export default {
-  command: "Merge",
+  command: "merge",
   aliases: [],
   describe: "Merge two branches with an in between branch",
   builder: (yargs: Argv) => yargs
