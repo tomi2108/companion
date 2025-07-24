@@ -12,10 +12,6 @@ import { readdirs } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
-const extraEnvs = {
-  STDOUT_LOGS: "on"
-};
-
 export default {
   command: "start",
   aliases: [],
@@ -60,11 +56,6 @@ export default {
         if (!found) return;
         const already_added = toStart[found];
         repo.removeEnv(key);
-
-        Object.entries(extraEnvs).forEach(([key, value]) => {
-          repo.removeEnv(key);
-          repo.addEnv(key, value);
-        });
 
         if (!already_added) {
           const next_port = port + Object.values(toStart).length;

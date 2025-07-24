@@ -81,6 +81,15 @@ export class AppRepo extends Repo {
   }
 
   async copyEnv(project: Project) {
+    const extraEnvs = {
+      STDOUT_LOGS: "on"
+    };
+
+    Object.entries(extraEnvs).forEach(([key, value]) => {
+      this.removeEnv(key);
+      this.addEnv(key, value);
+    });
+
     const { name } = await this.getInfo();
     const deployment = await project.getDeployment(name);
     const configMaps = await deployment.getConfigMaps() ?? [];
