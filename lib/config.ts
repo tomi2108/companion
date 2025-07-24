@@ -57,7 +57,8 @@ class Config {
 
   gitlab: GitlabConfig = {
     server: "https://gitlab-ee.agil.movistar.com.ar",
-    ms_template_id: 6399
+    ms_template_id: 6399,
+    mf_template_id: 4284
   } as GitlabConfig;
 
   jira: JiraConfig = {

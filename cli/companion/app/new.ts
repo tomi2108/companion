@@ -70,8 +70,43 @@ export default {
       if (!frontend_path) throw new ConfigError("paths.frontend");
       if (!frontend_id) throw new ConfigError("gitlab.repos.frontend");
       if (!frontend_id || !frontend_path) process.exit(1);
-      // TODO: Implement microfront creation
-      log.error("App creation not implemented yet");
+
+      const full_path = path.join(frontend_path, name);
+      createDirIfNotExists(full_path);
+
+      const mf_template_id = config.gitlab.mf_template_id;
+      const mf_template_link = (await glab.getProject(mf_template_id)).http_url_to_repo;
+      const clone_spinner = loading("Cloning template");
+      const new_repo = await Repo.cloneRepo(full_path, mf_template_link, true);
+      clone_spinner.succeed();
+
+      const init_spinner = loading("Initializing repository");
+      fs.rmSync(path.join(new_repo.full_path, ".git"), { recursive: true });
+      await new_repo.init("master");
+      init_spinner.succeed();
+
+      const install_spinner = loading("Installing dependencies");
+      const app_repo = new AppRepo(new_repo.full_path);
+      await app_repo.install(dependencies);
+      install_spinner.succeed();
+
+      await app_repo.build();
+      await app_repo.test();
+      await app_repo.add(".");
+      await app_repo.commit("initial commit");
+
+      const creating_spinner = loading("Creating GitLab repository");
+      const glab_repo = await glab.createAppProject({ name, groupId: frontend_id, description });
+      const origin = glab_repo.http_url_to_repo;
+      await app_repo.addOrigin(origin);
+      creating_spinner.succeed();
+
+      await app_repo.push("master");
+      await app_repo.createNewBranch("release");
+      await app_repo.push("release");
+      await app_repo.createNewBranch("develop");
+      await app_repo.push("develop");
+
       return;
     } else {
 

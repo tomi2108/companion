@@ -121,6 +121,7 @@ export type OpenShiftConfig = UserOpenShiftConfig & {
 };
 export type GitlabConfig = UserGitlabConfig & {
   ms_template_id: number;
+  mf_template_id: number;
   server: string;
   repos: { [K in keyof PathsConfig]: number };
 };
