@@ -23,10 +23,7 @@ const Connections = {
 type Connection = typeof Connections[keyof typeof Connections];
 
 const dependenciesMap: Record<AppType, Dependency[]> = {
-  app: [{
-    name: "axios",
-    version: "0.21.4"
-  }],
+  app: [],
   bau: [{ name: "mongoose" }],
   dao: [{ name: "sequelize" }],
   fcd: [{
@@ -64,6 +61,10 @@ export default {
     const projects = await new Openshift(token).getProjects();
     const projects_to_deploy = await promptForOcResource(projects, { message: "Select projects to deploy", multiple: true });
 
+    const replaceName = (file: string) => replace("{{name}}", name, file);
+    const replaceDescription = (file: string) => replace("{{description}}", description, file);
+    const replaceAuthor = (file: string) => replace("{{author}}", config.gitlab.username, file);
+
     if (type === "app") {
       const frontend_path = config.paths.frontend;
       const frontend_id = config.gitlab.repos.frontend;
@@ -72,41 +73,19 @@ export default {
       if (!frontend_id || !frontend_path) process.exit(1);
 
       const full_path = path.join(frontend_path, name);
-      createDirIfNotExists(full_path);
 
       const mf_template_id = config.gitlab.mf_template_id;
       const mf_template_link = (await glab.getProject(mf_template_id)).http_url_to_repo;
-      const clone_spinner = loading("Cloning template");
-      const new_repo = await Repo.cloneRepo(full_path, mf_template_link, true);
-      clone_spinner.succeed();
 
-      const init_spinner = loading("Initializing repository");
-      fs.rmSync(path.join(new_repo.full_path, ".git"), { recursive: true });
-      await new_repo.init("master");
-      init_spinner.succeed();
-
-      const install_spinner = loading("Installing dependencies");
-      const app_repo = new AppRepo(new_repo.full_path);
-      await app_repo.install(dependencies);
-      install_spinner.succeed();
-
-      await app_repo.build();
-      await app_repo.test();
-      await app_repo.add(".");
-      await app_repo.commit("initial commit");
-
-      const creating_spinner = loading("Creating GitLab repository");
-      const glab_repo = await glab.createAppProject({ name, groupId: frontend_id, description });
-      const origin = glab_repo.http_url_to_repo;
-      await app_repo.addOrigin(origin);
-      creating_spinner.succeed();
+      const app_repo = await init_repo(full_path, mf_template_link, dependencies);
+      await create_remote(app_repo, frontend_id, { name, description });
+      await initial_commit(app_repo);
 
       await app_repo.push("master");
       await app_repo.createNewBranch("release");
       await app_repo.push("release");
       await app_repo.createNewBranch("develop");
       await app_repo.push("develop");
-
       return;
     } else {
 
@@ -121,7 +100,11 @@ export default {
       }
 
       const full_path = path.join(backend_path, name);
-      createDirIfNotExists(full_path);
+
+      const ms_template_id = config.gitlab.ms_template_id;
+      const ms_template_link = (await glab.getProject(ms_template_id)).http_url_to_repo;
+
+      const app_repo = await init_repo(full_path, ms_template_link, dependencies);
 
       const src = path.join(full_path, "src");
       const swagger = path.join(full_path, "swagger");
@@ -138,15 +121,6 @@ export default {
       const apigw_setupTests = path.join(tests, "apigw_setupTest.ts");
       const digit3_setupTests = path.join(tests, "digit3_setupTest.ts");
 
-      const ms_template_id = config.gitlab.ms_template_id;
-      const ms_template_link = (await glab.getProject(ms_template_id)).http_url_to_repo;
-      const clone_spinner = loading("Cloning template");
-      const new_repo = await Repo.cloneRepo(full_path, ms_template_link, true);
-      clone_spinner.succeed();
-
-      const init_spinner = loading("Initializing repository");
-      fs.rmSync(path.join(new_repo.full_path, ".git"), { recursive: true });
-      await new_repo.init("master");
       const dao_files = [
         path.join(models, "SequelizeExample.ts"),
         path.join(configuration, "dao_db.ts"),
@@ -227,10 +201,6 @@ export default {
         fs.rmSync(f.from);
       });
 
-      const replaceName = (file: string) => replace("{{name}}", name, file);
-      const replaceDescription = (file: string) => replace("{{description}}", description, file);
-      const replaceAuthor = (file: string) => replace("{{author}}", config.gitlab.username, file);
-
       replaceAuthor(path.join(full_path, "package.json"));
 
       replaceName(path.join(full_path, "package.json"));
@@ -255,24 +225,9 @@ export default {
 
       if (type !== "int") removeLine(7, path.join(full_path, "jest.config.js"));
       if (type === "bau") insertLine(1, server, "import \"../configuration/db\";");
-      init_spinner.succeed();
 
-      const app_repo = new AppRepo(new_repo.full_path);
-      const install_spinner = loading("Installing dependencies");
-      await app_repo.install(dependencies);
-      install_spinner.succeed();
-
-      await app_repo.build();
-      await app_repo.test();
-      await app_repo.add(".");
-      await app_repo.commit("initial commit");
-
-      const creating_spinner = loading("Creating GitLab repository");
-      const glab_repo = await glab.createAppProject({ name, groupId: backend_id, description });
-      const origin = glab_repo.http_url_to_repo;
-      await app_repo.addOrigin(origin);
-      creating_spinner.succeed();
-
+      await initial_commit(app_repo);
+      await create_remote(app_repo, backend_id, { name, description });
       await app_repo.push("master");
 
       const replaceUrl = (file: string) => replace("{{url}}", origin, file);
@@ -316,3 +271,40 @@ export default {
     }
   }
 };
+
+async function init_repo(full_path: string, template: string, dependencies: Dependency[]) {
+  const clone_spinner = loading("Cloning template");
+  createDirIfNotExists(full_path);
+  const new_repo = await Repo.cloneRepo(full_path, template, true);
+  clone_spinner.succeed();
+
+  const init_spinner = loading("Initializing repository");
+  fs.rmSync(path.join(new_repo.full_path, ".git"), { recursive: true });
+  await new_repo.init("master");
+  init_spinner.succeed();
+
+  const install_spinner = loading("Installing dependencies");
+  const app_repo = new AppRepo(new_repo.full_path);
+  await app_repo.install(dependencies);
+  install_spinner.succeed();
+  return app_repo;
+}
+
+async function initial_commit(app_repo: AppRepo) {
+  await app_repo.build();
+  await app_repo.test();
+  await app_repo.add(".");
+  await app_repo.commit("initial commit");
+}
+
+async function create_remote(app_repo: AppRepo, groupId: number, { name, description }: {
+  name: string;
+  description: string;
+}) {
+  const glab = new Gitlab();
+  const creating_spinner = loading("Creating GitLab repository");
+  const glab_repo = await glab.createAppProject({ name, groupId, description });
+  const origin = glab_repo.http_url_to_repo;
+  await app_repo.addOrigin(origin);
+  creating_spinner.succeed();
+}
