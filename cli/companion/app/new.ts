@@ -41,10 +41,10 @@ export default {
   aliases: ["n"],
   describe: "Create a new app from template",
   handler: async () => {
-    const initial_version = "v1.0.0";
     const glab = new Gitlab();
     const config = Config.get();
     const type = await search({ choices: [...APP_TYPES], message: "Choose app type" }) as AppType;
+    const initial_version = type === "app" ? "v1.0.0-beta.1" : "v1.0.0";
     let connection: Connection | null = null;
 
     const argocd_path = config.paths.argocd;
@@ -62,8 +62,10 @@ export default {
     const projects_to_deploy = await promptForOcResource(projects, { message: "Select projects to deploy", multiple: true });
 
     const replaceName = (file: string) => replace("{{name}}", name, file);
+    const replaceAppName = (file: string) => replace("{{appName}}", name.split("app-")?.[1] ?? "", file);
     const replaceDescription = (file: string) => replace("{{description}}", description, file);
     const replaceAuthor = (file: string) => replace("{{author}}", config.gitlab.username, file);
+    let app_repo: AppRepo;
 
     if (type === "app") {
       const frontend_path = config.paths.frontend;
@@ -77,7 +79,7 @@ export default {
       const mf_template_id = config.gitlab.mf_template_id;
       const mf_template_link = (await glab.getProject(mf_template_id)).http_url_to_repo;
 
-      const app_repo = await init_repo(full_path, mf_template_link, dependencies);
+      app_repo = await init_repo(full_path, mf_template_link, dependencies);
       await create_remote(app_repo, frontend_id, { name, description });
       await initial_commit(app_repo);
 
@@ -86,9 +88,22 @@ export default {
       await app_repo.push("release");
       await app_repo.createNewBranch("develop");
       await app_repo.push("develop");
-      return;
-    } else {
 
+      await app_repo.createNewBranch("initial_deploy");
+
+      replaceName(path.join(full_path, "README.md"));
+      replaceDescription(path.join(full_path, "README.md"));
+
+      replaceAuthor(path.join(full_path, "package.json"));
+      replaceName(path.join(full_path, "package.json"));
+      replaceDescription(path.join(full_path, "package.json"));
+
+      replaceAppName(path.join(full_path, "mf-config.js"));
+
+      await app_repo.createAndMergeMr("develop");
+      await app_repo.switchBranchIfExists("develop");
+      await app_repo.deleteBranch("initial_deploy");
+    } else {
       const backend_path = config.paths.backend;
       const backend_id = config.gitlab.repos.backend;
       if (!backend_path) throw new ConfigError("paths.backend");
@@ -104,7 +119,7 @@ export default {
       const ms_template_id = config.gitlab.ms_template_id;
       const ms_template_link = (await glab.getProject(ms_template_id)).http_url_to_repo;
 
-      const app_repo = await init_repo(full_path, ms_template_link, dependencies);
+      app_repo = await init_repo(full_path, ms_template_link, dependencies);
 
       const src = path.join(full_path, "src");
       const swagger = path.join(full_path, "swagger");
@@ -202,7 +217,6 @@ export default {
       });
 
       replaceAuthor(path.join(full_path, "package.json"));
-
       replaceName(path.join(full_path, "package.json"));
       replaceDescription(path.join(full_path, "package.json"));
 
@@ -238,37 +252,39 @@ export default {
       await app_repo.add("package.json");
       await app_repo.commit("feat: initial deploy");
       await app_repo.createAndMergeMr("master");
-
-      const ci_pipeline = await findCIPipeline(app_repo);
-      if (!ci_pipeline) return log.error("Could not find ci pipeline");
-      const ci_status = await waitForPipeline(ci_pipeline);
-      if (ci_status === PipelineStatus.failed) return log.error("CI pipeline failed");
-
-      for (const project of projects_to_deploy) {
-        await new Gitlab().createArgoIssue(name, initial_version, project);
-        const argo_pipeline = await findArgoPipeline(app_repo, project);
-        if (!argo_pipeline) return log.error("Could not find argo pipeline");
-        const status = await waitForPipeline(argo_pipeline);
-        if (status === PipelineStatus.failed) log.error(`Argo pipeline failed for project ${project.name}`);
-      }
-
-      // TODO: clone only deploy repo created
-      await glab.cloneGroupOrProject(deploy_id, deploy_path);
-      const { deploy_repo } = await getApp(name);
-      if (!deploy_repo) return log.error("Could not find deploy repo");
-
-      await deploy_repo.deploy(projects_to_deploy.map((p) => ({ name: p.name, configmaps: [], secrets: [] })), initial_version);
-      const sync_pipeline = await findSyncPipeline(app_repo);
-      if (!sync_pipeline) return log.error("Could not find sync pipeline");
-      const cd_status = await waitForPipeline(sync_pipeline);
-      if (cd_status === PipelineStatus.failed) return log.error("CI pipeline failed");
-
-      if (type === "fcd") {
-        // TODO : expose in 3scale
-      }
-
-      log.success(`New app ${name} created successfully`);
+      await app_repo.switchBranchIfExists("master");
+      await app_repo.deleteBranch("initial_deploy");
     }
+
+    const ci_pipeline = await findCIPipeline(app_repo);
+    if (!ci_pipeline) return log.error("Could not find ci pipeline");
+    const ci_status = await waitForPipeline(ci_pipeline);
+    if (ci_status === PipelineStatus.failed) return log.error("CI pipeline failed");
+
+    for (const project of projects_to_deploy) {
+      await new Gitlab().createArgoIssue(name, initial_version, project);
+      const argo_pipeline = await findArgoPipeline(app_repo, project);
+      if (!argo_pipeline) return log.error("Could not find argo pipeline");
+      const status = await waitForPipeline(argo_pipeline);
+      if (status === PipelineStatus.failed) log.error(`Argo pipeline failed for project ${project.name}`);
+    }
+
+    // TODO: clone only deploy repo created
+    await glab.cloneGroupOrProject(deploy_id, deploy_path);
+    const { deploy_repo } = await getApp(name);
+    if (!deploy_repo) return log.error("Could not find deploy repo");
+
+    await deploy_repo.deploy(projects_to_deploy.map((p) => ({ name: p.name, configmaps: [], secrets: [] })), initial_version);
+    const sync_pipeline = await findSyncPipeline(app_repo);
+    if (!sync_pipeline) return log.error("Could not find sync pipeline");
+    const cd_status = await waitForPipeline(sync_pipeline);
+    if (cd_status === PipelineStatus.failed) return log.error("CI pipeline failed");
+
+    if (type === "fcd") {
+      // TODO : expose in 3scale
+    }
+
+    log.success(`New app ${name} created successfully`);
   }
 };
 
