@@ -1,5 +1,7 @@
 import fs from "node:fs";
 
+import { Config } from "./config";
+
 const valid_methods = [
   "GET",
   "PUT",
@@ -43,7 +45,8 @@ export class HttpFile {
   private getUrl(env: string, service: string | null) {
     if (!service) return null;
     const sufix = this.getEnvSufix(env);
-    return `http://${service}-movistar-empresas${sufix}.apps.ocpnp.cuyorh.tcloud.ar`;
+    const config = Config.get().openshift;
+    return `http://${service}-movistar-empresas${sufix}.apps.${config.server_name}.cuyorh.tcloud.ar`;
   }
 
   private getVariables(globals: string) {

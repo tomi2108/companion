@@ -111,6 +111,7 @@ export type JiraConfig = UserJiraConfig & {
   server: string;
 };
 export type OpenShiftConfig = UserOpenShiftConfig & {
+  server_name: string;
   auth_server_cuyo: string;
   auth_server_barracas: string;
   server_cuyo: string;

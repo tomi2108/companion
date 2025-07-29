@@ -49,6 +49,7 @@ class Config {
   };
 
   openshift: OpenShiftConfig = {
+    server_name: "ocpnp",
     auth_server_cuyo: "https://oauth-openshift.apps.ocpnp.cuyorh.tcloud.ar",
     auth_server_barracas: "https://oauth-openshift.apps.ocpnp.brcrh.tcloud.ar",
     server_cuyo: "api.ocpnp.cuyorh.tcloud.ar:6443",
