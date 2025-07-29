@@ -210,6 +210,12 @@ export class Repo {
     return project;
   }
 
+  async getLatestRelease() {
+    const project = await this.getProject();
+    const releases = await this.glab.ProjectReleases.showLatest(project.id);
+    return releases;
+  }
+
   async update() {
     await this.git.fetch(["--all", "--prune"]);
     const remotes = (await this.git.branch(["-r"])).all;

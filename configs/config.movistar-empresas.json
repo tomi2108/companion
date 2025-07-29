@@ -115,6 +115,7 @@
       "despliegues": 6069,
       "argocd": 431,
       "threescale": 4825,
+      "rest": 7333,
       "vault": 6070
     }
   },

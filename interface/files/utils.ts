@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
+import path from "node:path";
 
 import { DeployYamlContent } from "@files/validations";
 import { Config } from "@lib/config";
@@ -65,4 +66,10 @@ export function sha1(input: string) {
   const hash = crypto.createHash("sha1");
   hash.update(input);
   return hash.digest("hex");
+}
+
+export function createTempFile(file_name: string) {
+  const file_path = path.join(Config.get().global.tmp_dir, file_name);
+  createDirIfNotExists(path.dirname(file_path));
+  return file_path;
 }

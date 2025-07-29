@@ -1,11 +1,10 @@
 import fs from "node:fs";
-import path from "node:path";
 
 import { getApp } from "@files";
 import { AppRepo } from "@files/app_repo";
 import { DeployRepo } from "@files/deploy_repo";
 import { Repo } from "@files/repo";
-import { createDirIfNotExists } from "@files/utils";
+import { createTempFile } from "@files/utils";
 import { Jira } from "@jira";
 import { Config, openInEditor } from "@lib/config";
 import { Choice } from "@lib/constants";
@@ -71,9 +70,8 @@ export async function promptForJiraIssue<T>(
 }
 
 export async function promptTmpFile(file_name: string, content: string) {
-  const file_path = path.join(Config.get().global.tmp_dir, file_name);
+  const file_path = createTempFile(file_name);
   if (fs.existsSync(file_path)) fs.rmSync(file_path);
-  createDirIfNotExists(path.dirname(file_path));
   fs.writeFileSync(file_path, content);
   const m1 = md5FromFile(file_path);
   await openInEditor(file_path, { wait: true });

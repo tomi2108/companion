@@ -13,8 +13,8 @@ import repos from "@cli/repos/index";
 import route from "@cli/route/index";
 import ticket from "@cli/ticket/index";
 import upgrade from "@cli/upgrade";
-import { Config } from "@lib/config";
-import { storage } from "@lib/log";
+
+import { initLogger, loadConfig } from "./middleware";
 
 yargs
   .scriptName("companion")
@@ -24,19 +24,8 @@ yargs
   .boolean("prod")
   .alias("prod", ["p"])
   .describe("prod", "Wheter to use the production servers")
-  .middleware(async ({ prod }: { prod?: boolean }) => {
-    await Config.get().load();
-
-    if (prod) {
-      Config.get().openshift.server_cuyo = "api.ocpprod.cuyorh.tcloud.ar:6443";
-      Config.get().openshift.auth_server_cuyo = "https://oauth-openshift.apps.ocpprod.cuyorh.tcloud.ar";
-    }
-  }, true)
-  .middleware(({ $0, _: args, debug }) => {
-    const command = `${$0} ${args.join(" ")}`;
-    const startTime = new Date().getTime();
-    storage.enterWith({ command, startTime, debug: debug ?? false });
-  })
+  .middleware(loadConfig, true)
+  .middleware(initLogger)
   .command(app)
   .command(config)
   .command(env)

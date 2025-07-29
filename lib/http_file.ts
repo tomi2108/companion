@@ -1,0 +1,151 @@
+import fs from "node:fs";
+
+const valid_methods = [
+  "GET",
+  "PUT",
+  "POST",
+  "PATCH",
+  "DELETE"
+];
+
+const line_filter = (l: string) => l !== "" && l !== "###" && !l.includes("localhost") && l !== "\n";
+
+type Req = {
+  method: string;
+  params: Record<string, string | null> | null;
+  pathname: string;
+  headers: Record<string, string | null> | null;
+  body: Record<string, number | string> | null;
+};
+
+export class HttpFile {
+  file_path: string;
+  variables: Record<string, string>;
+  requests: Req[];
+  service: string | null;
+  url: string | null;
+
+  constructor(file_path: string) {
+    this.file_path = file_path;
+    const [globals, ...requestsString] = fs.readFileSync(this.file_path).toString().split("###");
+    if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path);
+    this.variables = this.getVariables(globals ?? "");
+    this.requests = this.parseRequests(requestsString);
+    this.service = this.variables.host?.split("-movistar-empresas")?.[0] ?? null;
+    this.url = this.getUrl("cert", this.service);
+  }
+
+  private getEnvSufix(env: string) {
+    if (env === "prod") return "";
+    return `-${env}`;
+  }
+
+  private getUrl(env: string, service: string | null) {
+    if (!service) return null;
+    const sufix = this.getEnvSufix(env);
+    return `http://${service}-movistar-empresas${sufix}.apps.ocpnp.cuyorh.tcloud.ar`;
+  }
+
+  private getVariables(globals: string) {
+    return Object.fromEntries(
+      globals.split("\n")
+        .filter(line_filter)
+        .map((l) => {
+          const variable = this.getVariable(l);
+          if (!variable?.key || !variable.value) return [];
+          return [variable.key, variable.value];
+        })
+    );
+  }
+
+  private getHeader(l: string) {
+    const split = l.split(":");
+    if (split.length <= 1) return null;
+    return { key: split[0], value: split?.[1]?.trim() };
+  }
+
+  private replaceVariables(string: string | undefined) {
+    if (!this.variables || !string) return string;
+    let res = string;
+    Object.entries(this.variables).forEach(([k, v]) => {
+      res = res.replaceAll(`{{${k}}}`, v);
+    });
+    return res;
+  }
+
+  private getVariable = (l: string) => {
+    const line = l.replaceAll("#", "");
+    if (line.startsWith("@")) {
+      const split = line.split("=");
+      return { key: split?.[0]?.substring(1).trim(), value: split?.[1]?.trim() ?? null };
+    }
+    return null;
+  };
+
+  private parseRequests(requests: string[]) {
+    return requests.map((r) => {
+      if (r.trim() === "") return null;
+      const lines = r.trim().split("\n");
+      const method = lines?.[0]?.split(" ")[0];
+      if (!method || !valid_methods.includes(method)) return null;
+      let url = lines?.[0]?.split(" ")[1] ?? "";
+      let i = 1;
+      for (i; i < lines.length; i++) {
+        const l = lines?.[i]?.trim();
+        if (!l || l === "" || !l.startsWith("?") && !l.startsWith("&")) break;
+        url = url?.concat(l);
+      }
+      const [path, searchParams] = url.split("?");
+      const pathname = `${this.replaceVariables(path?.split("/").slice(3).join("/")) ?? ""}`;
+      const urlSearchParams = new URLSearchParams(searchParams);
+      const params
+        = urlSearchParams && urlSearchParams.size > 0
+          ? Object.fromEntries(
+            Object.entries(
+              Object.fromEntries(urlSearchParams.entries())
+            ).map(([k, v]) => [k, this.replaceVariables(v) ?? null])
+          ) : null;
+
+      let headers: Record<string, string | null> | null = null;
+      for (i; i < lines.length; i++) {
+        const l = lines[i];
+        if (!l || l.trim() === "") break;
+
+        if (!headers) headers = {};
+        const h = this.getHeader(l);
+        if (!h) continue;
+        const { key, value } = h;
+        if (key && value) headers[key] = this.replaceVariables(value) || null;
+      }
+
+      let bodyString = "";
+      for (i; i < lines.length; i++) {
+        const l = lines[i];
+        if (!l) continue;
+        bodyString = bodyString.concat(l);
+      }
+      bodyString = this.replaceVariables(bodyString)?.trim() ?? "";
+      let body: Record<string, number | string> | null = null;
+      try {
+        if (!bodyString) body = null;
+        else body = JSON.parse(bodyString);
+      } catch {
+        throw new InvalidJson(this.file_path);
+      }
+      return { method, params, pathname, headers, body };
+    }
+    ).filter((e) => e !== null);
+  }
+}
+
+class InvalidJson extends Error {
+  constructor(file_path: string) {
+    super(`Invalid json found at file ${file_path}`);
+  }
+}
+
+class InvalidHttpFile extends Error {
+  constructor(file_path: string) {
+    super(`Invalid http file ${file_path}`);
+  }
+}
