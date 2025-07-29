@@ -3,6 +3,7 @@ import { ChildProcessWithoutNullStreams } from "node:child_process";
 import path from "node:path";
 import { Argv } from "yargs";
 
+import { getApp } from "@files";
 import { AppRepo } from "@files/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
@@ -36,18 +37,18 @@ export default {
     const toStart = { [app]: port };
 
     async function getEnv(app: string) {
-      const repo = new AppRepo(path.join(backend, app));
-      try {
-        await repo.copyEnv(project);
-        repo.internalEnvs();
-        // TODO: Checkout repo deploy_repo version ... getApp(app)
-        await repo.switchBranchIfExists("master");
-        await repo.pull("master");
-      } catch (err) {
-        if (err instanceof Error) log.error(err.message);
-      }
+      const { app_repo, deploy_repo } = await getApp(app);
+      if (!app_repo) return log.error(`App repo not found for ${app}`);
+      if (!deploy_repo) return log.error(`Deploy repo not found for ${app}`);
 
-      const env = repo.getEnv();
+      await app_repo.copyEnv(project);
+      app_repo.internalEnvs();
+      const deployment = deploy_repo.getDeployment(project.name);
+      const version = deployment?.getVersion();
+      if (!version) return log.error(`Version not found for ${app} in project ${project.name}`);
+      await app_repo.checkout(version);
+
+      const env = app_repo.getEnv();
       const children = Object.entries(env).map(async ([key, value]) => {
         const choices = apps.map((d) => d.name);
         const host = URL.canParse(value) ? new URL(value).hostname : null;
@@ -55,14 +56,14 @@ export default {
         const found = choices.find((c) => host.split(".")[0] === c);
         if (!found) return;
         const already_added = toStart[found];
-        repo.removeEnv(key);
+        app_repo.removeEnv(key);
 
         if (!already_added) {
           const next_port = port + Object.values(toStart).length;
           toStart[found] = next_port;
-          repo.addEnv(key, `http://localhost:${next_port}`);
+          app_repo.addEnv(key, `http://localhost:${next_port}`);
           await getEnv(found);
-        } else repo.addEnv(key, `http://localhost:${already_added}`);
+        } else app_repo.addEnv(key, `http://localhost:${already_added}`);
       });
       await Promise.all(children);
     }
