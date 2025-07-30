@@ -31,10 +31,8 @@ export class AppRepo extends Repo {
   constructor(full_path: string) {
     const package_path = path.join(full_path, "package.json");
     if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
-
     const package_file = JSON.parse(fs.readFileSync(package_path).toString());
     super(full_path);
-
     this.env_file = path.join(this.full_path, ".env");
     this.version = package_file.version;
     this.description = package_file.description;

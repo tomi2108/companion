@@ -244,10 +244,10 @@ export default {
       await create_remote(app_repo, backend_id, { name, description });
       await app_repo.push("master");
 
-      const replaceUrl = (file: string) => replace("{{url}}", origin, file);
+      // const replaceUrl = (file: string) => replace("{{url}}", origin, file);
       await app_repo.createNewBranch("initial_deploy");
-      replaceUrl(path.join(full_path, "package.json"));
-      replaceUrl(path.join(full_path, "README.md"));
+      // replaceUrl(path.join(full_path, "package.json"));
+      // replaceUrl(path.join(full_path, "README.md"));
       await app_repo.add("README.md");
       await app_repo.add("package.json");
       await app_repo.commit("feat: initial deploy");
