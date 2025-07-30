@@ -241,13 +241,13 @@ export default {
       if (type === "bau") insertLine(1, server, "import \"../configuration/db\";");
 
       await initial_commit(app_repo);
-      await create_remote(app_repo, backend_id, { name, description });
+      const origin = await create_remote(app_repo, backend_id, { name, description });
       await app_repo.push("master");
 
-      // const replaceUrl = (file: string) => replace("{{url}}", origin, file);
+      const replaceUrl = (file: string) => replace("{{url}}", origin, file);
       await app_repo.createNewBranch("initial_deploy");
-      // replaceUrl(path.join(full_path, "package.json"));
-      // replaceUrl(path.join(full_path, "README.md"));
+      replaceUrl(path.join(full_path, "package.json"));
+      replaceUrl(path.join(full_path, "README.md"));
       await app_repo.add("README.md");
       await app_repo.add("package.json");
       await app_repo.commit("feat: initial deploy");
@@ -323,4 +323,5 @@ async function create_remote(app_repo: AppRepo, groupId: number, { name, descrip
   const origin = glab_repo.http_url_to_repo;
   await app_repo.addOrigin(origin);
   creating_spinner.succeed();
+  return origin;
 }
