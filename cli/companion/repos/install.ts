@@ -1,12 +1,12 @@
-import { Dirent } from "node:fs";
-import path from "node:path";
 import { Argv } from "yargs";
 
-import { AppRepo } from "@files/app_repo";
-import { Config } from "@lib/config";
+import { getApp } from "@files";
+import { promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
-import { input, progressBar, search } from "@lib/ui";
-import { readdirs } from "@lib/utils";
+import { input, progressBar } from "@lib/ui";
+import { Openshift } from "@oc";
+import { filterFrontendDeployments, getOcToken } from "@oc/api";
+import { Deployment } from "@oc/deployment";
 
 export default {
   command: "install",
@@ -32,42 +32,39 @@ export default {
     backend?: boolean;
     dev?: boolean;
   }) => {
-    let paths: Dirent[] = [];
-    if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];
-    if (all || backend) paths = [...paths, ...readdirs(Config.get().paths.backend) ?? []];
-    if (paths.length === 0) {
-      const choices = [
-        ...readdirs(Config.get().paths.frontend) ?? [],
-        ...readdirs(Config.get().paths.backend) ?? []
-      ];
-      const choice = await search({ choices: choices.map((p) => ({ name: path.join(p.parentPath, p.name) })), message: "Select project" });
-      const selected = choices.find((p) => choice === path.join(p.parentPath, p.name));
-      if (selected) paths = [selected];
+    let toUpdate: Deployment[] = [];
+    const projects = await new Openshift(await getOcToken()).getProjects();
+    const project = await promptForOcResource(projects);
+    const deployments = await project.getDeployments();
+
+    if (all || frontend) toUpdate = [...toUpdate, ...deployments.filter(filterFrontendDeployments)];
+    if (all || backend) toUpdate = [...toUpdate, ...deployments.filter((d) => !filterFrontendDeployments(d))];
+
+    if (toUpdate.length === 0) {
+      const choice = await promptForOcResource(deployments);
+      toUpdate = [choice];
     }
 
     const name = await input({ message: "Enter dependency name" });
     const version = await input({ message: "Enter version" });
     const sourceBranch = await input({ message: "Source branch" });
 
-    const bar = progressBar(paths.length, 0, "Installing");
+    const bar = progressBar(toUpdate.length, 0, "Installing");
 
-    for (let i = 0; i < paths.length; i += 10) {
-      const toUpdate = paths.slice(i, i + 10);
+    for (let i = 0; i < toUpdate.length; i += 3) {
+      const slice = toUpdate.slice(i, i + 3);
       await Promise.all(
-        toUpdate.map(async (p) => {
-          bar.setSufix(p.name);
-          const full_path = path.join(p.parentPath, p.name);
-          const app_repo = new AppRepo(full_path);
+        slice.map(async (d) => {
+          bar.setSufix(d.name);
+          const { app_repo } = await getApp(d.name);
+          if (!app_repo) return log.warning(`Could not find app repo for ${d.name}, skipping`);
           await app_repo.stash(async () => {
-            const { switched } = await app_repo.switchBranchIfExists(sourceBranch);
-            if (!switched) {
-              log.warning(`Source branch not found for ${p.name}`);
-              return process.exit(1);
-            }
+            await app_repo.switchBranchIfExists(sourceBranch);
             const new_branch_name = `bump/${name}-${version}`;
             await app_repo.createNewBranch(new_branch_name);
             await app_repo.switchBranchIfExists(new_branch_name);
             await app_repo.install([{ name, version }], { dev });
+            await app_repo.build();
             await app_repo.add("package.json");
             await app_repo.commit(`feat: bump ${name} to ${version}`);
             await app_repo.createAndMergeMr(sourceBranch);

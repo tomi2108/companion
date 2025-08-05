@@ -22,6 +22,8 @@ export class AppRepo extends Repo {
   package?: string;
   description?: string;
   env_file: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
 
   static isAppRepo(full_path: string) {
     const package_path = path.join(full_path, "package.json");
@@ -37,6 +39,8 @@ export class AppRepo extends Repo {
     this.version = package_file.version;
     this.description = package_file.description;
     this.package = package_file.name;
+    this.dependencies = package_file.dependencies;
+    this.devDependencies = package_file.devDependencies;
   }
 
   getEnv(): Record<string, string> {

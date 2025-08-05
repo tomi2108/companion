@@ -11,6 +11,7 @@ import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
+import { kebabToCamel } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
@@ -62,7 +63,7 @@ export default {
     const projects_to_deploy = await promptForOcResource(projects, { message: "Select projects to deploy", multiple: true });
 
     const replaceName = (file: string) => replace("{{name}}", name, file);
-    const replaceAppName = (file: string) => replace("{{appName}}", name.split("app-")?.[1] ?? "", file);
+    const replaceAppName = (file: string) => replace("{{appName}}", kebabToCamel(name.split("app-")?.[1] ?? ""), file);
     const replaceDescription = (file: string) => replace("{{description}}", description, file);
     const replaceAuthor = (file: string) => replace("{{author}}", config.gitlab.username, file);
     let app_repo: AppRepo;
@@ -80,9 +81,10 @@ export default {
       const mf_template_link = (await glab.getProject(mf_template_id)).http_url_to_repo;
 
       app_repo = await init_repo(full_path, mf_template_link, dependencies);
-      await create_remote(app_repo, frontend_id, { name, description });
+      replaceAppName(path.join(full_path, "mf-config.js"));
       await initial_commit(app_repo);
 
+      await create_remote(app_repo, frontend_id, { name, description });
       await app_repo.push("master");
       await app_repo.createNewBranch("release");
       await app_repo.push("release");
@@ -98,8 +100,11 @@ export default {
       replaceName(path.join(full_path, "package.json"));
       replaceDescription(path.join(full_path, "package.json"));
 
-      replaceAppName(path.join(full_path, "mf-config.js"));
+      await app_repo.add("README.md");
+      await app_repo.add("package.json");
+      await app_repo.commit("feat: initial deploy");
 
+      await app_repo.createAndMergeMr("master");
       await app_repo.createAndMergeMr("develop");
       await app_repo.switchBranchIfExists("develop");
       await app_repo.deleteBranch("initial_deploy");
