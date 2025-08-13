@@ -3,7 +3,7 @@ import { Argv } from "yargs";
 import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
-import { input, progressBar } from "@lib/ui";
+import { confirm, input, progressBar } from "@lib/ui";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
 import { Deployment } from "@oc/deployment";
@@ -36,6 +36,7 @@ export default {
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
     const deployments = await project.getDeployments();
+    const merge = await confirm({ message: "Merge?" });
 
     if (all || frontend) toUpdate = [...toUpdate, ...deployments.filter(filterFrontendDeployments)];
     if (all || backend) toUpdate = [...toUpdate, ...deployments.filter((d) => !filterFrontendDeployments(d))];
@@ -67,7 +68,8 @@ export default {
             await app_repo.build();
             await app_repo.add("package.json");
             await app_repo.commit(`feat: bump ${name} to ${version}`);
-            await app_repo.createAndMergeMr(sourceBranch);
+            if (merge) await app_repo.createAndMergeMr(sourceBranch);
+            else app_repo.createMr(sourceBranch);
             await app_repo.switchBranchIfExists(sourceBranch);
             await app_repo.deleteBranch(new_branch_name);
             bar.increment(1);
