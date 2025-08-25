@@ -30,17 +30,21 @@ export class AppRepo extends Repo {
     return fs.existsSync(package_path);
   }
 
-  constructor(full_path: string) {
+  private updateState(full_path = this.full_path) {
     const package_path = path.join(full_path, "package.json");
-    if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
     const package_file = JSON.parse(fs.readFileSync(package_path).toString());
-    super(full_path);
-    this.env_file = path.join(this.full_path, ".env");
     this.version = package_file.version;
     this.description = package_file.description;
     this.package = package_file.name;
     this.dependencies = package_file.dependencies;
     this.devDependencies = package_file.devDependencies;
+  }
+
+  constructor(full_path: string) {
+    if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
+    super(full_path);
+    this.env_file = path.join(this.full_path, ".env");
+    this.updateState(full_path);
   }
 
   getEnv(): Record<string, string> {
@@ -191,6 +195,30 @@ export class AppRepo extends Repo {
     const pipelines = await project.getPipelineRuns();
     const pipeline = pipelines.find((p) => p.name.includes(q) && p.name.includes(name)) ?? null;
     return pipeline;
+  }
+
+  override reset() {
+    const res = super.reset();
+    this.updateState(this.full_path);
+    return res;
+  }
+
+  override checkout(branch: string) {
+    const res = super.checkout(branch);
+    this.updateState(this.full_path);
+    return res;
+  }
+
+  override createNewBranch(name: string) {
+    const res = super.createNewBranch(name);
+    this.updateState(this.full_path);
+    return res;
+  }
+
+  override switchBranchIfExists(branch: string) {
+    const res = super.switchBranchIfExists(branch);
+    this.updateState(this.full_path);
+    return res;
   }
 }
 

@@ -41,7 +41,7 @@ export class SecretsYaml {
 
   private fillGaps() {
     const values = Object.values(this.content);
-    this.content = Object.fromEntries(values.map((v, i) => [`secret${i}`, v]));
+    this.content = Object.fromEntries(values.map((v, i) => [`secret${i + 1}`, v]));
   }
 
   addSecret(name: string) {

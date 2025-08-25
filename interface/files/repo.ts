@@ -216,21 +216,23 @@ export class Repo {
     return releases;
   }
 
-  async update() {
-    await this.git.fetch(["--all", "--prune"]);
-    const remotes = (await this.git.branch(["-r"])).all;
-    for (const r of remotes) {
-      const commits = await this.git.log(["--since=\"2 weeks ago\"", r]);
-      if (commits.all.length === 0) continue;
+  async getCurrentBranch() {
+    return (await this.git.branch()).current;
+  }
 
-      const local = r.slice("origin/".length);
-      await this.git.branch(["--track", local, r]).catch(() => { });
-      const { original_branch } = await this.switchBranchIfExists(local);
-      await this.stash(async () => {
+  async update() {
+    const initial_branch = await this.getCurrentBranch();
+    await this.stash(async () => {
+      await this.git.fetch(["--all", "--prune"]);
+      const remotes = (await this.git.branch(["-r"])).all;
+      for (const r of remotes) {
+        const local = r.slice("origin/".length);
+        await this.git.branch(["--track", local, r]).catch(() => { });
+        await this.switchBranchIfExists(local);
         await this.pull(local);
-      });
-      await this.switchBranchIfExists(original_branch);
-    }
+      }
+      await this.switchBranchIfExists(initial_branch);
+    });
   }
 
   async getInfo() {

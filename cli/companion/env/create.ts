@@ -47,16 +47,21 @@ export default {
     const repo_path = path.join(vault_path, project.name);
     const secrets_file = path.join(repo_path, "values.yaml");
     const repo = new Repo(repo_path);
-    const file = new SecretsYaml(secrets_file);
     await repo.stash(async () => {
       await repo.update();
       const { original_branch } = await repo.switchBranchIfExists("master");
-      if (!file.hasSecret(name)) {
+      const master_file = new SecretsYaml(secrets_file);
+      if (!master_file.hasSecret(name)) {
+        const temp_branch = `feature/add-secret-${name}`;
+        await repo.createNewBranch(temp_branch);
+        const file = new SecretsYaml(secrets_file);
         file.addSecret(name);
         file.save();
         await repo.add(secrets_file);
         await repo.commit(name);
-        await repo.push("master");
+        await repo.createAndMergeMr("master");
+        await repo.switchBranchIfExists("master");
+        await repo.deleteBranch(temp_branch);
       }
       await repo.switchBranchIfExists(original_branch);
     });

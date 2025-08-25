@@ -18,6 +18,11 @@ vi.mock("@interface/prompts", async () => ({
   promptTmpFile: vi.fn()
 }));
 
+vi.mock("@interface/git", async () => ({
+  ...await vi.importActual("@interface/prompts"),
+  promptTmpFile: vi.fn()
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
 });

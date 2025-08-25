@@ -36,7 +36,6 @@ export default {
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
     const deployments = await project.getDeployments();
-    const merge = await confirm({ message: "Merge?" });
 
     if (all || frontend) toUpdate = [...toUpdate, ...deployments.filter(filterFrontendDeployments)];
     if (all || backend) toUpdate = [...toUpdate, ...deployments.filter((d) => !filterFrontendDeployments(d))];
@@ -49,6 +48,7 @@ export default {
     const name = await input({ message: "Enter dependency name" });
     const version = await input({ message: "Enter version" });
     const sourceBranch = await input({ message: "Source branch" });
+    const merge = await confirm({ message: "Merge?" });
 
     const bar = progressBar(toUpdate.length, 0, "Installing");
 
@@ -61,15 +61,18 @@ export default {
           if (!app_repo) return log.warning(`Could not find app repo for ${d.name}, skipping`);
           await app_repo.stash(async () => {
             await app_repo.switchBranchIfExists(sourceBranch);
+            await app_repo.pull(sourceBranch);
             const new_branch_name = `bump/${name}-${version}`;
             await app_repo.createNewBranch(new_branch_name);
-            await app_repo.switchBranchIfExists(new_branch_name);
+            const dependencies = dev ? app_repo.devDependencies : app_repo.dependencies;
+            const current_version = dependencies?.[name];
+            if (current_version && current_version.includes(version)) return bar.increment(1);
             await app_repo.install([{ name, version }], { dev });
             await app_repo.build();
             await app_repo.add("package.json");
             await app_repo.commit(`feat: bump ${name} to ${version}`);
             if (merge) await app_repo.createAndMergeMr(sourceBranch);
-            else app_repo.createMr(sourceBranch);
+            else await app_repo.createMr(sourceBranch);
             await app_repo.switchBranchIfExists(sourceBranch);
             await app_repo.deleteBranch(new_branch_name);
             bar.increment(1);

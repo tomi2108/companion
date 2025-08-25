@@ -1,5 +1,8 @@
 import { setupServer } from "msw/node";
 
+import { mergeRequestsHandlers } from "@mocks/glab/merge_request";
+import { projectsHandlers as glabProjectsHandlers } from "@mocks/glab/projects";
+import { searchHandlers } from "@mocks/glab/search";
 import { authHandlers } from "@mocks/oc/auth";
 import { configmapHandlers } from "@mocks/oc/configmaps";
 import { deploymentsHandlers } from "@mocks/oc/deployments";
@@ -13,6 +16,9 @@ export const server = setupServer(
   ...projectsHandlers,
   ...podsHandlers,
   ...configmapHandlers,
-  ...secretHandlers
+  ...secretHandlers,
+  ...mergeRequestsHandlers,
+  ...glabProjectsHandlers,
+  ...searchHandlers
 );
 
