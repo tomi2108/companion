@@ -40,6 +40,7 @@ export default {
     let version: string | null = null;
     if (app_repo) {
       const versions = loading("Getting versions");
+      await app_repo.update();
       const tags = await app_repo.getTags();
       versions.succeed();
       version = await search({ choices: tags, message: "Select a version to create:" });
