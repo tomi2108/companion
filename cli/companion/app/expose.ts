@@ -12,13 +12,15 @@ import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
+const availabe_methods = ["GET", "POST"];
+
 export default {
   command: "expose",
   aliases: ["e"],
   describe: "Expose app in 3scale",
   handler: async () => {
     const repo_path = Config.get().paths.threescale;
-    if (!repo_path) return log.error("threescale path not set");
+    if (!repo_path) throw new ConfigError("paths.threescale");
 
     const repo = new Repo(repo_path);
     const token = await getOcToken();
@@ -40,7 +42,6 @@ export default {
     const dir_to_create = path.join(repo.full_path, dir_name);
     const file_to_create = path.join(repo.full_path, dir_name, file_name);
 
-    const availabe_methods = ["GET", "POST"];
     const methods = await search({ choices: availabe_methods, message: "Select methods for backend", multiple: true });
 
     const description = app_repo?.description ?? "";
