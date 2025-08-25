@@ -78,7 +78,7 @@ export default {
 
 async function deleteBranches(repo: Repo) {
   // TODO: make a team , user overrideable config
-  const to_delete = ["nivelacion", "feature", "bugfix", "hotfix", "fix", "despliegue"];
+  const to_delete = ["nivelacion", "feature", "bugfix", "hotfix", "fix", "despliegue", "bump"];
 
   await repo.stash(async () => {
     await repo.switchBranchIfExists("master");

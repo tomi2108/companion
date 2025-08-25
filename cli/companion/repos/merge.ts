@@ -49,12 +49,10 @@ export default {
       await repo.stash(async () => {
         const temporary_branch = `nivelacion/${source_branch}-${target_branch}`;
         await repo.update();
-        const { switched: switchedT, original_branch } = await repo.switchBranchIfExists(target_branch);
-        if (!switchedT) return;
+        const { original_branch } = await repo.switchBranchIfExists(target_branch);
         await repo.pull(target_branch);
 
-        const { switched: switchedS } = await repo.switchBranchIfExists(source_branch);
-        if (!switchedS) return;
+        await repo.switchBranchIfExists(source_branch);
         await repo.pull(source_branch);
 
         await repo.createNewBranch(temporary_branch);
