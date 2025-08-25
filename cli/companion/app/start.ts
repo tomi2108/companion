@@ -20,8 +20,11 @@ export default {
   builder: (yargs: Argv) => yargs
     .boolean("raw")
     .alias("raw", ["r"])
-    .describe("raw", "Whether to show raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs"),
-  handler: async ({ raw }: { raw?: boolean }) => {
+    .describe("raw", "Whether to show raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs")
+    .boolean("noedit")
+    .alias("noedit", ["ne"])
+    .describe("noedit", "Do not start apps nor edit files, only show list"),
+  handler: async ({ raw, noedit }: { raw?: boolean; noedit?: boolean }) => {
     const backend = Config.get().paths.backend ?? "";
     if (!backend) return log.error("Backend path not set");
 
@@ -56,19 +59,22 @@ export default {
         const found = choices.find((c) => host.split(".")[0] === c);
         if (!found) return;
         const already_added = toStart[found];
-        app_repo.removeEnv(key);
+        if (!noedit) app_repo.removeEnv(key);
 
         if (!already_added) {
           const next_port = port + Object.values(toStart).length;
           toStart[found] = next_port;
-          app_repo.addEnv(key, `http://localhost:${next_port}`);
+          if (!noedit) app_repo.addEnv(key, `http://localhost:${next_port}`);
           await getEnv(found);
-        } else app_repo.addEnv(key, `http://localhost:${already_added}`);
+        } else {
+          if (!noedit) app_repo.addEnv(key, `http://localhost:${already_added}`);
+        }
       });
       await Promise.all(children);
     }
 
     await getEnv(app);
+    if (noedit) return console.log(toStart);
     const colors = [
       chalk.blue,
       chalk.red,
