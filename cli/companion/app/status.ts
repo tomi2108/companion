@@ -52,6 +52,7 @@ export default {
         const [last, current] = await Promise.all([
           (async () => {
             // TODO: for frontend repos look at -beta... -rc based on project
+            await app_repo.update();
             return (await app_repo.getTags())[0];
           })(),
           (async () => {

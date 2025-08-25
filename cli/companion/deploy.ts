@@ -14,6 +14,7 @@ export default {
   handler: async () => {
     const { app_repo, deploy_repo } = await promptForApp();
 
+    await deploy_repo.update();
     const choices = deploy_repo.deployments.map((d) => {
       const version = d.getVersion();
       return {

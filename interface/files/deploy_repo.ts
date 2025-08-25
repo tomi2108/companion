@@ -41,7 +41,6 @@ export class DeployRepo extends Repo {
   }[], version: string) {
     const targetBranch = "master";
     const sourceBranch = "feature/despliegue";
-    await this.update();
     await this.switchBranchIfExists(targetBranch);
     const { name, type } = await this.getInfo();
     await this.createNewBranch(sourceBranch);
