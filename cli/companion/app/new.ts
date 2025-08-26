@@ -66,6 +66,7 @@ export default {
     const replaceAppName = (file: string) => replace("{{appName}}", kebabToCamel(name.split("app-")?.[1] ?? ""), file);
     const replaceDescription = (file: string) => replace("{{description}}", description, file);
     const replaceAuthor = (file: string) => replace("{{author}}", config.gitlab.username, file);
+
     let app_repo: AppRepo;
 
     if (type === "app") {
@@ -82,16 +83,6 @@ export default {
 
       app_repo = await init_repo(full_path, mf_template_link, dependencies);
       replaceAppName(path.join(full_path, "mf-config.js"));
-      await initial_commit(app_repo);
-
-      await create_remote(app_repo, frontend_id, { name, description });
-      await app_repo.push("master");
-      await app_repo.createNewBranch("release");
-      await app_repo.push("release");
-      await app_repo.createNewBranch("develop");
-      await app_repo.push("develop");
-
-      await app_repo.createNewBranch("initial_deploy");
 
       replaceName(path.join(path.join(full_path, "sonar-project.properties")));
 
@@ -99,11 +90,32 @@ export default {
       replaceDescription(path.join(full_path, "README.md"));
 
       replaceAuthor(path.join(full_path, "package.json"));
-      replaceName(path.join(full_path, "package.json"));
       replaceDescription(path.join(full_path, "package.json"));
 
-      await app_repo.add("README.md");
+      await initial_commit(app_repo);
+      await create_remote(app_repo, frontend_id, { name, description });
+
+      await app_repo.createNewBranch("release");
+      await app_repo.push("release");
+      await app_repo.createNewBranch("develop");
+      await app_repo.push("develop");
+
+      await app_repo.switchBranchIfExists("master");
+      replaceName(path.join(full_path, "package.json"));
       await app_repo.add("package.json");
+      await app_repo.commit("replace name");
+      await app_repo.push("master");
+
+      await app_repo.switchBranchIfExists("release");
+      replaceName(path.join(full_path, "package.json"));
+      await app_repo.add("package.json");
+      await app_repo.commit("replace name");
+      await app_repo.push("release");
+
+      await app_repo.switchBranchIfExists("develop");
+      await app_repo.createNewBranch("initial_deploy");
+      replaceName(path.join(full_path, "package.json"));
+
       await app_repo.commit("feat: initial deploy");
 
       await app_repo.createAndMergeMr("develop");
