@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { Repo } from "@files/repo";
 import { Config } from "@lib/config";
+import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
@@ -32,7 +33,13 @@ export class AppRepo extends Repo {
 
   private updateState(full_path = this.full_path) {
     const package_path = path.join(full_path, "package.json");
-    const package_file = JSON.parse(fs.readFileSync(package_path).toString());
+    let package_file: any = {};
+    try {
+      package_file = JSON.parse(fs.readFileSync(package_path).toString());
+    } catch (err) {
+      log.error("Error reading package.json in ${full_path}");
+      throw err;
+    }
     this.version = package_file.version;
     this.description = package_file.description;
     this.package = package_file.name;
