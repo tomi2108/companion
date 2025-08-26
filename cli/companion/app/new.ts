@@ -93,6 +93,8 @@ export default {
 
       await app_repo.createNewBranch("initial_deploy");
 
+      replaceName(path.join(path.join(full_path, "sonar-project.properties")));
+
       replaceName(path.join(full_path, "README.md"));
       replaceDescription(path.join(full_path, "README.md"));
 
@@ -104,7 +106,6 @@ export default {
       await app_repo.add("package.json");
       await app_repo.commit("feat: initial deploy");
 
-      await app_repo.createAndMergeMr("master");
       await app_repo.createAndMergeMr("develop");
       await app_repo.switchBranchIfExists("develop");
       await app_repo.deleteBranch("initial_deploy");
