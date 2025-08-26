@@ -37,7 +37,7 @@ export class AppRepo extends Repo {
     try {
       package_file = JSON.parse(fs.readFileSync(package_path).toString());
     } catch (err) {
-      log.error("Error reading package.json in ${full_path}");
+      log.error(`Error reading package.json in ${full_path}`);
       throw err;
     }
     this.version = package_file.version;
