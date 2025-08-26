@@ -41,7 +41,7 @@ export class Gitlab {
   }
 
   async getProjects(id: number) {
-    return await this.glab.Groups.allProjects(id);
+    return await this.glab.Groups.allProjects(id, { archived: false });
   }
 
   async cloneProject(
