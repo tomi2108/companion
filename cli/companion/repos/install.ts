@@ -41,8 +41,7 @@ export default {
     if (all || backend) toUpdate = [...toUpdate, ...deployments.filter((d) => !filterFrontendDeployments(d))];
 
     if (toUpdate.length === 0) {
-      const choice = await promptForOcResource(deployments);
-      toUpdate = [choice];
+      toUpdate = await promptForOcResource(deployments, { multiple: true, message: "Select repositories to install" });
     }
 
     const name = await input({ message: "Enter dependency name" });
@@ -65,7 +64,9 @@ export default {
             const new_branch_name = `bump/${name}-${version}`;
             if ((await app_repo.getBranches()).some((b) => b.includes(new_branch_name))) return bar.increment(1);
             await app_repo.createNewBranch(new_branch_name);
-            const dependencies = dev ? app_repo.devDependencies : app_repo.dependencies;
+            const dependencies = dev
+              ? app_repo.devDependencies
+              : { ...app_repo.dependencies, ...app_repo.peerDependencies };
             const current_version = dependencies?.[name];
             if (current_version && current_version.includes(version)) return bar.increment(1);
             await app_repo.install([{ name, version }], { dev });

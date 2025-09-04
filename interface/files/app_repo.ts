@@ -25,6 +25,7 @@ export class AppRepo extends Repo {
   env_file: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
 
   static isAppRepo(full_path: string) {
     const package_path = path.join(full_path, "package.json");
@@ -45,6 +46,7 @@ export class AppRepo extends Repo {
     this.package = package_file.name;
     this.dependencies = package_file.dependencies;
     this.devDependencies = package_file.devDependencies;
+    this.peerDependencies = package_file.peerDependencies;
   }
 
   constructor(full_path: string) {
