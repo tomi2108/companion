@@ -42,6 +42,8 @@ export default {
 
     const bar = progressBar(paths.length);
     for (const p of paths) {
+      const ignores = Config.get().repos.merge?.ignores;
+      if (ignores?.includes(p.name)) continue;
       const full_path = path.join(p.parentPath, p.name);
       const repo = new AppRepo(full_path);
       const { name } = await repo.getInfo();

@@ -73,7 +73,10 @@ export const ThreescaleConfigSchema = z.object({
 });
 
 export const ReposConfigSchema = z.object({
-  environment_path: z.string().optional()
+  environment_path: z.string().optional(),
+  merge: z.object({
+    ignores: z.array(z.string()).optional()
+  }).optional()
 });
 
 export const EnvsConfigSchema = z.object({

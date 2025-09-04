@@ -63,6 +63,7 @@ export default {
             await app_repo.switchBranchIfExists(sourceBranch);
             await app_repo.pull(sourceBranch);
             const new_branch_name = `bump/${name}-${version}`;
+            if ((await app_repo.getBranches()).some((b) => b.includes(new_branch_name))) return bar.increment(1);
             await app_repo.createNewBranch(new_branch_name);
             const dependencies = dev ? app_repo.devDependencies : app_repo.dependencies;
             const current_version = dependencies?.[name];

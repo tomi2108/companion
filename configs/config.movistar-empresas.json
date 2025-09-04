@@ -141,7 +141,12 @@
     ]
   },
   "repos": {
-    "environment_path": "src/configuration/environment.ts"
+    "environment_path": "src/configuration/environment.ts",
+    "merge": {
+      "ignores": [
+        "app-mfbase"
+      ]
+    }
   },
   "envs": {
     "health_exclusions": [
