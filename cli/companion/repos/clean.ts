@@ -66,6 +66,8 @@ export default {
       await Promise.all(toClean.map(async (p) => {
         bar.setSufix(p.name);
         const repo = new Repo(path.join(p.parentPath, p.name));
+        await repo.reset();
+        await repo.switchBranchIfExists("master");
         await deleteBranches(repo);
         bar.increment(1);
       }
