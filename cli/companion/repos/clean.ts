@@ -25,13 +25,22 @@ export default {
     .boolean("despliegues")
     .alias("despliegues", ["d"])
     .describe("despliegues", "Whether to run the script for all despliegues repositories")
+    .boolean("force")
+    .describe("force", "Force clean")
     .conflicts("all", ["frontend", "backend", "despliegues"]),
   handler: async ({
     all,
     frontend,
     backend,
-    despliegues
-  }: { all?: boolean; frontend?: boolean; backend?: boolean; despliegues?: boolean }) => {
+    despliegues,
+    force
+  }: {
+    all?: boolean;
+    frontend?: boolean;
+    backend?: boolean;
+    despliegues?: boolean;
+    force?: boolean;
+  }) => {
     let paths: Dirent[] = [];
     if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];
     if (all || backend) paths = [...paths, ...readdirs(Config.get().paths.backend) ?? []];
@@ -52,7 +61,7 @@ export default {
       if (!sure) return;
 
       const spinner = loading(`Cleaning ${name}`);
-      await deleteBranches(repo);
+      await deleteBranches(repo, force);
       spinner.succeed(`Succesfully cleaned ${name}`);
       return;
     }
@@ -66,9 +75,7 @@ export default {
       await Promise.all(toClean.map(async (p) => {
         bar.setSufix(p.name);
         const repo = new Repo(path.join(p.parentPath, p.name));
-        await repo.reset();
-        await repo.switchBranchIfExists("master");
-        await deleteBranches(repo);
+        await deleteBranches(repo, force);
         bar.increment(1);
       }
       ));
@@ -78,16 +85,14 @@ export default {
   }
 };
 
-async function deleteBranches(repo: Repo) {
+async function deleteBranches(repo: Repo, force?: boolean) {
   // TODO: make a team , user overrideable config
   const to_delete = ["nivelacion", "feature", "bugfix", "hotfix", "fix", "despliegue", "bump"];
-
-  await repo.stash(async () => {
-    await repo.switchBranchIfExists("master");
-    const branches = await repo.getBranches();
-    for (const branch of branches) {
-      if (to_delete.some((d) => branch.includes(d))) await repo.deleteBranch(branch);
-    }
-  });
+  if (force) await repo.reset();
+  await repo.switchBranchIfExists("master");
+  const branches = await repo.getBranches();
+  for (const branch of branches) {
+    if (to_delete.some((d) => branch.includes(d))) await repo.deleteBranch(branch);
+  }
 }
 
