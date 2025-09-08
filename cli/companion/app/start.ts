@@ -3,7 +3,7 @@ import { ChildProcessWithoutNullStreams } from "node:child_process";
 import path from "node:path";
 import { Argv } from "yargs";
 
-import { getApp } from "@files";
+import { getSubApps } from "@files";
 import { AppRepo } from "@files/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
@@ -38,42 +38,19 @@ export default {
 
     const port = 8080;
     const toStart = { [app]: port };
-
-    async function getEnv(app: string) {
-      const { app_repo, deploy_repo } = await getApp(app);
-      if (!app_repo) return log.error(`App repo not found for ${app}`);
-      if (!deploy_repo) return log.error(`Deploy repo not found for ${app}`);
-
-      await app_repo.copyEnv(project);
-      app_repo.internalEnvs();
-      const deployment = deploy_repo.getDeployment(project.name);
-      const version = deployment?.getVersion();
-      if (!version) return log.error(`Version not found for ${app} in project ${project.name}`);
-      await app_repo.checkout(version);
-
-      const env = app_repo.getEnv();
-      const children = Object.entries(env).map(async ([key, value]) => {
-        const choices = apps.map((d) => d.name);
-        const host = URL.canParse(value) ? new URL(value).hostname : null;
-        if (!host) return;
-        const found = choices.find((c) => host.split(".")[0] === c);
-        if (!found) return;
-        const already_added = toStart[found];
+    await getSubApps(
+      app,
+      apps.map((a) => a.name),
+      project,
+      ({ key, app_repo, already_added, name }) => {
         if (!noedit) app_repo.removeEnv(key);
-
         if (!already_added) {
           const next_port = port + Object.values(toStart).length;
-          toStart[found] = next_port;
+          toStart[name] = next_port;
           if (!noedit) app_repo.addEnv(key, `http://localhost:${next_port}`);
-          await getEnv(found);
-        } else {
-          if (!noedit) app_repo.addEnv(key, `http://localhost:${already_added}`);
-        }
+        } else if (!noedit) app_repo.addEnv(key, `http://localhost:${already_added}`);
       });
-      await Promise.all(children);
-    }
 
-    await getEnv(app);
     if (noedit) return console.log(toStart);
     const colors = [
       chalk.blue,

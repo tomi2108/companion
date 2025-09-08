@@ -4,8 +4,8 @@ import yargs from "yargs";
 
 import app from "@cli/app/index";
 import config from "@cli/config/index";
-import deploy from "@cli/deploy";
 import env from "@cli/env/index";
+import monitors from "@cli/monitors/index";
 import mr from "@cli/mr/index";
 import pipeline from "@cli/pipeline";
 import pod from "@cli/pod/index";
@@ -29,13 +29,13 @@ yargs
   .command(app)
   .command(config)
   .command(env)
-  .command(pod)
-  .command(route)
-  .command(repos)
-  .command(ticket)
+  .command(monitors)
   .command(mr)
-  .command(deploy)
   .command(pipeline)
+  .command(pod)
+  .command(repos)
+  .command(route)
+  .command(ticket)
   .command(upgrade)
   .demandCommand(1, "Please specify a command")
   .strict()

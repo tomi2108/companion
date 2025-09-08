@@ -24,16 +24,18 @@ export class HttpFile {
   file_path: string;
   variables: Record<string, string>;
   requests: Req[];
-  service: string | null;
+  service: string;
   url: string | null;
 
   constructor(file_path: string) {
     this.file_path = file_path;
     const [globals, ...requestsString] = fs.readFileSync(this.file_path).toString().split("###");
-    if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path);
+    if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path, "Check syntax");
     this.variables = this.getVariables(globals ?? "");
     this.requests = this.parseRequests(requestsString);
-    this.service = this.variables.host?.split("-movistar-empresas")?.[0] ?? null;
+    const service = this.variables.host?.split("-movistar-empresas")?.[0];
+    if (!service) throw new InvalidHttpFile(file_path, "Could not find host variable to determine service name");
+    this.service = service;
     this.url = this.getUrl("cert", this.service);
   }
 
@@ -67,7 +69,7 @@ export class HttpFile {
     return { key: split[0], value: split?.[1]?.trim() };
   }
 
-  private replaceVariables(string: string | undefined) {
+  public replaceVariables(string: string | undefined) {
     if (!this.variables || !string) return string;
     let res = string;
     Object.entries(this.variables).forEach(([k, v]) => {
@@ -77,7 +79,7 @@ export class HttpFile {
   }
 
   private getVariable = (l: string) => {
-    const line = l.replaceAll("#", "");
+    const line = l.replaceAll("#", "").replaceAll(" ", "");
     if (line.startsWith("@")) {
       const split = line.split("=");
       return { key: split?.[0]?.substring(1).trim(), value: split?.[1]?.trim() ?? null };
@@ -99,14 +101,14 @@ export class HttpFile {
         url = url?.concat(l);
       }
       const [path, searchParams] = url.split("?");
-      const pathname = `${this.replaceVariables(path?.split("/").slice(3).join("/")) ?? ""}`;
+      const pathname = `/${path?.split("/").slice(3).join("/") ?? ""}`;
       const urlSearchParams = new URLSearchParams(searchParams);
       const params
         = urlSearchParams && urlSearchParams.size > 0
           ? Object.fromEntries(
             Object.entries(
               Object.fromEntries(urlSearchParams.entries())
-            ).map(([k, v]) => [k, this.replaceVariables(v) ?? null])
+            )
           ) : null;
 
       let headers: Record<string, string | null> | null = null;
@@ -148,7 +150,7 @@ class InvalidJson extends Error {
 }
 
 class InvalidHttpFile extends Error {
-  constructor(file_path: string) {
-    super(`Invalid http file ${file_path}`);
+  constructor(file_path: string, reason = "") {
+    super(`Invalid http file ${file_path} ${reason}`);
   }
 }

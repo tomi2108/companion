@@ -73,3 +73,35 @@ export function createTempFile(file_name: string) {
   createDirIfNotExists(path.dirname(file_path));
   return file_path;
 }
+
+type FileStat = {
+  type?: string;
+  files?: FileStat[];
+  file: string;
+  path: string;
+};
+
+const default_ignore = [".git"];
+export function traverseDirectory(dir: string, { ignore }: { ignore?: string[] } = { ignore: [] }, result: FileStat[] = []) {
+  fs.readdirSync(dir).forEach((file) => {
+    const to_ignore = default_ignore;
+    if (ignore) to_ignore.push(...ignore);
+    if (to_ignore.includes(file)) return;
+
+    const fPath = path.resolve(dir, file);
+
+    const fileStats: FileStat = { file, path: fPath };
+
+    if (fs.statSync(fPath).isDirectory()) {
+      fileStats.type = "dir";
+      fileStats.files = [];
+      result.push(fileStats);
+      return traverseDirectory(fPath, { ignore }, fileStats.files);
+    }
+
+    fileStats.type = "file";
+    result.push(fileStats);
+    return;
+  });
+  return result;
+}
