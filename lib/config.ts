@@ -151,6 +151,9 @@ class Config {
       }
     };
 
+    const dir = path.dirname(getConfigPath());
+    const exists = fs.existsSync(dir);
+    if (!exists) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(config_file, JSON.stringify(config_to_write, null, 2));
     log.success("Configuration was set up correctly");
   }
