@@ -142,7 +142,11 @@ export class Repo {
   }
 
   async getCommits() {
-    return (await this.git.log()).all;
+    try {
+      return (await this.git.log()).all;
+    } catch (err) {
+      return [];
+    }
   }
 
   async getDiffCommits(sourceBranch: string, targetBranch: string) {
