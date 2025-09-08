@@ -54,6 +54,10 @@ export class Repo {
   }
 
   async stash<T>(callback: () => Promise<T> | T) {
+
+    const hasCommits = (await this.getCommits()).length !== 0;
+    if (!hasCommits) return await callback();
+
     const { total: stash_before } = await this.git.stashList();
     await this.git.stash(["--include-untracked"]);
     const { total: stash_after } = await this.git.stashList();
