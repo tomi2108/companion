@@ -30,6 +30,7 @@ export default {
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
     const name = await input({ message: "User flow name" });
+    const services_doc_link = await input({ message: "Services documentation url" });
     const choices = http_files
       .map((f) => f.service)
       .filter((s) => s !== null);
@@ -56,6 +57,7 @@ export default {
     const res = {
       name,
       namespace: project.name,
+      services_doc_link,
       date: new Intl.DateTimeFormat("es-AR", {
         day: "2-digit",
         month: "2-digit",

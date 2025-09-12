@@ -17,7 +17,7 @@ type Req = {
   params: Record<string, string | null> | null;
   pathname: string;
   headers: Record<string, string | null> | null;
-  body: Record<string, number | string> | null;
+  body: string;
 };
 
 export class HttpFile {
@@ -130,24 +130,25 @@ export class HttpFile {
         bodyString = bodyString.concat(l);
       }
       bodyString = this.replaceVariables(bodyString)?.trim() ?? "";
-      let body: Record<string, number | string> | null = null;
-      try {
-        if (!bodyString) body = null;
-        else body = JSON.parse(bodyString);
-      } catch {
-        throw new InvalidJson(this.file_path);
-      }
-      return { method, params, pathname, headers, body };
+      // Quizas algun dia se necesario parsear el body ... por ahora no
+      // let body: Record<string, number | string> | null = null;
+      // try {
+      //   if (!bodyString) body = null;
+      //   else body = JSON.parse(bodyString);
+      // } catch {
+      //   throw new InvalidJson(this.file_path);
+      // }
+      return { method, params, pathname, headers, body: bodyString };
     }
     ).filter((e) => e !== null);
   }
 }
 
-class InvalidJson extends Error {
-  constructor(file_path: string) {
-    super(`Invalid json found at file ${file_path}`);
-  }
-}
+// class InvalidJson extends Error {
+//   constructor(file_path: string) {
+//     super(`Invalid json found at file ${file_path}`);
+//   }
+// }
 
 class InvalidHttpFile extends Error {
   constructor(file_path: string, reason = "") {
