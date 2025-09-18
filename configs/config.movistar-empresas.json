@@ -150,6 +150,11 @@
   },
   "envs": {
     "health_exclusions": [
+      "ELK_LOGS",
+      "ELK_LOGS_DEBUG",
+      "STDOUT_LOGS",
+      "CLIENT_SECRET",
+      "TZ",
       "PORT",
       "BAU_PORT",
       "DB_PORT"

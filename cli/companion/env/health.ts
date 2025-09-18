@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import Table from "cli-table3";
 import fs from "node:fs";
 import path from "node:path";
@@ -9,6 +10,11 @@ import { Config } from "@lib/config";
 import log from "@lib/log";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
+
+const status = {
+  UNUSED: "unused",
+  MISSING: "missing"
+} as const;
 
 export default {
   command: "health",
@@ -59,15 +65,17 @@ export default {
         .filter((k) => !envs_exclusions.includes(k));
 
       const missing = new Table({
-        head: [deployment.name],
-        style: {
-          compact: true
-        },
+        head: [deployment.name, "Status"],
+        style: { compact: true },
         colWidths: [50]
       });
 
       for (const key of keys) {
-        if (!env[key]) missing.push([key]);
+        if (!env[key]) missing.push([key, chalk.red(status.MISSING)]);
+      }
+
+      for (const key of Object.keys(env).filter((k) => !envs_exclusions.includes(k))) {
+        if (!keys.includes(key)) missing.push([key, chalk.yellow(status.UNUSED)]);
       }
 
       app.switchBranchIfExists(active_branch);
