@@ -5,7 +5,7 @@ import { Choice } from "@lib/constants";
 export abstract class Resource {
   name: string;
   namespace?: string;
-  protected data?: Record<string, string>;
+  public data?: Record<string, string>;
 
   abstract kind: string;
 

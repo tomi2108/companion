@@ -98,6 +98,13 @@ export class DeployYaml {
     this.fillGaps("secrets");
   }
 
+  removeConfigMap(name: string) {
+    const entries = Object.entries(this.content.configmaps ?? {});
+    const filtered_entries = entries.filter(([, value]) => value !== name);
+    this.content.configmaps = Object.fromEntries(filtered_entries);
+    this.fillGaps("configmaps");
+  }
+
   setConfigMap(name: string) {
     const values = Object.values(this.content.configmaps ?? {});
     if (values.includes(name)) return;

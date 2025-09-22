@@ -183,13 +183,13 @@ export class Repo {
     const spinner = loading("Building merge request");
     const { id } = await this.getProject();
     const mr = await this.createMr(targetBranch, { projectId: id });
-    await setTimeout(45 * 1000);
+    await setTimeout(60 * 1000);
     spinner.succeed();
     // genius =)
     try {
       await mr.merge();
     } catch {
-      setTimeout(10 * 1000);
+      setTimeout(20 * 1000);
       await mr.merge();
     }
   }
