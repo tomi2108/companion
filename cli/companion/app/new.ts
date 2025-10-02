@@ -95,6 +95,7 @@ export default {
       await initial_commit(app_repo);
       await create_remote(app_repo, frontend_id, { name, description });
 
+      await app_repo.push("master");
       await app_repo.createNewBranch("release");
       await app_repo.push("release");
       await app_repo.createNewBranch("develop");

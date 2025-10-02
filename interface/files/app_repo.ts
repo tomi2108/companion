@@ -173,6 +173,7 @@ export class AppRepo extends Repo {
       stdio: "pipe",
       cwd: this.full_path,
       env: {
+        ...process.env,
         PORT: String(port)
       }
     });

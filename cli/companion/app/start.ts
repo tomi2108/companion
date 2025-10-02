@@ -48,7 +48,7 @@ export default {
           const next_port = port + Object.values(toStart).length;
           toStart[name] = next_port;
           if (!noedit) app_repo.addEnv(key, `http://localhost:${next_port}`);
-        } else if (!noedit) app_repo.addEnv(key, `http://localhost:${already_added}`);
+        } else if (!noedit) app_repo.addEnv(key, `http://localhost:${toStart[name]}`);
       });
 
     if (noedit) return console.log(toStart);
