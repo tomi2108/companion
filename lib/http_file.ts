@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 import { Config } from "./config";
+import { Req } from "./req";
 
 const valid_methods = [
   "GET",
@@ -11,14 +12,6 @@ const valid_methods = [
 ];
 
 const line_filter = (l: string) => l !== "" && l !== "###" && !l.includes("localhost") && l !== "\n";
-
-type Req = {
-  method: string;
-  params: Record<string, string | null> | null;
-  pathname: string;
-  headers: Record<string, string | null> | null;
-  body: string;
-};
 
 export class HttpFile {
   file_path: string;
@@ -32,7 +25,7 @@ export class HttpFile {
     const [globals, ...requestsString] = fs.readFileSync(this.file_path).toString().split("###");
     if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path, "Check syntax");
     this.variables = this.getVariables(globals ?? "");
-    this.requests = this.parseRequests(requestsString);
+    this.requests = this.parseRequests(requestsString).map((r) => new Req(r));
     const service = this.variables.host?.split("-movistar-empresas")?.[0];
     if (!service) throw new InvalidHttpFile(file_path, "Could not find host variable to determine service name");
     this.service = service;

@@ -3,10 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { Repo } from "@files/repo";
-import { Config } from "@lib/config";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
+import { toExternalEnv, toInternalEnv } from "@oc/utils";
 
 export type Dependency = {
   name: string;
@@ -80,19 +80,14 @@ export class AppRepo extends Repo {
   externalEnvs() {
     if (!fs.existsSync(this.env_file)) return;
     const file_content = fs.readFileSync(this.env_file).toString();
-    const config = Config.get().openshift;
-    const replaced = file_content
-      .replace(new RegExp(`.${config.namespace_prefix}`, "g"), `-${Config.get().openshift.namespace_prefix}`)
-      .replace(/\.svc\.cluster\.local:8080/g, `.apps.${config.server_name}.cuyorh.tcloud.ar`);
+    const replaced = toExternalEnv(file_content);
     fs.writeFileSync(this.env_file, replaced);
   }
 
   internalEnvs() {
     if (!fs.existsSync(this.env_file)) return;
     const file_content = fs.readFileSync(this.env_file).toString();
-    const replaced = file_content
-      .replaceAll(new RegExp(`-${Config.get().openshift.namespace_prefix}`, "g"), `.${Config.get().openshift.namespace_prefix}`)
-      .replaceAll(/\.apps\..*\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
+    const replaced = toInternalEnv(file_content);
     fs.writeFileSync(this.env_file, replaced);
   }
 

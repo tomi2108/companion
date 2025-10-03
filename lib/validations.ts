@@ -72,6 +72,19 @@ export const ThreescaleConfigSchema = z.object({
   products: z.record(z.string(), z.string())
 });
 
+export const SqlConfigSchema = z.object({
+  credentials: z.record(
+    z.string(),
+    z.object({
+      user: z.string(),
+      password: z.string(),
+      port: z.number().optional(),
+      server: z.string(),
+      db: z.string()
+    }).optional()
+  )
+});
+
 export const ReposConfigSchema = z.object({
   environment_path: z.string().optional(),
   merge: z.object({
@@ -95,7 +108,8 @@ export const ConfigSchema = z.object({
   threescale: ThreescaleConfigSchema.optional(),
   repos: ReposConfigSchema.optional(),
   sonar: SonarConfigSchema.optional(),
-  envs: EnvsConfigSchema.optional()
+  envs: EnvsConfigSchema.optional(),
+  sql: SqlConfigSchema.optional()
 });
 
 type UserJiraConfig = z.infer<typeof JiraConfigSchema>;
@@ -109,6 +123,7 @@ type UserPathsConfig = z.infer<typeof PathsConfigSchema>;
 type UserThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 type UserReposConfig = z.infer<typeof ReposConfigSchema>;
 type UserEnvsConfig = z.infer<typeof EnvsConfigSchema>;
+type UserSqlConfig = z.infer<typeof SqlConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
   server: string;
@@ -145,3 +160,4 @@ export type ReposConfig = UserReposConfig;
 export type PathsConfig = UserPathsConfig;
 export type ThreeScaleConfig = UserThreeScaleConfig;
 export type EnvsConfig = UserEnvsConfig;
+export type SqlConfig = UserSqlConfig;

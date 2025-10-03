@@ -1,6 +1,7 @@
 import { Argv } from "yargs";
 
 import create from "@cli/app/create";
+import dataset from "@cli/app/dataset";
 import deploy from "@cli/app/deploy";
 import expose from "@cli/app/expose";
 import newCmd from "@cli/app/new";
@@ -13,6 +14,7 @@ export default {
   aliases: [],
   builder: (yargs: Argv) => yargs
     .command(create)
+    .command(dataset)
     .command(deploy)
     .command(expose)
     .command(newCmd)

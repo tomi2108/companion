@@ -1,6 +1,7 @@
 import { setTimeout } from "node:timers/promises";
 
 import { AppRepo } from "@files/app_repo";
+import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading } from "@lib/ui";
 import { Openshift } from "@oc";
@@ -50,3 +51,16 @@ export async function findArgoPipeline(app_repo: AppRepo, project: Project) {
   return await app_repo.findPipeline(cd_paas, project.name);
 }
 
+export function toExternalEnv(str: string) {
+  const config = Config.get().openshift;
+  return str
+    .replace(new RegExp(`.${config.namespace_prefix}`, "g"), `-${config.namespace_prefix}`)
+    .replace(/\.svc\.cluster\.local:8080/g, `.apps.${config.server_name}.cuyorh.tcloud.ar`);
+}
+
+export function toInternalEnv(str: string) {
+  const config = Config.get().openshift;
+  return str
+    .replaceAll(new RegExp(`-${config.namespace_prefix}`, "g"), `.${config.namespace_prefix}`)
+    .replaceAll(/\.apps\..*\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
+}

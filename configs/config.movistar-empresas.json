@@ -148,6 +148,17 @@
       ]
     }
   },
+  "sql": {
+    "credentials": {
+      "movistar-empresas-cert": {
+        "user": "WebApoderados",
+        "password": "WEBAPODERADOS",
+        "port": 1433,
+        "server": "10.167.11.13",
+        "db": "B2B"
+      }
+    }
+  },
   "envs": {
     "health_exclusions": [
       "ELK_LOGS",

@@ -16,17 +16,21 @@ import { getOcToken } from "@oc/api";
 const ignore = ["Ignore", "main.js"];
 const collections_folder = "Collections";
 
+export function getAppCollections() {
+  const rest_path = Config.get().paths.rest;
+  if (!rest_path) return [];
+  const collections = traverseDirectory(rest_path, { ignore }).find((e) => e.file === collections_folder)?.files;
+  if (!collections) return [];
+  const http_files = collections.map((n) => new HttpFile(n.path)).filter(Boolean);
+  return http_files;
+}
+
 export default {
   command: "new",
   aliases: ["n"],
   describe: "Create new monitor yaml",
   handler: async () => {
-    const rest_path = Config.get().paths.rest;
-    if (!rest_path) return;
-    const collections = traverseDirectory(rest_path, { ignore }).find((e) => e.file === collections_folder)?.files;
-    if (!collections) return;
-    const http_files = collections.map((n) => new HttpFile(n.path)).filter(Boolean);
-
+    const http_files = getAppCollections();
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
     const name = await input({ message: "User flow name" });

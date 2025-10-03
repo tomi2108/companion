@@ -18,6 +18,7 @@ import {
   PreferencesConfig,
   ReposConfig,
   SonarConfig,
+  SqlConfig,
   ThreeScaleConfig,
   VaultConfig
 } from "@lib/validations";
@@ -86,6 +87,7 @@ class Config {
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
   repos: ReposConfig = {} as ReposConfig;
   envs: EnvsConfig = {} as EnvsConfig;
+  sql: SqlConfig = {} as SqlConfig;
 
   static get() {
     if (this.config === null) this.config = new Config();
@@ -183,7 +185,8 @@ class Config {
       "threescale",
       "sonar",
       "envs",
-      "repos"
+      "repos",
+      "sql"
     ] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
         this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);
