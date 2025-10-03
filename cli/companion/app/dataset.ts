@@ -25,6 +25,8 @@ export default {
     if (!fs.existsSync(queries_path)) return log.error(`Queries folder not found at ${queries_path}`);
     const dataset_path = path.join(rest_path, "dataset");
     createDirIfNotExists(dataset_path);
+    const postscripts_path = path.join(rest_path, "postscripts");
+    if (!fs.existsSync(queries_path)) return log.error(`Postscripts folder not found at ${postscripts_path}`);
 
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
@@ -46,6 +48,13 @@ export default {
     const query_dir = readfiles(queries_path);
     const query_file = await search({ choices: query_dir, message: "Choose query to inject variables" });
     const query_file_path = path.join(queries_path, query_file);
+
+    const postscripts_dir = readfiles(postscripts_path);
+    const postscripts_file = await search({ choices: ["None", ...postscripts_dir], message: "Choose postscript to run for every request" });
+    const postscripts_file_path = path.join(postscripts_path, postscripts_file);
+    const postscript = postscripts_file === "None" ? () => { } : (await import(postscripts_file_path)).default;
+    if (typeof postscript !== "function") return log.error(`Postscript ${postscripts_file} does not have an export default function`);
+
     const query = fs.readFileSync(query_file_path).toString();
     const queryRes = await sql.query(query);
 
@@ -61,22 +70,26 @@ export default {
           method: req.method,
           url: `http://${service}-${project.name}.apps.${config.openshift.server_name}.cuyorh.tcloud.ar${path}`,
           params
+          // data: JSON.parse(file.replaceVariables(req.body) ?? "{}")
         };
 
         try {
-          await axios.request(reqConfig);
-          return value;
-        } catch {
-          return null;
+          const res = await axios.request(reqConfig);
+          return { request: reqConfig, response: res, query: value };
+        } catch (err) {
+          if (axios.isAxiosError(err)) return { request: reqConfig, response: err.response, query: null };
+          return { request: reqConfig, response: null, query: null };
         }
       }));
+    postscript(results);
 
-    const dataset = results.filter((r) => r !== null);
+    const dataset = results.map((r) => r.query).filter((r) => r !== null);
     const result = {
       service,
       project: project.name,
       lastUpdated: new Date().toISOString(),
       query: query_file,
+      postscript: postscripts_file,
       request: {
         endpoint: requestString,
         params: req.params
