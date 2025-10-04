@@ -2,8 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
-import { getAppCollections } from "@cli/monitors/new";
-import { createDirIfNotExists } from "@files/utils";
+import { createDirIfNotExists, createLogFile, getAppCollections } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Sql } from "@interface/sql/sql";
 import { Config, ConfigError } from "@lib/config";
@@ -19,14 +18,18 @@ export default {
   describe: "Creates a dataset that succeeds for a given request",
   handler: async () => {
     const config = Config.get();
+    const log_path = config.preferences.logs_path;
+    if (!log_path) throw new ConfigError("preferences.logs_path");
     const rest_path = config.paths.rest;
     if (!rest_path) throw new ConfigError("paths.rest");
     const queries_path = path.join(rest_path, "queries");
     if (!fs.existsSync(queries_path)) return log.error(`Queries folder not found at ${queries_path}`);
     const dataset_path = path.join(rest_path, "dataset");
     createDirIfNotExists(dataset_path);
-    const postscripts_path = path.join(rest_path, "postscripts");
-    if (!fs.existsSync(queries_path)) return log.error(`Postscripts folder not found at ${postscripts_path}`);
+    const postscripts_path = path.join(rest_path, "postscripts", "scripts");
+    if (!fs.existsSync(queries_path)) return log.error(`Postscripts sciprts folder not found at ${postscripts_path}`);
+    const postscripts_results_path = path.join(rest_path, "postscripts", "results");
+    if (!fs.existsSync(queries_path)) return log.error(`Postscripts results folder not found at ${postscripts_path}`);
 
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
@@ -77,17 +80,29 @@ export default {
           const res = await axios.request(reqConfig);
           return { request: reqConfig, response: res, query: value };
         } catch (err) {
-          if (axios.isAxiosError(err)) return { request: reqConfig, response: err.response, query: null };
-          return { request: reqConfig, response: null, query: null };
+          if (axios.isAxiosError(err)) return { request: reqConfig, response: err.response, query: value };
+          return { request: reqConfig, response: null, query: value };
         }
       }));
-    postscript(results);
 
-    const dataset = results.map((r) => r.query).filter((r) => r !== null);
+    const file_name = requestString.replaceAll(" ", "_").replaceAll("/", "_");
+
+    const postscript_res = postscript(results);
+    if (postscript_res) {
+      const filename = `${file_name}.json`;
+      const postscript_results_dir = path.join(postscripts_results_path, project.name, service);
+      createDirIfNotExists(postscript_results_dir);
+      const postscript_results_file = path.join(postscript_results_dir, filename);
+      fs.writeFileSync(postscript_results_file, JSON.stringify(postscript_res, undefined, 2));
+      log.success(`Post scripts results created in ${postscript_results_file}`);
+    }
+
+    const date = new Date().toISOString();
+    const dataset = results.map((r) => r.response?.status && r.response.status <= 299 ? r.query : null).filter((s) => s !== null);
     const result = {
       service,
       project: project.name,
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: date,
       query: query_file,
       postscript: postscripts_file,
       request: {
@@ -101,8 +116,28 @@ export default {
     createDirIfNotExists(project_dir);
     const service_dir = path.join(project_dir, service);
     createDirIfNotExists(service_dir);
-    const file_name = `${requestString.replaceAll(" ", "_").replaceAll("/", "_")}.yaml`;
-    fs.writeFileSync(path.join(service_dir, file_name), resultString);
+    fs.writeFileSync(path.join(service_dir, `${file_name}.yaml`), resultString);
+
+    const log_file_name = `${file_name}.json`;
+    const log_file = createLogFile(path.join(project.name, service, log_file_name));
+    if (log_file) {
+      const logs = {
+        service,
+        project: project.name,
+        date,
+        query: query_file,
+        postscript: postscripts_file,
+        results: results.map((r) => ({
+          ...r,
+          response: {
+            data: r.response?.data ?? null,
+            status: r.response?.data ?? null
+          }
+        }))
+      };
+      fs.writeFileSync(log_file, JSON.stringify(logs, undefined, 2));
+      log.success(`Log created in ${log_file}`);
+    }
 
     log.success(`Succeeded ${dataset.length} cases`);
     log.info(`Tried ${results.length} cases`);

@@ -1,8 +1,7 @@
 import fs from "node:fs";
-import path from "node:path";
 import { Argv } from "yargs";
 
-import { createDirIfNotExists } from "@files/utils";
+import { createLogFile } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
@@ -19,7 +18,6 @@ export default {
     .alias("raw", ["r"])
     .describe("raw", "Whether to download raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs"),
   handler: async ({ raw }: { raw?: boolean }) => {
-
     const config_log_path = Config.get().preferences.logs_path;
     if (!config_log_path) throw new ConfigError("preferences.logs_path");
 
@@ -33,15 +31,10 @@ export default {
     const formattedLogs = raw ? logs : JSON.stringify(logs.split("\n").map(tryParseJSONObject).filter(Boolean), null, 2);
 
     for (const p of pods.filter((p) => p.container === pod.container)) {
-      const log_path = path.join(
-        config_log_path,
-        project.name,
-        pod.container as string
-      );
       const date = new Date().toISOString();
       const file_name = `[${date}]_${p.name}`;
-      createDirIfNotExists(log_path);
-      const full_path = path.join(log_path, file_name);
+      const full_path = createLogFile(file_name);
+      if (!full_path) continue;
       fs.writeFileSync(full_path, formattedLogs);
       log.success(`Downloaded at ${full_path}`);
     }

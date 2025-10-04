@@ -150,6 +150,13 @@
   },
   "sql": {
     "credentials": {
+      "movistar-empresas-int": {
+        "user": "WebApoderados",
+        "password": "WEBAPODERADOS",
+        "port": 1433,
+        "server": "10.167.5.40",
+        "db": "B2B"
+      },
       "movistar-empresas-cert": {
         "user": "WebApoderados",
         "password": "WEBAPODERADOS",

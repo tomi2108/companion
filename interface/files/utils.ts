@@ -3,8 +3,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { DeployYamlContent } from "@files/validations";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import { AppType } from "@lib/constants";
+import { HttpFile } from "@lib/http_file";
 
 export function createDirIfNotExists(dir: string) {
   const exists = fs.existsSync(dir);
@@ -74,6 +75,14 @@ export function createTempFile(file_name: string) {
   return file_path;
 }
 
+export function createLogFile(file_name: string) {
+  const config_log_path = Config.get().preferences.logs_path;
+  if (!config_log_path) return null;
+  const file_path = path.join(config_log_path, file_name);
+  createDirIfNotExists(path.dirname(file_path));
+  return file_path;
+}
+
 type FileStat = {
   type?: string;
   files?: FileStat[];
@@ -105,3 +114,16 @@ export function traverseDirectory(dir: string, { ignore }: { ignore?: string[] }
   });
   return result;
 }
+
+const ignore = ["Ignore", "main.js"];
+const collections_folder = "Collections";
+
+export function getAppCollections() {
+  const rest_path = Config.get().paths.rest;
+  if (!rest_path) throw new ConfigError("paths.rest");
+  const collections = traverseDirectory(rest_path, { ignore }).find((e) => e.file === collections_folder)?.files;
+  if (!collections) return [];
+  const http_files = collections.map((n) => new HttpFile(n.path)).filter(Boolean);
+  return http_files;
+}
+

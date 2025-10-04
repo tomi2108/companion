@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { getApp, getSubApps } from "@files";
 import { Repo } from "@files/repo";
-import { createDirIfNotExists, traverseDirectory } from "@files/utils";
+import { createDirIfNotExists, getAppCollections } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { HttpFile } from "@lib/http_file";
@@ -13,23 +13,13 @@ import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
-const ignore = ["Ignore", "main.js"];
-const collections_folder = "Collections";
-
-export function getAppCollections() {
-  const rest_path = Config.get().paths.rest;
-  if (!rest_path) throw new ConfigError("paths.rest");
-  const collections = traverseDirectory(rest_path, { ignore }).find((e) => e.file === collections_folder)?.files;
-  if (!collections) return [];
-  const http_files = collections.map((n) => new HttpFile(n.path)).filter(Boolean);
-  return http_files;
-}
-
 export default {
   command: "new",
   aliases: ["n"],
   describe: "Create new monitor yaml",
   handler: async () => {
+    const rest_path = Config.get().paths.rest;
+    if (!rest_path) throw new ConfigError("paths.rest");
     const http_files = getAppCollections();
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
@@ -105,4 +95,3 @@ async function getService(f: HttpFile) {
 
   return { name, type, routes, description };
 }
-
