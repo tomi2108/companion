@@ -60,8 +60,8 @@ export default {
     const chosen_data_name = await search({ message: "Choose data", choices: options });
     const chose_data = options.find((o: { name: string }) => o.name === chosen_data_name);
 
-    http.variables = { ...http.variables, ...chose_data };
-
+    const vars = token_req.replaceableVariables();
+    http.variables = Object.fromEntries(vars.map((v) => [v, chose_data[v] ?? null]));
     const req_config: AxiosRequestConfig = {
       method: token_req.method,
       params: Object.fromEntries(Object.entries(token_req.params ?? {}).map(([k, v]) => [k, v ? http.replaceVariables(v) : undefined])),

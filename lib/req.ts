@@ -23,8 +23,9 @@ export class Req {
 
   replaceableVariables() {
     const res: string[] = [];
-    const varRegex = new RegExp("{{(.*)}}", "g");
+    const varRegex = new RegExp("{{(.*?)}}", "g");
     res.push(...this.pathname.matchAll(varRegex).map((m) => m?.[1] ?? ""));
+    res.push(...this.body.matchAll(varRegex).map((m) => m?.[1] ?? ""));
     res.push(
       ...this.params
         ? Object.entries(this.params)
@@ -33,6 +34,6 @@ export class Req {
           )
         : []
     );
-    return res;
+    return Array.from(new Set(res));
   }
 }
