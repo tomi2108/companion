@@ -177,5 +177,14 @@
       "BAU_PORT",
       "DB_PORT"
     ]
+  },
+  "app": {
+    "open": {
+      "token_file": "/mf/token.http",
+      "routes_file": "/mf/routes.list",
+      "data_dir": "/mf",
+      "token_app": "movistarempresas-external-webview-token",
+      "base_path": "/app/shell"
+    }
   }
 }

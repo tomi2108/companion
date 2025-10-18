@@ -62,11 +62,12 @@ export class HttpFile {
     return { key: split[0], value: split?.[1]?.trim() };
   }
 
-  public replaceVariables(string: string | undefined) {
+  public replaceVariables(string: string | undefined, options?: { quote_strings?: boolean }) {
     if (!this.variables || !string) return string;
     let res = string;
     Object.entries(this.variables).forEach(([k, v]) => {
-      res = res.replaceAll(`{{${k}}}`, v);
+      const value = options?.quote_strings && typeof v === "string" ? `"${v.replaceAll("\"", "")}"` : v;
+      res = res.replaceAll(`{{${k}}}`, value);
     });
     return res;
   }
@@ -122,7 +123,7 @@ export class HttpFile {
         if (!l) continue;
         bodyString = bodyString.concat(l);
       }
-      bodyString = this.replaceVariables(bodyString)?.trim() ?? "";
+      // bodyString = this.replaceVariables(bodyString)?.trim() ?? "";
       // Quizas algun dia se necesario parsear el body ... por ahora no
       // let body: Record<string, number | string> | null = null;
       // try {

@@ -8,6 +8,7 @@ import log from "@lib/log";
 import { confirm, input, password, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 import {
+  AppConfig,
   ConfigSchema,
   DynatraceConfig,
   EnvsConfig,
@@ -87,6 +88,7 @@ class Config {
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
   repos: ReposConfig = {} as ReposConfig;
   envs: EnvsConfig = {} as EnvsConfig;
+  app: AppConfig = {} as AppConfig;
   sql: SqlConfig = {} as SqlConfig;
 
   static get() {
@@ -185,6 +187,7 @@ class Config {
       "threescale",
       "sonar",
       "envs",
+      "app",
       "repos",
       "sql"
     ] as const).forEach((key) => {

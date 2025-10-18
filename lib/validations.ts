@@ -96,6 +96,18 @@ export const EnvsConfigSchema = z.object({
   health_exclusions: z.array(z.string()).optional()
 });
 
+export const AppConfigSchema = z.object({
+  open: z.object({
+    token_file: z.string().optional(),
+    routes_file: z.string().optional(),
+    default_port: z.number().optional(),
+    urls: z.record(z.string(), z.string()).optional(),
+    token_app: z.string().optional(),
+    data_dir: z.string().optional(),
+    base_path: z.string().optional()
+  }).optional()
+});
+
 export const ConfigSchema = z.object({
   team: z.string().optional(),
   paths: PathsConfigSchema,
@@ -109,6 +121,7 @@ export const ConfigSchema = z.object({
   repos: ReposConfigSchema.optional(),
   sonar: SonarConfigSchema.optional(),
   envs: EnvsConfigSchema.optional(),
+  app: AppConfigSchema.optional(),
   sql: SqlConfigSchema.optional()
 });
 
@@ -123,6 +136,7 @@ type UserPathsConfig = z.infer<typeof PathsConfigSchema>;
 type UserThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 type UserReposConfig = z.infer<typeof ReposConfigSchema>;
 type UserEnvsConfig = z.infer<typeof EnvsConfigSchema>;
+type UserAppConfig = z.infer<typeof AppConfigSchema>;
 type UserSqlConfig = z.infer<typeof SqlConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
@@ -160,4 +174,5 @@ export type ReposConfig = UserReposConfig;
 export type PathsConfig = UserPathsConfig;
 export type ThreeScaleConfig = UserThreeScaleConfig;
 export type EnvsConfig = UserEnvsConfig;
+export type AppConfig = UserAppConfig;
 export type SqlConfig = UserSqlConfig;
