@@ -1,6 +1,7 @@
 import { getApp } from "@files";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
+import log from "@lib/log";
 import { arrayDifference } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
@@ -18,6 +19,10 @@ export default {
     const from_deployments = await from.getDeployments();
     const to_deployments = await to.getDeployments();
     const difference = arrayDifference(from_deployments, to_deployments, (d1, d2) => d1.name === d2.name);
+    if (difference.length === 0) {
+      log.info("Project is already updated");
+      return;
+    }
 
     const errors: string[] = [];
     await Promise.all(
@@ -32,6 +37,6 @@ export default {
         }
       )
     );
-    if (errors.length > 0) errors.forEach((e) => console.log(e));
+    if (errors.length > 0) errors.forEach((e) => log.warning(e));
   }
 };
