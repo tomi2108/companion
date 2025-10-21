@@ -17,6 +17,7 @@ import {
   OpenShiftConfig,
   PathsConfig,
   PreferencesConfig,
+  ProjectConfig,
   ReposConfig,
   SonarConfig,
   SqlConfig,
@@ -89,6 +90,7 @@ class Config {
   repos: ReposConfig = {} as ReposConfig;
   envs: EnvsConfig = {} as EnvsConfig;
   app: AppConfig = {} as AppConfig;
+  project: ProjectConfig = {} as ProjectConfig;
   sql: SqlConfig = {} as SqlConfig;
 
   static get() {
@@ -188,6 +190,7 @@ class Config {
       "sonar",
       "envs",
       "app",
+      "project",
       "repos",
       "sql"
     ] as const).forEach((key) => {

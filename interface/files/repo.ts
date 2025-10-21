@@ -54,7 +54,6 @@ export class Repo {
   }
 
   async stash<T>(callback: () => Promise<T> | T) {
-
     const hasCommits = (await this.getCommits()).length !== 0;
     if (!hasCommits) return await callback();
 

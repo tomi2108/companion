@@ -23,6 +23,7 @@ export class AppRepo extends Repo {
   package?: string;
   description?: string;
   env_file: string;
+  package_file: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
@@ -32,13 +33,31 @@ export class AppRepo extends Repo {
     return fs.existsSync(package_path);
   }
 
-  private updateState(full_path = this.full_path) {
-    const package_path = path.join(full_path, "package.json");
+  public save() {
+    const package_path = this.package_file;
     let package_file: any = {};
     try {
       package_file = JSON.parse(fs.readFileSync(package_path).toString());
     } catch (err) {
-      log.error(`Error reading package.json in ${full_path}`);
+      log.error(`Error reading package.json in ${this.full_path}`);
+      throw err;
+    }
+    package_file.version = this.version;
+    package_file.description = this.description;
+    package_file.name = this.package;
+    package_file.dependencies = this.dependencies;
+    package_file.devDependencies = this.devDependencies;
+    package_file.peerDependencies = this.peerDependencies;
+    fs.writeFileSync(package_path, JSON.stringify(package_file, null, 2));
+  }
+
+  private updateState() {
+    const package_path = this.package_file;
+    let package_file: any = {};
+    try {
+      package_file = JSON.parse(fs.readFileSync(package_path).toString());
+    } catch (err) {
+      log.error(`Error reading package.json in ${this.full_path}`);
       throw err;
     }
     this.version = package_file.version;
@@ -52,8 +71,9 @@ export class AppRepo extends Repo {
   constructor(full_path: string) {
     if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
     super(full_path);
+    this.package_file = path.join(full_path, "package.json");
     this.env_file = path.join(this.full_path, ".env");
-    this.updateState(full_path);
+    this.updateState();
   }
 
   getEnv(): Record<string, string> {
@@ -204,25 +224,25 @@ export class AppRepo extends Repo {
 
   override reset() {
     const res = super.reset();
-    this.updateState(this.full_path);
+    this.updateState();
     return res;
   }
 
   override checkout(branch: string) {
     const res = super.checkout(branch);
-    this.updateState(this.full_path);
+    this.updateState();
     return res;
   }
 
   override createNewBranch(name: string) {
     const res = super.createNewBranch(name);
-    this.updateState(this.full_path);
+    this.updateState();
     return res;
   }
 
   override switchBranchIfExists(branch: string) {
     const res = super.switchBranchIfExists(branch);
-    this.updateState(this.full_path);
+    this.updateState();
     return res;
   }
 }

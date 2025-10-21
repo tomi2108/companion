@@ -1,6 +1,7 @@
 import { getApp } from "@files";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
+import { Config } from "@lib/config";
 import log from "@lib/log";
 import { arrayDifference } from "@lib/utils";
 import { Openshift } from "@oc";
@@ -12,6 +13,8 @@ export default {
   describe: "Copy all missing apps from one project to another",
   handler: async () => {
     const glab = new Gitlab();
+    const config = Config.get();
+    const exclusions = config.project.copy?.exclusions ?? [];
     const projects = await new Openshift(await getOcToken()).getProjects();
     const from = await promptForOcResource(projects, { message: "Choose project to copy from" });
     const to = await promptForOcResource(projects, { message: "Choose project to copy to" });
@@ -26,16 +29,18 @@ export default {
 
     const errors: string[] = [];
     await Promise.all(
-      difference.map(
-        async (deployment) => {
-          const { deploy_repo } = await getApp(deployment.name);
-          if (!deploy_repo) return errors.push(`Could not find deploy repo for app ${deployment}, skipped`);
-          const deploy_file = deploy_repo.getDeployment(from.name);
-          if (!deploy_file) return errors.push(`Could not find deploy file for app ${deployment} and namespace ${from.name}, skipped`);
-          const res = await glab.createArgoIssue(deployment.name, deploy_file.getVersion(), to);
-          return res;
-        }
-      )
+      difference
+        .filter((d) => !exclusions.includes(d.name))
+        .map(
+          async (deployment) => {
+            const { deploy_repo } = await getApp(deployment.name);
+            if (!deploy_repo) return errors.push(`Could not find deploy repo for app ${deployment.name}, skipped`);
+            const deploy_file = deploy_repo.getDeployment(from.name);
+            if (!deploy_file) return errors.push(`Could not find deploy file for app ${deployment.name} and namespace ${from.name}, skipped`);
+            const res = await glab.createArgoIssue(deployment.name, deploy_file.getVersion(), to);
+            return res;
+          }
+        )
     );
     if (errors.length > 0) errors.forEach((e) => log.warning(e));
   }

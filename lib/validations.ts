@@ -108,6 +108,12 @@ export const AppConfigSchema = z.object({
   }).optional()
 });
 
+export const ProjectConfigSchema = z.object({
+  copy: z.object({
+    exclusions: z.array(z.string()).optional()
+  }).optional()
+});
+
 export const ConfigSchema = z.object({
   team: z.string().optional(),
   paths: PathsConfigSchema,
@@ -122,6 +128,7 @@ export const ConfigSchema = z.object({
   sonar: SonarConfigSchema.optional(),
   envs: EnvsConfigSchema.optional(),
   app: AppConfigSchema.optional(),
+  project: ProjectConfigSchema.optional(),
   sql: SqlConfigSchema.optional()
 });
 
@@ -137,6 +144,7 @@ type UserThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 type UserReposConfig = z.infer<typeof ReposConfigSchema>;
 type UserEnvsConfig = z.infer<typeof EnvsConfigSchema>;
 type UserAppConfig = z.infer<typeof AppConfigSchema>;
+type UserProjectConfig = z.infer<typeof ProjectConfigSchema>;
 type UserSqlConfig = z.infer<typeof SqlConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
@@ -175,4 +183,5 @@ export type PathsConfig = UserPathsConfig;
 export type ThreeScaleConfig = UserThreeScaleConfig;
 export type EnvsConfig = UserEnvsConfig;
 export type AppConfig = UserAppConfig;
+export type ProjectConfig = UserProjectConfig;
 export type SqlConfig = UserSqlConfig;

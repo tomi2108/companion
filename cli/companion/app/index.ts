@@ -6,6 +6,7 @@ import deploy from "@cli/app/deploy";
 import expose from "@cli/app/expose";
 import newCmd from "@cli/app/new";
 import open from "@cli/app/open";
+import rename from "@cli/app/rename";
 import start from "@cli/app/start";
 import status from "@cli/app/status";
 
@@ -20,6 +21,7 @@ export default {
     .command(expose)
     .command(newCmd)
     .command(open)
+    .command(rename)
     .command(start)
     .command(status)
     .demandCommand(1, "Please specify a command")

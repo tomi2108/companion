@@ -186,5 +186,13 @@
       "token_app": "movistarempresas-external-webview-token",
       "base_path": "/app/shell"
     }
+  },
+  "project": {
+    "copy": {
+      "exlusions": [
+        "movistarempresas-mock-apigw",
+        "movistarempresas-mock-digit3"
+      ]
+    }
   }
 }
