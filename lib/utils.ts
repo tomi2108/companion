@@ -67,6 +67,14 @@ export function removeDuplicates<T>(arr: T[]) {
   return Array.from(new Set(arr));
 }
 
+export function arrayDifference<T>(
+  arr1: T[],
+  arr2: T[],
+  comparator: (a: T, b: T) => boolean
+): T[] {
+  return arr1.filter((a) => !arr2.some((b) => comparator(a, b)));
+}
+
 export function parseKeyVal(str: string) {
   return Object.fromEntries(str.trim().split("\n").filter(Boolean).map((l) => l.split("=").filter(Boolean)).filter(Boolean));
 }

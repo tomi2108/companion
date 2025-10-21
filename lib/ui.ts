@@ -53,7 +53,7 @@ export function progressBar(total?: number, start?: number, prefix?: string) {
   const update = (to: number) => bar.update(to);
   const increment = (by: number) => bar.increment(by);
   const stop = () => bar.stop();
-  const setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(12 - prefix.length) });
+  const setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(Math.max(12 - prefix.length, 0)) });
   const setSufix = (sufix: string) => bar.increment(0, { sufix });
 
   const setTotal = (to: number) => {

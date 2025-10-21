@@ -9,6 +9,7 @@ import monitors from "@cli/monitors/index";
 import mr from "@cli/mr/index";
 import pipeline from "@cli/pipeline";
 import pod from "@cli/pod/index";
+import project from "@cli/project";
 import repos from "@cli/repos/index";
 import route from "@cli/route/index";
 import ticket from "@cli/ticket/index";
@@ -33,6 +34,7 @@ yargs
   .command(mr)
   .command(pipeline)
   .command(pod)
+  .command(project)
   .command(repos)
   .command(route)
   .command(ticket)
