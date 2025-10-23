@@ -14,11 +14,14 @@ export default {
     const deployments = await project.getDeployments();
 
     const errors: string[] = [];
-    await Promise.all(
-      deployments
-        // TODO: make this script also upgrade frontend deployments
-        .filter((d) => !filterFrontendDeployments(d))
-        .map(
+
+    // TODO: make this script also upgrade frontend deployments
+    const filtered = deployments.filter((d) => !filterFrontendDeployments(d));
+
+    for (let index = 0; index < filtered.length; index += 10) {
+      const toDeploy = filtered.slice(index, index + 10);
+      await Promise.all(
+        toDeploy.map(
           async (d) => {
             const { deploy_repo, app_repo } = await getApp(d.name);
             if (!app_repo) return errors.push(`Could not find app repo for app ${d.name}, skipped`);
@@ -29,9 +32,13 @@ export default {
             // find a good way to represent this in the config, this should be used in companion app status as well
             const last_version = tags[0];
             if (!last_version) return errors.push(`Could not find tag for app ${d.name}, skipped`);
-            return await deploy_repo.deploy([{ name: project.name, configmaps: [], secrets: [] }], last_version);
+            const namespace = project.name;
+            if (last_version === deploy_repo.getDeployment(namespace)?.getVersion()) return;
+            return await deploy_repo.deploy([{ name: namespace, configmaps: [], secrets: [] }], last_version);
           }
         )
-    );
+      );
+    }
+    errors.forEach((e) => console.log(e));
   }
 };

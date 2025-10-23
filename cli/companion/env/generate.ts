@@ -25,13 +25,13 @@ export default {
     const configmaps = await project.getConfigMaps();
     for (const d of deployments) {
       if (configmaps.some((c) => c.name === d.name)) {
-        console.log(d.name, "already exists");
+        console.log("Configmap", `'${d.name}'`, "already exists");
         continue;
       }
       const env_name = d.name.split(prefix)[1]?.toUpperCase().replaceAll("-", "_") + "_URL";
       const env_value = `http://${d.name}.${project.name}.svc.cluster.local:8080`;
       await project.createConfigMap(d.name, { [env_name]: env_value });
-      console.log("Created:", d.name);
+      console.log("Created configmap", `'${d.name}'`);
     }
   }
 };
