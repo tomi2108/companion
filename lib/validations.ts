@@ -93,7 +93,12 @@ export const ReposConfigSchema = z.object({
 });
 
 export const EnvsConfigSchema = z.object({
-  health_exclusions: z.array(z.string()).optional()
+  health_exclusions: z.array(z.string()).optional(),
+  generate: z.object({
+    prefix: z.string().optional(),
+    exclusions: z.array(z.string()).optional(),
+    prefix_exclusions: z.array(z.string()).optional()
+  }).optional()
 });
 
 export const AppConfigSchema = z.object({

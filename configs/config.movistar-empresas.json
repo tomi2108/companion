@@ -176,7 +176,18 @@
       "PORT",
       "BAU_PORT",
       "DB_PORT"
-    ]
+    ],
+    "generate": {
+      "prefix": "movistarempresas-",
+      "exclusions": [
+        "onboarding-dao-test-ora19"
+      ],
+      "prefix_exclusions": [
+        "fcd",
+        "mock",
+        "wrk"
+      ]
+    }
   },
   "app": {
     "open": {
@@ -189,7 +200,7 @@
   },
   "project": {
     "copy": {
-      "exlusions": [
+      "exclusions": [
         "movistarempresas-mock-apigw",
         "movistarempresas-mock-digit3"
       ]
