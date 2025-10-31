@@ -41,6 +41,7 @@ export default {
     const target_branch = await input({ message: "Input target branch" });
 
     const bar = progressBar(paths.length);
+    const skipped: string[] = [];
     for (const p of paths) {
       const ignores = Config.get().repos.merge?.ignores;
       if (ignores?.includes(p.name)) continue;
@@ -51,6 +52,10 @@ export default {
       await repo.stash(async () => {
         const temporary_branch = `nivelacion/${source_branch}-${target_branch}`;
         await repo.update();
+        if ((await repo.getBranches()).includes(temporary_branch)) {
+          skipped.push(name);
+          return;
+        }
         const { original_branch } = await repo.switchBranchIfExists(target_branch);
         if (original_branch === temporary_branch) await repo.deleteBranch(temporary_branch);
         await repo.pull(target_branch);
@@ -67,5 +72,7 @@ export default {
       bar.increment(1);
     }
     bar.stop();
+    console.log("Skipped:");
+    skipped.forEach((n) => console.log(n));
   }
 };
