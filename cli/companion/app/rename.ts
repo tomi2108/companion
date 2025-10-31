@@ -40,35 +40,49 @@ export default {
     const branch = await input({ message: "Input branch" });
     const name_template = await input({ message: "Input new name (use {{name}} as a replacement for repo name)" });
     const skipped: string[] = [];
-    await Promise.all(
-      paths.map(
-        async (p) => {
-          const full_path = path.join(p.parentPath, p.name);
-          const repo = new AppRepo(full_path);
-          const { name } = await repo.getInfo();
 
-          if ((await repo.getBranches()).includes(branch)) {
-            skipped.push(name);
-            return;
-          }
-          await repo.stash(async () => {
-            let return_branch = null;
-            if (await repo.getActiveBranch() !== branch) {
-              const { original_branch } = await repo.switchBranchIfExists(branch);
-              return_branch = original_branch;
+    for (let index = 0; index < paths.length; index += 10) {
+      const toRename = paths.slice(index, index + 10);
+      await Promise.all(
+        toRename.map(
+          async (p) => {
+            const full_path = path.join(p.parentPath, p.name);
+            const repo = new AppRepo(full_path);
+            const { name } = await repo.getInfo();
+            const branches = await repo.getBranches();
+
+            if (!branches.includes(branch)) {
+              skipped.push(name);
+              return;
             }
-            const new_name = name_template.replaceAll("{{name}}", name);
-            repo.package = new_name;
-            repo.save();
-            await repo.add(repo.package_file);
-            const commit = await repo.commit(`fix: rename to ${new_name}`);
-            if (!commit) return;
-            await repo.push(branch);
-            if (return_branch) await repo.switchBranchIfExists(return_branch);
-          });
-        }
-      )
-    );
+
+            await repo.stash(async () => {
+              let return_branch = null;
+              if (await repo.getActiveBranch() !== branch) {
+                const { original_branch } = await repo.switchBranchIfExists(branch);
+                return_branch = original_branch;
+              }
+              await repo.pull(branch);
+              const new_name = name_template.replaceAll("{{name}}", name);
+
+              console.log({ active_branch: await repo.getActiveBranch() });
+              console.log({ package: repo.package, new_name });
+              if (repo.package === new_name) {
+                skipped.push(name);
+                return;
+              }
+              repo.package = new_name;
+              repo.save();
+              await repo.add(repo.package_file);
+              const commit = await repo.commit(`fix: rename to ${new_name}`);
+              if (!commit) return;
+              await repo.push(branch);
+              if (return_branch) await repo.switchBranchIfExists(return_branch);
+            });
+          }
+        )
+      );
+    }
     console.log("Skipped:");
     skipped.forEach((n) => console.log(n));
   }

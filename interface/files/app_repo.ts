@@ -245,6 +245,13 @@ export class AppRepo extends Repo {
     this.updateState();
     return res;
   }
+
+  override pull(branch: string) {
+    const res = super.pull(branch);
+    this.updateState();
+    return res;
+  }
+
 }
 
 class InvalidAppRepo extends Error {
