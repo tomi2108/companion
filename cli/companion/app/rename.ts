@@ -39,18 +39,24 @@ export default {
 
     const branch = await input({ message: "Input branch" });
     const name_template = await input({ message: "Input new name (use {{name}} as a replacement for repo name)" });
+    const skipped: string[] = [];
     await Promise.all(
       paths.map(
         async (p) => {
           const full_path = path.join(p.parentPath, p.name);
           const repo = new AppRepo(full_path);
+          const { name } = await repo.getInfo();
+
+          if ((await repo.getBranches()).includes(branch)) {
+            skipped.push(name);
+            return;
+          }
           await repo.stash(async () => {
             let return_branch = null;
             if (await repo.getActiveBranch() !== branch) {
               const { original_branch } = await repo.switchBranchIfExists(branch);
               return_branch = original_branch;
             }
-            const { name } = await repo.getInfo();
             const new_name = name_template.replaceAll("{{name}}", name);
             repo.package = new_name;
             repo.save();
@@ -63,5 +69,7 @@ export default {
         }
       )
     );
+    console.log("Skipped:");
+    skipped.forEach((n) => console.log(n));
   }
 };
