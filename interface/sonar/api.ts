@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import SonarQubeClient from "sonarqube-web-api-client";
+import SonarQubeClient, { Issue } from "sonarqube-web-api-client";
 
 import { Config, ConfigError } from "@lib/config";
 
@@ -25,24 +25,32 @@ export class SonarQube {
     });
   }
 
-  async getQualityGates(projectKey: string) {
-    const params = { projectKey };
-    const res = await this.sonar.get("/api/qualitygates/project_status", { params });
-    return res.data;
-  }
-
-  async getProjects() {
+  private async iterateEndpoint(endpoint: string, key: string, params?: Record<string, string | number | boolean>) {
     let i = 0;
     let total = Infinity;
     let res: any[] = [];
     const ps = 500;
     do {
-      const { data } = await this.sonar.get("/api/components/search_projects", { params: { p: i + 1, ps } });
+      const { data } = await this.sonar.get(endpoint, { params: { p: i + 1, ps, ...params } });
       total = data.paging.total;
-      res = [...res, ...data.components];
+      res = [...res, ...data[key]];
       i++;
     } while (i * ps < total);
     return res;
+  }
+
+  async getProjects() {
+    return this.iterateEndpoint("/api/components/search_projects", "components");
+  }
+
+  async getQualityGates(projectKey: string) {
+    const params = { projectKey };
+    const res = await this.sonar.get("/api/qualitygates/project_status", { params });
+    return res.data.projectStatus;
+  }
+
+  async getHotspots(projectKey: string) {
+    return this.iterateEndpoint("/api/hotspots/search", "hotspots", { projectKey, status: "TO_REVIEW", onlyMine: false, inNewCodePeriod: false });
   }
 
   async getCodeSmells(projectKey: string) {
@@ -52,7 +60,7 @@ export class SonarQube {
       .onlyUnresolved()
       .withTypes(["CODE_SMELL"])
       .all();
-    const res: any[] = [];
+    const res: Issue[] = [];
     for await (const issue of iterator) {
       res.push(issue);
     }
