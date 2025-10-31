@@ -7,6 +7,7 @@ import expose from "@cli/app/expose";
 import newCmd from "@cli/app/new";
 import open from "@cli/app/open";
 import rename from "@cli/app/rename";
+import scan from "@cli/app/scan";
 import start from "@cli/app/start";
 import status from "@cli/app/status";
 
@@ -22,6 +23,7 @@ export default {
     .command(newCmd)
     .command(open)
     .command(rename)
+    .command(scan)
     .command(start)
     .command(status)
     .demandCommand(1, "Please specify a command")

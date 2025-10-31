@@ -25,6 +25,12 @@ export class SonarQube {
     });
   }
 
+  async getQualityGates(projectKey: string) {
+    const params = { projectKey };
+    const res = await this.sonar.get("/api/qualitygates/project_status", { params });
+    return res.data;
+  }
+
   async getProjects() {
     let i = 0;
     let total = Infinity;

@@ -69,14 +69,15 @@ export default {
           Object.entries(req.params)
             .map(([k, v]) => [k, v ? file.replaceVariables(v) : ""]))
           : {};
+
         const reqConfig: AxiosRequestConfig = {
           method: req.method,
           url: `http://${service}-${project.name}.apps.${config.openshift.server_name}.cuyorh.tcloud.ar${path}`,
-          params
-          // data: JSON.parse(file.replaceVariables(req.body) ?? "{}")
+          params,
+          data: JSON.parse(req.body ? file.replaceVariables(req.body) ?? "{}" : "{}")
         };
-
         try {
+
           const res = await axios.request(reqConfig);
           return { request: reqConfig, response: res, query: value };
         } catch (err) {
