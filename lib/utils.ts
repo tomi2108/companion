@@ -87,3 +87,6 @@ export function isGitRepo(full_path: string) {
   return full_path && fs.existsSync(path.join(full_path, ".git"));
 }
 
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
