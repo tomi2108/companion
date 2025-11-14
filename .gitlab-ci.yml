@@ -2,6 +2,7 @@ stages:
   - notify
 notify_teams:
   stage: notify
+  image: curlimages/curl:latest
   script:
     - |
       curl -H "Content-Type: application/json" \
