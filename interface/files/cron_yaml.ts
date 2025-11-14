@@ -143,9 +143,24 @@ export class CronYaml {
     this.setContainer({ name });
   }
 
+  getName() {
+    return this.content.metadata.name;
+  }
+
   setSchedule(schedule: string) {
     this.content.spec.schedule = schedule;
   }
+
+  getAppName() {
+    const [url] = this.getContainer().image.split(":");
+    const splitted = url?.split("/");
+    return splitted?.at(-1);
+  }
+
+  getSchedule() {
+    return this.content.spec.schedule;
+  }
+
 }
 
 export class InvalidCronYaml extends Error {

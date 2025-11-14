@@ -42,7 +42,7 @@ export default {
       secrets = await promptForOcResource(secrets_available, { message: "Select secrets", multiple: true });
     }
 
-    const addsConfigmaps = await confirm({ message: `Add configmaps to the deployment? (${namespace})`, initial: false });
+    const addsConfigmaps = await confirm({ message: `Add configmaps to the cron job? (${namespace})`, initial: false });
     if (addsConfigmaps) {
       const tokenn = token ?? await getOcToken();
       const project = await new Openshift(tokenn).getProject(namespace);
