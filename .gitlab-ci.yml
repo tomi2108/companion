@@ -1,0 +1,20 @@
+stages:
+  - notify
+notify_teams:
+  stage: notify
+  script:
+    - |
+      curl -H "Content-Type: application/json" \
+           -d "{
+             \"@type\": \"MessageCard\",
+             \"@context\": \"http://schema.org/extensions\",
+             \"summary\": \"GitLab Push\",
+             \"themeColor\": \"0076D7\",
+             \"title\": \"New push to $CI_COMMIT_REF_NAME\",
+             \"text\": \"**Author:** $GITLAB_USER_NAME\n**Commit:** $CI_COMMIT_SHORT_SHA\n**Message:** $CI_COMMIT_MESSAGE\"
+           }" \
+           "$TEAMS_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+      when: always
+    - when: never
