@@ -1,11 +1,9 @@
 import path from "node:path";
 
-import { getApp } from "@files";
 import { CronYaml } from "@files/cron_yaml";
 import { Repo } from "@files/repo";
-import { promptForOcResource } from "@interface/prompts";
+import { promptForApp, promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
 import { confirm, input, loading, search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
@@ -27,20 +25,12 @@ export default {
 
     const name = await input({ message: "Cron job name:" });
     const schedule = await input({ message: "Cron job schedule:" });
-    const deployments = await project.getDeployments();
-    const deployment = await promptForOcResource(deployments);
-    const { app_repo } = await getApp(deployment.name);
+    const { app_repo } = await promptForApp();
+    if (!app_repo) throw new Error("Could not find app repo");
     const versionsSpinner = loading("Getting versions");
-    let version = null;
-    if (app_repo) {
-      const tags = await app_repo.getTags();
-      versionsSpinner.succeed();
-      version = await search({ choices: tags, message: "Choose a version to deploy:" });
-    } else {
-      versionsSpinner.fail();
-      log.warning("Tags not found");
-      version = await input({ message: "Enter version to deploy, starting with a 'v':" });
-    }
+    const tags = await app_repo.getTags();
+    versionsSpinner.succeed();
+    const version = await search({ choices: tags, message: "Choose a version to deploy:" });
 
     const addsSecrets = await confirm({ message: `Add secrets to the cron job? (${namespace})`, initial: false });
     let secrets: Secret[] = [];
@@ -71,7 +61,7 @@ export default {
       const file = CronYaml.create(cron_file);
       file.setVersion(version);
       file.setNameSpace(namespace);
-      file.setDeployment(deployment);
+      file.setDeployment(app_repo);
       secrets.forEach((s) => file.addSecret(s));
       configmaps.forEach((c) => file.addConfigmap(c));
       file.setName(name);
