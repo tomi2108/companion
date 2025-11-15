@@ -10,8 +10,8 @@ import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log";
-import { input, loading, search } from "@lib/ui";
-import { kebabToCamel } from "@lib/utils";
+import { confirm, input, loading, search } from "@lib/ui";
+import { arrayDifference, kebabToCamel } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
@@ -23,10 +23,15 @@ const Connections = {
 } as const;
 type Connection = typeof Connections[keyof typeof Connections];
 
+const s3Dependencies: Dependency[] = [{ name: "@aws-sdk/client-s3" }];
+const amqDependencies: Dependency[] = [{ name: "rhea-promise" }];
+
 const dependenciesMap: Record<AppType, Dependency[]> = {
   app: [],
+  wrk: [...amqDependencies],
   bau: [{ name: "mongoose" }],
   dao: [{ name: "sequelize" }],
+  crn: [],
   fcd: [{
     name: "axios",
     version: "0.21.4"
@@ -93,36 +98,45 @@ export default {
       replaceDescription(path.join(full_path, "package.json"));
 
       await initial_commit(app_repo);
-      await create_remote(app_repo, frontend_id, { name, description });
+      // await create_remote(app_repo, frontend_id, { name, description });
 
-      await app_repo.push("master");
-      await app_repo.createNewBranch("release");
-      await app_repo.push("release");
-      await app_repo.createNewBranch("develop");
-      await app_repo.push("develop");
+      // await app_repo.push("master");
+      // await app_repo.createNewBranch("release");
+      // await app_repo.push("release");
+      // await app_repo.createNewBranch("develop");
+      // await app_repo.push("develop");
 
-      await app_repo.switchBranchIfExists("master");
-      replaceName(path.join(full_path, "package.json"));
-      await app_repo.add("package.json");
-      await app_repo.commit("replace name");
-      await app_repo.push("master");
-
-      await app_repo.switchBranchIfExists("release");
-      replaceName(path.join(full_path, "package.json"));
-      await app_repo.add("package.json");
-      await app_repo.commit("replace name");
-      await app_repo.push("release");
-
-      await app_repo.switchBranchIfExists("develop");
-      await app_repo.createNewBranch("initial_deploy");
-      replaceName(path.join(full_path, "package.json"));
-
-      await app_repo.commit("feat: initial deploy");
-
-      await app_repo.createAndMergeMr("develop");
-      await app_repo.switchBranchIfExists("develop");
-      await app_repo.deleteBranch("initial_deploy");
+      // await app_repo.switchBranchIfExists("master");
+      // replaceName(path.join(full_path, "package.json"));
+      // await app_repo.add("package.json");
+      // await app_repo.commit("replace name");
+      // await app_repo.push("master");
+      //
+      // await app_repo.switchBranchIfExists("release");
+      // replaceName(path.join(full_path, "package.json"));
+      // await app_repo.add("package.json");
+      // await app_repo.commit("replace name");
+      // await app_repo.push("release");
+      //
+      // await app_repo.switchBranchIfExists("develop");
+      // await app_repo.createNewBranch("initial_deploy");
+      // replaceName(path.join(full_path, "package.json"));
+      //
+      // await app_repo.commit("feat: initial deploy");
+      //
+      // await app_repo.createAndMergeMr("develop");
+      // await app_repo.switchBranchIfExists("develop");
+      // await app_repo.deleteBranch("initial_deploy");
     } else {
+      const isAmqReceiver = type === "wrk";
+      const isAmqSender = await (async () => {
+        if (isAmqReceiver || type !== "int") return false;
+        return await confirm({ message: "Is amq sender?", initial: false });
+      })();
+      const usesS3 = await (async () => {
+        if (type !== "int" && type !== "wrk" && type !== "crn") return false;
+        return await confirm({ message: "Install s3?", initial: false });
+      })();
       const backend_path = config.paths.backend;
       const backend_id = config.gitlab.repos.backend;
       if (!backend_path) throw new ConfigError("paths.backend");
@@ -138,6 +152,8 @@ export default {
       const ms_template_id = config.gitlab.ms_template_id;
       const ms_template_link = (await glab.getProject(ms_template_id)).http_url_to_repo;
 
+      if (usesS3) dependencies.push(...s3Dependencies);
+      if (isAmqSender || isAmqReceiver) dependencies.push(...amqDependencies);
       app_repo = await init_repo(full_path, ms_template_link, dependencies);
 
       const src = path.join(full_path, "src");
@@ -155,6 +171,15 @@ export default {
       const apigw_setupTests = path.join(tests, "apigw_setupTest.ts");
       const digit3_setupTests = path.join(tests, "digit3_setupTest.ts");
 
+      const s3_files = [path.join(configuration, "s3.ts")];
+      const amq_sender_files = [path.join(configuration, "amq_sender.ts")];
+      const amq_receiver_files = [path.join(configuration, "amq_receiver.ts")];
+
+      const wrk_files = [path.join(services, "main.ts")];
+      const crn_files = [
+        path.join(src, "main.ts"),
+        path.join(services, "main.ts")
+      ];
       const dao_files = [
         path.join(models, "SequelizeExample.ts"),
         path.join(configuration, "dao_db.ts"),
@@ -190,13 +215,11 @@ export default {
 
       function getMovedFilesFromConnections(c: Connection | null) {
         if (c === Connections.apigw) return [
-          { from: path.join(configuration, "apigw_environment.ts"), to: path.join(configuration, "environment.ts") },
           { from: path.join(services, "ApigwTokenService.ts"), to: path.join(services, "TokenService.ts") },
           { from: path.join(tests_services, "apigw.test.ts"), to: path.join(tests_services, "token.test.ts") },
           { from: apigw_setupTests, to: path.join(tests, "setupTest.ts") }
         ];
         if (c === Connections.digit3) return [
-          { from: path.join(configuration, "digit3_environment.ts"), to: path.join(configuration, "environment.ts") },
           { from: path.join(services, "Digit3TokenService.ts"), to: path.join(services, "TokenService.ts") },
           { from: path.join(tests_services, "digit3.test.ts"), to: path.join(tests_services, "token.test.ts") },
           { from: digit3_setupTests, to: path.join(tests, "setupTest.ts") }
@@ -204,40 +227,82 @@ export default {
         return [];
       }
 
+      function getEnvFileByConnection(c: Connection | null) {
+        if (c === Connections.apigw) return "apgiw_environment.ts";
+        if (c === Connections.digit3) return "digit3_environment.ts";
+        return null;
+      }
+
+      const amq_env = "amq_environment.ts";
+      const s3_env = "s3_environment.ts";
+      const envsByType: Record<AppType, string | null> = {
+        app: null,
+        bau: "bau_environment.ts",
+        dao: "dao_environment.ts",
+        crn: "fcd_environment.ts",
+        fcd: "fcd_environment.ts",
+        wrk: "fcd_environment.ts",
+        int: getEnvFileByConnection(connection)
+      };
       const toRemove: Record<AppType, string[]> = {
         app: [],
-        bau: [...dao_files, ...int_files, ...fcd_files],
-        dao: [...bau_files, ...int_files, ...fcd_files],
-        fcd: [...db_files, ...int_files],
-        int: [...db_files, ...getDeletedFilesFromConnections(connection), ...fcd_files]
+        wrk: [...int_files, ...db_files, ...arrayDifference(crn_files, wrk_files, (a, b) => a === b)],
+        crn: [...int_files, ...db_files, ...arrayDifference(wrk_files, crn_files, (a, b) => a === b)],
+        bau: [...dao_files, ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
+        dao: [...bau_files, ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
+        fcd: [...db_files, ...int_files, ...crn_files, ...wrk_files],
+        int: [...db_files, ...crn_files, ...getDeletedFilesFromConnections(connection), ...fcd_files, ...wrk_files]
       };
       const toMove: Record<AppType, { from: string; to: string }[]> = {
         app: [],
         bau: [
           // TODO: add tests for bau connection to template
           // { from: path.join(tests_configuration, "mongoose.tests.ts"), to: path.join(configuration, "db.tests.ts") },
-          { from: path.join(configuration, "bau_db.ts"), to: path.join(configuration, "db.ts") },
-          { from: path.join(configuration, "bau_environment.ts"), to: path.join(configuration, "environment.ts") }
+          { from: path.join(configuration, "bau_db.ts"), to: path.join(configuration, "db.ts") }
         ],
         dao: [
           { from: path.join(tests_configuration, "sequelize.test.ts"), to: path.join(tests_configuration, "db.tests.ts") },
-          { from: path.join(configuration, "dao_db.ts"), to: path.join(configuration, "db.ts") },
-          { from: path.join(configuration, "dao_environment.ts"), to: path.join(configuration, "environment.ts") }
+          { from: path.join(configuration, "dao_db.ts"), to: path.join(configuration, "db.ts") }
         ],
-        fcd: [
-          { from: path.join(configuration, "fcd_environment.ts"), to: path.join(configuration, "environment.ts") }
-        ],
+        fcd: [],
+        wrk: [],
+        crn: [],
         int: [...getMovedFilesFromConnections(connection)]
       };
-      toRemove[type].forEach((f) => fs.rmSync(f, { recursive: true, force: true }));
-      toMove[type].forEach((f) => {
+
+      const files_to_remove = toRemove[type];
+      const files_to_move = toMove[type];
+
+      if (isAmqSender) files_to_move.push({ from: path.join(configuration, "amq_sender.ts"), to: path.join(configuration, "amq.ts") });
+      if (isAmqReceiver) files_to_move.push({ from: path.join(configuration, "amq_receiver.ts"), to: path.join(configuration, "amq.ts") });
+
+      if (!isAmqSender) files_to_remove.push(...amq_sender_files);
+      if (!isAmqReceiver) files_to_remove.push(...amq_receiver_files);
+      if (!usesS3) files_to_remove.push(...s3_files);
+
+      const envs = [];
+      const envByType = envsByType[type];
+      if (envByType) envs.push(envByType);
+
+      if (isAmqSender || isAmqReceiver) envs.push(amq_env);
+      if (usesS3) envs.push(s3_env);
+
+      const envs_full_path = envs.map((f) => path.join(configuration, f));
+      const merged = mergeEnvironmentFiles(envs_full_path);
+      writeEnvFile(path.join(configuration, "environment.ts"), merged);
+
+      files_to_remove.push(...envs_full_path);
+
+      files_to_remove.forEach((f) => fs.rmSync(f, { recursive: true, force: true }));
+      files_to_move.forEach((f) => {
         fs.cpSync(f.from, f.to);
         fs.rmSync(f.from);
       });
 
-      replaceAuthor(path.join(full_path, "package.json"));
-      replaceName(path.join(full_path, "package.json"));
-      replaceDescription(path.join(full_path, "package.json"));
+      const package_json = path.join(full_path, "package.json");
+      replaceAuthor(package_json);
+      replaceName(package_json);
+      replaceDescription(package_json);
 
       replaceName(path.join(full_path, "README.md"));
       replaceDescription(path.join(full_path, "README.md"));
@@ -258,6 +323,10 @@ export default {
 
       if (type !== "int") removeLine(7, path.join(full_path, "jest.config.js"));
       if (type === "bau") insertLine(1, server, "import \"../configuration/db\";");
+      if (type === "crn") {
+        replace("app.js", "main.js", package_json);
+        replace("app.ts", "main.ts", package_json);
+      }
 
       await initial_commit(app_repo);
       const origin = await create_remote(app_repo, backend_id, { name, description });
@@ -343,4 +412,39 @@ async function create_remote(app_repo: AppRepo, groupId: number, { name, descrip
   await app_repo.addOrigin(origin);
   creating_spinner.succeed();
   return origin;
+}
+
+function extractEnvContent(path: string): string[] {
+  const raw = fs.readFileSync(path, "utf8");
+
+  const match = raw.match(/export const environment\s*=\s*{([\s\S]*?)};/);
+  if (!match) throw new Error("Failed to extract environment from " + path);
+
+  const content = match[1] ?? "";
+  return (
+    content
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .filter((l) => l !== ",")
+      .map((l) => l.replace(/,*$/, ""))
+  );
+}
+
+function mergeEnvironmentFiles(paths: string[]) {
+  const allProps: string[] = [];
+  for (const path of paths) {
+    const items = extractEnvContent(path);
+    allProps.push(...items);
+  }
+
+  return (
+    "export const environment = {\n"
+    + allProps.map((l) => "  " + l + ",").join("\n")
+    + "\n};\n"
+  );
+}
+
+function writeEnvFile(path: string, file: string) {
+  fs.writeFileSync(path, file);
 }

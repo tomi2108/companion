@@ -1,4 +1,4 @@
-export const APP_TYPES = ["fcd", "int", "dao", "bau", "app"] as const;
+export const APP_TYPES = ["fcd", "int", "dao", "bau", "app", "crn", "wrk"] as const;
 export const ENVS = ["dev", "int", "cert"] as const;
 export const EXCLUDED_SECRETS = ["elasticsearch"];
 
