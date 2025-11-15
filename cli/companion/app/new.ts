@@ -23,7 +23,7 @@ const Connections = {
 } as const;
 type Connection = typeof Connections[keyof typeof Connections];
 
-const s3Dependencies: Dependency[] = [{ name: "@aws-sdk/client-s3" }];
+const s3Dependencies: Dependency[] = [{ name: "@aws-sdk/client-s3" }, { name: "@aws-sdk/node-http-handler" }];
 const amqDependencies: Dependency[] = [{ name: "rhea-promise" }];
 
 const dependenciesMap: Record<AppType, Dependency[]> = {
@@ -164,6 +164,7 @@ export default {
       const models = path.join(src, "models");
       const services = path.join(src, "services");
       const server = path.join(src, "server", "index.ts");
+      const app = path.join(src, "app.ts");
 
       const tests_services = path.join(tests, "services");
       const tests_configuration = path.join(tests, "configuration");
@@ -175,7 +176,10 @@ export default {
       const amq_sender_files = [path.join(configuration, "amq_sender.ts")];
       const amq_receiver_files = [path.join(configuration, "amq_receiver.ts")];
 
-      const wrk_files = [path.join(services, "main.ts")];
+      const wrk_files = [
+        path.join(services, "main.ts"),
+        path.join(src, "wrk_app.ts")
+      ];
       const crn_files = [
         path.join(src, "main.ts"),
         path.join(services, "main.ts")
@@ -246,7 +250,7 @@ export default {
       };
       const toRemove: Record<AppType, string[]> = {
         app: [],
-        wrk: [...int_files, ...db_files, ...arrayDifference(crn_files, wrk_files, (a, b) => a === b)],
+        wrk: [...int_files, ...db_files, ...arrayDifference(crn_files, wrk_files, (a, b) => a === b), app],
         crn: [...int_files, ...db_files, ...arrayDifference(wrk_files, crn_files, (a, b) => a === b)],
         bau: [...dao_files, ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
         dao: [...bau_files, ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
@@ -265,7 +269,9 @@ export default {
           { from: path.join(configuration, "dao_db.ts"), to: path.join(configuration, "db.ts") }
         ],
         fcd: [],
-        wrk: [],
+        wrk: [
+          { from: path.join(src, "wrk_app.ts"), to: path.join(src, "app.ts") }
+        ],
         crn: [],
         int: [...getMovedFilesFromConnections(connection)]
       };
@@ -309,7 +315,7 @@ export default {
 
       replaceName(path.join(path.join(full_path, "sonar-project.properties")));
 
-      replaceName(path.join(src, "app.ts"));
+      replaceName(app);
       replaceName(server);
       replaceName(path.join(src, "utils", "constant.ts"));
 
