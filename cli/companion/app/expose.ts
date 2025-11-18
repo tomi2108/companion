@@ -70,8 +70,12 @@ export default {
     const yaml_content = toYaml(file_content);
 
     await repo.stash(async () => {
+      await repo.switchBranchIfExists("create");
       await repo.update();
-      const new_branch = `create-${dir_name}-${project.name}`;
+      const new_branch = `feature/create/${dir_name}`;
+
+      const branches = await repo.getBranches();
+      if (branches.includes(new_branch)) await repo.deleteBranch(new_branch);
       await repo.createNewBranch(new_branch);
 
       createDirIfNotExists(dir_to_create);
