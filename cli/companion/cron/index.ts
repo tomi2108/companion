@@ -6,7 +6,7 @@ import deploy from "@cli/cron/deploy";
 export default {
   command: "cron <command>",
   describe: "Manage CronJobs",
-  aliases: ["envs"],
+  aliases: ["crn"],
   builder: (yargs: Argv) => yargs
     .command(create)
     .command(deploy)
