@@ -1,8 +1,9 @@
 import path from "node:path";
 
+import { getApp, getAppPaths } from "@files";
 import { CronYaml } from "@files/cron_yaml";
 import { Repo } from "@files/repo";
-import { promptForApp, promptForOcResource } from "@interface/prompts";
+import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { confirm, input, loading, search } from "@lib/ui";
 import { Openshift } from "@oc";
@@ -25,7 +26,9 @@ export default {
 
     const name = await input({ message: "Cron job name:" });
     const schedule = await input({ message: "Cron job schedule:" });
-    const { app_repo } = await promptForApp();
+    const paths = getAppPaths().filter((p) => p !== undefined).map((p) => path.basename(p));
+    const app_name = await search({ message: "Choose app", choices: paths });
+    const { app_repo } = await getApp(app_name);
     if (!app_repo) throw new Error("Could not find app repo");
     const versionsSpinner = loading("Getting versions");
     const tags = await app_repo.getTags();

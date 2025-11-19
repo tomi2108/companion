@@ -7,7 +7,7 @@ import log from "@lib/log";
 import { isGitRepo, readdirs } from "@lib/utils";
 import { Project } from "@oc/project";
 
-function getAppPaths() {
+export function getAppPaths() {
   return [Config.get().paths.frontend, Config.get().paths.backend]
     .filter(Boolean)
     .flatMap((p) => readdirs(p)?.map((d) => path.join(d.parentPath, d.name)))
