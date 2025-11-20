@@ -71,7 +71,11 @@ export default {
       file.setSchedule(schedule);
       file.save();
       await repo.add(file.file_path);
-      await repo.commit(name);
+      const commit = await repo.commit(name);
+      if (!commit) {
+        console.log("No changes made");
+        return;
+      }
       await repo.createAndMergeMr("master");
       await repo.switchBranchIfExists("master");
       await repo.deleteBranch(temp_branch);
