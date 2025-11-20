@@ -232,7 +232,7 @@ export default {
       }
 
       function getEnvFileByConnection(c: Connection | null) {
-        if (c === Connections.apigw) return "apgiw_environment.ts";
+        if (c === Connections.apigw) return "apigw_environment.ts";
         if (c === Connections.digit3) return "digit3_environment.ts";
         return null;
       }
