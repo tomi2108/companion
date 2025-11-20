@@ -284,7 +284,11 @@ export default {
 
       if (!isAmqSender) files_to_remove.push(...amq_sender_files);
       if (!isAmqReceiver) files_to_remove.push(...amq_receiver_files);
-      if (!usesS3) files_to_remove.push(...s3_files);
+      if (!usesS3) files_to_remove.push(
+        ...s3_files,
+        path.join(configuration, s3_env)
+      );
+      if (!isAmqSender && !isAmqSender) files_to_remove.push(path.join(configuration, amq_env));
 
       const envs = [];
       const envByType = envsByType[type];
