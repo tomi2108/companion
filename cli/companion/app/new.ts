@@ -98,35 +98,35 @@ export default {
       replaceDescription(path.join(full_path, "package.json"));
 
       await initial_commit(app_repo);
-      // await create_remote(app_repo, frontend_id, { name, description });
+      await create_remote(app_repo, frontend_id, { name, description });
 
-      // await app_repo.push("master");
-      // await app_repo.createNewBranch("release");
-      // await app_repo.push("release");
-      // await app_repo.createNewBranch("develop");
-      // await app_repo.push("develop");
+      await app_repo.push("master");
+      await app_repo.createNewBranch("release");
+      await app_repo.push("release");
+      await app_repo.createNewBranch("develop");
+      await app_repo.push("develop");
 
-      // await app_repo.switchBranchIfExists("master");
-      // replaceName(path.join(full_path, "package.json"));
-      // await app_repo.add("package.json");
-      // await app_repo.commit("replace name");
-      // await app_repo.push("master");
-      //
-      // await app_repo.switchBranchIfExists("release");
-      // replaceName(path.join(full_path, "package.json"));
-      // await app_repo.add("package.json");
-      // await app_repo.commit("replace name");
-      // await app_repo.push("release");
-      //
-      // await app_repo.switchBranchIfExists("develop");
-      // await app_repo.createNewBranch("initial_deploy");
-      // replaceName(path.join(full_path, "package.json"));
-      //
-      // await app_repo.commit("feat: initial deploy");
-      //
-      // await app_repo.createAndMergeMr("develop");
-      // await app_repo.switchBranchIfExists("develop");
-      // await app_repo.deleteBranch("initial_deploy");
+      await app_repo.switchBranchIfExists("master");
+      replaceName(path.join(full_path, "package.json"));
+      await app_repo.add("package.json");
+      await app_repo.commit("replace name");
+      await app_repo.push("master");
+
+      await app_repo.switchBranchIfExists("release");
+      replaceName(path.join(full_path, "package.json"));
+      await app_repo.add("package.json");
+      await app_repo.commit("replace name");
+      await app_repo.push("release");
+
+      await app_repo.switchBranchIfExists("develop");
+      await app_repo.createNewBranch("initial_deploy");
+      replaceName(path.join(full_path, "package.json"));
+
+      await app_repo.commit("feat: initial deploy");
+
+      await app_repo.createAndMergeMr("develop");
+      await app_repo.switchBranchIfExists("develop");
+      await app_repo.deleteBranch("initial_deploy");
     } else {
       const isAmqReceiver = type === "wrk";
       const isAmqSender = await (async () => {
