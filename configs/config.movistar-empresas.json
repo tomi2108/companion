@@ -198,6 +198,12 @@
       "base_path": "/app/shell"
     }
   },
+  "migrations": {
+    "secrets": [
+      "apoderados-db",
+      "apoderados-bau"
+    ]
+  },
   "project": {
     "copy": {
       "exclusions": [

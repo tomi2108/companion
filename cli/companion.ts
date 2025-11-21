@@ -6,6 +6,7 @@ import app from "@cli/app/index";
 import config from "@cli/config/index";
 import cron from "@cli/cron";
 import env from "@cli/env/index";
+import migration from "@cli/migration";
 import monitors from "@cli/monitors/index";
 import mr from "@cli/mr/index";
 import pipeline from "@cli/pipeline";
@@ -31,6 +32,7 @@ yargs
   .command(app)
   .command(config)
   .command(env)
+  .command(migration)
   .command(cron)
   .command(monitors)
   .command(mr)

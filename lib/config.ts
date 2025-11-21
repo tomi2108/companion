@@ -14,6 +14,7 @@ import {
   EnvsConfig,
   GitlabConfig,
   JiraConfig,
+  MigrationsConfig,
   OpenShiftConfig,
   PathsConfig,
   PreferencesConfig,
@@ -88,6 +89,7 @@ class Config {
   paths: PathsConfig = {} as PathsConfig;
   dynatrace: DynatraceConfig = {} as DynatraceConfig;
   repos: ReposConfig = {} as ReposConfig;
+  migrations: MigrationsConfig = {} as MigrationsConfig;
   envs: EnvsConfig = {} as EnvsConfig;
   app: AppConfig = {} as AppConfig;
   project: ProjectConfig = {} as ProjectConfig;
@@ -192,6 +194,7 @@ class Config {
       "app",
       "project",
       "repos",
+      "migrations",
       "sql"
     ] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {

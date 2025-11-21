@@ -6,6 +6,7 @@ type Opts = {
   supressStdout?: boolean;
   args?: string[];
   cwd?: string;
+  env?: Record<string, string>;
 };
 
 export function executeScript(script: string, opts: Opts) {
@@ -13,6 +14,7 @@ export function executeScript(script: string, opts: Opts) {
 
   const result = cp.spawnSync(`${full_path}`, opts?.args, {
     cwd: opts?.cwd,
+    env: opts.env,
     stdio: ["inherit", opts?.supressStdout ? "pipe" : "inherit", "inherit"]
   });
 

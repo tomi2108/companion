@@ -119,6 +119,10 @@ export const ProjectConfigSchema = z.object({
   }).optional()
 });
 
+export const MigrationsConfigSchema = z.object({
+  secrets: z.array(z.string()).optional()
+});
+
 export const ConfigSchema = z.object({
   team: z.string().optional(),
   paths: PathsConfigSchema,
@@ -130,6 +134,7 @@ export const ConfigSchema = z.object({
   preferences: PreferencesConfigSchema.optional(),
   threescale: ThreescaleConfigSchema.optional(),
   repos: ReposConfigSchema.optional(),
+  migrations: MigrationsConfigSchema.optional(),
   sonar: SonarConfigSchema.optional(),
   envs: EnvsConfigSchema.optional(),
   app: AppConfigSchema.optional(),
@@ -147,6 +152,7 @@ type UserPreferencesConfig = z.infer<typeof PreferencesConfigSchema>;
 type UserPathsConfig = z.infer<typeof PathsConfigSchema>;
 type UserThreeScaleConfig = z.infer<typeof ThreescaleConfigSchema>;
 type UserReposConfig = z.infer<typeof ReposConfigSchema>;
+type UserMigrationsConfig = z.infer<typeof MigrationsConfigSchema>;
 type UserEnvsConfig = z.infer<typeof EnvsConfigSchema>;
 type UserAppConfig = z.infer<typeof AppConfigSchema>;
 type UserProjectConfig = z.infer<typeof ProjectConfigSchema>;
@@ -184,6 +190,7 @@ export type PreferencesConfig = UserPreferencesConfig & {
 };
 export type DynatraceConfig = UserDynatraceConfig;
 export type ReposConfig = UserReposConfig;
+export type MigrationsConfig = UserMigrationsConfig;
 export type PathsConfig = UserPathsConfig;
 export type ThreeScaleConfig = UserThreeScaleConfig;
 export type EnvsConfig = UserEnvsConfig;
