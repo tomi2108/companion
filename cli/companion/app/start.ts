@@ -36,23 +36,27 @@ export default {
 
     const apps = readdirs(backend) ?? [];
     const choices = apps.map((d) => d.name);
-    const app = await search({ choices, message: "Choose app" });
+    const selected_apps = await search({ choices, message: "Choose app", multiple: true });
 
     const proxy_port = 8080;
     const port = 8081;
-    const toStart = { [app]: port };
-    await getSubApps(
-      app,
-      apps.map((a) => a.name),
-      project,
-      ({ key, app_repo, already_added, name }) => {
-        if (!noedit) app_repo.removeEnv(key);
-        if (!already_added) {
-          const next_port = port + Object.values(toStart).length;
-          toStart[name] = next_port;
-          if (!noedit) app_repo.addEnv(key, `http://localhost:${next_port}`);
-        } else if (!noedit) app_repo.addEnv(key, `http://localhost:${toStart[name]}`);
-      });
+    const toStart = Object.fromEntries(selected_apps.map((a, i) => [a, port + i]));
+
+    for (const app of selected_apps) {
+      await getSubApps(
+        app,
+        apps.map((a) => a.name),
+        project,
+        ({ key, app_repo, already_added, name }) => {
+          if (Object.keys(toStart).includes(name)) return;
+          if (!noedit) app_repo.removeEnv(key);
+          if (!already_added) {
+            const next_port = port + Object.values(toStart).length;
+            toStart[name] = next_port;
+            if (!noedit) app_repo.addEnv(key, `http://localhost:${next_port}`);
+          } else if (!noedit) app_repo.addEnv(key, `http://localhost:${toStart[name]}`);
+        });
+    }
 
     if (noedit) return console.log(toStart);
     const colors = [
