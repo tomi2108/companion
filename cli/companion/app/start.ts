@@ -1,5 +1,7 @@
 import chalk from "chalk";
+import httpProxy from "http-proxy";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
+import http from "node:http";
 import path from "node:path";
 import { Argv } from "yargs";
 
@@ -36,7 +38,8 @@ export default {
     const choices = apps.map((d) => d.name);
     const app = await search({ choices, message: "Choose app" });
 
-    const port = 8080;
+    const proxy_port = 8080;
+    const port = 8081;
     const toStart = { [app]: port };
     await getSubApps(
       app,
@@ -70,6 +73,20 @@ export default {
       children.push(process);
       await promise;
     });
+
+    const proxy = httpProxy.createProxyServer({});
+    http.createServer((req, res) => {
+      for (const [name, port] of Object.entries(toStart)) {
+        if (req.url?.includes(name)) {
+          const new_url = `/${req.url.split("/").slice(2).join("/")}`;
+          req.url = new_url;
+          proxy.web(req, res, { target: `http://localhost:${port}` });
+          return;
+        }
+      }
+      res.statusCode = 404;
+      res.end();
+    }).listen(proxy_port);
 
     try {
       console.log(toStart);
