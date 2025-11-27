@@ -17,29 +17,36 @@ import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
 import { findArgoPipeline, findCIPipeline, findSyncPipeline, waitForPipeline } from "@oc/utils";
 
-const Connections = {
+const IntConnections = {
   apigw: "apigw",
   digit3: "digit3"
 } as const;
-type Connection = typeof Connections[keyof typeof Connections];
+
+const DaoConnections = {
+  sql: "sql",
+  mongo: "mongo"
+} as const;
+
+type IntConnection = typeof IntConnections[keyof typeof IntConnections];
+type DaoConnection = typeof DaoConnections[keyof typeof DaoConnections];
+type Connection = DaoConnection | IntConnection;
 
 const s3Dependencies: Dependency[] = [{ name: "@aws-sdk/client-s3" }, { name: "@aws-sdk/node-http-handler" }];
 const amqDependencies: Dependency[] = [{ name: "rhea-promise" }];
 
-const dependenciesMap: Record<AppType, Dependency[]> = {
+const dependenciesMap: Record<AppType, Dependency[] | Partial<Record<Connection, Dependency[]>>> = {
   app: [],
-  wrk: [...amqDependencies],
-  bau: [{ name: "mongoose" }],
-  dao: [{ name: "sequelize" }],
+  wrk: amqDependencies,
+  dao: {
+    [DaoConnections.mongo]: [{ name: "mongoose" }],
+    [DaoConnections.sql]: [{ name: "sequelize" }]
+  },
   crn: [],
-  fcd: [{
-    name: "axios",
-    version: "0.21.4"
-  }],
-  int: [{
-    name: "axios",
-    version: "0.21.4"
-  }]
+  fcd: [{ name: "axios", version: "0.21.4" }],
+  int: {
+    [IntConnections.apigw]: [{ name: "axios", version: "0.21.4" }],
+    [IntConnections.digit3]: [{ name: "axios", version: "0.21.4" }]
+  }
 };
 
 export default {
@@ -60,7 +67,7 @@ export default {
     if (!deploy_path) throw new ConfigError("paths.despliegues");
     if (!argocd_path) throw new ConfigError("paths.argocd");
 
-    const dependencies = dependenciesMap[type];
+    const dependencies = (connection ? dependenciesMap[type][connection] : dependenciesMap[type]) as Dependency[];
     const name = await input({ message: "Enter name" });
     const description = await input({ message: "Enter description" });
     const token = await getOcToken();
@@ -144,7 +151,17 @@ export default {
       if (!backend_id || !backend_path) process.exit(1);
 
       if (type === "int") {
-        connection = await search({ choices: Object.values(Connections), message: "Choose connection" }) as Connection;
+        connection = await search({
+          choices: Object.values(IntConnections),
+          message: "Choose connection"
+        }) as IntConnection;
+      }
+
+      if (type === "dao") {
+        connection = await search({
+          choices: Object.values(DaoConnections),
+          message: "Choose connection"
+        }) as DaoConnection;
       }
 
       const full_path = path.join(backend_path, name);
@@ -212,28 +229,42 @@ export default {
       const fcd_files = [path.join(configuration, "fcd_environment.ts")];
 
       function getDeletedFilesFromConnections(c: Connection | null) {
-        if (c === Connections.apigw) return digit3_files;
-        if (c === Connections.digit3) return apigw_files;
+        if (c === IntConnections.apigw) return digit3_files;
+        if (c === IntConnections.digit3) return apigw_files;
+        if (c === DaoConnections.mongo) return dao_files;
+        if (c === DaoConnections.sql) return bau_files;
         return [];
       }
 
       function getMovedFilesFromConnections(c: Connection | null) {
-        if (c === Connections.apigw) return [
+        if (c === IntConnections.apigw) return [
           { from: path.join(services, "ApigwTokenService.ts"), to: path.join(services, "TokenService.ts") },
           { from: path.join(tests_services, "apigw.test.ts"), to: path.join(tests_services, "token.test.ts") },
           { from: apigw_setupTests, to: path.join(tests, "setupTest.ts") }
         ];
-        if (c === Connections.digit3) return [
+        if (c === IntConnections.digit3) return [
           { from: path.join(services, "Digit3TokenService.ts"), to: path.join(services, "TokenService.ts") },
           { from: path.join(tests_services, "digit3.test.ts"), to: path.join(tests_services, "token.test.ts") },
           { from: digit3_setupTests, to: path.join(tests, "setupTest.ts") }
+        ];
+
+        if (c === DaoConnections.mongo) return [
+          // TODO: add tests for bau connection to template
+          // { from: path.join(tests_configuration, "mongoose.tests.ts"), to: path.join(configuration, "db.tests.ts") },
+          { from: path.join(configuration, "bau_db.ts"), to: path.join(configuration, "db.ts") }
+        ];
+        if (c === DaoConnections.sql) return [
+          { from: path.join(tests_configuration, "sequelize.test.ts"), to: path.join(tests_configuration, "db.tests.ts") },
+          { from: path.join(configuration, "dao_db.ts"), to: path.join(configuration, "db.ts") }
         ];
         return [];
       }
 
       function getEnvFileByConnection(c: Connection | null) {
-        if (c === Connections.apigw) return "apigw_environment.ts";
-        if (c === Connections.digit3) return "digit3_environment.ts";
+        if (c === IntConnections.apigw) return "apigw_environment.ts";
+        if (c === IntConnections.digit3) return "digit3_environment.ts";
+        if (c === DaoConnections.mongo) return "bau_environment.ts";
+        if (c === DaoConnections.sql) return "dao_environment.ts";
         return null;
       }
 
@@ -241,8 +272,7 @@ export default {
       const s3_env = "s3_environment.ts";
       const envsByType: Record<AppType, string | null> = {
         app: null,
-        bau: "bau_environment.ts",
-        dao: "dao_environment.ts",
+        dao: getEnvFileByConnection(connection),
         crn: "fcd_environment.ts",
         fcd: "fcd_environment.ts",
         wrk: "fcd_environment.ts",
@@ -252,28 +282,19 @@ export default {
         app: [],
         wrk: [...int_files, ...db_files, ...arrayDifference(crn_files, wrk_files, (a, b) => a === b), app],
         crn: [...int_files, ...db_files, ...arrayDifference(wrk_files, crn_files, (a, b) => a === b)],
-        bau: [...dao_files, ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
-        dao: [...bau_files, ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
+        dao: [...getDeletedFilesFromConnections(connection), ...int_files, ...fcd_files, ...crn_files, ...wrk_files],
         fcd: [...db_files, ...int_files, ...crn_files, ...wrk_files],
         int: [...db_files, ...crn_files, ...getDeletedFilesFromConnections(connection), ...fcd_files, ...wrk_files]
       };
       const toMove: Record<AppType, { from: string; to: string }[]> = {
         app: [],
-        bau: [
-          // TODO: add tests for bau connection to template
-          // { from: path.join(tests_configuration, "mongoose.tests.ts"), to: path.join(configuration, "db.tests.ts") },
-          { from: path.join(configuration, "bau_db.ts"), to: path.join(configuration, "db.ts") }
-        ],
-        dao: [
-          { from: path.join(tests_configuration, "sequelize.test.ts"), to: path.join(tests_configuration, "db.tests.ts") },
-          { from: path.join(configuration, "dao_db.ts"), to: path.join(configuration, "db.ts") }
-        ],
+        dao: getMovedFilesFromConnections(connection),
         fcd: [],
         wrk: [
           { from: path.join(src, "wrk_app.ts"), to: path.join(src, "app.ts") }
         ],
         crn: [],
-        int: [...getMovedFilesFromConnections(connection)]
+        int: getMovedFilesFromConnections(connection)
       };
 
       const files_to_remove = toRemove[type];
@@ -332,7 +353,7 @@ export default {
       replaceDescription(path.join(swagger, "docs", "specification.yaml"));
 
       if (type !== "int") removeLine(7, path.join(full_path, "jest.config.js"));
-      if (type === "bau") insertLine(1, server, "import \"../configuration/db\";");
+      if (connection && connection === DaoConnections.mongo) insertLine(1, server, "import \"../configuration/db\";");
       if (type === "crn") {
         replace("app.js", "main.js", package_json);
         replace("app.ts", "main.ts", package_json);
