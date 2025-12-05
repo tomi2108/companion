@@ -67,7 +67,6 @@ export default {
     if (!deploy_path) throw new ConfigError("paths.despliegues");
     if (!argocd_path) throw new ConfigError("paths.argocd");
 
-    const dependencies = (connection ? dependenciesMap[type][connection] : dependenciesMap[type]) as Dependency[];
     const name = await input({ message: "Enter name" });
     const description = await input({ message: "Enter description" });
     const token = await getOcToken();
@@ -93,6 +92,7 @@ export default {
       const mf_template_id = config.gitlab.mf_template_id;
       const mf_template_link = (await glab.getProject(mf_template_id)).http_url_to_repo;
 
+      const dependencies = dependenciesMap[type] as Dependency[];
       app_repo = await init_repo(full_path, mf_template_link, dependencies);
       replaceAppName(path.join(full_path, "mf-config.js"));
 
@@ -169,6 +169,7 @@ export default {
       const ms_template_id = config.gitlab.ms_template_id;
       const ms_template_link = (await glab.getProject(ms_template_id)).http_url_to_repo;
 
+      const dependencies = (connection ? (dependenciesMap as Record<AppType, Record<Connection, Dependency[]>>)[type][connection] : dependenciesMap[type]) as Dependency[];
       if (usesS3) dependencies.push(...s3Dependencies);
       if (isAmqSender || isAmqReceiver) dependencies.push(...amqDependencies);
       app_repo = await init_repo(full_path, ms_template_link, dependencies);
