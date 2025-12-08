@@ -116,6 +116,7 @@
       "argocd": 431,
       "threescale": 4825,
       "rest": 7333,
+      "tasks": 0,
       "vault": 6070
     }
   },

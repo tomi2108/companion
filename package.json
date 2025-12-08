@@ -33,6 +33,7 @@
     "http-proxy": "^1.18.1",
     "jira-client": "8.2.2",
     "js-yaml": "4.1.0",
+    "mdast-util-from-markdown": "^2.0.2",
     "node-vault": "0.10.5",
     "open": "10.1.2",
     "open-editor": "5.1.0",

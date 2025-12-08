@@ -10,7 +10,8 @@ export const PathsConfigSchema = z.object({
   threescale: z.string().optional(),
   argocd: z.string().optional(),
   vault: z.string().optional(),
-  rest: z.string().optional()
+  rest: z.string().optional(),
+  tasks: z.string().optional()
 });
 
 export const OpenShiftConfigSchema = z.object({

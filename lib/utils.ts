@@ -29,8 +29,9 @@ export function removeSuffix(str: string, suffix: string) {
 }
 
 export function readdirs(p: string | undefined) {
-  if (!p || !fs.existsSync(p)) return;
-  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory());
+  const ignore = [".git"];
+  if (!p || !fs.existsSync(p)) return [];
+  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).filter((d) => !ignore.includes(d.name));
 }
 
 export function readfiles(p: string) {

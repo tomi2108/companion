@@ -14,6 +14,7 @@ import pod from "@cli/pod/index";
 import project from "@cli/project";
 import repos from "@cli/repos/index";
 import route from "@cli/route/index";
+import tasks from "@cli/tasks/index";
 import ticket from "@cli/ticket/index";
 import upgrade from "@cli/upgrade";
 
@@ -31,9 +32,9 @@ yargs
   .middleware(initLogger)
   .command(app)
   .command(config)
+  .command(cron)
   .command(env)
   .command(migration)
-  .command(cron)
   .command(monitors)
   .command(mr)
   .command(pipeline)
@@ -41,6 +42,7 @@ yargs
   .command(project)
   .command(repos)
   .command(route)
+  .command(tasks)
   .command(ticket)
   .command(upgrade)
   .demandCommand(1, "Please specify a command")
