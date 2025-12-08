@@ -1,9 +1,9 @@
 import { ProjectSchema } from "@gitbeaker/rest";
 import path from "node:path";
 
-import { Repo } from "@files/repo";
 import { createDirIfNotExists } from "@files/utils";
 import { glab } from "@glab/api";
+import { Repo } from "@interface/dirs/repo";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading, ProgressBar } from "@lib/ui";

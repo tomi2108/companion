@@ -2,11 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { getApp, getSubApps } from "@files";
-import { Repo } from "@files/repo";
 import { createDirIfNotExists, getAppCollections } from "@files/utils";
+import { Repo } from "@interface/dirs/repo";
+import { HttpFile } from "@interface/http/http_file";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import { HttpFile } from "@lib/http_file";
 import log from "@lib/log";
 import { input, search } from "@lib/ui";
 import { toYaml } from "@lib/utils";

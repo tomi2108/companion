@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { getApp } from "@files";
 import { CronYaml } from "@files/cron_yaml";
-import { Repo } from "@files/repo";
+import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { confirm, input, loading, search } from "@lib/ui";

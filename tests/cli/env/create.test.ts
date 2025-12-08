@@ -7,8 +7,8 @@ import { clearMockConfig, mockConfig } from "@mocks/config";
 import { mockInput, mockSearch } from "@mocks/ui";
 
 import create from "@cli/env/create";
-import { InvalidRepo } from "@files/repo";
 import { InvalidSecretYaml } from "@files/secrets_yaml";
+import { InvalidRepo } from "@interface/dirs/repo";
 import { promptTmpFile } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { isGitRepo } from "@lib/utils";

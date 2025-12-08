@@ -1,7 +1,7 @@
 import path from "node:path";
 
-import { Repo } from "@files/repo";
 import { SecretsYaml } from "@files/secrets_yaml";
+import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource, promptTmpFile } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";

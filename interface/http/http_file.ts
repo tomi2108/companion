@@ -1,7 +1,7 @@
 import fs from "node:fs";
 
-import { Config } from "./config";
 import { Req } from "./req";
+import { Config } from "../../lib/config";
 
 const valid_methods = [
   "GET",

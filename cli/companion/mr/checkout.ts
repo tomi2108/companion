@@ -1,4 +1,4 @@
-import { Repo } from "@files/repo";
+import { Repo } from "@interface/dirs/repo";
 import { promptForMr } from "@interface/prompts";
 import log from "@lib/log";
 import { getCurrentPath } from "@lib/utils";

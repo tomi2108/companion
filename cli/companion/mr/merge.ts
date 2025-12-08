@@ -1,5 +1,5 @@
 import { getApp } from "@files";
-import { Repo } from "@files/repo";
+import { Repo } from "@interface/dirs/repo";
 import { promptForMr, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
 import { confirm } from "@lib/ui";

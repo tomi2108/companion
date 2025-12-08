@@ -2,7 +2,7 @@ import chalk from "chalk";
 import path from "node:path";
 import yargs from "yargs";
 
-import { AppRepo } from "@files/app_repo";
+import { AppRepo } from "@interface/dirs/app_repo";
 import { Config } from "@lib/config";
 import { storage } from "@lib/log";
 

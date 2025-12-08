@@ -1,10 +1,10 @@
 import fs from "node:fs";
 
 import { getApp } from "@files";
-import { AppRepo } from "@files/app_repo";
-import { DeployRepo } from "@files/deploy_repo";
-import { Repo } from "@files/repo";
 import { createTempFile } from "@files/utils";
+import { AppRepo } from "@interface/dirs/app_repo";
+import { DeployRepo } from "@interface/dirs/deploy_repo";
+import { Repo } from "@interface/dirs/repo";
 import { Jira } from "@jira";
 import { Config, openInEditor } from "@lib/config";
 import { Choice } from "@lib/constants";

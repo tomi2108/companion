@@ -2,8 +2,8 @@ import { writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { getApp } from "@files";
-import { Repo } from "@files/repo";
 import { createDirIfNotExists } from "@files/utils";
+import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";

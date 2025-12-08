@@ -2,9 +2,9 @@ import axios, { AxiosRequestConfig } from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
+import { HttpFile } from "@interface/http/http_file";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError, openInBrowser } from "@lib/config";
-import { HttpFile } from "@lib/http_file";
 import { search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";

@@ -1,6 +1,6 @@
 import { setTimeout } from "node:timers/promises";
 
-import { AppRepo } from "@files/app_repo";
+import { AppRepo } from "@interface/dirs/app_repo";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { loading } from "@lib/ui";

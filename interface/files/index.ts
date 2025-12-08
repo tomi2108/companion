@@ -1,7 +1,7 @@
 import path from "node:path";
 
-import { AppRepo } from "@files/app_repo";
-import { DeployRepo } from "@files/deploy_repo";
+import { AppRepo } from "@interface/dirs/app_repo";
+import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { isGitRepo, readdirs } from "@lib/utils";

@@ -3,7 +3,7 @@ import Table from "cli-table3";
 import path from "node:path";
 
 import { getApp } from "@files";
-import { AppRepo } from "@files/app_repo";
+import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { SonarQube } from "@interface/sonar/api";
 import { Config } from "@lib/config";

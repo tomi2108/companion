@@ -2,10 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { getApp } from "@files";
-import { AppRepo, Dependency } from "@files/app_repo";
-import { Repo } from "@files/repo";
 import { createDirIfNotExists, insertLine, removeLine, replace } from "@files/utils";
 import { Gitlab } from "@glab";
+import { AppRepo, Dependency } from "@interface/dirs/app_repo";
+import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";

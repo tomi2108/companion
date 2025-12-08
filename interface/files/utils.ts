@@ -3,9 +3,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { DeployYamlContent } from "@files/validations";
+import { HttpFile } from "@interface/http/http_file";
 import { Config, ConfigError } from "@lib/config";
 import { AppType } from "@lib/constants";
-import { HttpFile } from "@lib/http_file";
 
 export function createDirIfNotExists(dir: string) {
   const exists = fs.existsSync(dir);

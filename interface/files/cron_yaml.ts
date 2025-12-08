@@ -6,7 +6,7 @@ import { toYaml } from "@lib/utils";
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
 
-import { AppRepo } from "./app_repo";
+import { AppRepo } from "../dirs/app_repo";
 
 const YamlContentSchema = z.object({
   apiVersion: z.string(),

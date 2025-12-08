@@ -6,7 +6,7 @@ import path from "node:path";
 import { Argv } from "yargs";
 
 import { getSubApps } from "@files";
-import { AppRepo } from "@files/app_repo";
+import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
