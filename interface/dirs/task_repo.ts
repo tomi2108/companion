@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import path from "node:path";
 
 import { Repo } from "@interface/dirs/repo";
@@ -25,6 +24,6 @@ export class TaskRepo extends Repo {
     const dir = path.join(this.full_path, task.project, task.id);
     const task_path = path.join(dir, TASK_FILE);
     createDirIfNotExists(dir);
-    fs.writeFileSync(task_path, task.toMdString());
+    task.save(task_path);
   }
 }

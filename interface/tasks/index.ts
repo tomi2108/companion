@@ -1,9 +1,10 @@
 import fs from "node:fs";
+import path from "node:path";
 
 import { Task } from "@interface/tasks/task";
 import { sleep } from "@lib/utils";
 
-export function getTasksFromFile(file_path: string) {
+export const getTasksFromFile = (project: string) => (file_path: string) => {
   const content = fs.readFileSync(file_path).toString();
   const lines = content.split(/\r?\n/);
   const results: Task[] = [];
@@ -15,8 +16,9 @@ export function getTasksFromFile(file_path: string) {
     while ((match = regex.exec(line)) !== null) {
       const col = match.index;
       const title = match[1]?.trim() ?? "";
-      const file_location = { file_path: "", row, col };
-      const project = "";
+      const splitted_path = file_path.split(path.sep);
+      const saved_file_path = splitted_path.slice(splitted_path.findIndex((e) => e === project) + 1).join(path.sep);
+      const file_location = { file_path: saved_file_path, row: row + 1, col: col + 1 };
       results.push(
         new Task({
           title,
@@ -30,5 +32,6 @@ export function getTasksFromFile(file_path: string) {
       sleep(1 * 1000);
     }
   });
-}
+  return results;
+};
 

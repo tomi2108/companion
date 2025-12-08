@@ -16,6 +16,7 @@ type TaskTags = {
 };
 
 export class Task {
+  md_path?: string;
   id: string;
   project: string;
 
@@ -42,7 +43,6 @@ export class Task {
   }
 
   static fromTaskFile(file: string) {
-
     const raw = fs.readFileSync(file, "utf8");
 
     const tree = fromMarkdown(raw);
@@ -115,6 +115,7 @@ export class Task {
     if (!status) throw new Error(`Could not find status for task ${id} from project ${project}`);
 
     return new Task({
+      md_path: file,
       id,
       title,
       project,
@@ -129,23 +130,34 @@ export class Task {
   }
 
   constructor({
+    md_path,
     id,
     title,
     tags,
     project,
     description
   }: {
+    md_path?: string;
     id?: string;
     description?: string;
     project: string;
     title: string;
     tags: TaskTags;
   }) {
+    this.md_path = md_path;
     this.id = id ?? Task.newId();
     this.title = title;
     this.tags = tags;
     this.project = project;
     this.description = description;
+  }
+
+  save(file: string) {
+    fs.writeFileSync(file, this.toMdString());
+    this.md_path = file;
+  }
+
+  openInEditor() {
   }
 
   toString() {
