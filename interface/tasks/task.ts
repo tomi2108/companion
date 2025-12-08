@@ -23,6 +23,18 @@ export class Task {
   description?: string;
   tags: TaskTags;
 
+  static newId() {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const YYYY = d.getFullYear();
+    const MM = pad(d.getMonth() + 1);
+    const DD = pad(d.getDate());
+    const HH = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    const SS = pad(d.getSeconds());
+    return `${YYYY}${MM}${DD}-${HH}${mm}${SS}`;
+  }
+
   private static parseFileLocation(raw: string): FileLocation {
     const [file_path, row, col] = raw.split(":");
     if (!file_path) throw new Error(`Could not parse file location ${raw} file_path missing`);
@@ -129,8 +141,7 @@ export class Task {
     title: string;
     tags: TaskTags;
   }) {
-    // TODO: generate proper id
-    this.id = id ?? new Date().toISOString();
+    this.id = id ?? Task.newId();
     this.title = title;
     this.tags = tags;
     this.project = project;

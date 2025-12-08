@@ -17,16 +17,16 @@ export function getTasksFromFile(file_path: string) {
       const title = match[1]?.trim() ?? "";
       const file_location = { file_path: "", row, col };
       const project = "";
-      results.push(new Task({
-        id: "",
-        title,
-        project,
-        tags: {
-          priority: 1,
-          status: "OPEN",
-          file_location
-        }
-      }));
+      results.push(
+        new Task({
+          title,
+          project,
+          tags: {
+            priority: 1,
+            status: "OPEN",
+            file_location
+          }
+        }));
       sleep(1 * 1000);
     }
   });
