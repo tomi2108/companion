@@ -1,8 +1,5 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
 import fs from "node:fs";
-import path from "node:path";
-
-import { Config, ConfigError } from "@lib/config";
 
 const TASK_STATUS = {
   OPEN: "OPEN",
@@ -61,8 +58,8 @@ export class Task {
             || !item.children[0].children[0]
             || !("value" in item.children[0].children[0])) continue;
           const text = item.children[0].children[0]?.value;
-          const [key, rawVal] = text.split(":");
-          const value = rawVal?.trim();
+          const [key, rawVal, ...rest] = text.split(":");
+          const value = [rawVal, ...rest].join(":")?.trim();
           switch (key) {
             case "ID":
               id = value;
@@ -119,12 +116,6 @@ export class Task {
     });
   }
 
-  getMdFile() {
-    const tasks_path = Config.get().paths.tasks;
-    if (!tasks_path) throw new ConfigError("paths.tasks");
-    return path.join(tasks_path, this.project, this.id, "TASK.md");
-  }
-
   constructor({
     id,
     title,
@@ -148,5 +139,22 @@ export class Task {
 
   toString() {
     return `[${this.tags.status}] (${this.id}) ${this.title}`;
+  }
+
+  toMdString() {
+    const required_tags = `- ID: ${this.id}
+- PROJECT: ${this.project}
+- STATUS: ${this.tags.status}
+- PRIORITY: ${this.tags.priority}`;
+    const tags = [
+      required_tags,
+      this.tags.jira_id ? `- JIRA-ID: ${this.tags.jira_id}` : "",
+      this.tags.file_location && `- FILE-LOCATION: ${this.tags.file_location.file_path}:${this.tags.file_location.row}:${this.tags.file_location.col}`
+    ].filter(Boolean).join("\n");
+    return `# ${this.title}
+
+${tags}
+
+${this.description ?? ""}`;
   }
 }
