@@ -1,3 +1,5 @@
+import { Argv } from "yargs";
+
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import { Openshift } from "@oc";
@@ -7,7 +9,11 @@ export default {
   command: "generate",
   aliases: ["gen"],
   describe: "Generate self containing configmaps",
-  handler: async () => {
+  builder: (yargs: Argv) => yargs
+    .boolean("all")
+    .alias("all", ["a"])
+    .describe("all", "Whether to run the script for all repositories"),
+  handler: async ({ all }: { all?: boolean }) => {
     const config = Config.get();
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
@@ -17,12 +23,13 @@ export default {
     const excluded = config.envs.generate?.exclusions ?? [];
     const excluded_prefix = config.envs.generate?.prefix_exclusions ?? [];
 
-    const deployments = (await project.getDeployments())
+    const choices = (await project.getDeployments())
       .filter((d) => !filterFrontendDeployments(d))
       .filter((d) => !excluded.includes(d.name))
       .filter((d) => !excluded_prefix.some((p) => d.name.split(prefix)[1]?.startsWith(p)));
 
     const configmaps = await project.getConfigMaps();
+    const deployments = all ? choices : [await promptForOcResource(choices)];
     for (const d of deployments) {
       if (configmaps.some((c) => c.name === d.name)) {
         console.log("Configmap", `'${d.name}'`, "already exists");
