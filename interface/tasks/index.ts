@@ -4,12 +4,13 @@ import path from "node:path";
 import { Task } from "@interface/tasks/task";
 import { sleep } from "@lib/utils";
 
-export const getTasksFromFile = (project: string) => (file_path: string) => {
+export const getTasksFromFile = async (file_path: string, { project }: { project: string }) => {
   const content = fs.readFileSync(file_path).toString();
   const lines = content.split(/\r?\n/);
   const results: Task[] = [];
-
-  lines.forEach((line, row) => {
+  for (let row = 0; row < lines.length; row++) {
+    const line = lines[row];
+    if (!line) continue;
     const regex = /TODO:\s*(.*)/g;
     let match;
 
@@ -29,9 +30,9 @@ export const getTasksFromFile = (project: string) => (file_path: string) => {
             file_location
           }
         }));
-      sleep(1 * 1000);
+      await sleep(1 * 1000);
     }
-  });
+  }
   return results;
 };
 

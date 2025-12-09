@@ -84,14 +84,17 @@ export function createLogFile(file_name: string) {
 }
 
 type FileStat = {
-  type?: string;
+  type?: "dir" | "file";
   files?: FileStat[];
   file: string;
   path: string;
 };
 
 const default_ignore = [".git"];
-export function traverseDirectory(dir: string, { ignore }: { ignore?: string[] } = { ignore: [] }, result: FileStat[] = []) {
+export function traverseDirectory(dir: string, {
+  ignore,
+  flatten
+}: { ignore?: string[]; flatten?: boolean } = { ignore: [] }, result: FileStat[] = []) {
   fs.readdirSync(dir).forEach((file) => {
     const to_ignore = default_ignore;
     if (ignore) to_ignore.push(...ignore);
@@ -112,7 +115,13 @@ export function traverseDirectory(dir: string, { ignore }: { ignore?: string[] }
     result.push(fileStats);
     return;
   });
-  return result;
+  if (!flatten) return result;
+
+  function flat(f: FileStat): FileStat[] {
+    if (f.type === "dir") return f.files?.flatMap(flat) ?? [];
+    return [f];
+  }
+  return result.flatMap(flat);
 }
 
 const ignore = ["Ignore", "main.js"];
