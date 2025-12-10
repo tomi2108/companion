@@ -86,6 +86,10 @@ export const SqlConfigSchema = z.object({
   )
 });
 
+export const TasksConfigSchema = z.object({
+  jira_parent_key: z.string().optional()
+});
+
 export const ReposConfigSchema = z.object({
   environment_path: z.string().optional(),
   merge: z.object({
@@ -140,7 +144,8 @@ export const ConfigSchema = z.object({
   envs: EnvsConfigSchema.optional(),
   app: AppConfigSchema.optional(),
   project: ProjectConfigSchema.optional(),
-  sql: SqlConfigSchema.optional()
+  sql: SqlConfigSchema.optional(),
+  tasks: TasksConfigSchema.optional()
 });
 
 type UserJiraConfig = z.infer<typeof JiraConfigSchema>;
@@ -158,6 +163,7 @@ type UserEnvsConfig = z.infer<typeof EnvsConfigSchema>;
 type UserAppConfig = z.infer<typeof AppConfigSchema>;
 type UserProjectConfig = z.infer<typeof ProjectConfigSchema>;
 type UserSqlConfig = z.infer<typeof SqlConfigSchema>;
+type UserTasksConfig = z.infer<typeof TasksConfigSchema>;
 
 export type JiraConfig = UserJiraConfig & {
   server: string;
@@ -198,3 +204,4 @@ export type EnvsConfig = UserEnvsConfig;
 export type AppConfig = UserAppConfig;
 export type ProjectConfig = UserProjectConfig;
 export type SqlConfig = UserSqlConfig;
+export type TasksConfig = UserTasksConfig;

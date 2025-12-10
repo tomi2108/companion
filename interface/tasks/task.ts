@@ -1,6 +1,9 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
 import fs from "node:fs";
 
+import { Jira } from "@jira";
+import { Config, ConfigError } from "@lib/config";
+
 const TASK_STATUS = {
   OPEN: "OPEN",
   CLOSED: "CLOSED"
@@ -134,9 +137,20 @@ export class Task {
       this.tags.jira_id
       || !this.tags.file_location
     ) return;
-    // TODO: create issue in jira
-    const jira_id = "ECR-123";
-
+    const config = Config.get();
+    const jira = new Jira();
+    const parent_key = config.tasks.jira_parent_key;
+    const labels = config.jira.labels;
+    if (!parent_key) throw new ConfigError("tasks.jira_parent_key");
+    const parent_issue = await jira.getIssue(parent_key);
+    const created_issue = await parent_issue.createChild({
+      user: await jira.getCurrentUser(),
+      project: await jira.getProject(),
+      title: `TODO(${this.project}): ${this.title}`,
+      description: `- FILE-LOCATION: ${this.tags.file_location.file_path}:${this.tags.file_location.row}:${this.tags.file_location.col}`,
+      labels
+    });
+    const jira_key = created_issue.key;
     const { file_path, row, col } = this.tags.file_location;
     const normalized_col = col - 1;
     const normalized_row = row - 1;
@@ -146,11 +160,11 @@ export class Task {
     if (normalized_row < 0 || normalized_row >= lines.length) throw new Error(`Row ${row} is out of range for file ${file_path}`);
     const line = lines[normalized_row]!;
     const prefix = line.slice(0, normalized_col);
-    const newTodo = `TODO(${jira_id}): ${this.title}`;
+    const newTodo = `TODO(${jira_key}): ${this.title}`;
     lines[normalized_row] = prefix + newTodo;
     fs.writeFileSync(file_path, lines.join("\n"));
 
-    this.tags.jira_id = jira_id;
+    this.tags.jira_id = jira_key;
   }
 
   constructor({

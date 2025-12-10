@@ -12,7 +12,7 @@ export default {
     // TODO: fix this script
     const user = await search({
       message: `Select a user to assing issue ${issue?.key}`,
-      choices: users.map((u) => ({ name: u.name, hint: u.email }))
+      choices: users.map((u) => u.toChoice())
     });
     issue.assign(user);
   }

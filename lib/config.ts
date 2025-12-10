@@ -22,6 +22,7 @@ import {
   ReposConfig,
   SonarConfig,
   SqlConfig,
+  TasksConfig,
   ThreeScaleConfig,
   VaultConfig
 } from "@lib/validations";
@@ -94,6 +95,7 @@ class Config {
   app: AppConfig = {} as AppConfig;
   project: ProjectConfig = {} as ProjectConfig;
   sql: SqlConfig = {} as SqlConfig;
+  tasks: TasksConfig = {} as TasksConfig;
 
   static get() {
     if (this.config === null) this.config = new Config();
@@ -179,7 +181,6 @@ class Config {
       } else throw err;
     }
     const readConfig = ConfigSchema.parse(JSON.parse(file_content));
-
     ([
       "jira",
       "gitlab",
@@ -195,7 +196,8 @@ class Config {
       "project",
       "repos",
       "migrations",
-      "sql"
+      "sql",
+      "tasks"
     ] as const).forEach((key) => {
       if (readConfig.team && this.isValidTeamKey(readConfig.team)) {
         this[key] = deepMerge(this[key], this.getTeamConfig(readConfig.team)[key]);

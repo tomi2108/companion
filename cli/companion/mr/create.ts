@@ -43,7 +43,17 @@ export default {
     }
 
     const tasks = await getTasksFromDir(full_path, { project: name });
-    await Promise.all(tasks.map(async (t) => await t.setJiraId()));
+    if (tasks.length > 0) {
+      const spinner = loading("Creating missing jira tickets");
+      await Promise.all(
+        tasks.map(async (t) => {
+          if (!t.tags.file_location) return;
+          await t.generateJiraId();
+          app_repo?.add(t.tags.file_location.file_path);
+        }));
+      spinner.succeed();
+      await app_repo?.commit("fix: add jira tickets");
+    }
 
     if (!merge) {
       const spinner = loading("Building merge request");

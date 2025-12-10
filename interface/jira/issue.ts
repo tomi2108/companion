@@ -3,12 +3,15 @@ import { Config, openInBrowser } from "@lib/config";
 import { Choice } from "@lib/constants";
 
 import { Board } from "./board";
+import { JiraProject } from "./project";
+import { JiraUser } from "./user";
 
+export type IssueType = { id: string; name: string };
 export type IssueResponse = {
   id: string;
   key: string;
   fields: {
-    issuetype: { name: string };
+    issuetype: IssueType;
     status: { name: string };
     summary: string;
   };
@@ -29,9 +32,9 @@ export class Issue {
 
   static fromIssueResponse(i: IssueResponse) {
     const issue = new Issue(i.key, i.id);
-    issue.type = i.fields.issuetype.name;
-    issue.status = i.fields.status.name;
-    issue.description = i.fields.summary;
+    issue.type = i.fields?.issuetype.name;
+    issue.status = i.fields?.status.name;
+    issue.description = i.fields?.summary;
     return issue;
   }
 
@@ -94,13 +97,40 @@ export class Issue {
     return await this.jira.addWorklog(this.id, { timeSpent: work });
   }
 
-  async createChild(labels?: string[]) {
-    console.log("labels:", labels);
-    // TODO: probably recieve more fields for title, description etc
-    // should ideally return the created issue wrapped in a new Issue()
-    // maybe with Issue.fromIssueResponse()
-    return await this.jira.addNewIssue({
-    });
+  async createChild(opts: {
+    title: string;
+    description?: string;
+    labels?: string[];
+    user: JiraUser;
+    project: JiraProject;
+  }) {
+    const labels = opts.labels ?? Config.get().jira.labels ?? [];
+    // TODO: probably make this a param not every child sould be the same issuetype... i think
+    const issuetype = opts.project.issueTypes?.find((t) => t.name === "Tarea");
+    if (!issuetype) throw new Error("Could not find proper issue type to create child");
+    return Issue.fromIssueResponse(await this.jira.addNewIssue({
+      fields: {
+        assignee: {
+          id: opts.user.id
+        },
+        issuetype: {
+          id: issuetype.id
+        },
+        project: {
+          id: opts.project.id
+        },
+        labels,
+        description: opts.description,
+        summary: opts.title,
+        reporter: {
+          id: opts.user.id
+        },
+        parent: {
+          key: this.key
+        }
+      }
+    }) as IssueResponse
+    );
   }
 
   async addToCurrentSprint() {

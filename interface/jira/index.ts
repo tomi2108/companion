@@ -5,7 +5,11 @@ import { jira } from "@jira/api";
 import { Issue, IssueResponse } from "@jira/issue";
 import { Config } from "@lib/config";
 
+import { JiraProject, JiraProjectReponse } from "./project";
+import { JiraUser, JiraUserResponse } from "./user";
+
 export class Jira {
+  // TODO: try to stick to one
   private jira: ReturnType<typeof jira>;
   private api: AxiosInstance;
 
@@ -22,8 +26,15 @@ export class Jira {
   async getUsers() {
     const params = { project: Config.get().jira.project_key, maxResults: 1000 };
     const res = await this.api.get("/3/user/assignable/search", { params });
-    const data = res.data as { displayName: string; emailAddress: string }[];
-    return data.map((u) => ({ name: u.displayName, email: u.emailAddress }));
+    // TODO: test
+    const data = res.data as JiraUserResponse[];
+    return data.map((u) => JiraUser.fromUserResponse(u));
+  }
+
+  async getCurrentUser() {
+    return JiraUser.fromUserResponse(
+      await this.jira.getCurrentUser() as JiraUserResponse
+    );
   }
 
   getEpics() {
@@ -36,11 +47,15 @@ export class Jira {
   async getProject() {
     const project_key = Config.get().jira.project_key;
     if (!project_key) throw new Error("Missing jira project_key");
-    return await this.jira.getProject(project_key);
+    return JiraProject.fromJiraProjectResponse(await this.jira.getProject(project_key) as JiraProjectReponse);
   }
 
   async getBoard() {
     return await this.jira.getBoard(String(Config.get().jira.board_id));
+  }
+
+  async getIssue(idOrKey: string) {
+    return Issue.fromIssueResponse(await this.jira.getIssue(idOrKey) as IssueResponse);
   }
 
   async getIssues({ labels, type, status }: { labels?: string[]; type?: string; status?: string[] }) {

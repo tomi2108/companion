@@ -6,7 +6,7 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { Repo } from "@interface/dirs/repo";
 import { Jira } from "@jira";
-import { Config, openInEditor } from "@lib/config";
+import { Config, ConfigError, openInEditor } from "@lib/config";
 import { Choice } from "@lib/constants";
 import { ArrayPromptOptions, loading, search } from "@lib/ui";
 import { md5FromFile, readdirs } from "@lib/utils";
@@ -16,16 +16,14 @@ type PromptOptions<T> = Omit<ArrayPromptOptions<T>, "choices">;
 export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
   const opts = promptOpts || {};
   const dep_path = Config.get().paths.despliegues;
-  if (!dep_path) {
-    process.exit(1);
-  }
+  if (!dep_path) throw new ConfigError("paths.despliegues");
   const apps = readdirs(dep_path) ?? [];
   const app_name = await search({
     choices: apps.map((a) => a.name),
     message: "",
     ...opts
   });
-  // can maybe improve this, not searching by app_name, but by origin url ?
+  // TODO: can maybe improve this, not searching by app_name, but by origin url ?
   // think more about this and making deploy_repo in return type
   // not optional, since we are searching in Config.get().paths.despliegues;
   const spinner = loading("Getting app");

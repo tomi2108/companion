@@ -8,18 +8,19 @@ export default {
   describe: "Create jira ticket",
   handler: async () => {
     const labels = Config.get().jira.labels;
+    const jira = new Jira();
     const parent_issue = await promptForJiraIssue(
       { message: "Select parent ticket" },
       { type: "Feature", labels: [] }
     );
 
-    parent_issue.createChild(labels);
-
-    const issue = (await new Jira().getIssues({ labels: labels }))[0];
-    if (!issue) {
-      console.error("Could not find created issue");
-      process.exit(1);
-    }
+    const title = await input({ message: "Input title for the ticket" });
+    const issue = await parent_issue.createChild({
+      user: await jira.getCurrentUser(),
+      project: await jira.getProject(),
+      title,
+      labels
+    });
 
     const estimacion = await input({ message: "Input estimate for the ticket" });
     issue.estimate(estimacion);
