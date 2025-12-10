@@ -24,17 +24,17 @@ export class Task {
   description?: string;
   tags: TaskTags;
 
-  static newId() {
-    const d = new Date();
-    const pad = (n: number) => String(n).padStart(2, "0");
-    const YYYY = d.getFullYear();
-    const MM = pad(d.getMonth() + 1);
-    const DD = pad(d.getDate());
-    const HH = pad(d.getHours());
-    const mm = pad(d.getMinutes());
-    const SS = pad(d.getSeconds());
-    return `${YYYY}${MM}${DD}-${HH}${mm}${SS}`;
-  }
+  // static newId() {
+  //   const d = new Date();
+  //   const pad = (n: number) => String(n).padStart(2, "0");
+  //   const YYYY = d.getFullYear();
+  //   const MM = pad(d.getMonth() + 1);
+  //   const DD = pad(d.getDate());
+  //   const HH = pad(d.getHours());
+  //   const mm = pad(d.getMinutes());
+  //   const SS = pad(d.getSeconds());
+  //   return `${YYYY}${MM}${DD}-${HH}${mm}${SS}`;
+  // }
 
   private static parseFileLocation(raw: string): FileLocation {
     const [file_path, row, col] = raw.split(":");
@@ -129,6 +129,27 @@ export class Task {
     });
   }
 
+  async generateJiraId() {
+    if (
+      this.tags.jira_id
+      || !this.tags.file_location
+    ) return;
+    // TODO: create issue in jira
+    const jira_id = "ECR-123";
+
+    const { file_path, row, col } = this.tags.file_location;
+    const content = fs.readFileSync(file_path).toString();
+    const lines = content.split(/\r?\n/);
+    if (row < 0 || row >= lines.length) throw new Error(`Row ${row} is out of range for file ${file_path}`);
+    const line = lines[row]!;
+    const prefix = line.slice(0, col);
+    const newTodo = `TODO(${jira_id}): ${this.title}`;
+    lines[row] = prefix + newTodo;
+    fs.writeFileSync(file_path, lines.join("\n"));
+
+    this.tags.jira_id = jira_id;
+  }
+
   constructor({
     md_path,
     id,
@@ -145,7 +166,8 @@ export class Task {
     tags: TaskTags;
   }) {
     this.md_path = md_path;
-    this.id = id ?? Task.newId();
+    // this.id = id ?? Task.newId();
+    this.id = id ?? "";
     this.title = title;
     this.tags = tags;
     this.project = project;

@@ -2,6 +2,7 @@ import { getApp } from "@files";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
+import { getTasksFromDir } from "@interface/tasks";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { confirm, loading, search } from "@lib/ui";
@@ -40,6 +41,9 @@ export default {
         deploy_projects = await promptForOcResource(projects, { message: "Choose projects", multiple: true });
       }
     }
+
+    const tasks = await getTasksFromDir(full_path, { project: name });
+    await Promise.all(tasks.map(async (t) => await t.setJiraId()));
 
     if (!merge) {
       const spinner = loading("Building merge request");
