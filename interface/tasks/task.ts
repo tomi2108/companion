@@ -138,13 +138,16 @@ export class Task {
     const jira_id = "ECR-123";
 
     const { file_path, row, col } = this.tags.file_location;
+    const normalized_col = col - 1;
+    const normalized_row = row - 1;
+
     const content = fs.readFileSync(file_path).toString();
     const lines = content.split(/\r?\n/);
-    if (row < 0 || row >= lines.length) throw new Error(`Row ${row} is out of range for file ${file_path}`);
-    const line = lines[row]!;
-    const prefix = line.slice(0, col);
+    if (normalized_row < 0 || normalized_row >= lines.length) throw new Error(`Row ${row} is out of range for file ${file_path}`);
+    const line = lines[normalized_row]!;
+    const prefix = line.slice(0, normalized_col);
     const newTodo = `TODO(${jira_id}): ${this.title}`;
-    lines[row] = prefix + newTodo;
+    lines[normalized_row] = prefix + newTodo;
     fs.writeFileSync(file_path, lines.join("\n"));
 
     this.tags.jira_id = jira_id;
