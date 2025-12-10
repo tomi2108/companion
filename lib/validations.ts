@@ -9,8 +9,11 @@ export const PathsConfigSchema = z.object({
   backend: z.string().optional(),
   threescale: z.string().optional(),
   argocd: z.string().optional(),
-  vault: z.string().optional(),
+  namespaces: z.string().optional(),
   rest: z.string().optional(),
+  dataset: z.string().optional(),
+  mongo: z.string().optional(),
+  monitors: z.string().optional(),
   tasks: z.string().optional()
 });
 

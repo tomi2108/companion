@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { MonitorYaml } from "@files/monitor_yaml";
 import { createTempFile } from "@files/utils";
-import { Config, openInEditor } from "@lib/config";
+import { Config, ConfigError, openInEditor } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { readdirs, readfiles } from "@lib/utils";
@@ -13,18 +13,16 @@ export default {
   aliases: ["d"],
   describe: "Genera el documento de alta de monitor para subir a Jira",
   handler: async () => {
-    const rest_path = Config.get().paths.rest;
-    if (!rest_path) return;
+    const monitors_path = Config.get().paths.monitors;
+    if (!monitors_path) throw new ConfigError("paths.monitors");
 
-    const monitoresRoot = path.join(rest_path, "monitores");
-    const namespaces = readdirs(monitoresRoot);
-    if (!namespaces) return log.error(`No existe la carpeta: ${monitoresRoot}`);
+    const namespaces = readdirs(monitors_path);
 
     const namespace = await search({
       choices: namespaces.map((d) => d.name),
       message: "Selecciona entorno(s): Space para marcar, Enter para confirmar"
     });
-    const dir = path.join(monitoresRoot, namespace);
+    const dir = path.join(monitors_path, namespace);
     const files = readfiles(dir)
       .filter((e) => e.toLowerCase().endsWith(".yaml"))
       .sort((a, b) => a.localeCompare(b));

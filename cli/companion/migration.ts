@@ -13,13 +13,12 @@ export default {
   describe: "Run db migrations",
   handler: async () => {
     const config = Config.get();
-
     const migration_secrets = config.migrations.secrets ?? [];
 
-    const rest_path = config.paths.rest;
-    if (!rest_path) throw new ConfigError("paths.rest");
+    const mongo_path = config.paths.mongo;
+    if (!mongo_path) throw new ConfigError("paths.mongo");
 
-    const migrations_path = path.join(rest_path, "mongo", "migrations");
+    const migrations_path = path.join(mongo_path, "migrations");
     const migration_scripts = path.join(migrations_path, "src", "scripts");
 
     const projects = await new Openshift(await getOcToken()).getProjects();

@@ -20,15 +20,15 @@ export default {
     const config = Config.get();
     const log_path = config.preferences.logs_path;
     if (!log_path) throw new ConfigError("preferences.logs_path");
-    const rest_path = config.paths.rest;
-    if (!rest_path) throw new ConfigError("paths.rest");
-    const queries_path = path.join(rest_path, "queries");
+    const dataset_repo_path = config.paths.dataset;
+    if (!dataset_repo_path) throw new ConfigError("paths.dataset");
+    const queries_path = path.join(dataset_repo_path, "queries");
     if (!fs.existsSync(queries_path)) return log.error(`Queries folder not found at ${queries_path}`);
-    const dataset_path = path.join(rest_path, "dataset");
+    const dataset_path = path.join(dataset_repo_path, "dataset");
     createDirIfNotExists(dataset_path);
-    const postscripts_path = path.join(rest_path, "postscripts", "scripts");
+    const postscripts_path = path.join(dataset_repo_path, "postscripts", "scripts");
     if (!fs.existsSync(queries_path)) return log.error(`Postscripts sciprts folder not found at ${postscripts_path}`);
-    const postscripts_results_path = path.join(rest_path, "postscripts", "results");
+    const postscripts_results_path = path.join(dataset_repo_path, "postscripts", "results");
     if (!fs.existsSync(queries_path)) return log.error(`Postscripts results folder not found at ${postscripts_path}`);
 
     const projects = await new Openshift(await getOcToken()).getProjects();

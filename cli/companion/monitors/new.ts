@@ -18,8 +18,8 @@ export default {
   aliases: ["n"],
   describe: "Create new monitor yaml",
   handler: async () => {
-    const rest_path = Config.get().paths.rest;
-    if (!rest_path) throw new ConfigError("paths.rest");
+    const monitors_path = Config.get().paths.monitors;
+    if (!monitors_path) throw new ConfigError("paths.monitors");
     const http_files = getAppCollections();
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
@@ -62,10 +62,10 @@ export default {
 
     const content = toYaml(res);
     const file_name = `${res.name}_${res.date}.yaml`;
-    const dir = path.join(rest_path, "monitores", project.name);
+    const dir = path.join(monitors_path, project.name);
     const full_path = path.join(dir, file_name);
 
-    const repo = new Repo(rest_path);
+    const repo = new Repo(monitors_path);
     await repo.stash(async () => {
       await repo.switchBranchIfExists("master");
       await repo.update();

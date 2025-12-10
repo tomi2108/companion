@@ -116,8 +116,10 @@
       "argocd": 431,
       "threescale": 4825,
       "rest": 7333,
-      "tasks": 0,
-      "vault": 6070
+      "namespaces": 6070,
+      "dataset": 9428,
+      "mongo": 9429,
+      "monitors": 9430
     }
   },
   "vault": {
