@@ -1,16 +1,19 @@
+import fs from "node:fs";
 import path from "node:path";
 
+import { AppRepo } from "@files/app_repo";
 import { executeScript } from "@interface/cmd";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import { search } from "@lib/ui";
+import { loading, search } from "@lib/ui";
 import { readfiles } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
 export default {
   command: "migration",
-  describe: "Run db migrations",
+  aliases: ["migrations"],
+  describe: "Run MongoDb migrations",
   handler: async () => {
     const config = Config.get();
     const migration_secrets = config.migrations.secrets ?? [];
@@ -18,8 +21,7 @@ export default {
     const mongo_path = config.paths.mongo;
     if (!mongo_path) throw new ConfigError("paths.mongo");
 
-    const migrations_path = path.join(mongo_path, "migrations");
-    const migration_scripts = path.join(migrations_path, "src", "scripts");
+    const migration_scripts = path.join(mongo_path, "src", "migrations");
 
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
@@ -27,6 +29,14 @@ export default {
     const choices = readfiles(migration_scripts);
     const choice = await search({ message: "Choose migration to run", choices });
     const migration_file = path.join(migration_scripts, choice);
+
+    const repo = new AppRepo(mongo_path);
+    const node_modules = fs.existsSync(path.join(mongo_path, "node_modules"));
+    if (!node_modules) {
+      const spinner = loading("Installing missing dependencies");
+      await repo.install();
+      spinner.succeed();
+    }
 
     const secrets = await project.getSecrets();
     const env = (await Promise.all(secrets

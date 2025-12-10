@@ -2,20 +2,20 @@
 
 import yargs from "yargs";
 
-import app from "@cli/app/index";
-import config from "@cli/config/index";
+import app from "@cli/app";
+import config from "@cli/config";
 import cron from "@cli/cron";
-import env from "@cli/env/index";
-import migration from "@cli/migration";
-import monitors from "@cli/monitors/index";
-import mr from "@cli/mr/index";
+import env from "@cli/env";
+import mongo from "@cli/mongo";
+import monitors from "@cli/monitors";
+import mr from "@cli/mr";
 import pipeline from "@cli/pipeline";
-import pod from "@cli/pod/index";
+import pod from "@cli/pod";
 import project from "@cli/project";
-import repos from "@cli/repos/index";
-import route from "@cli/route/index";
-import tasks from "@cli/tasks/index";
-import ticket from "@cli/ticket/index";
+import repos from "@cli/repos";
+import route from "@cli/route";
+import tasks from "@cli/tasks";
+import ticket from "@cli/ticket";
 import upgrade from "@cli/upgrade";
 
 import { initLogger, loadConfig } from "./middleware";
@@ -34,7 +34,7 @@ yargs
   .command(config)
   .command(cron)
   .command(env)
-  .command(migration)
+  .command(mongo)
   .command(monitors)
   .command(mr)
   .command(pipeline)
