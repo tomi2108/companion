@@ -5,7 +5,7 @@ import path from "node:path";
 import { getApp } from "@files";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
-import { SonarQube } from "@interface/sonar/api";
+import { SonarQube } from "@interface/sonar";
 import { Config } from "@lib/config";
 import { loading } from "@lib/ui";
 import { readdirs } from "@lib/utils";

@@ -8,7 +8,7 @@ import { Deployment, DeploymentResponse } from "@oc/deployment";
 import { PipelineRun, PipelineRunResponse } from "@oc/pipelinerun";
 import { Pod, PodResponse } from "@oc/pod";
 import { Secret } from "@oc/secret";
-import { vault } from "@vault";
+import { vault } from "@vault/api";
 
 export type ProjectResponse = {
   metadata: {

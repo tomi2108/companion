@@ -4,7 +4,7 @@ import SonarScanner from "sonarqube-scanner";
 import { Argv } from "yargs";
 
 import { promptForApp } from "@interface/prompts";
-import { SonarQube } from "@interface/sonar/api";
+import { SonarQube } from "@interface/sonar";
 import { Config, openInBrowser } from "@lib/config";
 import { confirm } from "@lib/ui";
 
