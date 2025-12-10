@@ -48,7 +48,6 @@ export class MonitorYaml {
   toString() {
     let out = "";
     out += "Solicitud de alta de monitor\n";
-    out += `Flujo: ${this.content.name}\n`;
     out += `Documento de alta de servicio: ${this.content.services_doc_link}\n`;
     for (const s of this.content.services) {
       const type = s.type.toUpperCase();

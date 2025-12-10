@@ -1,9 +1,8 @@
-import fs from "node:fs";
 import path from "node:path";
 
 import { MonitorYaml } from "@files/monitor_yaml";
-import { createTempFile } from "@files/utils";
-import { Config, ConfigError, openInEditor } from "@lib/config";
+import { Jira } from "@jira";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
 import { readdirs, readfiles } from "@lib/utils";
@@ -13,8 +12,14 @@ export default {
   aliases: ["d"],
   describe: "Genera el documento de alta de monitor para subir a Jira",
   handler: async () => {
-    const monitors_path = Config.get().paths.monitors;
+    const config = Config.get();
+    const monitors_path = config.paths.monitors;
+    const project_key = config.jira.monitors_project_key;
+    const parent_issue_key = config.jira.monitors_parent_issue_key;
+
     if (!monitors_path) throw new ConfigError("paths.monitors");
+    if (!project_key) throw new ConfigError("jira.monitors_project_key");
+    if (!parent_issue_key) throw new ConfigError("jira.monitors_parent_issue_key");
 
     const namespaces = readdirs(monitors_path);
 
@@ -35,11 +40,28 @@ export default {
     });
 
     const full_path = path.join(dir, file);
-    const doc = new MonitorYaml(full_path).toString();
-
-    const file_name = file.slice(0, -5);
-    const temp_file = createTempFile(`monitor_doc_${file_name}`);
-    fs.writeFileSync(temp_file, doc);
-    openInEditor(temp_file);
+    const yaml = new MonitorYaml(full_path);
+    await createMonitorIssue(yaml, { project_key, parent_issue_key });
   }
 };
+
+export async function createMonitorIssue(yaml: MonitorYaml, {
+  project_key,
+  parent_issue_key
+}: { project_key: string; parent_issue_key: string }) {
+  const doc = yaml.toString();
+
+  const jira = new Jira();
+  const reporter = await jira.getCurrentUser();
+  const project = await jira.getProject(project_key);
+  const issue = await jira.getIssue(parent_issue_key);
+  issue.createChild({
+    project,
+    issueType: "Story",
+    title: `NUEVO - ${yaml.content.name}`,
+    description: doc,
+    reporter,
+    labels: ["MONITOR"]
+  });
+}
+

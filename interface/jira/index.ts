@@ -37,16 +37,7 @@ export class Jira {
     );
   }
 
-  getEpics() {
-    // TODO: Should only fetch Epic issues
-    // maybe we need labels here ? but in movistar-empresas
-    // parent issues ("Features") do not have labels, at least no the ones listed in theConfig.get()
-    return this.getIssues({ type: "Feature" });
-  }
-
-  async getProject() {
-    const project_key = Config.get().jira.project_key;
-    if (!project_key) throw new Error("Missing jira project_key");
+  async getProject(project_key: string) {
     return JiraProject.fromJiraProjectResponse(await this.jira.getProject(project_key) as JiraProjectReponse);
   }
 
@@ -56,27 +47,6 @@ export class Jira {
 
   async getIssue(idOrKey: string) {
     return Issue.fromIssueResponse(await this.jira.getIssue(idOrKey) as IssueResponse);
-  }
-
-  async getIssues({ labels, type, status }: { labels?: string[]; type?: string; status?: string[] }) {
-    const board_id = String(Config.get().jira.board_id);
-    const query = [
-      type && `issuetype=${type}`,
-      labels && labels.length > 0 && `labels in (${labels.map((l) => `'${l}'`).join(",")})`,
-      status && status.length > 0 && `!status in (${status.map((s) => `'${s}'`).join(",")})`
-    ].filter(Boolean).join(" AND ");
-
-    const res = await this.jira.getIssuesForBoard(
-      board_id,
-      0,
-      100,
-      query,
-      true,
-      ["key", "summary", "issuetype", "status"] as unknown as string // works
-    );
-
-    const issues = res.issues as IssueResponse[];
-    return issues.map(Issue.fromIssueResponse);
   }
 
   async getIssueLinkTypes() {

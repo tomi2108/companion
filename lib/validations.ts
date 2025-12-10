@@ -61,7 +61,9 @@ export const JiraConfigSchema = z.object({
   username: z.string(),
   token: z.string(),
   labels: z.array(z.string()).optional(),
-  board_id: z.number().optional()
+  board_id: z.number().optional(),
+  monitors_project_key: z.string().optional(),
+  monitors_parent_issue_key: z.string().optional()
 });
 
 export const VaultConfigSchema = z.object({

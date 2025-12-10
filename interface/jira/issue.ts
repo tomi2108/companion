@@ -2,7 +2,6 @@ import { jira } from "@jira/api";
 import { Config, openInBrowser } from "@lib/config";
 import { Choice } from "@lib/constants";
 
-import { Board } from "./board";
 import { JiraProject } from "./project";
 import { JiraUser } from "./user";
 
@@ -101,17 +100,19 @@ export class Issue {
     title: string;
     description?: string;
     labels?: string[];
-    user: JiraUser;
+    asignee?: JiraUser;
+    reporter: JiraUser;
     project: JiraProject;
+    issueType: string;
   }) {
     const labels = opts.labels ?? Config.get().jira.labels ?? [];
     // TODO: probably make this a param not every child sould be the same issuetype... i think
-    const issuetype = opts.project.issueTypes?.find((t) => t.name === "Tarea");
+    const issuetype = opts.project.issueTypes?.find((t) => t.name === opts.issueType);
     if (!issuetype) throw new Error("Could not find proper issue type to create child");
     return Issue.fromIssueResponse(await this.jira.addNewIssue({
       fields: {
         assignee: {
-          id: opts.user.id
+          id: opts.asignee?.id
         },
         issuetype: {
           id: issuetype.id
@@ -123,7 +124,7 @@ export class Issue {
         description: opts.description,
         summary: opts.title,
         reporter: {
-          id: opts.user.id
+          id: opts.reporter.id
         },
         parent: {
           key: this.key
@@ -137,9 +138,10 @@ export class Issue {
     // TODO: test
     const board_id = Config.get().jira.board_id;
     if (!board_id) throw new Error("No board id set");
-    const sprint = await new Board(board_id).getCurrentSprint();
-    if (!sprint) throw new Error("There is no active sprint");
-    return await this.jira.addIssueToSprint(this.id, sprint.id);
+    // TODO: fix circular dependency
+    // const sprint = await new Board(board_id).getCurrentSprint();
+    // if (!sprint) throw new Error("There is no active sprint");
+    // return await this.jira.addIssueToSprint(this.id, sprint.id);
   }
 
   async assign(user: string) {

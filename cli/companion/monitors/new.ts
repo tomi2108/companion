@@ -2,23 +2,27 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { getApp, getSubApps } from "@files";
+import { MonitorYaml } from "@files/monitor_yaml";
 import { createDirIfNotExists, getAppCollections } from "@files/utils";
 import { Repo } from "@interface/dirs/repo";
 import { HttpFile } from "@interface/http/http_file";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
-import { input, search } from "@lib/ui";
+import { confirm, input, search } from "@lib/ui";
 import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
+
+import { createMonitorIssue } from "./doc";
 
 export default {
   command: "new",
   aliases: ["n"],
   describe: "Create new monitor yaml",
   handler: async () => {
-    const monitors_path = Config.get().paths.monitors;
+    const config = Config.get();
+    const monitors_path = config.paths.monitors;
     if (!monitors_path) throw new ConfigError("paths.monitors");
     const http_files = getAppCollections();
     const projects = await new Openshift(await getOcToken()).getProjects();
@@ -64,6 +68,16 @@ export default {
     const file_name = `${res.name}_${res.date}.yaml`;
     const dir = path.join(monitors_path, project.name);
     const full_path = path.join(dir, file_name);
+
+    const createIssue = await confirm({ message: "Create jira ticket?" });
+    if (createIssue) {
+      const project_key = config.jira.monitors_project_key;
+      const parent_issue_key = config.jira.monitors_parent_issue_key;
+
+      if (!project_key) throw new ConfigError("jira.monitors_project_key");
+      if (!parent_issue_key) throw new ConfigError("jira.monitors_parent_issue_key");
+      await createMonitorIssue(new MonitorYaml(full_path), { parent_issue_key, project_key });
+    }
 
     const repo = new Repo(monitors_path);
     await repo.stash(async () => {
