@@ -70,10 +70,10 @@ describe("CLI - env create command", () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
-  it("should throw if no vault path is set", async () => {
+  it("should throw if no namespaces path is set", async () => {
     mockConfigMapCreation();
-    mockConfig({ paths: { vault: undefined } });
-    await expect(create.handler()).rejects.toThrow(new ConfigError("paths.vault"));
+    mockConfig({ paths: { namespaces: undefined } });
+    await expect(create.handler()).rejects.toThrow(new ConfigError("paths.namespaces"));
   });
 
   it("should throw if secrets yaml is invalid", async () => {
@@ -82,9 +82,9 @@ describe("CLI - env create command", () => {
     await expect(create.handler()).rejects.toThrow(InvalidSecretYaml);
   });
 
-  it("should throw if vault path is not a git repository if creating a secret", async () => {
+  it("should throw if namespaces path is not a git repository if creating a secret", async () => {
     mockSecretCreation();
-    vi.mocked(isGitRepo).mockImplementation((p) => p.includes(Config.get().paths.vault as string) ? false : true);
+    vi.mocked(isGitRepo).mockImplementation((p) => p.includes(Config.get().paths.namespaces as string) ? false : true);
     await expect(create.handler()).rejects.toThrow(InvalidRepo);
   });
 });

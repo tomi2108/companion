@@ -7,7 +7,9 @@ export const mockConfigData = {
     scripts_dir: "/mock/scripts",
     oc_config_path: "/mock/kube/config"
   },
-  paths: { vault: "/path/to/vault" },
+  paths: {
+    namespaces: "/path/to/vault"
+  },
   gitlab: {
     token: "mock_gitlab_token",
     server: "https://mock_gitlab_server"

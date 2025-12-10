@@ -16,8 +16,8 @@ export default {
   aliases: [],
   describe: "Create CronJob from deployment",
   handler: async () => {
-    const vault_path = Config.get().paths.vault;
-    if (!vault_path) throw new ConfigError("paths.vault");
+    const namespaces_path = Config.get().paths.namespaces;
+    if (!namespaces_path) throw new ConfigError("paths.namespaces");
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
@@ -53,7 +53,7 @@ export default {
       configmaps = await promptForOcResource(configmaps_availabie, { message: "Select configmaps", multiple: true });
     }
 
-    const repo_path = path.join(vault_path, project.name);
+    const repo_path = path.join(namespaces_path, project.name);
     const cron_file = path.join(repo_path, "templates", `${name}-cronjob.yaml`);
     const repo = new Repo(repo_path);
     await repo.stash(async () => {

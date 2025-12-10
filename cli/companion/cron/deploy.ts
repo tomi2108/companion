@@ -17,14 +17,14 @@ export default {
   aliases: ["dep"],
   describe: "Deploy CronJob new version",
   handler: async () => {
-    const vault_path = Config.get().paths.vault;
-    if (!vault_path) throw new ConfigError("paths.vault");
+    const namespaces_path = Config.get().paths.namespaces;
+    if (!namespaces_path) throw new ConfigError("paths.namespaces");
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
     const namespace = project.name;
-    const repo_path = path.join(vault_path, namespace);
+    const repo_path = path.join(namespaces_path, namespace);
     const templates_path = path.join(repo_path, "templates");
     const cron_jobs = fs.readdirSync(templates_path, { withFileTypes: true }).filter(CronYaml.isCronYaml).map((d) => d.name);
     const selected_cron = await search({ message: "Select cronjob", choices: cron_jobs });

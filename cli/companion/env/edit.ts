@@ -3,7 +3,7 @@ import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 
 import { promptForOcResource, promptTmpFile } from "@interface/prompts";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
 import { Openshift } from "@oc";
@@ -14,7 +14,7 @@ export default {
   aliases: ["e"],
   describe: "Edit configmap or secret",
   handler: async () => {
-    if (!Config.get().paths.vault) throw new Error("Vault path not set");
+    if (!Config.get().paths.namespaces) throw new ConfigError("paths.namespaces");
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
