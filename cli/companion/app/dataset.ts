@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -63,26 +63,13 @@ export default {
 
     const results = await Promise.all(
       queryRes.map(async (value) => {
-        file.variables = { ...file.variables, ...value };
-        const path = file.replaceVariables(req.pathname);
-        const params = req.params ? Object.fromEntries(
-          Object.entries(req.params)
-            .map(([k, v]) => [k, v ? file.replaceVariables(v) : ""]))
-          : {};
-
-        const reqConfig: AxiosRequestConfig = {
-          method: req.method,
-          url: `http://${service}-${project.name}.apps.${config.openshift.server_name}.cuyorh.tcloud.ar${path}`,
-          params,
-          data: JSON.parse(req.body ? file.replaceVariables(req.body) ?? "{}" : "{}")
-        };
+        const url = `http://${service}-${project.name}.apps.${config.openshift.server_name}.cuyorh.tcloud.ar`;
         try {
-
-          const res = await axios.request(reqConfig);
-          return { request: reqConfig, response: res, query: value };
+          const { res, config } = await req.send(url, value);
+          return { request: config, response: res, query: value };
         } catch (err) {
-          if (axios.isAxiosError(err)) return { request: reqConfig, response: err.response, query: value };
-          return { request: reqConfig, response: null, query: value };
+          if (axios.isAxiosError(err)) return { request: config, response: err.response, query: value };
+          return { request: config, response: null, query: value };
         }
       }));
 
@@ -99,7 +86,10 @@ export default {
     }
 
     const date = new Date().toISOString();
-    const dataset = results.map((r) => r.response?.status && r.response.status <= 299 ? r.query : null).filter((s) => s !== null);
+    const dataset = results.map(
+      (r) => r.response?.status && r.response.status <= 299 ? r.query : null)
+      .filter((s) => s !== null
+      );
     const result = {
       service,
       project: project.name,
@@ -130,10 +120,10 @@ export default {
         postscript: postscripts_file,
         results: results.map((r) => ({
           ...r,
-          response: {
+          response: r.response ? {
             data: r.response?.data ?? null,
-            status: r.response?.data ?? null
-          }
+            status: r.response?.status ?? null
+          } : null
         }))
       };
       fs.writeFileSync(log_file, JSON.stringify(logs, undefined, 2));

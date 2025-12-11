@@ -25,7 +25,7 @@ export class HttpFile {
     const [globals, ...requestsString] = fs.readFileSync(this.file_path).toString().split("###");
     if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path, "Check syntax");
     this.variables = this.getVariables(globals ?? "");
-    this.requests = this.parseRequests(requestsString).map((r) => new Req(r));
+    this.requests = this.parseRequests(requestsString).map((r) => new Req(r, this.variables));
     const service = this.variables.host?.split("-movistar-empresas")?.[0];
     if (!service) throw new InvalidHttpFile(file_path, "Could not find host variable to determine service name");
     this.service = service;
@@ -60,16 +60,6 @@ export class HttpFile {
     const split = l.split(":");
     if (split.length <= 1) return null;
     return { key: split[0], value: split?.[1]?.trim() };
-  }
-
-  public replaceVariables(string: string | undefined, options?: { quote_strings?: boolean }) {
-    if (!this.variables || !string) return string;
-    let res = string;
-    Object.entries(this.variables).forEach(([k, v]) => {
-      const value = options?.quote_strings && typeof v === "string" ? `"${v.replaceAll("\"", "")}"` : v;
-      res = res.replaceAll(`{{${k}}}`, value);
-    });
-    return res;
   }
 
   private getVariable = (l: string) => {
@@ -114,7 +104,7 @@ export class HttpFile {
         const h = this.getHeader(l);
         if (!h) continue;
         const { key, value } = h;
-        if (key && value) headers[key] = this.replaceVariables(value) || null;
+        if (key && value) headers[key] = value;
       }
 
       let bodyString = "";
@@ -123,26 +113,11 @@ export class HttpFile {
         if (!l) continue;
         bodyString = bodyString.concat(l);
       }
-      // bodyString = this.replaceVariables(bodyString)?.trim() ?? "";
-      // Quizas algun dia se necesario parsear el body ... por ahora no
-      // let body: Record<string, number | string> | null = null;
-      // try {
-      //   if (!bodyString) body = null;
-      //   else body = JSON.parse(bodyString);
-      // } catch {
-      //   throw new InvalidJson(this.file_path);
-      // }
       return { method, params, pathname, headers, body: bodyString };
     }
     ).filter((e) => e !== null);
   }
 }
-
-// class InvalidJson extends Error {
-//   constructor(file_path: string) {
-//     super(`Invalid json found at file ${file_path}`);
-//   }
-// }
 
 class InvalidHttpFile extends Error {
   constructor(file_path: string, reason = "") {

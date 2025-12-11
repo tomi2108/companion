@@ -1,4 +1,3 @@
-import axios, { AxiosRequestConfig } from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -60,17 +59,7 @@ export default {
     const chosen_data_name = await search({ message: "Choose data", choices: options });
     const chose_data = options.find((o: { name: string }) => o.name === chosen_data_name);
 
-    const vars = token_req.replaceableVariables();
-    http.variables = Object.fromEntries(vars.map((v) => [v, chose_data[v] ?? null]));
-    const req_config: AxiosRequestConfig = {
-      method: token_req.method,
-      params: Object.fromEntries(Object.entries(token_req.params ?? {}).map(([k, v]) => [k, v ? http.replaceVariables(v) : undefined])),
-      headers: token_req.headers ?? {},
-      url: `${url}${http.replaceVariables(token_req.pathname)}`,
-      data: JSON.parse(http.replaceVariables(token_req.body, { quote_strings: true }) ?? "{}")
-    };
-
-    const res = await axios.request(req_config);
+    const { res } = await token_req.send(url, chose_data);
     const token = res.data.token;
     const app_host = await (async () => {
       if (isLocal) return `localhost:${local_port}`;

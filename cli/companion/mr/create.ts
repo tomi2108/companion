@@ -43,7 +43,7 @@ export default {
     }
 
     const tasks = await getTasksFromDir(full_path, { project: name });
-    if (tasks.length > 0) {
+    if (tasks.length > 0 && tasks.some((t) => !t.tags.jira_id)) {
       const spinner = loading("Creating missing jira tickets");
       await Promise.all(
         tasks.map(async (t) => {

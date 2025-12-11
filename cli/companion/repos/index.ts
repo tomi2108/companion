@@ -5,6 +5,7 @@ import clone from "@cli/repos/clone";
 import install from "@cli/repos/install";
 import level from "@cli/repos/merge";
 import open from "@cli/repos/open";
+import web from "@cli/repos/web";
 
 export default {
   command: "repos <command>",
@@ -16,6 +17,7 @@ export default {
     .command(open)
     .command(level)
     .command(install)
+    .command(web)
     .demandCommand(1, "Please specify a command")
     .help(),
   handler: () => { }

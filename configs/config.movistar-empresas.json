@@ -216,5 +216,8 @@
         "movistarempresas-mock-digit3"
       ]
     }
+  },
+  "tasks": {
+    "jira_parent_key": "ECR-12485"
   }
 }

@@ -140,14 +140,16 @@ export class Task {
     const config = Config.get();
     const jira = new Jira();
     const parent_key = config.tasks.jira_parent_key;
+    const project_key = config.jira.project_key;
     const labels = config.jira.labels;
     if (!parent_key) throw new ConfigError("tasks.jira_parent_key");
+    if (!project_key) throw new ConfigError("jira.project_key");
     const parent_issue = await jira.getIssue(parent_key);
-    // TODO: arreglar
     const created_issue = await parent_issue.createChild({
+      issueType: "Task",
       asignee: await jira.getCurrentUser(),
       reporter: await jira.getCurrentUser(),
-      project: await jira.getProject(),
+      project: await jira.getProject(project_key),
       title: `TODO(${this.project}): ${this.title}`,
       description: `- FILE-LOCATION: ${this.tags.file_location.file_path}:${this.tags.file_location.row}:${this.tags.file_location.col}`,
       labels
