@@ -76,8 +76,7 @@ export function createTempFile(file_name: string) {
 }
 
 export function createLogFile(file_name: string) {
-  const config_log_path = Config.get().preferences.logs_path;
-  if (!config_log_path) return null;
+  const config_log_path = Config.get().preferences.logs_path!;
   const file_path = path.join(config_log_path, file_name);
   createDirIfNotExists(path.dirname(file_path));
   return file_path;
@@ -136,3 +135,6 @@ export function getAppCollections() {
   return http_files;
 }
 
+export function removeExtensions(filename: string) {
+  return filename.replace(/\..+$/, "");
+}

@@ -2,9 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { AppRepo } from "@files/app_repo";
+import { createLogFile, removeExtensions } from "@files/utils";
 import { executeScript } from "@interface/cmd";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
+import log from "@lib/log";
 import { loading, search } from "@lib/ui";
 import { readfiles } from "@lib/utils";
 import { Openshift } from "@oc";
@@ -44,11 +46,15 @@ export default {
       .map((s) => s.getData())
     )).reduce((acc, curr) => ({ ...acc, ...curr }));
 
-    executeScript("node", {
+    const output = executeScript("node", {
       path: "",
       env,
+      supressStdout: true,
       args: [migration_file],
       cwd: migration_scripts
     });
+    const log_file = createLogFile(path.join("mongo", "scripts", removeExtensions(choice), new Date().toISOString()));
+    fs.writeFileSync(log_file, output);
+    log.info(`Log file written at ${log_file}`);
   }
 };

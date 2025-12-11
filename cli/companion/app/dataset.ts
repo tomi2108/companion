@@ -18,8 +18,6 @@ export default {
   describe: "Creates a dataset that succeeds for a given request",
   handler: async () => {
     const config = Config.get();
-    const log_path = config.preferences.logs_path;
-    if (!log_path) throw new ConfigError("preferences.logs_path");
     const dataset_repo_path = config.paths.dataset;
     if (!dataset_repo_path) throw new ConfigError("paths.dataset");
     const queries_path = path.join(dataset_repo_path, "queries");
