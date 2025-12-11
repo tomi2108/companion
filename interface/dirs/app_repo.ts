@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { Repo } from "@interface/dirs/repo";
+import { getTasksFromDir } from "@interface/tasks";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
@@ -252,6 +253,18 @@ export class AppRepo extends Repo {
     return res;
   }
 
+  async generateMissingJiraTickets() {
+    const { name } = await this.getInfo();
+    const tasks = await getTasksFromDir(this.full_path, { project: name });
+    if (tasks.length === 0 || tasks.every((t) => t.tags.jira_id)) return;
+    await Promise.all(
+      tasks.map(async (t) => {
+        if (!t.tags.file_location) return;
+        await t.generateJiraId();
+        this.add(t.tags.file_location.file_path);
+      }));
+    await this.commit("fix: add jira tickets");
+  }
 }
 
 class InvalidAppRepo extends Error {

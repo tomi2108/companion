@@ -2,7 +2,6 @@ import { getApp } from "@files";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
-import { getTasksFromDir } from "@interface/tasks";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { confirm, loading, search } from "@lib/ui";
@@ -42,17 +41,10 @@ export default {
       }
     }
 
-    const tasks = await getTasksFromDir(full_path, { project: name });
-    if (tasks.length > 0 && tasks.some((t) => !t.tags.jira_id)) {
+    if (app_repo) {
       const spinner = loading("Creating missing jira tickets");
-      await Promise.all(
-        tasks.map(async (t) => {
-          if (!t.tags.file_location) return;
-          await t.generateJiraId();
-          app_repo?.add(t.tags.file_location.file_path);
-        }));
+      await app_repo?.generateMissingJiraTickets();
       spinner.succeed();
-      await app_repo?.commit("fix: add jira tickets");
     }
 
     if (!merge) {
