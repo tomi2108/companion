@@ -3,8 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { DeployYamlContent } from "@files/validations";
-import { HttpFile } from "@interface/http/http_file";
-import { Config, ConfigError } from "@lib/config";
+import { Config } from "@lib/config";
 import { AppType } from "@lib/constants";
 
 export function createDirIfNotExists(dir: string) {
@@ -15,12 +14,12 @@ export function createDirIfNotExists(dir: string) {
 
 export const get = <T>(obj: any, path: string): T | undefined => path.split(".").reduce((current, step) => current?.[step], obj);
 
-// do not bother typing this, adds no value
 export function getDeploymentOption(
   path: string,
   type: AppType,
   namespace: string,
   y: DeployYamlContent
+  // do not bother typing this, adds no value
 ): any {
   const deployments = Config.get().openshift?.deployments as any;
 
@@ -121,18 +120,6 @@ export function traverseDirectory(dir: string, {
     return [f];
   }
   return result.flatMap(flat);
-}
-
-const ignore = ["Ignore", "main.js"];
-const collections_folder = "Collections";
-
-export function getAppCollections() {
-  const rest_path = Config.get().paths.rest;
-  if (!rest_path) throw new ConfigError("paths.rest");
-  const collections = traverseDirectory(rest_path, { ignore }).find((e) => e.file === collections_folder)?.files;
-  if (!collections) return [];
-  const http_files = collections.map((n) => new HttpFile(n.path)).filter(Boolean);
-  return http_files;
 }
 
 export function removeExtensions(filename: string) {

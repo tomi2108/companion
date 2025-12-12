@@ -2,8 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { getApp, getSubApps } from "@files";
+import { getAppCollections } from "@files/http";
 import { MonitorYaml } from "@files/monitor_yaml";
-import { createDirIfNotExists, getAppCollections } from "@files/utils";
+import { createDirIfNotExists } from "@files/utils";
 import { Repo } from "@interface/dirs/repo";
 import { HttpFile } from "@interface/http/http_file";
 import { promptForOcResource } from "@interface/prompts";

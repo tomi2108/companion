@@ -8,6 +8,7 @@ type ReqObj = {
   body: string;
 };
 
+export const varRegex = new RegExp("{{(.*?)}}", "g");
 export class Req {
   method: string;
   params: Record<string, string | null> | null;
@@ -56,7 +57,6 @@ export class Req {
 
   private replaceableVariables() {
     const res: string[] = [];
-    const varRegex = new RegExp("{{(.*?)}}", "g");
     res.push(...this.pathname.matchAll(varRegex).map((m) => m?.[1] ?? ""));
     res.push(...this.body.matchAll(varRegex).map((m) => m?.[1] ?? ""));
     res.push(
@@ -69,5 +69,4 @@ export class Req {
     );
     return Array.from(new Set(res));
   }
-
 }

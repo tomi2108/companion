@@ -6,6 +6,7 @@ import app from "@cli/app";
 import config from "@cli/config";
 import cron from "@cli/cron";
 import env from "@cli/env";
+import http from "@cli/http";
 import mongo from "@cli/mongo";
 import monitors from "@cli/monitors";
 import mr from "@cli/mr";
@@ -34,6 +35,7 @@ yargs
   .command(config)
   .command(cron)
   .command(env)
+  .command(http)
   .command(mongo)
   .command(monitors)
   .command(mr)

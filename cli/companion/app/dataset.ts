@@ -2,7 +2,8 @@ import axios from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
-import { createDirIfNotExists, createLogFile, getAppCollections } from "@files/utils";
+import { getAppCollections } from "@files/http";
+import { createDirIfNotExists, createLogFile } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Sql } from "@interface/sql/sql";
 import { Config, ConfigError } from "@lib/config";

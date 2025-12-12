@@ -1,7 +1,9 @@
 import fs from "node:fs";
 
+import { getApp } from "@files";
+
 import { Req } from "./req";
-import { Config } from "../../lib/config";
+import { Config, ConfigError } from "../../lib/config";
 
 const valid_methods = [
   "GET",
@@ -21,12 +23,14 @@ export class HttpFile {
   url: string | null;
 
   constructor(file_path: string) {
+    const namespace_prefix = Config.get().openshift.namespace_prefix;
+    if (!namespace_prefix) throw new ConfigError("openshift.namespace_prefix");
     this.file_path = file_path;
     const [globals, ...requestsString] = fs.readFileSync(this.file_path).toString().split("###");
     if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path, "Check syntax");
     this.variables = this.getVariables(globals ?? "");
     this.requests = this.parseRequests(requestsString).map((r) => new Req(r, this.variables));
-    const service = this.variables.host?.split("-movistar-empresas")?.[0];
+    const service = this.variables.host?.split(`-${namespace_prefix}`)?.[0];
     if (!service) throw new InvalidHttpFile(file_path, "Could not find host variable to determine service name");
     this.service = service;
     this.url = this.getUrl("cert", this.service);
@@ -38,10 +42,12 @@ export class HttpFile {
   }
 
   private getUrl(env: string, service: string | null) {
+    const namespace_prefix = Config.get().openshift.namespace_prefix;
+    if (!namespace_prefix) throw new ConfigError("openshift.namespace_prefix");
     if (!service) return null;
     const sufix = this.getEnvSufix(env);
     const config = Config.get().openshift;
-    return `http://${service}-movistar-empresas${sufix}.apps.${config.server_name}.cuyorh.tcloud.ar`;
+    return `http://${service}-${namespace_prefix}${sufix}.apps.${config.server_name}.cuyorh.tcloud.ar`;
   }
 
   private getVariables(globals: string) {
@@ -116,6 +122,14 @@ export class HttpFile {
       return { method, params, pathname, headers, body: bodyString };
     }
     ).filter((e) => e !== null);
+  }
+
+  async getInfo() {
+    const { app_repo } = await getApp(this.service);
+    if (!app_repo) throw new Error(`Could not find app_repo for app ${this.service}`);
+    const description = app_repo.description;
+    const version = app_repo.version ?? "1.0.0";
+    return { description, version };
   }
 }
 
