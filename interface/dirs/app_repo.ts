@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { Repo } from "@interface/dirs/repo";
 import { getTasksFromDir } from "@interface/tasks";
+import { JiraIssueTracker } from "@interface/tasks/jira_issue_tracker";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
@@ -256,12 +257,14 @@ export class AppRepo extends Repo {
   async generateMissingJiraTickets() {
     const { name } = await this.getInfo();
     const tasks = await getTasksFromDir(this.full_path, { project: name });
-    if (tasks.length === 0 || tasks.every((t) => t.tags.jira_id)) return;
+    const tracker = new JiraIssueTracker();
+    if (
+      tasks.length === 0 || tasks.every((t) => tracker.isTracked(t))
+    ) return;
     await Promise.all(
       tasks.map(async (t) => {
-        if (!t.tags.file_location) return;
-        await t.generateJiraId();
-        this.add(t.tags.file_location.file_path);
+        await tracker.save(t);
+        this.add(t.file_location.file_path);
       }));
     await this.commit("fix: add jira tickets");
   }

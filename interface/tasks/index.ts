@@ -6,7 +6,7 @@ import { Task } from "@interface/tasks/task";
 
 type Opt = { project: string };
 export const getTasksFromDir = async (dir: string, opt: Opt) => {
-  const ignore = [".git", "dist", "coverage", ".husky", ".next", "node_modules"];
+  const ignore = [".git", "dist", "coverage", ".husky", ".next", "node_modules", "out", "build"];
   const file_stats = traverseDirectory(dir, { flatten: true, ignore });
   const tasks: Task[] = [];
   for (const file_stat of file_stats) {
@@ -22,27 +22,16 @@ export const getTasksFromFile = async (file_path: string, { project }: Opt) => {
   for (let row = 0; row < lines.length; row++) {
     const line = lines[row];
     if (!line) continue;
-    const regex = /TODO(?:\(([^)]+)\))?:\s*(.*)/g;
+    const regex = /TODO([^:]*):\s*(.*)/g;
     let match;
-
     while ((match = regex.exec(line)) !== null) {
       const col = match.index;
       const title = match[2]?.trim() ?? "";
       const splitted_path = file_path.split(path.sep);
       const saved_file_path = splitted_path.slice(splitted_path.findIndex((e) => e === project) + 1).join(path.sep);
       const file_location = { file_path: saved_file_path, row: row + 1, col: col + 1 };
-      const jira_id = match[1]?.trim() ?? undefined;
-      results.push(
-        new Task({
-          title,
-          project,
-          tags: {
-            priority: 1,
-            status: "OPEN",
-            file_location,
-            jira_id
-          }
-        }));
+      // TODO: Task.description from file
+      results.push(new Task({ title, project, file_location }));
     }
   }
   return results;

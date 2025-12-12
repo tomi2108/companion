@@ -206,7 +206,7 @@ export class Repo {
     const project = await this.getProject();
     const assigneeId = await new GitlabUser(Config.get().gitlab.username).getId();
     const options = { description, assigneeId };
-    await this.glab.Issues.create(project.id, title, options);
+    return await this.glab.Issues.create(project.id, title, options);
   }
 
   async getProject() {
