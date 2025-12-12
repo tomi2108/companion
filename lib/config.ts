@@ -17,6 +17,7 @@ import {
   MigrationsConfig,
   OpenShiftConfig,
   PathsConfig,
+  PathsConfigSchema,
   PreferencesConfig,
   ProjectConfig,
   ReposConfig,
@@ -36,6 +37,10 @@ export async function openInBrowser(url: string) {
 export async function openInEditor(full_path: string, opts?: { wait?: boolean }) {
   await openEditor([{ file: full_path }], { wait: opts?.wait ?? false, editor: Config.get().preferences.editor });
 }
+
+const default_log_path = path.resolve(__dirname, "../../logs");
+const default_editor = process.env.EDITOR ?? "vim";
+const default_browser = process.env.BROWSER ?? "firefox";
 
 const homeDir = os.homedir();
 
@@ -73,9 +78,9 @@ class Config {
   } as JiraConfig;
 
   preferences: PreferencesConfig = {
-    logs_path: path.resolve(__dirname, "../../logs"),
-    editor: process.env.EDITOR ?? "vi",
-    browser: process.env.BROWSER ?? "firefox"
+    logs_path: default_log_path,
+    editor: default_editor,
+    browser: default_browser
   };
 
   vault: VaultConfig = {
@@ -126,24 +131,23 @@ class Config {
     const jira_token = await password({ message: "Enter Jira auth token (https://id.atlassian.com/manage-profile/security/api-tokens)" });
 
     const vault_token = await password({ message: `Enter Vault auth token (${this.vault.server}/ui/vault/secrets)` });
+    const sonar_token = await password({ message: `Enter Sonar auth token (${this.sonar.server}/account/security)` });
 
-    const backend = await input({ message: "Where do you store backend repositories?" });
-    const frontend = await input({ message: "Where do you store frontend repositories?" });
-    const despliegues = await input({ message: "Where do you store despliegues repositories?" });
-    const threescale = await input({ message: "Where do you store threescale repositories?" });
-    const argocd = await input({ message: "Where do you store argocd repositories?" });
-    const vault = await input({ message: "Where do you store vault repositories?" });
+    const editor = await input({ message: "What is your favourite editor? (code, nvim, vim, nano)", initial: this.preferences.editor ?? default_editor });
+    const browser = await input({ message: "What is your favourite browser? (google-chrome, firefox, brave-browser, qutebrowser)", initial: this.preferences.browser ?? default_browser });
+    const logs_path = await input({ message: "Where do you store log files?", initial: this.preferences.logs_path ?? default_log_path });
+
+    const paths_keys = Object.keys(PathsConfigSchema.shape);
+    const paths: Record<string, string> = {};
+
+    for (const key of paths_keys) {
+      const value = await input({ message: `Where do you store ${key} repositories?` });
+      paths[key] = value;
+    }
 
     const config_to_write = {
       team: preset !== "default" ? preset : null,
-      paths: {
-        backend,
-        frontend,
-        despliegues,
-        threescale,
-        argocd,
-        vault
-      },
+      paths,
       openshift: {
         username: oc_user,
         password: oc_password
@@ -152,12 +156,20 @@ class Config {
         username: glab_user,
         token: glab_token
       },
+      "sonar": {
+        "token": sonar_token
+      },
       vault: {
         token: vault_token
       },
       jira: {
         username: jira_user,
         token: jira_token
+      },
+      preferences: {
+        editor,
+        browser,
+        logs_path
       }
     };
 
