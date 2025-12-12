@@ -26,7 +26,7 @@ export class JiraIssueTracker extends TaskTracker {
     if (!project_key) throw new ConfigError("jira.project_key");
     const parent_issue = await jira.getIssue(parent_key);
     const created_issue = await parent_issue.createChild({
-      issueType: "Tarea",
+      issueType: "Task",
       asignee: await jira.getCurrentUser(),
       reporter: await jira.getCurrentUser(),
       project: await jira.getProject(project_key),
