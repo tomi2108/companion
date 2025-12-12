@@ -21,7 +21,7 @@ export async function password(opts: StringPromptOptions) {
 }
 
 export async function search<T>(opts: ArrayPromptOptions<T>) {
-  // TODO: would be cool if search filtered hints as you type
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/34]: would be cool if search filtered hints as you type
   // I dont think this is doable with "enquirer" might have to move away from it
   // maybe look at Inquirer ??
   const res = await prompt({ ...opts, type: "autocomplete", scroll: true, separator: true, sort: true, name: "selected" });

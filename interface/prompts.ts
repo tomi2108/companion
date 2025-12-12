@@ -23,7 +23,7 @@ export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
     message: "",
     ...opts
   });
-  // TODO: can maybe improve this, not searching by app_name, but by origin url ?
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/38]: can maybe improve this, not searching by app_name, but by origin url ?
   // think more about this and making deploy_repo in return type
   // not optional, since we are searching in Config.get().paths.despliegues;
   const spinner = loading("Getting app");

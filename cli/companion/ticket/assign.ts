@@ -9,7 +9,7 @@ export default {
 
     const issue = await promptForJiraIssue();
     const users = await new Jira().getUsers();
-    // TODO: fix this script
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/48]: fix this script
     const user = await search({
       message: `Select a user to assing issue ${issue?.key}`,
       choices: users.map((u) => u.toChoice())

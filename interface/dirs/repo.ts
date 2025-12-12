@@ -23,7 +23,7 @@ export class Repo {
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
     const repo_path = path.join(full_path, name);
-    // TODO: would be cool to clone directly in full_path similar to "git clone {{url}} ."
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/74]: would be cool to clone directly in full_path similar to "git clone {{url}} ."
     // copying and deleting seems wrong
     if (current) {
       cpSync(repo_path, full_path, { recursive: true });
@@ -248,7 +248,7 @@ export class Repo {
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
     let type = Config.get().openshift.default_ms_type || APP_TYPES[0];
-    // TODO: Not the best idea, find a better way
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/56]: Not the best idea, find a better way
     APP_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
     return { name, pathname, type };
   }

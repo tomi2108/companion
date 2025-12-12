@@ -86,7 +86,7 @@ export default {
 };
 
 async function deleteBranches(repo: Repo, force?: boolean) {
-  // TODO: make a team , user overrideable config
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/75]: make a team , user overrideable config
   const to_delete = ["nivelacion", "feature", "bugfix", "hotfix", "fix", "despliegue", "bump"];
   if (force) await repo.reset();
   await repo.switchBranchIfExists("master");

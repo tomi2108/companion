@@ -1,6 +1,6 @@
 import fs from "node:fs";
 
-// TODO: move to TaskRepo
+// TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/51]: move to TaskRepo
 // const TASK_STATUS = {
 //   OPEN: "OPEN",
 //   CLOSED: "CLOSED"
@@ -63,14 +63,14 @@ export class Task {
     fs.writeFileSync(file_path, lines.join("\n"));
   }
 
-  // TODO: move to TaskRepo
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/37]: move to TaskRepo
   // private static parseFileLocation(raw: string): FileLocation {
   //   const [file_path, row, col] = raw.split(":");
   //   if (!file_path) throw new Error(`Could not parse file location ${raw} file_path missing`);
   //   return { file_path, row: Number(row), col: Number(col) };
   // }
 
-  // TODO: move to TaskRepo
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/63]: move to TaskRepo
   // static fromTaskFile(file: string) {
   //   const raw = fs.readFileSync(file, "utf8");
   //
@@ -159,10 +159,10 @@ export class Task {
   // }
 
   openInEditor() {
-    // TODO: implement Task.openInEditor()
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/35]: implement Task.openInEditor()
   }
 
-  // TODO: probably TaskRepo should be a TaskTracker and use this method for .generateId()
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/72]: probably TaskRepo should be a TaskTracker and use this method for .generateId()
   //
   // static newId() {
   //   const d = new Date();
@@ -175,7 +175,7 @@ export class Task {
   //   const SS = pad(d.getSeconds());
   //   return `${YYYY}${MM}${DD}-${HH}${mm}${SS}`;
   // }
-  // TODO: probably TaskRepo should be a TaskTracker and use this method for .save()
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/64]: probably TaskRepo should be a TaskTracker and use this method for .save()
   //   toMdString() {
   //     const required_tags = `- ID: ${this.id}
   // - PROJECT: ${this.project}

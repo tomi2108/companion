@@ -15,7 +15,7 @@ export default {
 
     const errors: string[] = [];
 
-    // TODO: make this script also upgrade frontend deployments
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/67]: make this script also upgrade frontend deployments
     const filtered = deployments.filter((d) => !filterFrontendDeployments(d));
 
     for (let index = 0; index < filtered.length; index += 10) {
@@ -27,7 +27,7 @@ export default {
             if (!app_repo) return errors.push(`Could not find app repo for app ${d.name}, skipped`);
             if (!deploy_repo) return errors.push(`Could not find deploy repo for app ${d.name}, skipped`);
             const tags = await app_repo.getTags();
-            // TODO: this is only right for backend deployments
+            // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/70]: this is only right for backend deployments
             // for frontend deployments we should look for -beta, -rc for different namespaces
             // find a good way to represent this in the config, this should be used in companion app status as well
             const last_version = tags[0];

@@ -30,7 +30,7 @@ export const getTasksFromFile = async (file_path: string, { project }: Opt) => {
       const splitted_path = file_path.split(path.sep);
       const saved_file_path = splitted_path.slice(splitted_path.findIndex((e) => e === project) + 1).join(path.sep);
       const file_location = { file_path: saved_file_path, row: row + 1, col: col + 1 };
-      // TODO: Task.description from file
+      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/36]: Task.description from file
       results.push(new Task({ title, project, file_location }));
     }
   }

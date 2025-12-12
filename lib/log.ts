@@ -1,5 +1,5 @@
-// TODO: Replace all logging with this
-// TODO: Add logging of error whenever we process.exit(1)
+// TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/33]: Replace all logging with this
+// TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/32]: Add logging of error whenever we process.exit(1)
 // and maybe find a better way of exiting with custom errors... ?
 
 import { AsyncLocalStorage } from "node:async_hooks";
