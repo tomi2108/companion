@@ -36,7 +36,7 @@ export async function openInEditor(full_path: string, opts?: { wait?: boolean })
 }
 
 const homeDir = os.homedir();
-const configs_dir = path.resolve(__dirname, "../../configs");
+const configs_dir = path.resolve(__dirname, "../../../configs");
 const config_file = process.env.COMPANION_CONFIG ?? getConfigPath();
 
 function getConfigPath() {

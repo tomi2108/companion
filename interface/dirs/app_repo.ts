@@ -59,7 +59,6 @@ export class AppRepo extends Repo {
     const package_path = path.join(this.full_path, "package.json");
     let package_file: any = {};
     try {
-      console.log("pack", package_path);
       package_file = JSON.parse(fs.readFileSync(package_path).toString());
     } catch (err) {
       console.log(err);
