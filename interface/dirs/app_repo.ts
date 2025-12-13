@@ -55,12 +55,14 @@ export class AppRepo extends Repo {
     fs.writeFileSync(package_path, JSON.stringify(package_file, null, 2));
   }
 
-  override async updateState() {
-    const package_path = this.package_file;
+  override updateState() {
+    const package_path = path.join(this.full_path, "package.json");
     let package_file: any = {};
     try {
+      console.log("pack", package_path);
       package_file = JSON.parse(fs.readFileSync(package_path).toString());
     } catch (err) {
+      console.log(err);
       log.error(`Error reading package.json in ${this.full_path}`);
       throw err;
     }

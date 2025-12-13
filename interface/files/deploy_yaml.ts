@@ -3,7 +3,7 @@ import fs, { Dirent } from "node:fs";
 import path from "node:path";
 
 import { getDeploymentOption } from "@files/utils";
-import { DeployYamlContent, YamlContentSchema } from "@files/validations";
+import { DeployYamlContent, DeployYamlContentSchema } from "@files/validations";
 import { Config } from "@lib/config";
 import { AppType, ENVS } from "@lib/constants";
 import { deepMerge, toYaml } from "@lib/utils";
@@ -25,7 +25,7 @@ export class DeployYaml {
     if (!yaml_content) throw new InvalidDeployYaml(file_path);
 
     this.content
-      = deepMerge(YamlContentSchema.parse(yaml_content, {
+      = deepMerge(DeployYamlContentSchema.parse(yaml_content, {
         error: () => {
           console.log(yaml_content);
           return file_path;

@@ -69,7 +69,7 @@ export function sha1(input: string) {
 }
 
 export function createTempFile(file_name: string) {
-  const file_path = path.join(Config.get().global.tmp_dir, file_name);
+  const file_path = path.join(Config.get().preferences.tmp_path, file_name);
   createDirIfNotExists(path.dirname(file_path));
   return file_path;
 }

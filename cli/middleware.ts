@@ -7,11 +7,10 @@ import { Config } from "@lib/config";
 import { storage } from "@lib/log";
 
 export async function loadConfig({ prod }: { prod?: boolean }) {
-  await Config.get().load();
+  const config = Config.get();
+  await config.load();
   if (prod) {
-    Config.get().openshift.server_name = "ocpprod";
-    Config.get().openshift.server_cuyo = "api.ocpprod.cuyorh.tcloud.ar:6443";
-    Config.get().openshift.auth_server_cuyo = "https://oauth-openshift.apps.ocpprod.cuyorh.tcloud.ar";
+    await config.prod();
   }
 }
 

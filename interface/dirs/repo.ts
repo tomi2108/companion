@@ -82,7 +82,7 @@ export class Repo {
     const branches = await this.git.branchLocal();
     if (branches.all.includes(name)) this.deleteBranch(name);
     await this.git.checkoutLocalBranch(name);
-    await this.updateState();
+    this.updateState();
   }
 
   async add(file: string) {
@@ -105,7 +105,7 @@ export class Repo {
   async checkout(branch: string) {
     await this.git.fetch(["-a"]);
     await this.git.checkout(branch);
-    await this.updateState();
+    this.updateState();
   }
 
   async switchBranchIfExists(branch: string) {
@@ -113,7 +113,7 @@ export class Repo {
     const branches = await this.git.branchLocal();
     if (!branches.all.includes(branch) || active_branch === branch) return { switched: false, original_branch: active_branch };
     await this.git.checkout(branch);
-    await this.updateState();
+    this.updateState();
 
     return { switched: true, original_branch: active_branch };
   }
@@ -121,7 +121,7 @@ export class Repo {
   async pull(branch: string) {
     await this.git.branch(["-u", `origin/${branch}`, branch]);
     const res = await this.git.pull("origin", branch, ["--no-rebase"]);
-    await this.updateState();
+    this.updateState();
     return res;
   }
 
@@ -269,7 +269,7 @@ export class Repo {
     return { name, pathname, type };
   }
 
-  updateState(): void | Promise<void> { }
+  updateState(): void { }
 
 }
 

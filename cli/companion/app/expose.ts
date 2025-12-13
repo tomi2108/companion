@@ -31,7 +31,7 @@ export default {
     const deployment = await promptForOcResource(deployments);
     const namespace = project.name;
 
-    const system_name = Config.get().threescale.products[namespace];
+    const system_name = Config.get().threescale.products?.[namespace];
     if (!system_name) throw new ConfigError(`threescale.products.${namespace}`);
 
     const { app_repo } = await getApp(deployment.name);

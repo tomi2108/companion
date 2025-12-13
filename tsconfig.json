@@ -61,6 +61,7 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "useUnknownInCatchVariables": true,
+    "useDefineForClassFields": false,
     "alwaysStrict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

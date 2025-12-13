@@ -11,7 +11,7 @@ import { Secret } from "@oc/secret";
 export class DeployRepo extends Repo {
   deployments: DeployYaml[] = [];
 
-  override async updateState() {
+  override updateState() {
     const dir = fs.readdirSync(this.full_path, { withFileTypes: true });
     const yaml_files = dir
       .filter(DeployYaml.isDeployYamlFile)

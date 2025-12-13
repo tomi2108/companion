@@ -1,6 +1,6 @@
-import { z } from "zod/v4";
+import z from "zod/v4";
 
-export const YamlContentSchema = z.object({
+export const DeployYamlContentSchema = z.object({
   image: z.object({
     tag: z.string()
   }),
@@ -45,5 +45,5 @@ export const YamlContentSchema = z.object({
   secrets: z.record(z.string(), z.string()).optional()
 });
 
-export type DeployYamlContent = z.infer<typeof YamlContentSchema>;
+export type DeployYamlContent = z.infer<typeof DeployYamlContentSchema>;
 

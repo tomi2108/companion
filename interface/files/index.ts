@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
-import { Config } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { isGitRepo, readdirs } from "@lib/utils";
 import { Project } from "@oc/project";
@@ -16,7 +16,7 @@ export function getAppPaths() {
 
 function getDeploymentPaths() {
   const dep_path = Config.get().paths.despliegues;
-  if (!dep_path) throw new Error("Despliegues path not set");
+  if (!dep_path) throw new ConfigError("paths.despliegues");
   return readdirs(dep_path)
     ?.map((d) => path.join(d.parentPath, d.name))
     .filter(isGitRepo);
