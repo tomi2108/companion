@@ -15,8 +15,9 @@ export default {
     const { app_repo: app } = await promptForApp();
 
     if (!app || !app.full_path) return log.error("Could not find app, check the apps origin url");
-    await app.copyEnv(project);
-    app.externalEnvs();
+    const env = app.env_file;
+    await env.copy(project, app);
+    env.external();
     log.success(`Copied envs for ${app.package} from namespace ${project.name}`);
   }
 };

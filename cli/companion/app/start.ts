@@ -48,13 +48,14 @@ export default {
         apps.map((a) => a.name),
         project,
         ({ key, app_repo, already_added, name }) => {
+          const env = app_repo.env_file;
           if (Object.keys(toStart).includes(name)) return;
-          if (!noedit) app_repo.removeEnv(key);
+          if (!noedit) env.remove(key);
           if (!already_added) {
             const next_port = port + Object.values(toStart).length;
             toStart[name] = next_port;
-            if (!noedit) app_repo.addEnv(key, `http://localhost:${next_port}`);
-          } else if (!noedit) app_repo.addEnv(key, `http://localhost:${toStart[name]}`);
+            if (!noedit) env.add(key, `http://localhost:${next_port}`);
+          } else if (!noedit) env.add(key, `http://localhost:${toStart[name]}`);
         });
     }
 

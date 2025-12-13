@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { AppRepo } from "@files/app_repo";
 import { createLogFile, removeExtensions } from "@files/utils";
 import { executeScript } from "@interface/cmd";
+import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";

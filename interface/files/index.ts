@@ -53,18 +53,17 @@ export async function getSubApps(
   const { app_repo, deploy_repo } = await getApp(app);
   if (!app_repo) return log.error(`App repo not found for ${app}`);
   if (!deploy_repo) return log.error(`Deploy repo not found for ${app}`);
+  const env = app_repo.env_file;
 
-  await app_repo.copyEnv(project);
-  app_repo.internalEnvs();
+  await env.copy(project, app_repo);
+  env.internal();
 
   const deployment = deploy_repo.getDeployment(project.name);
   const version = deployment?.getVersion();
   if (!version) return log.error(`Version not found for ${app} in project ${project.name}`);
   await app_repo.checkout(version);
 
-  const env = app_repo.getEnv();
-  const envEntries = Object.entries(env);
-
+  const envEntries = Object.entries(env.get());
   for (const [key, value] of envEntries) {
     const host = URL.canParse(value) ? new URL(value).hostname : null;
     if (!host) continue;

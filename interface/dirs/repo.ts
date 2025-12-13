@@ -11,10 +11,13 @@ import { APP_TYPES } from "@lib/constants";
 import { loading } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 
+import { RepoAction } from "./actions";
+
 export class Repo {
   git: SimpleGit;
   glab: ReturnType<typeof glab>;
   full_path: string;
+  actions: RepoAction[] = [];
 
   static async cloneRepo(full_path: string, link: string, current?: boolean) {
     await git(full_path).clone(link);
@@ -36,11 +39,11 @@ export class Repo {
   }
 
   constructor(full_path: string) {
-    if (isGitRepo(full_path)) {
-      this.git = git(full_path);
-      this.glab = glab();
-      this.full_path = full_path;
-    } else throw new InvalidRepo(full_path);
+    if (!isGitRepo(full_path)) throw new InvalidRepo(full_path);
+    this.git = git(full_path);
+    this.glab = glab();
+    this.full_path = full_path;
+    this.updateState();
   }
 
   async init(initialBranch: string) {
@@ -66,7 +69,9 @@ export class Repo {
   }
 
   async reset() {
-    return await this.git.reset(ResetMode.HARD);
+    const res = await this.git.reset(ResetMode.HARD);
+    await this.updateState();
+    return res;
   }
 
   async deleteBranch(name: string) {
@@ -77,6 +82,7 @@ export class Repo {
     const branches = await this.git.branchLocal();
     if (branches.all.includes(name)) this.deleteBranch(name);
     await this.git.checkoutLocalBranch(name);
+    await this.updateState();
   }
 
   async add(file: string) {
@@ -99,6 +105,7 @@ export class Repo {
   async checkout(branch: string) {
     await this.git.fetch(["-a"]);
     await this.git.checkout(branch);
+    await this.updateState();
   }
 
   async switchBranchIfExists(branch: string) {
@@ -106,12 +113,16 @@ export class Repo {
     const branches = await this.git.branchLocal();
     if (!branches.all.includes(branch) || active_branch === branch) return { switched: false, original_branch: active_branch };
     await this.git.checkout(branch);
+    await this.updateState();
+
     return { switched: true, original_branch: active_branch };
   }
 
   async pull(branch: string) {
     await this.git.branch(["-u", `origin/${branch}`, branch]);
-    return await this.git.pull("origin", branch, ["--no-rebase"]);
+    const res = await this.git.pull("origin", branch, ["--no-rebase"]);
+    await this.updateState();
+    return res;
   }
 
   async push(branch: string) {
@@ -152,7 +163,12 @@ export class Repo {
     return (await this.git.log({ from: sourceBranch, to: targetBranch })).all;
   }
 
+  private async runActions() {
+    for (const action of this.actions) await action.onMrCreate(this);
+  }
+
   async createMr(targetBranch: string, opts?: { projectId?: number; title?: string; reviewer?: string }) {
+    await this.runActions();
     const sourceBranch = await this.getActiveBranch();
     await this.push(sourceBranch);
 
@@ -252,6 +268,8 @@ export class Repo {
     APP_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
     return { name, pathname, type };
   }
+
+  updateState(): void | Promise<void> { }
 
 }
 

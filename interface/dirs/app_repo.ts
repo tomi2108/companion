@@ -2,13 +2,14 @@ import cp, { StdioOptions } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
+import { EnvFile } from "@files/env_file";
 import { Repo } from "@interface/dirs/repo";
-import { getTasksFromDir } from "@interface/tasks";
-import { JiraIssueTracker } from "@interface/tasks/jira_issue_tracker";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
-import { toExternalEnv, toInternalEnv } from "@oc/utils";
+
+import { RepoAction } from "./actions";
+import { GenerateJiraTicketsAction } from "./actions/generate_jira_tickets";
 
 export type Dependency = {
   name: string;
@@ -24,11 +25,12 @@ export class AppRepo extends Repo {
   version?: string;
   package?: string;
   description?: string;
-  env_file: string;
+  env_file: EnvFile;
   package_file: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
+  override actions: RepoAction[] = [new GenerateJiraTicketsAction()];
 
   static isAppRepo(full_path: string) {
     const package_path = path.join(full_path, "package.json");
@@ -53,7 +55,7 @@ export class AppRepo extends Repo {
     fs.writeFileSync(package_path, JSON.stringify(package_file, null, 2));
   }
 
-  private updateState() {
+  override async updateState() {
     const package_path = this.package_file;
     let package_file: any = {};
     try {
@@ -74,66 +76,7 @@ export class AppRepo extends Repo {
     if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
     super(full_path);
     this.package_file = path.join(full_path, "package.json");
-    this.env_file = path.join(this.full_path, ".env");
-    this.updateState();
-  }
-
-  getEnv(): Record<string, string> {
-    if (!fs.existsSync(this.env_file)) return {};
-    const content = fs.readFileSync(this.env_file).toString().trim();
-    return Object.fromEntries(content.split("\n").map((l) => l.trim().split("=")));
-  }
-
-  addEnv(key: string, value: string | number) {
-    fs.appendFileSync(this.env_file, `${key}=${value}\n`);
-  }
-
-  removeEnv(key: string) {
-    this.setEnv({ ...this.getEnv(), [key]: undefined });
-  }
-
-  setEnv(newEnv: Record<string, string | number | undefined>) {
-    if (fs.existsSync(this.env_file)) fs.rmSync(this.env_file);
-    Object.entries(newEnv).forEach(([key, value]) =>
-      value ? fs.appendFileSync(this.env_file, `${key}=${value}\n`) : null
-    );
-  }
-
-  externalEnvs() {
-    if (!fs.existsSync(this.env_file)) return;
-    const file_content = fs.readFileSync(this.env_file).toString();
-    const replaced = toExternalEnv(file_content);
-    fs.writeFileSync(this.env_file, replaced);
-  }
-
-  internalEnvs() {
-    if (!fs.existsSync(this.env_file)) return;
-    const file_content = fs.readFileSync(this.env_file).toString();
-    const replaced = toInternalEnv(file_content);
-    fs.writeFileSync(this.env_file, replaced);
-  }
-
-  async copyEnv(project: Project) {
-    const { name } = await this.getInfo();
-    const deployment = await project.getDeployment(name);
-    const configMaps = await deployment.getConfigMaps() ?? [];
-    const secrets = deployment.getSecrets() ?? [];
-
-    if (fs.existsSync(this.env_file)) fs.rmSync(this.env_file);
-    for (const r of [...secrets, ...configMaps]) {
-      for (const [key, value] of Object.entries(await r.getData() ?? {})) {
-        this.addEnv(key, value);
-      }
-    }
-
-    const extraEnvs = {
-      STDOUT_LOGS: "on"
-    };
-
-    Object.entries(extraEnvs).forEach(([key, value]) => {
-      this.removeEnv(key);
-      this.addEnv(key, value);
-    });
+    this.env_file = new EnvFile(path.join(this.full_path, ".env"));
   }
 
   private async npmRun(cmd: string, stdio?: StdioOptions) {
@@ -222,51 +165,6 @@ export class AppRepo extends Repo {
     const pipelines = await project.getPipelineRuns();
     const pipeline = pipelines.find((p) => p.name.includes(q) && p.name.includes(name)) ?? null;
     return pipeline;
-  }
-
-  override reset() {
-    const res = super.reset();
-    this.updateState();
-    return res;
-  }
-
-  override checkout(branch: string) {
-    const res = super.checkout(branch);
-    this.updateState();
-    return res;
-  }
-
-  override createNewBranch(name: string) {
-    const res = super.createNewBranch(name);
-    this.updateState();
-    return res;
-  }
-
-  override switchBranchIfExists(branch: string) {
-    const res = super.switchBranchIfExists(branch);
-    this.updateState();
-    return res;
-  }
-
-  override pull(branch: string) {
-    const res = super.pull(branch);
-    this.updateState();
-    return res;
-  }
-
-  async generateMissingJiraTickets() {
-    const { name } = await this.getInfo();
-    const tasks = await getTasksFromDir(this.full_path, { project: name });
-    const tracker = new JiraIssueTracker();
-    if (
-      tasks.length === 0 || tasks.every((t) => tracker.isTracked(t))
-    ) return;
-    await Promise.all(
-      tasks.map(async (t) => {
-        await tracker.save(t);
-        this.add(t.file_location.file_path);
-      }));
-    await this.commit("fix: add jira tickets");
   }
 }
 

@@ -41,12 +41,6 @@ export default {
       }
     }
 
-    if (app_repo) {
-      const spinner = loading("Creating missing jira tickets");
-      await app_repo?.generateMissingJiraTickets();
-      spinner.succeed();
-    }
-
     if (!merge) {
       const spinner = loading("Building merge request");
       const mr = await repo.createMr(targetBranch, { reviewer: add_reviewer ? default_reviewer : undefined });
