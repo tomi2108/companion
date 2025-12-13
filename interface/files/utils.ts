@@ -6,11 +6,7 @@ import { DeployYamlContent } from "@files/validations";
 import { Config } from "@lib/config";
 import { AppType } from "@lib/constants";
 
-export function createDirIfNotExists(dir: string) {
-  const exists = fs.existsSync(dir);
-  if (!exists) fs.mkdirSync(dir, { recursive: true });
-  return { created: !exists };
-}
+import { Dir } from "./dir";
 
 export const get = <T>(obj: any, path: string): T | undefined => path.split(".").reduce((current, step) => current?.[step], obj);
 
@@ -74,11 +70,12 @@ export function createTempFile(file_name: string) {
   return file_path;
 }
 
-export function createLogFile(file_name: string) {
-  const config_log_path = Config.get().preferences.logs_path!;
-  const file_path = path.join(config_log_path, file_name);
-  createDirIfNotExists(path.dirname(file_path));
-  return file_path;
+export function createLogFile(file_name: string, subDir?: Dir) {
+  const log_dir = new Dir(Config.get().preferences.logs_path);
+  const file_dir = log_dir;
+  if (subDir) file_dir.join(subDir);
+  file_dir.create();
+  return file_dir.createFile(file_name);
 }
 
 type FileStat = {
@@ -120,8 +117,4 @@ export function traverseDirectory(dir: string, {
     return [f];
   }
   return result.flatMap(flat);
-}
-
-export function removeExtensions(filename: string) {
-  return filename.replace(/\..+$/, "");
 }

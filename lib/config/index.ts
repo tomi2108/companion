@@ -2,8 +2,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import open from "open";
-import openEditor from "open-editor";
 
+import { FileNotFound, InvalidJsonFile } from "@files/errors";
+import { JsonFile } from "@files/json_file";
 import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
@@ -31,13 +32,9 @@ export async function openInBrowser(url: string) {
   else open(url);
 }
 
-export async function openInEditor(full_path: string, opts?: { wait?: boolean }) {
-  await openEditor([{ file: full_path }], { wait: opts?.wait ?? false, editor: Config.get().preferences.editor });
-}
-
 const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
-const config_file = process.env.COMPANION_CONFIG ?? getConfigPath();
+const config_file = new JsonFile(process.env.COMPANION_CONFIG ?? getConfigPath());
 
 function getConfigPath() {
   if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "companion", "config.json");
@@ -72,7 +69,7 @@ class Config {
   private constructor() { }
 
   open() {
-    openInEditor(config_file);
+    config_file.openInEditor();
   }
 
   async setup() {
@@ -97,7 +94,7 @@ class Config {
     const dir = path.dirname(getConfigPath());
     const exists = fs.existsSync(dir);
     if (!exists) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(config_file, JSON.stringify(config_to_write, null, 2));
+    config_file.write(JSON.stringify(config_to_write, null, 2));
     log.success("Configuration was set up correctly");
   }
 
@@ -113,17 +110,29 @@ class Config {
   }
 
   async load() {
-    let file_content = "";
+    let config;
     try {
-      file_content = fs.readFileSync(config_file).toString();
+      config = config_file.read();
+      if (
+        !config
+        || Array.isArray(config)
+        || typeof config !== "object"
+      ) throw new Error();
     } catch (err) {
-      if (err && typeof err === "object" && "code" in err && err.code === "ENOENT") await this.newConfigPrompt();
+      if (
+        err instanceof InvalidJsonFile
+        || err instanceof FileNotFound
+      ) return await this.newConfigPrompt();
       else throw err;
     }
 
     const configKeys = Object.keys(this);
-    const parsed = JSON.parse(file_content);
-    const team = this.isValidTeamKey(parsed.team) ? parsed.team : undefined;
+    const team = config.team
+      && typeof config.team === "string"
+      && this.isValidTeamKey(config.team)
+      ? config.team
+      : undefined;
+
     const validatedConfig = {
       team,
       ...Object.fromEntries(
@@ -131,7 +140,7 @@ class Config {
           (c) => {
             const configObj = this[c as keyof Config];
             if (!("validate" in configObj)) return [];
-            const configSlice = parsed[c];
+            const configSlice = config[c];
             const validated = configObj.validate(configSlice);
             return [c, validated];
           }

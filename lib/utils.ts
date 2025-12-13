@@ -1,5 +1,4 @@
 import yaml from "js-yaml";
-import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { cwd } from "node:process";
@@ -26,23 +25,6 @@ export function removePrefix(str: string, prefix: string) {
 export function removeSuffix(str: string, suffix: string) {
   if (str.endsWith(suffix)) return str.slice(0, -suffix.length);
   return str;
-}
-
-export function readdirs(p: string | undefined) {
-  const ignore = [".git"];
-  if (!p || !fs.existsSync(p)) return [];
-  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).filter((d) => !ignore.includes(d.name));
-}
-
-export function readfiles(p: string) {
-  return fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile()).map((d) => d.name);
-}
-
-export function md5FromFile(file_path: string) {
-  const content = fs.readFileSync(file_path);
-  const hash = crypto.createHash("md5");
-  hash.update(content);
-  return hash.digest("hex");
 }
 
 export function kebabToCamel(str: string) {

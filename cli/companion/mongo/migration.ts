@@ -1,14 +1,11 @@
-import fs from "node:fs";
-import path from "node:path";
-
-import { createLogFile, removeExtensions } from "@files/utils";
+import { Dir } from "@files/dir";
+import { createLogFile } from "@files/utils";
 import { executeScript } from "@interface/cmd";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { loading, search } from "@lib/ui";
-import { readfiles } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -23,18 +20,18 @@ export default {
     const mongo_path = config.paths.mongo;
     if (!mongo_path) throw new ConfigError("paths.mongo");
 
-    const migration_scripts = path.join(mongo_path, "src", "migrations");
+    const migrations_dir = new Dir(mongo_path);
+    const migration_scripts = migrations_dir.sub("src").sub("migrations");
 
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
 
-    const choices = readfiles(migration_scripts);
+    const choices = migration_scripts.readFiles().map((f) => f.toChoice());
     const choice = await search({ message: "Choose migration to run", choices });
-    const migration_file = path.join(migration_scripts, choice);
+    const migration_file = migration_scripts.getFile(choice);
 
     const repo = new AppRepo(mongo_path);
-    const node_modules = fs.existsSync(path.join(mongo_path, "node_modules"));
-    if (!node_modules) {
+    if (!migrations_dir.sub("node_modules").exists()) {
       const spinner = loading("Installing missing dependencies");
       await repo.install();
       spinner.succeed();
@@ -50,11 +47,13 @@ export default {
       path: "",
       env,
       supressStdout: true,
-      args: [migration_file],
-      cwd: migration_scripts
+      args: [migration_file.path],
+      cwd: migration_scripts.path
     });
-    const log_file = createLogFile(path.join("mongo", "scripts", removeExtensions(choice), new Date().toISOString()));
-    fs.writeFileSync(log_file, output);
-    log.info(`Log file written at ${log_file}`);
+
+    const log_dir = new Dir("mongo").sub("scripts").sub(migration_file.name({ extension: false }));
+    const log_file = createLogFile(new Date().toISOString(), log_dir);
+    log_file.write(output);
+    log.info(`Log file written at ${log_file.path}`);
   }
 };
