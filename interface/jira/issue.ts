@@ -106,7 +106,6 @@ export class Issue {
     issueType: string;
   }) {
     const labels = opts.labels ?? Config.get().jira.labels ?? [];
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/58]: probably make this a param not every child sould be the same issuetype... i think
     const issuetype = opts.project.issueTypes?.find((t) => t.name === opts.issueType);
     if (!issuetype) throw new Error("Could not find proper issue type to create child");
     return Issue.fromIssueResponse(await this.jira.addNewIssue({
