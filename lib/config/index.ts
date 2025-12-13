@@ -123,21 +123,25 @@ class Config {
 
     const configKeys = Object.keys(this);
     const parsed = JSON.parse(file_content);
-    const validatedConfig = Object.fromEntries(
-      configKeys.map(
-        (c) => {
-          const configObj = this[c as keyof Config];
-          if (!("validate" in configObj)) return [];
-          const configSlice = parsed[c];
-          const validated = configObj.validate(configSlice);
-          return [c, validated];
-        }
+    const team = this.isValidTeamKey(parsed.team) ? parsed.team : undefined;
+    const validatedConfig = {
+      team,
+      ...Object.fromEntries(
+        configKeys.map(
+          (c) => {
+            const configObj = this[c as keyof Config];
+            if (!("validate" in configObj)) return [];
+            const configSlice = parsed[c];
+            const validated = configObj.validate(configSlice);
+            return [c, validated];
+          }
+        )
       )
-    );
+    };
 
     configKeys.forEach((key) => {
       const k = key as keyof Config;
-      if (validatedConfig.team && this.isValidTeamKey(validatedConfig.team)) {
+      if (validatedConfig.team) {
         this[k] = deepMerge(this[k], this.getTeamConfig(validatedConfig.team)[key]);
       }
       this[k] = deepMerge(this[k], validatedConfig[key]);
