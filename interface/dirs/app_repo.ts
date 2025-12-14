@@ -5,12 +5,12 @@ import { Dir } from "@files/dir";
 import { EnvFile } from "@files/env_file";
 import { PackageJson } from "@files/package_json";
 import { Repo } from "@interface/dirs/repo";
-import { JiraIssueTracker } from "@interface/tasks/jira_issue_tracker";
+import { JiraTaskTracker } from "@interface/tasks/trackers/jira_task_tracker";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
 import { RepoAction } from "./actions";
-import { TrackTasksAction } from "./actions/track_tasks";
+import { CreateMissingTasksAction } from "./actions/track_tasks";
 
 export type Dependency = {
   name: string;
@@ -25,7 +25,7 @@ function dependencyToString(d: Dependency) {
 export class AppRepo extends Repo {
   env: EnvFile;
   package: PackageJson;
-  override actions: RepoAction[] = [new TrackTasksAction(new JiraIssueTracker())];
+  override actions: RepoAction[] = [new CreateMissingTasksAction(new JiraTaskTracker())];
 
   static isAppRepo(dir: Dir) {
     return dir.hasFile("package.json");

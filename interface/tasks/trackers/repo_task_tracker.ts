@@ -1,31 +1,80 @@
-import path from "node:path";
 
 import { Repo } from "@interface/dirs/repo";
 import { Task } from "@interface/tasks/task";
-import { readdirs } from "@lib/utils";
+import { sleep } from "@lib/utils";
 
-import { createDirIfNotExists } from "../files/utils";
+import { TaskTracker } from "./task_tracker";
 
 export const TASK_FILE = "TASK.md";
 
-export class TaskRepo extends Repo {
-  constructor(full_path: string) {
-    super(full_path);
+// TODO: for now Tasks change status manually outside the app,
+// add support for trackers to change task status, could be useful for RepoActions
+const TASK_STATUS = {
+  OPEN: "OPEN",
+  CLOSED: "CLOSED"
+} as const;
+
+export class RepoTaskTracker extends TaskTracker {
+  repo: Repo;
+
+  constructor(repo: Repo) {
+    super();
+    this.repo = repo;
   }
 
-  async getTasks(project?: string) {
-    await this.update();
-    const dirs = project ? [project] : readdirs(this.full_path).map((d) => d.name);
-    const full_dirs = dirs.map((d) => path.join(this.full_path, d));
-    return full_dirs.flatMap((d) => readdirs(d).map((task_dir) => Task.fromTaskFile(path.join(d, task_dir.name, TASK_FILE))));
+  override addIdToTodo(id: string): string {
+    return `(${id})`;
   }
 
-  addTask(task: Task) {
-    const dir = path.join(this.full_path, task.project, task.id);
-    const task_path = path.join(dir, TASK_FILE);
-    createDirIfNotExists(dir);
-    task.save(task_path);
+  override async save(task: Task): Promise<string> {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const YYYY = d.getFullYear();
+    const MM = pad(d.getMonth() + 1);
+    const DD = pad(d.getDate());
+    const HH = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    const SS = pad(d.getSeconds());
+    await sleep(1 * 1000);
+    const id = `${YYYY}${MM}${DD}-${HH}${mm}${SS}`;
+
+    const tasks_dir = this.repo.dir.sub("tasks");
+    tasks_dir.create();
+    const task_dir = tasks_dir.sub(id);
+    task_dir.createFile(TASK_FILE).write(this.toMdString(task));
+    return id;
   }
+
+  override isTracked(task: Task): boolean {
+    const todoLine = task.getTodo();
+    const regex = /TODO[^:]*\([^)]*\)[^:]*:/;
+    return regex.test(todoLine);
+  }
+
+  private toMdString(task: Task) {
+    const relative = task.getPathInProject();
+    return `# ${task.title}
+
+  - PROJECT: ${task.project}
+  - FILE-LOCATION: ${relative}:${task.file_location.row}:${task.file_location.col}
+  - STATUS: ${TASK_STATUS.OPEN}
+
+${task.description} `;
+  }
+
+  // async getTasks(project?: string) {
+  //   await this.update();
+  //   const dirs = project ? [project] : readdirs(this.full_path).map((d) => d.name);
+  //   const full_dirs = dirs.map((d) => path.join(this.full_path, d));
+  //   return full_dirs.flatMap((d) => readdirs(d).map((task_dir) => Task.fromTaskFile(path.join(d, task_dir.name, TASK_FILE))));
+  // }
+  //
+  // addTask(task: Task) {
+  //   const dir = path.join(this.full_path, task.project, task.id);
+  //   const task_path = path.join(dir, TASK_FILE);
+  //   createDirIfNotExists(dir);
+  //   task.save(task_path);
+  // }
 
   // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/37]: move to TaskRepo
   // private static parseFileLocation(raw: string): FileLocation {

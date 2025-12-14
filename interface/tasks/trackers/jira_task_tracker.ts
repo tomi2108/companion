@@ -1,10 +1,10 @@
 import { Jira } from "@jira";
 import { Config, ConfigError } from "@lib/config";
 
-import { Task } from "./task";
+import { Task } from "../task";
 import { TaskTracker } from "./task_tracker";
 
-export class JiraIssueTracker extends TaskTracker {
+export class JiraTaskTracker extends TaskTracker {
 
   override isTracked(task: Task) {
     const todoLine = task.getTodo();
@@ -16,7 +16,7 @@ export class JiraIssueTracker extends TaskTracker {
     return `(${id})`;
   }
 
-  override async generateId(task: Task) {
+  override async save(task: Task) {
     const config = Config.get();
     const jira = new Jira();
     const parent_key = config.tasks.jira_parent_key;

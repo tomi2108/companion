@@ -2,12 +2,6 @@
 import { Dir } from "@files/dir";
 import { TextFile } from "@files/text_file";
 
-// TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/51]: move to TaskRepo
-// const TASK_STATUS = {
-//   OPEN: "OPEN",
-//   CLOSED: "CLOSED"
-// } as const;
-
 type FileLocation = {
   file: TextFile;
   row: number;
@@ -72,34 +66,4 @@ export class Task {
   getPathInProject() {
     return this.project.relativePathTo(this.file_location.file) as string;
   }
-
-  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/72]: probably TaskRepo should be a TaskTracker and use this method for .generateId()
-  //
-  // static newId() {
-  //   const d = new Date();
-  //   const pad = (n: number) => String(n).padStart(2, "0");
-  //   const YYYY = d.getFullYear();
-  //   const MM = pad(d.getMonth() + 1);
-  //   const DD = pad(d.getDate());
-  //   const HH = pad(d.getHours());
-  //   const mm = pad(d.getMinutes());
-  //   const SS = pad(d.getSeconds());
-  //   return `${YYYY}${MM}${DD}-${HH}${mm}${SS}`;
-  // }
-  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/64]: probably TaskRepo should be a TaskTracker and use this method for .save()
-  //   toMdString() {
-  //     const required_tags = `- ID: ${this.id}
-  // - PROJECT: ${this.project}
-  // - STATUS: ${this.tags.status}
-  // - PRIORITY: ${this.tags.priority}`;
-  //     const tags = [
-  //       required_tags,
-  //       this.tags.file_location && `- FILE-LOCATION: ${this.tags.file_location.file_path}:${this.tags.file_location.row}:${this.tags.file_location.col}`
-  //     ].filter(Boolean).join("\n");
-  //     return `# ${this.title}
-  //
-  // ${tags}
-  //
-  // ${this.description ?? ""}`;
-  //   }
 }

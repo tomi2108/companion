@@ -1,9 +1,9 @@
 import { Repo } from "@interface/dirs/repo";
 
-import { Task } from "./task";
+import { Task } from "../task";
 import { TaskTracker } from "./task_tracker";
 
-export class GitLabIssueTracker extends TaskTracker {
+export class GitLabTaskTracker extends TaskTracker {
   repo: Repo;
 
   constructor(repo: Repo) {
@@ -21,7 +21,7 @@ export class GitLabIssueTracker extends TaskTracker {
     return `[${id}]`;
   }
 
-  override async generateId(task: Task) {
+  override async save(task: Task) {
     const relative = task.getPathInProject();
     const issue = await this.repo.createIssue({
       title: `TODO(${task.project.name()}): ${task.title}`,

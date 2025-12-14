@@ -32,7 +32,6 @@ export class DeployRepo extends Repo {
       namespace.secrets.forEach((s) => deploymentFile.setSecret(s.name));
       namespace.configmaps.forEach((cm) => deploymentFile.setConfigMap(cm.name));
       deploymentFile.setVersion(version);
-      deploymentFile.save();
       await this.add(deploymentFile);
     }
 

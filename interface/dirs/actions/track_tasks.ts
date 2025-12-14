@@ -1,11 +1,11 @@
 import { Repo } from "@interface/dirs/repo";
 import { getTasksFromDir } from "@interface/tasks";
-import { TaskTracker } from "@interface/tasks/task_tracker";
+import { TaskTracker } from "@interface/tasks/trackers/task_tracker";
 import { loading } from "@lib/ui";
 
 import { RepoAction } from ".";
 
-export class TrackTasksAction implements RepoAction {
+export class CreateMissingTasksAction implements RepoAction {
   tracker: TaskTracker;
 
   constructor(tracker: TaskTracker) {
@@ -21,7 +21,7 @@ export class TrackTasksAction implements RepoAction {
 
     await Promise.all(
       tasks.map(async (t) => {
-        await this.tracker.save(t);
+        await this.tracker.track(t);
         await repo.add(t.file_location.file);
       }));
     await repo.commit("fix: add issues");
