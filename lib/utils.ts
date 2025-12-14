@@ -1,7 +1,7 @@
 import yaml from "js-yaml";
-import fs from "node:fs";
-import path from "node:path";
 import { cwd } from "node:process";
+
+import { Dir } from "@files/dir";
 
 // do not bother with typing this, adds no value
 export function deepMerge(obj1: any, obj2: any) {
@@ -66,8 +66,8 @@ export function toYaml(obj: object) {
   return yaml.dump(obj, {});
 }
 
-export function isGitRepo(full_path: string) {
-  return full_path && fs.existsSync(path.join(full_path, ".git"));
+export function isGitRepo(dir: Dir) {
+  return dir.sub(".git").exists();
 }
 
 export function sleep(ms: number) {

@@ -1,24 +1,26 @@
-import path from "node:path";
-
 import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
-import { isGitRepo, readdirs } from "@lib/utils";
+import { isGitRepo } from "@lib/utils";
 import { Project } from "@oc/project";
 
+import { Dir } from "./dir";
+
 export function getAppPaths() {
-  return [Config.get().paths.frontend, Config.get().paths.backend]
-    .filter(Boolean)
-    .flatMap((p) => readdirs(p)?.map((d) => path.join(d.parentPath, d.name)))
-    .filter((s) => s && isGitRepo(s));
+  const fe = Config.get().paths.frontend;
+  const be = Config.get().paths.backend;
+  return [
+    ...fe ? new Dir(fe).readDirs() : [],
+    ...be ? new Dir(be).readDirs() : []
+  ].filter((s) => s !== undefined)
+    .filter(isGitRepo);
 }
 
 function getDeploymentPaths() {
   const dep_path = Config.get().paths.despliegues;
   if (!dep_path) throw new ConfigError("paths.despliegues");
-  return readdirs(dep_path)
-    ?.map((d) => path.join(d.parentPath, d.name))
+  return new Dir(dep_path).readDirs()
     .filter(isGitRepo);
 }
 
@@ -27,14 +29,14 @@ export async function getApp(app_name: string) {
   let app_repo: AppRepo | null = null;
 
   for (const d of getDeploymentPaths() ?? []) {
-    deploy_repo = new DeployRepo(d);
+    deploy_repo = new DeployRepo(d.path);
     const { name } = await deploy_repo.getInfo();
     if (app_name === name) break;
     deploy_repo = null;
   }
 
   for (const d of getAppPaths()) {
-    app_repo = new AppRepo(d ?? "");
+    app_repo = new AppRepo(d.path);
     const { name } = await app_repo.getInfo();
     if (app_name === name) break;
     app_repo = null;

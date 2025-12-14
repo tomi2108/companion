@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { FileNotFound } from "./errors";
+import { File } from "./file";
 import { TextFile } from "./text_file";
 
 export class Dir {
@@ -64,16 +65,25 @@ export class Dir {
     if (this.exists()) fs.rmSync(this.path);
   }
 
-  toChoice() {
-    return { name: this.name() };
+  contains(file: File<unknown>) {
+    const dirPath = path.resolve(this.path);
+    const filePath = path.resolve(file.path);
+    const dirWithSep = dirPath.endsWith(path.sep)
+      ? dirPath
+      : dirPath + path.sep;
+    return filePath.startsWith(dirWithSep);
+  }
+
+  relativePathTo(file: File<unknown>): string | null {
+    if (!this.contains(file)) return null;
+    return path.relative(path.resolve(this.path), path.resolve(file.path));
   }
 
   traverse() {
-    const ignore = [".git"];
-    const result: Array<Dir | TextFile> = [];
+    const ignore = [".git", "dist", "coverage", ".husky", ".next", "node_modules", "out", "build"];
+    const result: Array<TextFile> = [];
     if (!this.exists()) return result;
     const walk = (dir: Dir) => {
-      result.push(dir);
       const entries = fs.readdirSync(dir.path, { withFileTypes: true });
       for (const entry of entries) {
         const fullPath = path.join(dir.path, entry.name);
@@ -91,6 +101,14 @@ export class Dir {
 
     walk(this);
     return result;
+  }
+
+  toChoice() {
+    return { name: this.name() };
+  }
+
+  toString() {
+    return this.path;
   }
 }
 

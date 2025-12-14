@@ -53,10 +53,10 @@ export class Gitlab {
     const name = project.path;
     const clone_url = project.http_url_to_repo;
     const clone_path = current ? full_path : path.join(full_path, name);
+    const clone_dir = new Dir(clone_path);
+    const { created } = clone_dir.create();
 
-    const { created } = new Dir(clone_path).create();
-
-    if (!created && isGitRepo(clone_path)) await new Repo(clone_path).update();
+    if (!created && isGitRepo(clone_dir)) await new Repo(clone_path).update();
     else await Repo.cloneRepo(full_path, clone_url, current);
 
     bar?.increment(1);

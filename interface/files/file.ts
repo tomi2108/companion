@@ -65,10 +65,14 @@ export abstract class File<T> {
     this.writeString(updated);
   }
 
-  async openInEditor(opts: { wait?: boolean } = {}) {
+  async openInEditor(opts: { wait?: boolean; line?: number; column?: number } = {}) {
     await openEditor(
-      [{ file: this.path }],
-      { wait: opts?.wait ?? false, editor: Config.get().preferences.editor }
+      [{
+        file: this.path,
+        line: opts?.line,
+        column: opts?.column
+      }],
+      { wait: opts?.wait, editor: Config.get().preferences.editor }
     );
   }
 
@@ -81,6 +85,10 @@ export abstract class File<T> {
 
   toChoice() {
     return { name: this.name() };
+  }
+
+  toString() {
+    return this.path;
   }
 }
 

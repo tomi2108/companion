@@ -25,13 +25,14 @@ export class JiraIssueTracker extends TaskTracker {
     if (!parent_key) throw new ConfigError("tasks.jira_parent_key");
     if (!project_key) throw new ConfigError("jira.project_key");
     const parent_issue = await jira.getIssue(parent_key);
+    const relative = task.getPathInProject();
     const created_issue = await parent_issue.createChild({
       issueType: "Task",
       asignee: await jira.getCurrentUser(),
       reporter: await jira.getCurrentUser(),
       project: await jira.getProject(project_key),
-      title: `TODO(${task.project}): ${task.title}`,
-      description: `- FILE-LOCATION: ${task.file_location.file_path}:${task.file_location.row}:${task.file_location.col}
+      title: `TODO(${task.project.name()}): ${task.title}`,
+      description: `- FILE-LOCATION: ${relative}:${task.file_location.row}:${task.file_location.col}
 ${task.description ?? ""}`,
       labels
     });

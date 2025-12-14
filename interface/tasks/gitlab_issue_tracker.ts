@@ -23,9 +23,10 @@ export class GitLabIssueTracker extends TaskTracker {
 
   override async generateId(task: Task) {
     const repo = new Repo(this.file_path);
+    const relative = task.getPathInProject();
     const issue = await repo.createIssue({
-      title: `TODO(${task.project}): ${task.title}`,
-      description: `- FILE-LOCATION: ${task.file_location.file_path}:${task.file_location.row}:${task.file_location.col}
+      title: `TODO(${task.project.name()}): ${task.title}`,
+      description: `- FILE-LOCATION: ${relative}:${task.file_location.row}:${task.file_location.col}
 ${task.description ?? ""}`
     });
     return issue.web_url;
