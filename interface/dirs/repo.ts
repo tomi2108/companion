@@ -38,7 +38,6 @@ export class Repo {
     this.git = git(dir.path);
     this.glab = glab();
     this.dir = dir;
-    this.updateState();
   }
 
   async init(initialBranch: string) {
@@ -64,9 +63,7 @@ export class Repo {
   }
 
   async reset() {
-    const res = await this.git.reset(ResetMode.HARD);
-    this.updateState();
-    return res;
+    return await this.git.reset(ResetMode.HARD);
   }
 
   async deleteBranch(name: string) {
@@ -76,8 +73,7 @@ export class Repo {
   async createNewBranch(name: string) {
     const branches = await this.git.branchLocal();
     if (branches.all.includes(name)) this.deleteBranch(name);
-    await this.git.checkoutLocalBranch(name);
-    this.updateState();
+    return await this.git.checkoutLocalBranch(name);
   }
 
   async add(file: File<unknown>) {
@@ -100,7 +96,6 @@ export class Repo {
   async checkout(branch: string) {
     await this.git.fetch(["-a"]);
     await this.git.checkout(branch);
-    this.updateState();
   }
 
   async switchBranchIfExists(branch: string) {
@@ -108,16 +103,13 @@ export class Repo {
     const branches = await this.git.branchLocal();
     if (!branches.all.includes(branch) || active_branch === branch) return { switched: false, original_branch: active_branch };
     await this.git.checkout(branch);
-    this.updateState();
 
     return { switched: true, original_branch: active_branch };
   }
 
   async pull(branch: string) {
     await this.git.branch(["-u", `origin/${branch}`, branch]);
-    const res = await this.git.pull("origin", branch, ["--no-rebase"]);
-    this.updateState();
-    return res;
+    return await this.git.pull("origin", branch, ["--no-rebase"]);
   }
 
   async push(branch: string) {
@@ -263,8 +255,6 @@ export class Repo {
     APP_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
     return { name, pathname, type };
   }
-
-  updateState(): void { }
 
 }
 

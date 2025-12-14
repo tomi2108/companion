@@ -4,7 +4,7 @@ import { Config } from "@lib/config";
 import { mapObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
-import { EnvContent } from "./formatters/env_formatter";
+import { EnvContent, EnvFormatter } from "./formatters/env_formatter";
 import { ObjectFile } from "./object_file";
 
 export function toExternalEnv(str: string) {
@@ -22,6 +22,10 @@ export function toInternalEnv(str: string) {
 }
 
 export class EnvFile extends ObjectFile<EnvContent> {
+
+  constructor(path: string) {
+    super(path, new EnvFormatter());
+  }
 
   add(key: string, value: string | number) {
     this.writePartial({ [key]: value });

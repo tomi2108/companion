@@ -12,12 +12,6 @@ export class DeployRepo extends Repo {
   deployments: DeployYaml[] = [];
   override actions: RepoAction[] = [new LintDeploymentFilesAction()];
 
-  override updateState() {
-    const yaml_files = this.dir.readFiles()
-      .filter(DeployYaml.isDeployYamlFile);
-    this.deployments = yaml_files.map((f) => new DeployYaml(f.path));
-  }
-
   getDeployment(namespace: string) {
     return this.deployments.find((d) => d.namespace === namespace);
   }

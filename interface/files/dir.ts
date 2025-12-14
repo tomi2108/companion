@@ -35,6 +35,11 @@ export class Dir {
       .map((d) => new Dir(path.join(d.parentPath, d.name)));
   }
 
+  hasFile(name: string) {
+    const file_path = path.join(this.path, name);
+    return fs.existsSync(file_path);
+  }
+
   getFile(name: string) {
     const file_path = path.join(this.path, name);
     if (!fs.existsSync(file_path)) throw new FileNotFound(file_path);

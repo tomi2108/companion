@@ -1,11 +1,11 @@
 import cp, { StdioOptions } from "node:child_process";
-import fs from "node:fs";
 import path from "node:path";
 
+import { Dir } from "@files/dir";
 import { EnvFile } from "@files/env_file";
+import { PackageJson } from "@files/package_json";
 import { Repo } from "@interface/dirs/repo";
 import { JiraIssueTracker } from "@interface/tasks/jira_issue_tracker";
-import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
@@ -23,62 +23,19 @@ function dependencyToString(d: Dependency) {
 }
 
 export class AppRepo extends Repo {
-  version?: string;
-  package?: string;
-  description?: string;
   env_file: EnvFile;
-  package_file: string;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
+  package_file: PackageJson;
   override actions: RepoAction[] = [new TrackTasksAction(new JiraIssueTracker())];
 
-  static isAppRepo(full_path: string) {
-    const package_path = path.join(full_path, "package.json");
-    return fs.existsSync(package_path);
+  static isAppRepo(dir: Dir) {
+    return dir.hasFile("package.json");
   }
 
-  public save() {
-    const package_path = this.package_file;
-    let package_file: any = {};
-    try {
-      package_file = JSON.parse(fs.readFileSync(package_path).toString());
-    } catch (err) {
-      log.error(`Error reading package.json in ${this.full_path}`);
-      throw err;
-    }
-    package_file.version = this.version;
-    package_file.description = this.description;
-    package_file.name = this.package;
-    package_file.dependencies = this.dependencies;
-    package_file.devDependencies = this.devDependencies;
-    package_file.peerDependencies = this.peerDependencies;
-    fs.writeFileSync(package_path, JSON.stringify(package_file, null, 2));
-  }
-
-  override updateState() {
-    const package_path = path.join(this.full_path, "package.json");
-    let package_file: any = {};
-    try {
-      package_file = JSON.parse(fs.readFileSync(package_path).toString());
-    } catch (err) {
-      console.log(err);
-      log.error(`Error reading package.json in ${this.full_path}`);
-      throw err;
-    }
-    this.version = package_file.version;
-    this.description = package_file.description;
-    this.package = package_file.name;
-    this.dependencies = package_file.dependencies;
-    this.devDependencies = package_file.devDependencies;
-    this.peerDependencies = package_file.peerDependencies;
-  }
-
-  constructor(full_path: string) {
-    if (!AppRepo.isAppRepo(full_path)) throw new InvalidAppRepo(full_path);
-    super(full_path);
-    this.package_file = path.join(full_path, "package.json");
-    this.env_file = new EnvFile(path.join(this.full_path, ".env"));
+  constructor(dir: Dir) {
+    if (!AppRepo.isAppRepo(dir)) throw new InvalidAppRepo(dir);
+    super(dir);
+    this.package_file = new PackageJson(dir.getFile("package.json").path);
+    this.env_file = new EnvFile(dir.createFile(".env").path);
   }
 
   private async npmRun(cmd: string, stdio?: StdioOptions) {
@@ -87,12 +44,12 @@ export class AppRepo extends Repo {
         ["run", cmd],
         {
           stdio,
-          cwd: this.full_path
+          cwd: this.dir.path
         });
       child.on("error", reject);
       child.on("exit", (code) => {
         if (code === 0) resolve(undefined);
-        else reject(new Error(`Error running npm run ${cmd} in ${this.full_path}`));
+        else reject(new Error(`Error running npm run ${cmd} in ${this.dir.path}`));
       });
     });
   }
@@ -108,13 +65,13 @@ export class AppRepo extends Repo {
         ],
         {
           stdio: "pipe",
-          cwd: this.full_path
+          cwd: this.dir.path
         });
 
       child.on("error", reject);
       child.on("exit", (code) => {
         if (code === 0) resolve(undefined);
-        else reject(new Error(`Error installing ${this.full_path}`));
+        else reject(new Error(`Error installing ${this.dir.path}`));
       });
     });
   }
@@ -128,12 +85,12 @@ export class AppRepo extends Repo {
   }
 
   dev(port: number, opts?: { prefix?: string; raw?: boolean }) {
-    const ts_node_dev_path = path.join(this.full_path, "node_modules", "ts-node-dev", "lib", "bin.js");
-    const app_path = path.join(this.full_path, "src", "app.ts");
+    const ts_node_dev_path = path.join(this.dir.path, "node_modules", "ts-node-dev", "lib", "bin.js");
+    const app_path = path.join(this.dir.path, "src", "app.ts");
 
     const child = cp.spawn(ts_node_dev_path, [app_path], {
       stdio: "pipe",
-      cwd: this.full_path,
+      cwd: this.dir.path,
       env: {
         ...process.env,
         PORT: String(port)
@@ -156,7 +113,7 @@ export class AppRepo extends Repo {
         child.on("error", reject);
         child.on("exit", (code) => {
           if (code === 0) resolve(undefined);
-          else reject(new Error(`Error starting ${this.full_path}`));
+          else reject(new Error(`Error starting ${this.dir.path}`));
         });
       })
     };
@@ -171,7 +128,7 @@ export class AppRepo extends Repo {
 }
 
 class InvalidAppRepo extends Error {
-  constructor(full_path: string) {
-    super(`${full_path} is not a valid app repository, package.json not found`);
+  constructor(dir: Dir) {
+    super(`${dir.path} is not a valid app repository, package.json not found`);
   }
 }
