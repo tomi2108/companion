@@ -1,4 +1,4 @@
-import { DeployYamlContent } from "@files/validations";
+import { DeployYamlContent } from "@files/formatters/deploy_yaml_formatter";
 import { Config } from "@lib/config";
 import { AppType } from "@lib/constants";
 import { loading } from "@lib/ui";
@@ -12,7 +12,7 @@ function getDeploymentOption(
   path: string,
   type: AppType,
   namespace: string,
-  y: DeployYamlContent
+  content: DeployYamlContent
   // do not bother typing this, adds no value
 ): any {
   const deployments = Config.get().openshift?.deployments as any;
@@ -32,7 +32,7 @@ function getDeploymentOption(
   const deployment_value = get(deployments, path);
   if (deployment_value !== null && deployment_value !== undefined) return deployment_value;
 
-  return get(y, path);
+  return get(content, path);
 }
 
 export class LintDeploymentFilesAction implements RepoAction {
@@ -49,10 +49,12 @@ export class LintDeploymentFilesAction implements RepoAction {
         && Config.get().openshift.deployments?.exclude?.includes(type)
       ) continue;
 
-      const secrets_to_add = getDeploymentOption("secrets", type, file.namespace, file.content) ?? [];
+      const content = file.read();
+
+      const secrets_to_add = getDeploymentOption("secrets", type, file.namespace, content) ?? [];
       secrets_to_add.forEach((s: string) => file.setSecret(s));
 
-      if (!file.content.dynatrace) file.content.dynatrace = {
+      const dynatrace = content["helm-chart-master"].dynatrace ?? {
         modulo: Config.get().dynatrace?.modulo ?? "NO_INFORMADO",
         tipo: type === "app" ? "MICROFRONTEND" : type.toUpperCase(),
         clave_jira: Config.get().jira?.project_key ?? "NO_INFORMADO",
@@ -60,27 +62,41 @@ export class LintDeploymentFilesAction implements RepoAction {
         masivo_critico: "NO"
       };
 
-      file.content.route.enabled = getDeploymentOption("route.enabled", type, file.namespace, file.content);
-
-      file.content.resources.limits.cpu = getDeploymentOption("resources.limits.cpu", type, file.namespace, file.content);
-      file.content.resources.limits.memory = getDeploymentOption("resources.limits.memory", type, file.namespace, file.content);
-
-      file.content.resources.requests.cpu = getDeploymentOption("resources.requests.cpu", type, file.namespace, file.content);
-      file.content.resources.requests.memory = getDeploymentOption("resources.requests.memory", type, file.namespace, file.content);
-
-      file.content.autoscaling.enabled = getDeploymentOption("autoscaling.enabled", type, file.namespace, file.content);
-      file.content.autoscaling.minReplicas = getDeploymentOption("autoscaling.minReplicas", type, file.namespace, file.content);
-      file.content.autoscaling.maxReplicas = getDeploymentOption("autoscaling.maxReplicas", type, file.namespace, file.content);
-
-      file.content.readinessProbe.enabled = getDeploymentOption("readinessProbe.enabled", type, file.namespace, file.content);
-
-      file.content.configmapENV.ELK_LOGS = getDeploymentOption("configmapENV.ELK_LOGS", type, file.namespace, file.content);
-      file.content.configmapENV.ELK_LOGS_DEBUG = getDeploymentOption("configmapENV.ELK_LOGS_DEBUG", type, file.namespace, file.content);
-      file.content.configmapENV.STDOUT_LOGS = getDeploymentOption("configmapENV.STDOUT_LOGS", type, file.namespace, file.content);
-
-      file.content.labels.lproduct = Config.get().openshift.product ?? file.content.labels.lproduct;
-      file.content.labels.lenvironment = file.getEnv();
-      file.save();
+      file.writePartial({
+        "helm-chart-master": {
+          dynatrace,
+          route: {
+            enabled: getDeploymentOption("route.enabled", type, file.namespace, content)
+          },
+          resources: {
+            limits: {
+              cpu: getDeploymentOption("resources.limits.cpu", type, file.namespace, content),
+              memory: getDeploymentOption("resources.limits.memory", type, file.namespace, content)
+            },
+            requests: {
+              cpu: getDeploymentOption("resources.requests.cpu", type, file.namespace, content),
+              memory: getDeploymentOption("resources.requests.memory", type, file.namespace, content)
+            }
+          },
+          autoscaling: {
+            enabled: getDeploymentOption("autoscaling.enabled", type, file.namespace, content),
+            minReplicas: getDeploymentOption("autoscaling.minReplicas", type, file.namespace, content),
+            maxReplicas: getDeploymentOption("autoscaling.maxReplicas", type, file.namespace, content)
+          },
+          readinessProbe: {
+            enabled: getDeploymentOption("readinessProbe.enabled", type, file.namespace, content)
+          },
+          configmapENV: {
+            ELK_LOGS: getDeploymentOption("configmapENV.ELK_LOGS", type, file.namespace, content),
+            ELK_LOGS_DEBUG: getDeploymentOption("configmapENV.ELK_LOGS_DEBUG", type, file.namespace, content),
+            STDOUT_LOGS: getDeploymentOption("configmapENV.STDOUT_LOGS", type, file.namespace, content)
+          },
+          labels: {
+            lproduct: Config.get().openshift.product ?? content["helm-chart-master"].labels.lproduct,
+            lenvironment: file.getEnv()
+          }
+        }
+      });
       await repo.add(file);
     }
     await repo.commit("Lint deployments");
