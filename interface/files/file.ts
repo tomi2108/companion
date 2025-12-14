@@ -6,15 +6,33 @@ import openEditor from "open-editor";
 import { Config } from "@lib/config";
 
 import { FileNotFound } from "./errors";
+import { FileFormatter } from "./formatters";
 
-export abstract class File<T> {
+export class File<T> {
   readonly path: string;
+  formatter: FileFormatter<T>;
 
-  abstract write(input: T): void;
-  abstract read(): T;
+  write(input: T) {
+    const formatted = this.formatter.toString(input);
+    fs.writeFileSync(this.path, formatted);
+  }
 
-  constructor(file_path: string) {
+  read(): T {
+    if (!this.exists()) throw new FileNotFound(this.path);
+
+    try {
+      const content = fs.readFileSync(this.path).toString();
+      return this.formatter.fromString(content);
+    } catch (err) {
+      const exception = this.formatter.exception(this.path);
+      if (exception) throw exception;
+      throw err;
+    }
+  }
+
+  constructor(file_path: string, formatter: FileFormatter<T>) {
     this.path = file_path;
+    this.formatter = formatter;
   }
 
   name({ extension } = { extension: true }) {
@@ -23,18 +41,7 @@ export abstract class File<T> {
     return name;
   }
 
-  protected readString() {
-    try {
-      return fs.readFileSync(this.path).toString();
-    } catch {
-      throw new FileNotFound(this.path);
-    }
-  }
-
-  protected writeString(content: string): void {
-    fs.writeFileSync(this.path, content);
-  }
-
+  // TODO:this is only used in EnvFiles, could be moved to formatter or deleted honestly
   append(content: string) {
     fs.appendFileSync(this.path, content);
   }
@@ -47,22 +54,10 @@ export abstract class File<T> {
     if (this.exists()) fs.rmSync(this.path);
   }
 
-  insertLine(lineNo: number, line: string) {
-    const lines = this.readString().split("\n");
-    lines.splice(lineNo - 1, 0, line);
-    this.writeString(lines.join("\n"));
-  }
-
-  removeLine(lineNo: number) {
-    const lines = this.readString().split("\n");
-    lines.splice(lineNo - 1, 1);
-    this.writeString(lines.join("\n"));
-  }
-
   replace(from: string, to: string) {
-    const content = this.readString();
+    const content = fs.readFileSync(this.path).toString();
     const updated = content.replace(new RegExp(from, "g"), to);
-    this.writeString(updated);
+    fs.writeFileSync(this.path, updated);
   }
 
   async openInEditor(opts: { wait?: boolean; line?: number; column?: number } = {}) {
@@ -77,7 +72,7 @@ export abstract class File<T> {
   }
 
   getMd5() {
-    const content = this.readString();
+    const content = fs.readFileSync(this.path);
     const hash = crypto.createHash("md5");
     hash.update(content);
     return hash.digest("hex");

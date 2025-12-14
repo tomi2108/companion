@@ -7,7 +7,7 @@ export class FileNotFound extends Error {
 
 export class InvalidJsonFile extends Error {
   constructor(path: string) {
-    super(`Invalid json file ${path}`);
+    super(`Invalid json ${path}`);
   }
 }
 
@@ -18,7 +18,13 @@ export class InvalidYamlFile extends Error {
 }
 
 export class InvalidDeployYaml extends Error {
-  constructor(full_path: string) {
-    super(`${full_path} is not a valid deploy yaml`);
+  constructor(path: string) {
+    super(`${path} is not a valid deploy yaml`);
+  }
+}
+
+export class InvalidMonitorYaml extends Error {
+  constructor(path: string) {
+    super(`${path} is not a valid monitor yaml`);
   }
 }

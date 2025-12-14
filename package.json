@@ -6,7 +6,7 @@
     "lint": "eslint .",
     "build": "tsc --project ./tsconfig.json ; tsc-alias -p tsconfig.json",
     "test": "vitest --coverage --reporter=verbose",
-    "precommit": "",
+    "precommit": "npm run build && lint-staged && npm run circular-dependencies && npm run test",
     "clean": "rm -rf package-lock.json node_modules dist",
     "circular-dependencies": "madge --circular .",
     "prepare": "husky"

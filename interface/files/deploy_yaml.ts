@@ -1,10 +1,9 @@
 import path from "node:path";
 
-import { DeployYamlContent, DeployYamlContentSchema } from "@files/validations";
 import { ENVS } from "@lib/constants";
 
-import { InvalidDeployYaml } from "./errors";
 import { File } from "./file";
+import { DeployYamlContent, DeployYamlFormatter } from "./formatters/deploy_yaml_formatter";
 import { YamlFile } from "./yaml_file";
 
 export class DeployYaml extends YamlFile<DeployYamlContent> {
@@ -16,17 +15,8 @@ export class DeployYaml extends YamlFile<DeployYamlContent> {
     // && ENVS.some((e) => file.name.includes(e))
   }
 
-  override validate(content: unknown) {
-    try {
-      DeployYamlContentSchema.parse(content);
-    } catch (err) {
-      console.error(err);
-      throw new InvalidDeployYaml(this.path);
-    }
-  }
-
   constructor(file_path: string) {
-    super(file_path);
+    super(file_path, new DeployYamlFormatter());
     this.namespace = path.basename(file_path, ".yaml").replaceAll("values-", "");
   }
 
@@ -37,35 +27,37 @@ export class DeployYaml extends YamlFile<DeployYamlContent> {
   }
 
   private fillGaps(key: "secrets" | "configmaps") {
-    const values = Object.values(this.content[key] ?? {});
-    this.content[key] = Object.fromEntries(values.map((v, i) => [`${key.slice(0, -1) + (i + 1)}`, v]));
+    const content = this.read()["helm-chart-master"];
+    const values = Object.values(content[key] ?? {});
+    const newConfig = Object.fromEntries(values.map((v, i) => [`${key.slice(0, -1) + (i + 1)}`, v]));
+    this.writePartial({ "helm-chart-master": { [key]: newConfig } });
   }
 
   setSecret(name: string) {
     const content = this.read();
-
-    if (!content["helm-chart-master"].secrets) content["helm-chart-master"].secrets = {};
-    const secrets = content["helm-chart-master"].secrets = {};
-    const values = Object.values(secrets);
-    if (values.includes(name)) return;
-    const i = values.length;
-    content["helm-chart-master"].secrets[`secret${i + 1}`] = name;
+    const secrets = content["helm-chart-master"].secrets ?? {};
+    const i = Object.values(secrets).length;
+    const key = secrets ? "secret1" : `secret${i + 1}`;
+    const update = { "helm-chart-master": { secrets: { [key]: name } } };
+    this.writePartial(update);
     this.fillGaps("secrets");
   }
 
   removeConfigMap(name: string) {
-    const entries = Object.entries(this.content.configmaps ?? {});
+    const cms = this.read()["helm-chart-master"].configmaps;
+    const entries = Object.entries(cms ?? {});
     const filtered_entries = entries.filter(([, value]) => value !== name);
-    this.content.configmaps = Object.fromEntries(filtered_entries);
+    this.writePartial({ "helm-chart-master": { configmaps: Object.fromEntries(filtered_entries) } });
     this.fillGaps("configmaps");
   }
 
   setConfigMap(name: string) {
-    const values = Object.values(this.content.configmaps ?? {});
-    if (values.includes(name)) return;
-    const i = values.length;
-    if (!this.content.configmaps) this.content.configmaps = {};
-    this.content.configmaps[`configmap${i + 1}`] = name;
+    const content = this.read();
+    const configmaps = content["helm-chart-master"].configmaps ?? {};
+    const i = Object.values(configmaps).length;
+    const key = configmaps ? "configmap1" : `configmap${i + 1}`;
+    const update = { "helm-chart-master": { configmaps: { [key]: name } } };
+    this.writePartial(update);
     this.fillGaps("configmaps");
   }
 
