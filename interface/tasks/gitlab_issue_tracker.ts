@@ -4,11 +4,11 @@ import { Task } from "./task";
 import { TaskTracker } from "./task_tracker";
 
 export class GitLabIssueTracker extends TaskTracker {
-  file_path: string;
+  repo: Repo;
 
-  constructor(file_path: string) {
+  constructor(repo: Repo) {
     super();
-    this.file_path = file_path;
+    this.repo = repo;
   }
 
   override isTracked(task: Task) {
@@ -22,9 +22,8 @@ export class GitLabIssueTracker extends TaskTracker {
   }
 
   override async generateId(task: Task) {
-    const repo = new Repo(this.file_path);
     const relative = task.getPathInProject();
-    const issue = await repo.createIssue({
+    const issue = await this.repo.createIssue({
       title: `TODO(${task.project.name()}): ${task.title}`,
       description: `- FILE-LOCATION: ${relative}:${task.file_location.row}:${task.file_location.col}
 ${task.description ?? ""}`

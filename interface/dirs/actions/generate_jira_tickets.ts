@@ -10,8 +10,7 @@ export class GenerateJiraTicketsAction implements RepoAction {
 
   async onMrCreate(repo: Repo) {
     const spinner = loading("Generate missing jira tickets");
-    const { name } = await repo.getInfo();
-    const tasks = await getTasksFromDir(repo.full_path, { project: name });
+    const tasks = getTasksFromDir(repo.dir);
     if (
       tasks.length === 0 || tasks.every((t) => this.tracker.isTracked(t))
     ) return;
@@ -19,7 +18,7 @@ export class GenerateJiraTicketsAction implements RepoAction {
     await Promise.all(
       tasks.map(async (t) => {
         await this.tracker.save(t);
-        repo.add(t.file_location.file_path);
+        await repo.add(t.file_location.file);
       }));
     await repo.commit("fix: add jira tickets");
     spinner.succeed();

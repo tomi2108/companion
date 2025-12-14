@@ -1,4 +1,4 @@
-import { createDirIfNotExists } from "@files/utils";
+import { Dir } from "@files/dir";
 import { Gitlab } from "@glab";
 import { Config } from "@lib/config";
 import log from "@lib/log";
@@ -20,20 +20,13 @@ export default {
       async ([key, id]) => {
         const path = config.paths?.[key];
         if (!id && !path) return;
-        if (!id) {
-          log.warning(`Could not clone repo with path ${path} and key ${key}, an id was not specified in the config`);
-          return;
-        }
-        if (!path) {
-          log.warning(`Could not clone repo with id ${id} and key ${key}, a path was not specified in the config`);
-          return;
-        }
+        if (!id) return log.warning(`Could not clone repo with path ${path} and key ${key}, an id was not specified in the config`);
+        if (!path) return log.warning(`Could not clone repo with id ${id} and key ${key}, a path was not specified in the config`);
 
         const bar = multi.create(0, 0);
         bar.setPrefix(key);
-        createDirIfNotExists(path);
         bar.setTotal(1);
-        await new Gitlab().cloneGroupOrProject(id, path, bar);
+        await new Gitlab().cloneGroupOrProject(new Dir(path), id, bar);
         bar.stop();
       }));
     multi.stop();

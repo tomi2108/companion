@@ -2,6 +2,7 @@ import { setTimeout } from "node:timers/promises";
 import { ResetMode, SimpleGit } from "simple-git";
 
 import { Dir } from "@files/dir";
+import { File } from "@files/file";
 import { git, glab } from "@glab/api";
 import { MergeRequest } from "@glab/merge_request";
 import { GitlabUser } from "@glab/user";
@@ -64,7 +65,7 @@ export class Repo {
 
   async reset() {
     const res = await this.git.reset(ResetMode.HARD);
-    await this.updateState();
+    this.updateState();
     return res;
   }
 
@@ -79,9 +80,9 @@ export class Repo {
     this.updateState();
   }
 
-  async add(file: string) {
+  async add(file: File<unknown>) {
     const spinner = loading(`Adding file: ${file}`);
-    await this.git.add(file);
+    await this.git.add(file.path);
     spinner.succeed();
   }
 
@@ -192,7 +193,7 @@ export class Repo {
     const spinner = loading("Building merge request");
     const { id } = await this.getProject();
     const mr = await this.createMr(targetBranch, { projectId: id });
-    await setTimeout(60 * 1000);
+    await setTimeout(45 * 1000);
     spinner.succeed();
     // genius =)
     try {

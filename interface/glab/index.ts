@@ -1,5 +1,4 @@
 import { ProjectSchema } from "@gitbeaker/rest";
-import path from "node:path";
 
 import { Dir } from "@files/dir";
 import { glab } from "@glab/api";
@@ -21,7 +20,7 @@ export class Gitlab {
     const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${appName}\r\nversion:${version}`;
 
     const spinner = loading(`Creating issues for: ${appName}`);
-    await new Repo(argocd_path).createIssue({
+    await new Repo(new Dir(argocd_path)).createIssue({
       title,
       description
     });
@@ -46,34 +45,32 @@ export class Gitlab {
 
   async cloneProject(
     project: ProjectSchema,
-    full_path: string,
+    dir: Dir,
     bar?: ProgressBar,
     current = false
   ) {
     const name = project.path;
     const clone_url = project.http_url_to_repo;
-    const clone_path = current ? full_path : path.join(full_path, name);
-    const clone_dir = new Dir(clone_path);
-    const { created } = clone_dir.create();
-
-    if (!created && isGitRepo(clone_dir)) await new Repo(clone_path).update();
-    else await Repo.cloneRepo(full_path, clone_url, current);
+    const clone_dir = current ? dir : dir.sub(name);
+    if (clone_dir.exists() && isGitRepo(clone_dir)) await new Repo(clone_dir).update();
+    else await Repo.cloneRepo(clone_dir, clone_url, current);
 
     bar?.increment(1);
     bar?.setSufix(name);
   }
 
   async cloneGroupOrProject(
+    dir: Dir,
     id: number,
-    full_path: string,
     bar?: ProgressBar
   ) {
+    dir.create();
     try {
       const projects = await this.getProjects(id);
       bar?.setTotal(projects.length);
       for (let index = 0; index < projects.length; index += 10) {
         const toClone = projects.slice(index, index + 10);
-        await Promise.all(toClone.map(async (p) => await this.cloneProject(p, full_path, bar)));
+        await Promise.all(toClone.map(async (p) => await this.cloneProject(p, dir, bar)));
       }
     } catch (err) {
       if (
@@ -86,7 +83,7 @@ export class Gitlab {
       try {
         const project = await this.getProject(id);
         bar?.setTotal(1);
-        await this.cloneProject(project, full_path, bar, true);
+        await this.cloneProject(project, dir, bar, true);
       } catch (err) {
         if (
           !err || typeof err !== "object"
