@@ -1,8 +1,11 @@
-import fs from "node:fs";
 
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Config } from "@lib/config";
+import { mapObject } from "@lib/utils";
 import { Project } from "@oc/project";
+
+import { EnvContent } from "./formatters/env_formatter";
+import { ObjectFile } from "./object_file";
 
 export function toExternalEnv(str: string) {
   const config = Config.get().openshift;
@@ -18,48 +21,28 @@ export function toInternalEnv(str: string) {
     .replaceAll(/\.apps\..*\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
 }
 
-export class EnvFile {
-  path: string;
-  content: Record<string, string>;
-
-  constructor(path: string) {
-    this.path = path;
-    const exists = fs.existsSync(path);
-    const file_content = exists ? fs.readFileSync(path).toString().trim() : "";
-    this.content = Object.fromEntries(file_content.split("\n").map((l) => l.trim().split("=")));
-  }
-
-  get() {
-    return this.content;
-  }
+export class EnvFile extends ObjectFile<EnvContent> {
 
   add(key: string, value: string | number) {
-    fs.appendFileSync(this.path, `${key}=${value}\n`);
-  }
-
-  set(newEnv: Record<string, string | number | undefined>) {
-    if (fs.existsSync(this.path)) fs.rmSync(this.path);
-    Object.entries(newEnv).forEach(([key, value]) =>
-      value ? fs.appendFileSync(this.path, `${key}=${value}\n`) : null
-    );
+    this.writePartial({ [key]: value });
   }
 
   remove(key: string) {
-    this.set({ ...this.content, [key]: undefined });
+    const content = this.read();
+    if (!(key in content)) return;
+    this.writePartial({ [key]: undefined });
   }
 
   external() {
-    if (!fs.existsSync(this.path)) return;
-    const file_content = fs.readFileSync(this.path).toString();
-    const replaced = toExternalEnv(file_content);
-    fs.writeFileSync(this.path, replaced);
+    const content = this.read();
+    const replaced = mapObject(content, ([key, value]) => [key, toExternalEnv(String(value))]);
+    this.write(replaced);
   }
 
   internal() {
-    if (!fs.existsSync(this.path)) return;
-    const file_content = fs.readFileSync(this.path).toString();
-    const replaced = toInternalEnv(file_content);
-    fs.writeFileSync(this.path, replaced);
+    const content = this.read();
+    const replaced = mapObject(content, ([key, value]) => [key, toInternalEnv(String(value))]);
+    this.write(replaced);
   }
 
   async copy(project: Project, app_repo: AppRepo) {
@@ -67,8 +50,8 @@ export class EnvFile {
     const deployment = await project.getDeployment(name);
     const configMaps = await deployment.getConfigMaps() ?? [];
     const secrets = deployment.getSecrets() ?? [];
+    this.delete();
 
-    if (fs.existsSync(this.path)) fs.rmSync(this.path);
     for (const r of [...secrets, ...configMaps]) {
       for (const [key, value] of Object.entries(await r.getData() ?? {})) {
         this.add(key, value);

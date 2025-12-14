@@ -73,3 +73,18 @@ export function isGitRepo(dir: Dir) {
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function mapObject<
+  T extends Record<PropertyKey, any>,
+  K extends PropertyKey,
+  V
+>(
+  obj: T,
+  fn: (entry: [key: keyof T, value: T[keyof T]]) => readonly [K, V]
+): Record<K, V> {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) =>
+      fn([key as keyof T, value as T[keyof T]])
+    )
+  ) as Record<K, V>;
+}

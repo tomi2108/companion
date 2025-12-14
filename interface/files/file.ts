@@ -13,7 +13,7 @@ export class File<T> {
   formatter: FileFormatter<T>;
 
   write(input: T) {
-    const formatted = this.formatter.toString(input);
+    const formatted = this.formatter.toString(input).trim();
     fs.writeFileSync(this.path, formatted);
   }
 
@@ -21,7 +21,7 @@ export class File<T> {
     if (!this.exists()) throw new FileNotFound(this.path);
 
     try {
-      const content = fs.readFileSync(this.path).toString();
+      const content = fs.readFileSync(this.path).toString().trim();
       return this.formatter.fromString(content);
     } catch (err) {
       const exception = this.formatter.exception(this.path);

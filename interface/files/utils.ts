@@ -1,14 +1,12 @@
 import crypto from "node:crypto";
 
-import { DeployYamlContent } from "@files/validations";
 import { Config } from "@lib/config";
-import { AppType } from "@lib/constants";
 
 import { Dir } from "./dir";
 
-
 export const base64Encode = (string: string) => Buffer.from(string).toString("base64");
 export const base64Decode = (string: string) => Buffer.from(string, "base64").toString();
+
 export function sha1(input: string) {
   const hash = crypto.createHash("sha1");
   hash.update(input);

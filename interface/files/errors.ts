@@ -28,3 +28,9 @@ export class InvalidMonitorYaml extends Error {
     super(`${path} is not a valid monitor yaml`);
   }
 }
+
+export class InvalidCronYaml extends Error {
+  constructor(path: string) {
+    super(`${path} is not a valid cron yaml`);
+  }
+}

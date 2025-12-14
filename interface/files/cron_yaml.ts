@@ -1,51 +1,14 @@
 import yaml from "js-yaml";
 import fs, { Dirent } from "node:fs";
-import { z } from "zod/v4";
 
-import { toYaml } from "@lib/utils";
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
 
+import { YamlFile } from "./yaml_file";
 import { AppRepo } from "../dirs/app_repo";
+import { Container, CronYamlContent, CronYamlFormatter } from "./formatters/cron_yaml_formatter";
 
-const YamlContentSchema = z.object({
-  apiVersion: z.string(),
-  kind: z.string(),
-  metadata: z.object({
-    name: z.string(),
-    namespace: z.string()
-  }),
-  spec: z.object({
-    schedule: z.string(),
-    jobTemplate: z.object({
-      spec: z.object({
-        template: z.object({
-          spec: z.object({
-            restartPolicy: z.string(),
-            containers: z.array(
-              z.object({
-                name: z.string(),
-                image: z.string(),
-                envFrom: z.array(z.object({
-                  configMapRef: z.object({ name: z.string() }).optional(),
-                  secretRef: z.object({ name: z.string() }).optional()
-                })).optional(),
-                args: z.array(z.string())
-              }))
-          })
-        })
-      })
-    })
-  })
-});
-
-type Content = z.infer<typeof YamlContentSchema>;
-type Container = Content["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][number];
-
-export class CronYaml {
-  file_path: string;
-  content: Content;
-
+export class CronYaml extends YamlFile<CronYamlContent> {
   static isCronYaml(file: Dirent) {
     return file.isFile() && file.name.includes("cronjob");
   }
@@ -83,31 +46,19 @@ export class CronYaml {
     return new CronYaml(file_path);
   }
 
-  constructor(file_path: string) {
-    const file_content = fs.readFileSync(file_path).toString();
-    const yaml_content = yaml.load(file_content);
-    if (!yaml_content) throw new InvalidCronYaml(file_path);
-
-    this.content = YamlContentSchema.parse(yaml_content);
-    this.file_path = file_path;
+  constructor(path: string) {
+    super(path, new CronYamlFormatter());
   }
 
   private setContainer(partial_update: Partial<Container>) {
-    this.content.spec.jobTemplate.spec.template.spec.containers[0] = { ...this.getContainer(), ...partial_update };
+    const new_container = { ...this.getContainer(), ...partial_update };
+    this.writePartial({ spec: { jobTemplate: { spec: { template: { spec: { containers: [new_container] } } } } } });
   }
 
   private getContainer() {
-    if (!this.content.spec.jobTemplate.spec.template.spec.containers[0]) throw new Error(`missing container in cron job yaml ${this.file_path}`);
-    return this.content.spec.jobTemplate.spec.template.spec.containers[0];
-  }
-
-  toString() {
-    return toYaml(this.content);
-  }
-
-  save() {
-    const string = this.toString();
-    fs.writeFileSync(this.file_path, string);
+    const container = this.read().spec.jobTemplate.spec.template.spec.containers[0];
+    if (!container) throw new Error(`Missing container in cron yaml ${this.path}`);
+    return container;
   }
 
   addSecret(secret: Secret) {
@@ -135,20 +86,19 @@ export class CronYaml {
   }
 
   setNameSpace(namespace: string) {
-    this.content.metadata.namespace = namespace;
+    this.writePartial({ metadata: { namespace } });
   }
 
   setName(name: string) {
-    this.content.metadata.name = name;
-    this.setContainer({ name });
+    this.writePartial({ metadata: { name } });
   }
 
   getName() {
-    return this.content.metadata.name;
+    return this.read().metadata.name;
   }
 
   setSchedule(schedule: string) {
-    this.content.spec.schedule = schedule;
+    this.writePartial({ spec: { schedule } });
   }
 
   getAppName() {
@@ -158,13 +108,6 @@ export class CronYaml {
   }
 
   getSchedule() {
-    return this.content.spec.schedule;
-  }
-
-}
-
-export class InvalidCronYaml extends Error {
-  constructor(full_path: string) {
-    super(`${full_path} is not a valid cron yaml`);
+    return this.read().spec.schedule;
   }
 }
