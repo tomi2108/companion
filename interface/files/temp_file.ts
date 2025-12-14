@@ -7,13 +7,13 @@ import { TextFile } from "./text_file";
 
 export class TempFile extends TextFile {
 
-  constructor(content: string, ext?: string) {
+  constructor({ content, ext }: { content?: string; ext?: string }) {
     const tmp_dir = new Dir(Config.get().preferences.tmp_path);
     tmp_dir.create();
     const extension = ext ? `.${ext}` : "";
     const name = `${crypto.randomUUID()}${extension}`;
     const file = tmp_dir.createFile(name);
-    file.write(content);
+    file.write(content ?? "");
     super(file.path);
   }
 

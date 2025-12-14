@@ -26,7 +26,7 @@ export default {
     if (type === "configmap") {
       const configmaps = await project.getConfigMaps();
       const configmap = await promptForOcResource(configmaps);
-      const { changed, new_content } = await new TempFile(await configmap.toYaml(), "yaml").prompt();
+      const { changed, new_content } = await new TempFile({ content: await configmap.toYaml(), ext: "yaml" }).prompt();
       if (!changed || !new_content) return log.info("Edit canceled, no changes made");
       const y = yaml.load(new_content);
       if (!y
@@ -44,7 +44,7 @@ export default {
 
     const secrets = await project.getSecrets();
     const secret = await promptForOcResource(secrets);
-    const { changed, new_content } = await new TempFile(await secret.toYaml(), "yaml").prompt();
+    const { changed, new_content } = await new TempFile({ content: await secret.toYaml(), ext: "yaml" }).prompt();
     if (!changed || !new_content) return log.info("Edit canceled, no changes made");
     const y = yaml.load(new_content);
     if (!y

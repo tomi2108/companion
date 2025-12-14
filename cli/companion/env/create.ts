@@ -29,7 +29,7 @@ export default {
     const name = await input({ message: `Enter a name for the new ${resource}` });
     if (!name) process.exit(1);
 
-    const { changed, new_content } = await new TempFile("KEY=VALUE").prompt();
+    const { changed, new_content } = await new TempFile({ content: "KEY=VALUE" }).prompt();
     if (!changed) {
       log.info("Create canceled, no changes made");
       process.exit(0);
