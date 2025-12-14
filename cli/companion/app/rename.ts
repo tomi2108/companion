@@ -73,7 +73,7 @@ export default {
               }
               repo.package = new_name;
               repo.save();
-              await repo.add(repo.package_file);
+              await repo.add(repo.package);
               const commit = await repo.commit(`fix: rename to ${new_name}`);
               if (!commit) return;
               await repo.push(branch);

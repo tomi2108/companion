@@ -15,13 +15,7 @@ export default {
     const { app_repo, deploy_repo } = await promptForApp();
 
     await deploy_repo.update();
-    const choices = deploy_repo.deployments.map((d) => {
-      const version = d.getVersion();
-      return {
-        hint: version ? `Current: ${version}` : "Missing yaml",
-        name: d.namespace
-      };
-    });
+    const choices = deploy_repo.deployments.map((d) => d.toChoice());
 
     const selectedNamespaces = await search({ message: "Select environment", multiple: true, choices });
     if (selectedNamespaces.length === 0) return process.exit(1);

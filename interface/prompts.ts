@@ -16,7 +16,7 @@ export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
   if (!dep_path) throw new ConfigError("paths.despliegues");
   const apps = new Dir(dep_path).readDirs();
   const app_name = await search({
-    choices: apps.map((a) => a.name),
+    choices: apps.map((a) => a.toChoice()),
     message: "",
     ...opts
   });

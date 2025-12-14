@@ -48,7 +48,7 @@ export default {
         apps.map((a) => a.name),
         project,
         ({ key, app_repo, already_added, name }) => {
-          const env = app_repo.env_file;
+          const env = app_repo.env;
           if (Object.keys(toStart).includes(name)) return;
           if (!noedit) env.remove(key);
           if (!already_added) {

@@ -4,7 +4,7 @@ import { Config } from "@lib/config";
 import { mapObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
-import { EnvContent, EnvFormatter } from "./formatters/env_formatter";
+import { EnvFileContent, EnvFormatter } from "./formatters/env_formatter";
 import { ObjectFile } from "./object_file";
 
 export function toExternalEnv(str: string) {
@@ -21,7 +21,7 @@ export function toInternalEnv(str: string) {
     .replaceAll(/\.apps\..*\.cuyorh\.tcloud\.ar/g, ".svc.cluster.local:8080");
 }
 
-export class EnvFile extends ObjectFile<EnvContent> {
+export class EnvFile extends ObjectFile<EnvFileContent> {
 
   constructor(path: string) {
     super(path, new EnvFormatter());

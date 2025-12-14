@@ -1,6 +1,6 @@
 import z from "zod/v4";
 
-import { DeployYamlContentSchema } from "@files/validations";
+import { DeployYamlContentSchema } from "@files/formatters/deploy_yaml_formatter";
 import { APP_TYPES } from "@lib/constants";
 import { input, password } from "@lib/ui";
 

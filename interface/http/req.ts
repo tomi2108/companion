@@ -1,16 +1,11 @@
 import axios from "axios";
 
-type ReqObj = {
-  method: string;
-  params: Record<string, string | null> | null;
-  pathname: string;
-  headers: Record<string, string | null> | null;
-  body: string;
-};
+import { HttpMethod, ReqObj } from "@files/formatters/http_formatter";
 
 export const varRegex = new RegExp("{{(.*?)}}", "g");
-export class Req {
-  method: string;
+
+export class Req implements ReqObj {
+  method: HttpMethod;
   params: Record<string, string | null> | null;
   pathname: string;
   headers: Record<string, string | null> | null;

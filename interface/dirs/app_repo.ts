@@ -23,8 +23,8 @@ function dependencyToString(d: Dependency) {
 }
 
 export class AppRepo extends Repo {
-  env_file: EnvFile;
-  package_file: PackageJson;
+  env: EnvFile;
+  package: PackageJson;
   override actions: RepoAction[] = [new TrackTasksAction(new JiraIssueTracker())];
 
   static isAppRepo(dir: Dir) {
@@ -34,8 +34,8 @@ export class AppRepo extends Repo {
   constructor(dir: Dir) {
     if (!AppRepo.isAppRepo(dir)) throw new InvalidAppRepo(dir);
     super(dir);
-    this.package_file = new PackageJson(dir.getFile("package.json").path);
-    this.env_file = new EnvFile(dir.createFile(".env").path);
+    this.package = new PackageJson(dir.getFile("package.json").path);
+    this.env = new EnvFile(dir.getFile(".env").path);
   }
 
   private async npmRun(cmd: string, stdio?: StdioOptions) {
@@ -117,6 +117,10 @@ export class AppRepo extends Repo {
         });
       })
     };
+  }
+
+  getPackage() {
+    return this.package.read();
   }
 
   async findPipeline(project: Project, q: string) {

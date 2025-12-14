@@ -68,5 +68,14 @@ export class DeployYaml extends YamlFile<DeployYamlContent> {
   getEnv() {
     return ENVS.find((e) => path.basename(this.path).includes(e)) ?? "prod";
   }
+
+  override toChoice() {
+    const version = this.getVersion();
+    return {
+      hint: version ? `Current: ${version}` : "Missing yaml",
+      name: this.namespace
+    };
+
+  }
 }
 

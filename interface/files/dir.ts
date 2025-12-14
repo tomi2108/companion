@@ -54,7 +54,6 @@ export class Dir {
 
   createFile(file_name: string) {
     const file_path = path.join(this.path, file_name);
-    if (fs.existsSync(file_path)) fs.rmSync(file_path);
     return new TextFile(file_path);
   }
 

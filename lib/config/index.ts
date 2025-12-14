@@ -94,7 +94,7 @@ class Config {
     const dir = path.dirname(getConfigPath());
     const exists = fs.existsSync(dir);
     if (!exists) fs.mkdirSync(dir, { recursive: true });
-    config_file.write(JSON.stringify(config_to_write, null, 2));
+    config_file.write(config_to_write);
     log.success("Configuration was set up correctly");
   }
 

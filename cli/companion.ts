@@ -31,6 +31,7 @@ yargs
   .describe("prod", "Wheter to use the production servers")
   .middleware(loadConfig, true)
   .middleware(initLogger)
+  // .middleware(checkVersion)
   .command(app)
   .command(config)
   .command(cron)

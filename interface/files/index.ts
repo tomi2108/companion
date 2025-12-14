@@ -36,7 +36,7 @@ export async function getApp(app_name: string) {
   }
 
   for (const d of getAppPaths()) {
-    app_repo = new AppRepo(d.path);
+    app_repo = new AppRepo(d);
     const { name } = await app_repo.getInfo();
     if (app_name === name) break;
     app_repo = null;
@@ -55,7 +55,7 @@ export async function getSubApps(
   const { app_repo, deploy_repo } = await getApp(app);
   if (!app_repo) return log.error(`App repo not found for ${app}`);
   if (!deploy_repo) return log.error(`Deploy repo not found for ${app}`);
-  const env = app_repo.env_file;
+  const env = app_repo.env;
 
   await env.copy(project, app_repo);
   env.internal();
@@ -65,8 +65,9 @@ export async function getSubApps(
   if (!version) return log.error(`Version not found for ${app} in project ${project.name}`);
   await app_repo.checkout(version);
 
-  const envEntries = Object.entries(env.get());
+  const envEntries = Object.entries(env.read());
   for (const [key, value] of envEntries) {
+    if (typeof value !== "string") continue;
     const host = URL.canParse(value) ? new URL(value).hostname : null;
     if (!host) continue;
     const found = apps.find((a) => host.split(".")[0] === a);

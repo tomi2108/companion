@@ -25,7 +25,7 @@ export class Swagger {
 
   private fromFile(file: HttpFile): Record<string, SwaggerPathItem> {
     const paths: Record<string, any> = {};
-    for (const fragment of file.requests.map((r) => this.fromRequest(r))) {
+    for (const fragment of file.getRequests().map((r) => this.fromRequest(r))) {
       for (const [path, methods] of Object.entries(fragment)) {
         if (!paths[path]) paths[path] = {};
         Object.assign(paths[path], methods);

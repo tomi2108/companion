@@ -34,3 +34,9 @@ export class InvalidCronYaml extends Error {
     super(`${path} is not a valid cron yaml`);
   }
 }
+
+export class InvalidHttpFile extends Error {
+  constructor(file_path: string, reason = "") {
+    super(`Invalid http file ${file_path} ${reason}`);
+  }
+}

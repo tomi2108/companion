@@ -32,7 +32,7 @@ export class Postman {
   }
 
   private fromFile(file: HttpFile): PostmanFolder {
-    const items = file.requests.map((r) => this.fromRequest(r));
+    const items = file.getRequests().map((r) => this.fromRequest(r));
 
     return {
       name: file.service,

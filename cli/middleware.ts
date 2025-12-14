@@ -2,6 +2,7 @@ import chalk from "chalk";
 import path from "node:path";
 import yargs from "yargs";
 
+import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Config } from "@lib/config";
 import { storage } from "@lib/log";
@@ -22,8 +23,9 @@ export async function initLogger({ $0, _: args, debug }: yargs.ArgumentsCamelCas
 }
 
 export async function checkVersion() {
-  const repo = new AppRepo(path.resolve(__dirname, "../../"));
-  const current_version = repo.version;
+  const root = path.resolve(__dirname, "../../");
+  const repo = new AppRepo(new Dir(root));
+  const current_version = repo.getPackage().version;
   const release = await repo.getLatestRelease();
   const remote_version = release.name;
   if (current_version !== remote_version) {

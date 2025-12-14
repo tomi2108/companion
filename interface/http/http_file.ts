@@ -1,140 +1,37 @@
-import fs from "node:fs";
-
 import { getApp } from "@files";
+import { InvalidHttpFile } from "@files/errors";
+import { HttpFileContent, HttpFormatter } from "@files/formatters/http_formatter";
+import { ObjectFile } from "@files/object_file";
 
 import { Req } from "./req";
 import { Config, ConfigError } from "../../lib/config";
 
-const valid_methods = [
-  "GET",
-  "PUT",
-  "POST",
-  "PATCH",
-  "DELETE"
-];
-
-const line_filter = (l: string) => l !== "" && l !== "###" && !l.includes("localhost") && l !== "\n";
-
-export class HttpFile {
-  file_path: string;
-  variables: Record<string, string>;
-  requests: Req[];
+export class HttpFile extends ObjectFile<HttpFileContent> {
   service: string;
-  url: string | null;
 
   constructor(file_path: string) {
+    super(file_path, new HttpFormatter());
     const namespace_prefix = Config.get().openshift.namespace_prefix;
     if (!namespace_prefix) throw new ConfigError("openshift.namespace_prefix");
-    this.file_path = file_path;
-    const [globals, ...requestsString] = fs.readFileSync(this.file_path).toString().split("###");
-    if (!globals || requestsString.length === 0) throw new InvalidHttpFile(file_path, "Check syntax");
-    this.variables = this.getVariables(globals ?? "");
-    this.requests = this.parseRequests(requestsString).map((r) => new Req(r, this.variables));
-    const service = this.variables.host?.split(`-${namespace_prefix}`)?.[0];
+    // TODO: I hate the idea of having http files linked to a particular service, find a better way
+    const service = this.getVariables().host?.split(`-${namespace_prefix}`)?.[0];
     if (!service) throw new InvalidHttpFile(file_path, "Could not find host variable to determine service name");
     this.service = service;
-    this.url = this.getUrl("cert", this.service);
   }
 
-  private getEnvSufix(env: string) {
-    if (env === "prod") return "";
-    return `-${env}`;
+  getVariables() {
+    return this.read().variables;
   }
 
-  private getUrl(env: string, service: string | null) {
-    const namespace_prefix = Config.get().openshift.namespace_prefix;
-    if (!namespace_prefix) throw new ConfigError("openshift.namespace_prefix");
-    if (!service) return null;
-    const sufix = this.getEnvSufix(env);
-    const config = Config.get().openshift;
-    return `http://${service}-${namespace_prefix}${sufix}.apps.${config.server_name}.cuyorh.tcloud.ar`;
-  }
-
-  private getVariables(globals: string) {
-    return Object.fromEntries(
-      globals.split("\n")
-        .filter(line_filter)
-        .map((l) => {
-          const variable = this.getVariable(l);
-          if (!variable?.key || !variable.value) return [];
-          return [variable.key, variable.value];
-        })
-    );
-  }
-
-  private getHeader(l: string) {
-    const split = l.split(":");
-    if (split.length <= 1) return null;
-    return { key: split[0], value: split?.[1]?.trim() };
-  }
-
-  private getVariable = (l: string) => {
-    const line = l.replaceAll("#", "").replaceAll(" ", "");
-    if (line.startsWith("@")) {
-      const split = line.split("=");
-      return { key: split?.[0]?.substring(1).trim(), value: split?.[1]?.trim() ?? null };
-    }
-    return null;
-  };
-
-  private parseRequests(requests: string[]) {
-    return requests.map((r) => {
-      if (r.trim() === "") return null;
-      const lines = r.trim().split("\n");
-      const method = lines?.[0]?.split(" ")[0];
-      if (!method || !valid_methods.includes(method)) return null;
-      let url = lines?.[0]?.split(" ")[1] ?? "";
-      let i = 1;
-      for (i; i < lines.length; i++) {
-        const l = lines?.[i]?.trim();
-        if (!l || l === "" || !l.startsWith("?") && !l.startsWith("&")) break;
-        url = url?.concat(l);
-      }
-      const [path, searchParams] = url.split("?");
-      const pathname = `/${path?.split("/").slice(3).join("/") ?? ""}`;
-      const urlSearchParams = new URLSearchParams(searchParams);
-      const params
-        = urlSearchParams && urlSearchParams.size > 0
-          ? Object.fromEntries(
-            Object.entries(
-              Object.fromEntries(urlSearchParams.entries())
-            )
-          ) : null;
-
-      let headers: Record<string, string | null> | null = null;
-      for (i; i < lines.length; i++) {
-        const l = lines[i];
-        if (!l || l.trim() === "") break;
-
-        if (!headers) headers = {};
-        const h = this.getHeader(l);
-        if (!h) continue;
-        const { key, value } = h;
-        if (key && value) headers[key] = value;
-      }
-
-      let bodyString = "";
-      for (i; i < lines.length; i++) {
-        const l = lines[i];
-        if (!l) continue;
-        bodyString = bodyString.concat(l);
-      }
-      return { method, params, pathname, headers, body: bodyString };
-    }
-    ).filter((e) => e !== null);
+  getRequests() {
+    return this.read().requests.map((r) => new Req(r));
   }
 
   async getInfo() {
     const { app_repo } = await getApp(this.service);
     if (!app_repo) throw new Error(`Could not find app_repo for app ${this.service}`);
-    const description = app_repo.description;
-    const version = app_repo.version ?? "1.0.0";
+    const description = app_repo.getPackage().description;
+    const version = app_repo.getPackage().version ?? "1.0.0";
     return { description, version };
-  }
-}
-
-class InvalidHttpFile extends Error {
-  constructor(file_path: string, reason = "") {
-    super(`Invalid http file ${file_path} ${reason}`);
   }
 }

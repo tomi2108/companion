@@ -1,17 +1,17 @@
 import { FileFormatter } from ".";
 
-export type EnvContent = Record<string, string | number | undefined>;
+export type EnvFileContent = Record<string, string | number | undefined>;
 
-export class EnvFormatter implements FileFormatter<EnvContent> {
+export class EnvFormatter implements FileFormatter<EnvFileContent> {
 
-  toString(input: EnvContent): string {
+  toString(input: EnvFileContent): string {
     return Object.entries(input)
       .filter(([value]) => Boolean(value))
       .map(([key, value]) => `${key}=${value}`)
       .join("\n");
   }
 
-  fromString(content: string): EnvContent {
+  fromString(content: string): EnvFileContent {
     return Object.fromEntries(content
       .split("\n")
       .map((line) => line.split("="))
