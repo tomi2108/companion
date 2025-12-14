@@ -1,15 +1,19 @@
 import { Repo } from "@interface/dirs/repo";
 import { getTasksFromDir } from "@interface/tasks";
-import { JiraIssueTracker } from "@interface/tasks/jira_issue_tracker";
+import { TaskTracker } from "@interface/tasks/task_tracker";
 import { loading } from "@lib/ui";
 
 import { RepoAction } from ".";
 
-export class GenerateJiraTicketsAction implements RepoAction {
-  tracker = new JiraIssueTracker();
+export class TrackTasksAction implements RepoAction {
+  tracker: TaskTracker;
+
+  constructor(tracker: TaskTracker) {
+    this.tracker = tracker;
+  }
 
   async onMrCreate(repo: Repo) {
-    const spinner = loading("Generate missing jira tickets");
+    const spinner = loading("Generate missing issues");
     const tasks = getTasksFromDir(repo.dir);
     if (
       tasks.length === 0 || tasks.every((t) => this.tracker.isTracked(t))
@@ -20,7 +24,7 @@ export class GenerateJiraTicketsAction implements RepoAction {
         await this.tracker.save(t);
         await repo.add(t.file_location.file);
       }));
-    await repo.commit("fix: add jira tickets");
+    await repo.commit("fix: add issues");
     spinner.succeed();
   }
 

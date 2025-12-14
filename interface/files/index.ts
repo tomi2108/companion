@@ -29,7 +29,7 @@ export async function getApp(app_name: string) {
   let app_repo: AppRepo | null = null;
 
   for (const d of getDeploymentPaths() ?? []) {
-    deploy_repo = new DeployRepo(d.path);
+    deploy_repo = new DeployRepo(d);
     const { name } = await deploy_repo.getInfo();
     if (app_name === name) break;
     deploy_repo = null;

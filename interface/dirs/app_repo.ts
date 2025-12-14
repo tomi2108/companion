@@ -4,12 +4,13 @@ import path from "node:path";
 
 import { EnvFile } from "@files/env_file";
 import { Repo } from "@interface/dirs/repo";
+import { JiraIssueTracker } from "@interface/tasks/jira_issue_tracker";
 import log from "@lib/log";
 import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
 import { RepoAction } from "./actions";
-import { GenerateJiraTicketsAction } from "./actions/generate_jira_tickets";
+import { TrackTasksAction } from "./actions/track_tasks";
 
 export type Dependency = {
   name: string;
@@ -30,7 +31,7 @@ export class AppRepo extends Repo {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
-  override actions: RepoAction[] = [new GenerateJiraTicketsAction()];
+  override actions: RepoAction[] = [new TrackTasksAction(new JiraIssueTracker())];
 
   static isAppRepo(full_path: string) {
     const package_path = path.join(full_path, "package.json");
