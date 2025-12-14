@@ -48,9 +48,21 @@ export abstract class File<T> {
   }
 
   insertLine(lineNo: number, line: string) {
-    const lines = fs.readFileSync(this.path).toString().split("\n");
+    const lines = this.readString().split("\n");
     lines.splice(lineNo - 1, 0, line);
-    fs.writeFileSync(this.path, lines.join("\n"));
+    this.writeString(lines.join("\n"));
+  }
+
+  removeLine(lineNo: number) {
+    const lines = this.readString().split("\n");
+    lines.splice(lineNo - 1, 1);
+    this.writeString(lines.join("\n"));
+  }
+
+  replace(from: string, to: string) {
+    const content = this.readString();
+    const updated = content.replace(new RegExp(from, "g"), to);
+    this.writeString(updated);
   }
 
   async openInEditor(opts: { wait?: boolean } = {}) {

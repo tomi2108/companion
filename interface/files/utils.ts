@@ -1,6 +1,4 @@
 import crypto from "node:crypto";
-import fs from "node:fs";
-import path from "node:path";
 
 import { DeployYamlContent } from "@files/validations";
 import { Config } from "@lib/config";
@@ -37,25 +35,6 @@ export function getDeploymentOption(
   return get(y, path);
 }
 
-export function replace(from: string, to: string, file: string) {
-  let content = fs.readFileSync(file).toString();
-  content = content.toString();
-  const updatedContent = content.replace(new RegExp(from, "g"), to);
-  fs.writeFileSync(file, updatedContent);
-}
-
-export function removeLine(line: number, file: string) {
-  const lines = fs.readFileSync(file).toString().split("\n");
-  lines.splice(line - 1, 1);
-  fs.writeFileSync(file, lines.join("\n"));
-}
-
-export function insertLine(line: number, file: string, content: string) {
-  const lines = fs.readFileSync(file).toString().split("\n");
-  lines.splice(line - 1, 0, content);
-  fs.writeFileSync(file, lines.join("\n"));
-}
-
 export const base64Encode = (string: string) => Buffer.from(string).toString("base64");
 export const base64Decode = (string: string) => Buffer.from(string, "base64").toString();
 export function sha1(input: string) {
@@ -70,45 +49,4 @@ export function createLogFile(file_name: string, subDir?: Dir) {
   if (subDir) file_dir.join(subDir);
   file_dir.create();
   return file_dir.createFile(file_name);
-}
-
-type FileStat = {
-  type?: "dir" | "file";
-  files?: FileStat[];
-  file: string;
-  path: string;
-};
-
-const default_ignore = [".git"];
-export function traverseDirectory(dir: string, {
-  ignore,
-  flatten
-}: { ignore?: string[]; flatten?: boolean } = { ignore: [] }, result: FileStat[] = []) {
-  fs.readdirSync(dir).forEach((file) => {
-    const to_ignore = default_ignore;
-    if (ignore) to_ignore.push(...ignore);
-    if (to_ignore.includes(file)) return;
-
-    const fPath = path.resolve(dir, file);
-
-    const fileStats: FileStat = { file, path: fPath };
-
-    if (fs.statSync(fPath).isDirectory()) {
-      fileStats.type = "dir";
-      fileStats.files = [];
-      result.push(fileStats);
-      return traverseDirectory(fPath, { ignore }, fileStats.files);
-    }
-
-    fileStats.type = "file";
-    result.push(fileStats);
-    return;
-  });
-  if (!flatten) return result;
-
-  function flat(f: FileStat): FileStat[] {
-    if (f.type === "dir") return f.files?.flatMap(flat) ?? [];
-    return [f];
-  }
-  return result.flatMap(flat);
 }

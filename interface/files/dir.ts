@@ -68,5 +68,29 @@ export class Dir {
     return { name: this.name() };
   }
 
+  traverse() {
+    const ignore = [".git"];
+    const result: Array<Dir | TextFile> = [];
+    if (!this.exists()) return result;
+    const walk = (dir: Dir) => {
+      result.push(dir);
+      const entries = fs.readdirSync(dir.path, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir.path, entry.name);
+
+        if (entry.isDirectory()) {
+          if (ignore.includes(entry.name)) continue;
+          walk(new Dir(fullPath));
+        }
+        if (entry.isFile()) {
+          if (ignore.includes(entry.name)) continue;
+          result.push(new TextFile(fullPath));
+        }
+      }
+    };
+
+    walk(this);
+    return result;
+  }
 }
 
