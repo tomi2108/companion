@@ -1,8 +1,7 @@
-import { cpSync, rmSync } from "node:fs";
-import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 import { ResetMode, SimpleGit } from "simple-git";
 
+import { Dir } from "@files/dir";
 import { git, glab } from "@glab/api";
 import { MergeRequest } from "@glab/merge_request";
 import { GitlabUser } from "@glab/user";
@@ -16,33 +15,28 @@ import { RepoAction } from "./actions";
 export class Repo {
   git: SimpleGit;
   glab: ReturnType<typeof glab>;
-  full_path: string;
+  dir: Dir;
   actions: RepoAction[] = [];
 
-  static async cloneRepo(full_path: string, link: string, current?: boolean) {
-    await git(full_path).clone(link);
+  static async cloneRepo(dir: Dir, link: string, current?: boolean) {
+    dir.create();
+    const gitInstance = git(dir.path);
+    if (current) await gitInstance.clone(link, ".");
+    else await gitInstance.clone(link);
 
     const url = new URL(link);
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
-    const repo_path = path.join(full_path, name);
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/74]: would be cool to clone directly in full_path similar to "git clone {{url}} ."
-    // copying and deleting seems wrong
-    if (current) {
-      cpSync(repo_path, full_path, { recursive: true });
-      rmSync(repo_path, { recursive: true });
-    }
 
-    const repo = new Repo(current ? full_path : repo_path);
-    await repo.update();
+    const repo = new Repo(current ? dir : dir.sub(name));
     return repo;
   }
 
-  constructor(full_path: string) {
-    if (!isGitRepo(full_path)) throw new InvalidRepo(full_path);
-    this.git = git(full_path);
+  constructor(dir: Dir) {
+    if (!isGitRepo(dir)) throw new InvalidRepo(dir);
+    this.git = git(dir.path);
     this.glab = glab();
-    this.full_path = full_path;
+    this.dir = dir;
     this.updateState();
   }
 
@@ -274,7 +268,7 @@ export class Repo {
 }
 
 export class InvalidRepo extends Error {
-  constructor(full_path: string) {
-    super(`${full_path} is not a Git repository`);
+  constructor(dir: Dir) {
+    super(`${dir} is not a Git repository`);
   }
 }
