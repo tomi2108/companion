@@ -39,6 +39,14 @@ export abstract class File<T> {
     fs.appendFileSync(this.path, content);
   }
 
+  exists() {
+    return fs.existsSync(this.path);
+  }
+
+  delete() {
+    if (this.exists()) fs.rmSync(this.path);
+  }
+
   insertLine(lineNo: number, line: string) {
     const lines = fs.readFileSync(this.path).toString().split("\n");
     lines.splice(lineNo - 1, 0, line);
@@ -53,14 +61,14 @@ export abstract class File<T> {
   }
 
   getMd5() {
-    const content = fs.readFileSync(this.path);
+    const content = this.readString();
     const hash = crypto.createHash("md5");
     hash.update(content);
     return hash.digest("hex");
   }
 
   toChoice() {
-    return { name: this.name };
+    return { name: this.name() };
   }
 }
 

@@ -22,7 +22,7 @@ export default {
     if (!mongo_path) throw new ConfigError("paths.mongo");
 
     const migrations_dir = new Dir(mongo_path);
-    const migration_scripts = migrations_dir.sub("src").sub("scripts");
+    const migration_scripts = migrations_dir.sub("src", "scripts");
 
     const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
@@ -52,7 +52,7 @@ export default {
       cwd: migration_scripts.path
     });
 
-    const log_dir = new Dir("mongo").sub("scripts").sub(migration_file.name({ extension: false }));
+    const log_dir = new Dir("mongo").sub("scripts", migration_file.name({ extension: false }));
     const log_file = createLogFile(new Date().toISOString(), log_dir);
     log_file.write(output);
     log.info(`Log file written at ${log_file.path}`);

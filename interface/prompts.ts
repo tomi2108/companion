@@ -1,15 +1,12 @@
-import fs from "node:fs";
-
 import { getApp } from "@files";
-import { createTempFile } from "@files/utils";
+import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { Repo } from "@interface/dirs/repo";
 import { Jira } from "@jira";
-import { Config, ConfigError, openInEditor } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
 import { Choice } from "@lib/constants";
 import { ArrayPromptOptions, loading, search } from "@lib/ui";
-import { md5FromFile, readdirs } from "@lib/utils";
 
 type PromptOptions<T> = Omit<ArrayPromptOptions<T>, "choices">;
 
@@ -17,7 +14,7 @@ export async function promptForApp<T>(promptOpts?: PromptOptions<T>) {
   const opts = promptOpts || {};
   const dep_path = Config.get().paths.despliegues;
   if (!dep_path) throw new ConfigError("paths.despliegues");
-  const apps = readdirs(dep_path) ?? [];
+  const apps = new Dir(dep_path).readDirs();
   const app_name = await search({
     choices: apps.map((a) => a.name),
     message: "",
@@ -65,18 +62,6 @@ export async function promptForJiraIssue<T>(
 
   if (!choice) return process.exit(1);
   return issues.find((i) => i.key === choice)!;
-}
-
-export async function promptTmpFile(file_name: string, content: string) {
-  const file_path = createTempFile(file_name);
-  if (fs.existsSync(file_path)) fs.rmSync(file_path);
-  fs.writeFileSync(file_path, content);
-  const m1 = md5FromFile(file_path);
-  await openInEditor(file_path, { wait: true });
-  const m2 = md5FromFile(file_path);
-  const new_content = fs.readFileSync(file_path).toString();
-  fs.rmSync(file_path);
-  return { changed: m1 !== m2, new_content };
 }
 
 export async function promptForMr(repo: Repo) {

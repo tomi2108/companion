@@ -1,10 +1,10 @@
 import { getApp } from "@files";
+import { Dir } from "@files/dir";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { input, loading, search } from "@lib/ui";
-import { readdirs } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -22,17 +22,16 @@ export default {
     if (!mf_repos_path) throw new ConfigError("paths.frontend");
 
     const apps = [
-      ...readdirs(mf_repos_path) ?? [],
-      ...readdirs(ms_repos_path) ?? []
+      ...new Dir(mf_repos_path).readDirs(),
+      ...new Dir(ms_repos_path).readDirs()
     ];
 
-    const choices = apps.map((dir) => ({ name: dir.name }));
+    const choices = apps.map((d) => d.toChoice());
     const app = await search({ choices, message: "Select an app" });
     const { app_repo, deploy_repo } = await getApp(app);
     if (!app_repo) return log.error(`Could not find app repo for ${app}`);
     const existingNamespaces = deploy_repo?.deployments.map((d) => d.namespace) ?? [];
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
+    const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(
       projects.filter((p) => !existingNamespaces.includes(p.name)),
       { message: "Select a project" });

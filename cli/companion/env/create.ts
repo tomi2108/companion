@@ -1,8 +1,9 @@
 import path from "node:path";
 
 import { SecretsYaml } from "@files/secrets_yaml";
+import { TempFile } from "@files/temp_file";
 import { Repo } from "@interface/dirs/repo";
-import { promptForOcResource, promptTmpFile } from "@interface/prompts";
+import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { input, search } from "@lib/ui";
@@ -18,8 +19,7 @@ export default {
     const namespaces_path = Config.get().paths.namespaces;
     if (!namespaces_path) throw new ConfigError("paths.namespaces");
 
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
+    const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
 
     const choices = ["configmap", "secret"];
@@ -29,12 +29,12 @@ export default {
     const name = await input({ message: `Enter a name for the new ${resource}` });
     if (!name) process.exit(1);
 
-    const { changed, new_content } = await promptTmpFile(`${name}-${resource}`, "KEY=VALUE");
-
+    const { changed, new_content } = await new TempFile("KEY=VALUE").prompt();
     if (!changed) {
       log.info("Create canceled, no changes made");
       process.exit(0);
     }
+
     const data = parseKeyVal(new_content);
 
     if (resource === "configmap") {

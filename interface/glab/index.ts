@@ -1,7 +1,7 @@
 import { ProjectSchema } from "@gitbeaker/rest";
 import path from "node:path";
 
-import { createDirIfNotExists } from "@files/utils";
+import { Dir } from "@files/dir";
 import { glab } from "@glab/api";
 import { Repo } from "@interface/dirs/repo";
 import { Config } from "@lib/config";
@@ -54,7 +54,7 @@ export class Gitlab {
     const clone_url = project.http_url_to_repo;
     const clone_path = current ? full_path : path.join(full_path, name);
 
-    const { created } = createDirIfNotExists(clone_path);
+    const { created } = new Dir(clone_path).create();
 
     if (!created && isGitRepo(clone_path)) await new Repo(clone_path).update();
     else await Repo.cloneRepo(full_path, clone_url, current);

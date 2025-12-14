@@ -64,12 +64,6 @@ export function sha1(input: string) {
   return hash.digest("hex");
 }
 
-export function createTempFile(file_name: string) {
-  const file_path = path.join(Config.get().preferences.tmp_path, file_name);
-  createDirIfNotExists(path.dirname(file_path));
-  return file_path;
-}
-
 export function createLogFile(file_name: string, subDir?: Dir) {
   const log_dir = new Dir(Config.get().preferences.logs_path);
   const file_dir = log_dir;

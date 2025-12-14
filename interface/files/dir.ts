@@ -11,8 +11,12 @@ export class Dir {
     this.path = path;
   }
 
-  sub(dir_name: string) {
-    return new Dir(path.join(this.path, dir_name));
+  name() {
+    return path.basename(this.path);
+  }
+
+  sub(...dir_name: string[]) {
+    return new Dir(path.join(this.path, ...dir_name));
   }
 
   readFiles() {
@@ -43,7 +47,9 @@ export class Dir {
   }
 
   createFile(file_name: string) {
-    return new TextFile(path.join(this.path, file_name));
+    const file_path = path.join(this.path, file_name);
+    if (fs.existsSync(file_path)) fs.rmSync(file_path);
+    return new TextFile(file_path);
   }
 
   join(dir: Dir) {
@@ -53,5 +59,14 @@ export class Dir {
   exists() {
     return fs.existsSync(this.path);
   }
+
+  delete() {
+    if (this.exists()) fs.rmSync(this.path);
+  }
+
+  toChoice() {
+    return { name: this.name() };
+  }
+
 }
 

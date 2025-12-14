@@ -1,8 +1,8 @@
 import yaml from "js-yaml";
-import path from "node:path";
 import { setTimeout } from "node:timers/promises";
 
-import { promptForOcResource, promptTmpFile } from "@interface/prompts";
+import { TempFile } from "@files/temp_file";
+import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log";
 import { confirm, search } from "@lib/ui";
@@ -26,8 +26,7 @@ export default {
     if (type === "configmap") {
       const configmaps = await project.getConfigMaps();
       const configmap = await promptForOcResource(configmaps);
-      const tmp_file = path.join("configmaps", "edit", `${configmap.name}.yaml`);
-      const { changed, new_content } = await promptTmpFile(tmp_file, await configmap.toYaml());
+      const { changed, new_content } = await new TempFile(await configmap.toYaml(), "yaml").prompt();
       if (!changed || !new_content) return log.info("Edit canceled, no changes made");
       const y = yaml.load(new_content);
       if (!y
@@ -45,8 +44,7 @@ export default {
 
     const secrets = await project.getSecrets();
     const secret = await promptForOcResource(secrets);
-    const tmp_file = path.join("secrets", "edit", `${secret.name}.yaml`);
-    const { changed, new_content } = await promptTmpFile(tmp_file, await secret.toYaml());
+    const { changed, new_content } = await new TempFile(await secret.toYaml(), "yaml").prompt();
     if (!changed || !new_content) return log.info("Edit canceled, no changes made");
     const y = yaml.load(new_content);
     if (!y
