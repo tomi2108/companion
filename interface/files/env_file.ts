@@ -35,6 +35,8 @@ export class EnvFile {
 
   add(key: string, value: string | number) {
     fs.appendFileSync(this.path, `${key}=${value}\n`);
+    const file_content = fs.readFileSync(this.path).toString().trim();
+    this.content = Object.fromEntries(file_content.split("\n").map((l) => l.trim().split("=")));
   }
 
   set(newEnv: Record<string, string | number | undefined>) {
@@ -69,6 +71,7 @@ export class EnvFile {
     const secrets = deployment.getSecrets() ?? [];
 
     if (fs.existsSync(this.path)) fs.rmSync(this.path);
+
     for (const r of [...secrets, ...configMaps]) {
       for (const [key, value] of Object.entries(await r.getData() ?? {})) {
         this.add(key, value);

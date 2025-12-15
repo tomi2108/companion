@@ -102,7 +102,7 @@ class Config {
   }
 
   async prod() {
-    // TODO: implement
+    this.openshift.prod();
   }
 
   private async newConfigPrompt() {
