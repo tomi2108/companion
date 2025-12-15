@@ -2,9 +2,10 @@ import { Argv } from "yargs";
 
 import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
+import { promptSourcesOrOne } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
-import { input, progressBar, search } from "@lib/ui";
+import { input, progressBar } from "@lib/ui";
 
 export default {
   command: "merge",
@@ -23,25 +24,11 @@ export default {
     .conflicts("all", ["frontend", "backend"]),
   handler: async ({ all, frontend, backend }: { all?: boolean; frontend?: boolean; backend?: boolean }) => {
     const config = Config.get();
-    const sources = [
-      all || frontend ? config.paths.frontend : undefined,
-      all || backend ? config.paths.backend : undefined
-    ].filter(Boolean) as string[];
-
-    let dirs: Dir[] = sources.flatMap(
-      (p) => new Dir(p).readDirs()
-    );
-
-    if (dirs.length === 0) {
-      const fallbackSources = [
-        config.paths.frontend,
-        config.paths.backend
-      ].filter(Boolean) as string[];
-      if (fallbackSources.length === 0) return log.info("No apps found, set config.paths.frontend or config.paths.backend");
-      const choices = fallbackSources.flatMap((p) => new Dir(p).readDirs());
-      const choice = await search({ choices: choices.map((p) => p.toChoice()), message: "Select project" });
-      dirs = [choices.find((p) => p.toChoice().name === choice)!];
-    }
+    const dirs = await promptSourcesOrOne([
+      { enabled: Boolean(all || frontend), path: config.paths.frontend },
+      { enabled: Boolean(all || backend), path: config.paths.backend }
+    ]);
+    if (!dirs) return log.info("No apps found, set config.paths.frontend or config.paths.backend");
 
     const source_branch = await input({ message: "Input source branch" });
     const target_branch = await input({ message: "Input target branch" });

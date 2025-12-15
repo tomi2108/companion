@@ -1,12 +1,10 @@
-import { Dirent } from "node:fs";
-import path from "node:path";
 import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
+import { promptSourcesOrOne } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
-import { confirm, loading, progressBar, search } from "@lib/ui";
-import { readdirs } from "@lib/utils";
+import { confirm, progressBar } from "@lib/ui";
 
 export default {
   command: "clean",
@@ -41,44 +39,29 @@ export default {
     despliegues?: boolean;
     force?: boolean;
   }) => {
-    let paths: Dirent[] = [];
-    if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];
-    if (all || backend) paths = [...paths, ...readdirs(Config.get().paths.backend) ?? []];
-    if (all || despliegues) paths = [...paths, ...readdirs(Config.get().paths.despliegues) ?? []];
+    const config = Config.get();
+    const dirs = await promptSourcesOrOne([
+      { enabled: Boolean(all || frontend), path: config.paths.frontend },
+      { enabled: Boolean(all || backend), path: config.paths.backend },
+      { enabled: Boolean(all || despliegues), path: config.paths.despliegues }
+    ]);
 
-    if (paths.length === 0) {
-      const choices = [
-        ...readdirs(Config.get().paths.frontend) ?? [],
-        ...readdirs(Config.get().paths.backend) ?? [],
-        ...readdirs(Config.get().paths.despliegues) ?? []
-      ].map((p) => ({ name: path.join(p.parentPath, p.name) }));
-
-      const choice = await search({ choices, message: "Select project" });
-      const repo = new Repo(choice);
-      const { name } = await repo.getInfo();
-
-      const sure = await confirm({ message: `Are you sure you want to clean ${name}` });
-      if (!sure) return;
-
-      const spinner = loading(`Cleaning ${name}`);
-      await deleteBranches(repo, force);
-      spinner.succeed(`Succesfully cleaned ${name}`);
-      return;
-    }
+    if (!dirs) return log.info("No apps found, set config.paths.frontend or config.paths.backend");
 
     const sure = await confirm({ message: "Are you sure you want to clean repositories?" });
     if (!sure) return;
 
-    const bar = progressBar(paths.length, 0, "cleaning");
-    for (let index = 0; index < paths.length; index += 10) {
-      const toClean = paths.slice(index, index + 10);
-      await Promise.all(toClean.map(async (p) => {
-        bar.setSufix(p.name);
-        const repo = new Repo(path.join(p.parentPath, p.name));
-        await deleteBranches(repo, force);
-        bar.increment(1);
-      }
-      ));
+    const bar = progressBar(dirs.length, 0, "cleaning");
+    for (let index = 0; index < dirs.length; index += 10) {
+      const toClean = dirs.slice(index, index + 10);
+      await Promise.all(
+        toClean.map(async (dir) => {
+          bar.setSufix(dir.name());
+          const repo = new Repo(dir);
+          await deleteBranches(repo, force);
+          bar.increment(1);
+        })
+      );
     }
     bar.stop();
     log.success("Succesfully cleaned repositories");

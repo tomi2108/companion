@@ -27,6 +27,14 @@ export class JsonFormatter<T extends JsonValue = JsonValue> implements FileForma
     return JSON.stringify(input, null, 2);
   }
 
+  tryFromString(content: string): T | null {
+    try {
+      return this.fromString(content);
+    } catch {
+      return null;
+    }
+  }
+
   exception(path: string): Error {
     return new InvalidJsonFile(path);
   }

@@ -1,10 +1,9 @@
-import fs from "node:fs";
 import { Argv } from "yargs";
 
+import { JsonFormatter } from "@files/formatters/json_formatter";
 import { createLogFile } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
-import { tryParseJSONObject } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -23,16 +22,22 @@ export default {
     const pods = await project.getPods();
     const pod = await promptForOcResource(pods);
 
+    const formatter = new JsonFormatter();
     const logs = await pod.getLogs();
-    const formattedLogs = raw ? logs : JSON.stringify(logs.split("\n").map(tryParseJSONObject).filter(Boolean), null, 2);
+    const formattedLogs = raw
+      ? logs
+      : formatter.toString(
+        logs.split("\n").map((l) =>
+          formatter.tryFromString(l)
+        ).filter(Boolean)
+      );
 
     for (const p of pods.filter((p) => p.container === pod.container)) {
       const date = new Date().toISOString();
       const file_name = `[${date}]_${p.name}`;
-      const full_path = createLogFile(file_name);
-      if (!full_path) continue;
-      fs.writeFileSync(full_path, formattedLogs);
-      log.success(`Downloaded at ${full_path}`);
+      const log_file = createLogFile(file_name);
+      log_file.write(formattedLogs);
+      log.success(`Downloaded at ${log_file}`);
     }
   }
 };

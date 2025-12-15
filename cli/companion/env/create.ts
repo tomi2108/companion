@@ -1,5 +1,5 @@
-import path from "node:path";
 
+import { Dir } from "@files/dir";
 import { SecretsYaml } from "@files/secrets_yaml";
 import { TempFile } from "@files/temp_file";
 import { Repo } from "@interface/dirs/repo";
@@ -44,17 +44,17 @@ export default {
     }
 
     await project.createSecret(name, data);
-    const repo_path = path.join(namespaces_path, project.name);
-    const secrets_file = path.join(repo_path, "values.yaml");
+    const repo_path = new Dir(namespaces_path).sub(project.name);
+    const secrets_file = repo_path.getFile("values.yaml");
     const repo = new Repo(repo_path);
     await repo.stash(async () => {
       await repo.update();
       const { original_branch } = await repo.switchBranchIfExists("master");
-      const master_file = new SecretsYaml(secrets_file);
+      const master_file = new SecretsYaml(secrets_file.path);
       if (!master_file.hasSecret(name)) {
         const temp_branch = `feature/add-secret-${name}`;
         await repo.createNewBranch(temp_branch);
-        const file = new SecretsYaml(secrets_file);
+        const file = new SecretsYaml(secrets_file.path);
         file.addSecret(name);
         file.save();
         await repo.add(secrets_file);

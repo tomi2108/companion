@@ -1,6 +1,7 @@
 import { jira } from "@jira/api";
-import { Config, openInBrowser } from "@lib/config";
+import { Config } from "@lib/config";
 import { Choice } from "@lib/constants";
+import { openInBrowser } from "@lib/editor";
 
 import { JiraProject } from "./project";
 import { JiraUser } from "./user";

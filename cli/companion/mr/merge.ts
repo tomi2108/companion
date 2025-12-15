@@ -1,4 +1,5 @@
 import { getApp } from "@files";
+import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
 import { promptForMr, promptForOcResource } from "@interface/prompts";
 import log from "@lib/log";
@@ -15,8 +16,8 @@ export default {
   aliases: [],
   describe: "Merge merge request",
   handler: async () => {
-    const full_path = getCurrentPath();
-    const repo = new Repo(full_path);
+    const dir = new Dir(getCurrentPath());
+    const repo = new Repo(dir);
     const mr = await promptForMr(repo);
     const { name } = await repo.getInfo();
     const { deploy_repo, app_repo } = await getApp(name);

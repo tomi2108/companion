@@ -1,4 +1,3 @@
-
 import { Dir } from "@files/dir";
 import { createLogFile } from "@files/utils";
 import { executeScript } from "@interface/cmd";
@@ -31,7 +30,7 @@ export default {
     const choice = await search({ message: "Choose script to run", choices });
     const migration_file = migration_scripts.getFile(choice);
 
-    const repo = new AppRepo(mongo_path);
+    const repo = new AppRepo(migrations_dir);
     if (!migrations_dir.sub("node_modules").exists()) {
       const spinner = loading("Installing missing dependencies");
       await repo.install();

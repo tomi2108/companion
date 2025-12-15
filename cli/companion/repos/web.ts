@@ -1,6 +1,5 @@
-
 import { promptForApp } from "@interface/prompts";
-import { openInBrowser } from "@lib/config";
+import { openInBrowser } from "@lib/editor";
 
 export default {
   command: "web",

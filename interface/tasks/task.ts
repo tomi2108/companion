@@ -1,6 +1,6 @@
-
 import { Dir } from "@files/dir";
 import { TextFile } from "@files/text_file";
+import { openInEditor } from "@lib/editor";
 
 type FileLocation = {
   file: TextFile;
@@ -60,7 +60,7 @@ export class Task {
 
   openInEditor() {
     const { col, row } = this.file_location;
-    this.file_location.file.openInEditor({ line: row, column: col });
+    openInEditor(this.file_location.file, { line: row, column: col });
   }
 
   getPathInProject() {

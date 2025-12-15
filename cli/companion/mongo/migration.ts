@@ -30,7 +30,7 @@ export default {
     const choice = await search({ message: "Choose migration to run", choices });
     const migration_file = migration_scripts.getFile(choice);
 
-    const repo = new AppRepo(mongo_path);
+    const repo = new AppRepo(migrations_dir);
     if (!migrations_dir.sub("node_modules").exists()) {
       const spinner = loading("Installing missing dependencies");
       await repo.install();

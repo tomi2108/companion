@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 import { Config } from "@lib/config";
+import { openInEditor } from "@lib/editor";
 
 import { Dir } from "./dir";
 import { TextFile } from "./text_file";
@@ -19,7 +20,7 @@ export class TempFile extends TextFile {
 
   async prompt() {
     const m1 = this.getMd5();
-    await this.openInEditor({ wait: true });
+    openInEditor(this, { wait: true });
     const m2 = this.getMd5();
     const new_content = this.read();
     return { changed: m1 !== m2, new_content };

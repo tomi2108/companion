@@ -1,3 +1,4 @@
+import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
 import { promptForMr } from "@interface/prompts";
 import log from "@lib/log";
@@ -8,8 +9,8 @@ export default {
   aliases: [],
   describe: "Checkout merge request",
   handler: async () => {
-    const full_path = getCurrentPath();
-    const repo = new Repo(full_path);
+    const dir = new Dir(getCurrentPath());
+    const repo = new Repo(dir);
     const mr = await promptForMr(repo);
 
     if (!mr.source_branch) return log.error("Could not find source_branch");

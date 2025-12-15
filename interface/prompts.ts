@@ -70,3 +70,20 @@ export async function promptForMr(repo: Repo) {
   if (!choice) return process.exit(1);
   return mrs.find((mr) => mr.id === Number(choice))!;
 }
+
+export async function promptSourcesOrOne(options: { enabled: boolean; path: string | undefined }[]) {
+  const sources = options
+    .filter((o) => o.enabled)
+    .map((o) => o.path)
+    .filter((o) => o !== undefined);
+  let dirs: Dir[] = sources.flatMap((p) => new Dir(p).readDirs());
+
+  if (dirs.length === 0) {
+    const fallbackSources = options.map((o) => o.path).filter(Boolean) as string[];
+    if (fallbackSources.length === 0) return null;
+    const choices = fallbackSources.flatMap((p) => new Dir(p).readDirs());
+    const choice = await search({ choices: choices.map((p) => p.toChoice()), message: "Select project" });
+    dirs = [choices.find((p) => p.toChoice().name === choice)!];
+  }
+  return dirs;
+}

@@ -2,10 +2,10 @@ import cp, { StdioOptions } from "node:child_process";
 
 import { Dir } from "@files/dir";
 import { EnvFile } from "@files/env_file";
+import { JsonFormatter } from "@files/formatters/json_formatter";
 import { PackageJson } from "@files/package_json";
 import { Repo } from "@interface/dirs/repo";
 import { JiraTaskTracker } from "@interface/tasks/trackers/jira_task_tracker";
-import { tryParseJSONObject } from "@lib/utils";
 import { Project } from "@oc/project";
 
 import { RepoAction } from "./actions";
@@ -98,10 +98,14 @@ export class AppRepo extends Repo {
 
     return {
       process: child, promise: new Promise((resolve, reject) => {
+        const formatter = new JsonFormatter();
         const pre = opts?.prefix ? `[${opts.prefix}]: ` : "";
         child.stdout.on("data", (data) => {
           let message = data.toString().trim();
-          if (!opts?.raw) message = tryParseJSONObject(message);
+          if (!opts?.raw) {
+            const formatted = formatter.tryFromString(message);
+            if (formatted) message = formatter.toString(formatted);
+          }
           if (message) console.log(pre, message);
         });
 

@@ -1,9 +1,9 @@
 import { AxiosInstance } from "axios";
 import WebSocket from "ws";
 
+import { JsonFormatter } from "@files/formatters/json_formatter";
 import { base64Decode } from "@files/utils";
 import { Choice } from "@lib/constants";
-import { tryParseJSONObject } from "@lib/utils";
 
 export type PodResponse = {
   metadata: {
@@ -52,9 +52,13 @@ export class Pod {
       });
       ws.on("close", resolve);
       ws.on("error", reject);
+      const formatter = new JsonFormatter();
       ws.on("message", (data) => {
         let message: string | object = base64Decode(data.toString()).trim();
-        if (!opts?.raw) message = tryParseJSONObject(message);
+        if (!opts?.raw) {
+          const formatted = formatter.tryFromString(message);
+          if (formatted) message = formatter.toString(formatted);
+        }
         if (!message) return;
         if (opts?.prefix) {
           if (opts.raw) message = (message as string)
@@ -78,7 +82,7 @@ export class Pod {
     return (await this.oc.get(
       `/api/v1/namespaces/${this.namespace}/pods/${this.name}/log`,
       { params }
-    )).data;
+    )).data as string;
   }
 
   async remoteSession() {

@@ -1,8 +1,8 @@
 import { MergeRequestSchema } from "@gitbeaker/rest";
 
 import { glab } from "@glab/api";
-import { openInBrowser } from "@lib/config";
 import { Choice } from "@lib/constants";
+import { openInBrowser } from "@lib/editor";
 import { loading } from "@lib/ui";
 
 export type MergeRequestResponse = MergeRequestSchema;

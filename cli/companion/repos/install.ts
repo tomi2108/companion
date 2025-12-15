@@ -64,14 +64,15 @@ export default {
             const new_branch_name = `bump/${name}-${version}`;
             if ((await app_repo.getBranches()).some((b) => b.includes(new_branch_name))) return bar.increment(1);
             await app_repo.createNewBranch(new_branch_name);
+            const repo_package = app_repo.getPackage();
             const dependencies = dev
-              ? app_repo.devDependencies
-              : { ...app_repo.dependencies, ...app_repo.peerDependencies };
+              ? repo_package.devDependencies
+              : { ...repo_package.dependencies, ...repo_package.peerDependencies };
             const current_version = dependencies?.[name];
             if (current_version && current_version.includes(version)) return bar.increment(1);
             await app_repo.install([{ name, version }], { dev });
             await app_repo.build();
-            await app_repo.add("package.json");
+            await app_repo.add(app_repo.package);
             await app_repo.commit(`feat: bump ${name} to ${version}`);
             if (merge) await app_repo.createAndMergeMr(sourceBranch);
             else await app_repo.createMr(sourceBranch);

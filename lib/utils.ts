@@ -35,17 +35,6 @@ export function getCurrentPath() {
   return cwd();
 }
 
-export function tryParseJSONObject(jsonString: unknown) {
-  try {
-    const o = JSON.parse(jsonString as string);
-    if (o && typeof o === "object") {
-      return o;
-    }
-  } catch (e) {
-    return false;
-  }
-}
-
 export function removeDuplicates<T>(arr: T[]) {
   return Array.from(new Set(arr));
 }

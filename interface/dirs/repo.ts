@@ -21,7 +21,7 @@ export class Repo {
 
   static async cloneRepo(dir: Dir, link: string, current?: boolean) {
     dir.create();
-    const gitInstance = git(dir.path);
+    const gitInstance = git(dir);
     if (current) await gitInstance.clone(link, ".");
     else await gitInstance.clone(link);
 
@@ -35,7 +35,7 @@ export class Repo {
 
   constructor(dir: Dir) {
     if (!isGitRepo(dir)) throw new InvalidRepo(dir);
-    this.git = git(dir.path);
+    this.git = git(dir);
     this.glab = glab();
     this.dir = dir;
   }
