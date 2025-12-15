@@ -1,5 +1,4 @@
 import cp, { StdioOptions } from "node:child_process";
-import path from "node:path";
 
 import { Dir } from "@files/dir";
 import { EnvFile } from "@files/env_file";
@@ -85,8 +84,8 @@ export class AppRepo extends Repo {
   }
 
   dev(port: number, opts?: { prefix?: string; raw?: boolean }) {
-    const ts_node_dev_path = path.join(this.dir.path, "node_modules", "ts-node-dev", "lib", "bin.js");
-    const app_path = path.join(this.dir.path, "src", "app.ts");
+    const ts_node_dev_path = this.dir.sub("node_modules", "ts-node-dev", "lib").getFile("bin.js").path;
+    const app_path = this.dir.sub("src").getFile("app.ts").path;
 
     const child = cp.spawn(ts_node_dev_path, [app_path], {
       stdio: "pipe",

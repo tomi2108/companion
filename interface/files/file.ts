@@ -1,9 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import openEditor from "open-editor";
-
-import { Config } from "@lib/config";
 
 import { FileNotFound } from "./errors";
 import { FileFormatter } from "./formatters";
@@ -58,17 +55,6 @@ export class File<T> {
     const content = fs.readFileSync(this.path).toString();
     const updated = content.replace(new RegExp(from, "g"), to);
     fs.writeFileSync(this.path, updated);
-  }
-
-  async openInEditor(opts: { wait?: boolean; line?: number; column?: number } = {}) {
-    await openEditor(
-      [{
-        file: this.path,
-        line: opts?.line,
-        column: opts?.column
-      }],
-      { wait: opts?.wait, editor: Config.get().preferences.editor }
-    );
   }
 
   getMd5() {

@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import open from "open";
 
 import { FileNotFound, InvalidJsonFile } from "@files/errors";
 import { JsonFile } from "@files/json_file";
@@ -26,15 +25,9 @@ import { TasksConfig } from "./tasks";
 import { ThreescaleConfig } from "./threescale";
 import { VaultConfig } from "./vault";
 
-export async function openInBrowser(url: string) {
-  const browser = Config.get().preferences.browser;
-  if (browser) open(url, { app: { name: browser } });
-  else open(url);
-}
-
 const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
-const config_file = new JsonFile(process.env.COMPANION_CONFIG ?? getConfigPath());
+export const config_file = new JsonFile(process.env.COMPANION_CONFIG ?? getConfigPath());
 
 function getConfigPath() {
   if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "companion", "config.json");
@@ -42,7 +35,7 @@ function getConfigPath() {
   throw new Error("Unknown platform");
 }
 
-class Config {
+export class Config {
   static config: Config | null = null;
   openshift = new OpenShiftConfig();
   gitlab = new GitlabConfig();
@@ -67,10 +60,6 @@ class Config {
   }
 
   private constructor() { }
-
-  open() {
-    config_file.openInEditor();
-  }
 
   async setup() {
     const presets = this.getAvailablePresets();
@@ -183,7 +172,7 @@ type DotNestedKeys<T> = (T extends object ?
   { [K in Exclude<keyof T, symbol>]: `${K}${DotPrefix<DotNestedKeys<T[K]>>}` }[Exclude<keyof T, symbol>]
   : "") extends infer D ? Extract<D, string> : never;
 
-class ConfigError extends Error {
+export class ConfigError extends Error {
   constructor(key: DotNestedKeys<Omit<Config, "config">>) {
     const msg = `${key} not set`;
     log.error(`ConfigError: ${msg}`);
@@ -191,4 +180,3 @@ class ConfigError extends Error {
   }
 }
 
-export { Config, ConfigError };

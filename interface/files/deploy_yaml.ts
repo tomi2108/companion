@@ -66,7 +66,7 @@ export class DeployYaml extends YamlFile<DeployYamlContent> {
   }
 
   getEnv() {
-    return ENVS.find((e) => path.basename(this.path).includes(e)) ?? "prod";
+    return ENVS.find((e) => this.namespace.includes(e)) ?? "prod";
   }
 
   override toChoice() {
