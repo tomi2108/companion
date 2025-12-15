@@ -2,7 +2,7 @@ import { getApp } from "@files";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { arrayDifference } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";

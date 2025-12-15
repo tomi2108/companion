@@ -1,7 +1,7 @@
 import { setTimeout } from "node:timers/promises";
 
 import { AppRepo } from "@interface/dirs/app_repo";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { loading } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";

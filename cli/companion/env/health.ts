@@ -6,7 +6,7 @@ import { getApp } from "@files";
 import { TextFile } from "@files/text_file";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
 

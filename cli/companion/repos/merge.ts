@@ -4,7 +4,7 @@ import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptSourcesOrOne } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { input, progressBar } from "@lib/ui";
 
 export default {

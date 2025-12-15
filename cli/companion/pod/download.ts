@@ -3,7 +3,7 @@ import { Argv } from "yargs";
 import { JsonFormatter } from "@files/formatters/json_formatter";
 import { createLogFile } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 

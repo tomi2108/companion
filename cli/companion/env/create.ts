@@ -5,7 +5,7 @@ import { TempFile } from "@files/temp_file";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { input, search } from "@lib/ui";
 import { parseKeyVal } from "@lib/utils";
 import { Openshift } from "@oc";

@@ -1,7 +1,7 @@
 import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { isGitRepo } from "@lib/utils";
 import { Project } from "@oc/project";
 

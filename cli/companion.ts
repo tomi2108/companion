@@ -18,7 +18,7 @@ import route from "@cli/route";
 import tasks from "@cli/tasks";
 import upgrade from "@cli/upgrade";
 
-import { initLogger, loadConfig } from "./middleware";
+import { loadExecutionContext } from "./middleware";
 
 yargs
   .scriptName("companion")
@@ -28,8 +28,7 @@ yargs
   .boolean("prod")
   .alias("prod", ["p"])
   .describe("prod", "Wheter to use the production servers")
-  .middleware(loadConfig, true)
-  .middleware(initLogger)
+  .middleware(loadExecutionContext, true)
   // .middleware(checkVersion)
   .command(app)
   .command(config)

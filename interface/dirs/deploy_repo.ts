@@ -1,7 +1,7 @@
 
 import { DeployYaml } from "@files/deploy_yaml";
 import { Repo } from "@interface/dirs/repo";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
 

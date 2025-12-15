@@ -2,7 +2,7 @@ import { Argv } from "yargs";
 
 import { getApp } from "@files";
 import { promptForOcResource } from "@interface/prompts";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, input, progressBar } from "@lib/ui";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";

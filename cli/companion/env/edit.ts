@@ -4,7 +4,7 @@ import { setTimeout } from "node:timers/promises";
 import { TempFile } from "@files/temp_file";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";

@@ -7,7 +7,7 @@ import { createLogFile } from "@files/utils";
 import { promptForOcResource } from "@interface/prompts";
 import { Sql } from "@interface/sql/sql";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { search } from "@lib/ui";
 import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";

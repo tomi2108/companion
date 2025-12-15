@@ -2,7 +2,7 @@ import { getApp } from "@files";
 import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
 import { promptForMr, promptForOcResource } from "@interface/prompts";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm } from "@lib/ui";
 import { getCurrentPath } from "@lib/utils";
 import { Openshift } from "@oc";

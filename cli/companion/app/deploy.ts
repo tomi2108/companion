@@ -1,5 +1,5 @@
 import { promptForApp, promptForOcResource } from "@interface/prompts";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, input, loading, search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";

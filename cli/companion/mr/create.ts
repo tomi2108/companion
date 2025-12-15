@@ -4,7 +4,7 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, loading, search } from "@lib/ui";
 import { getCurrentPath } from "@lib/utils";
 import { Openshift } from "@oc";

@@ -3,7 +3,7 @@ import path from "node:path";
 import { MonitorYaml } from "@files/monitor_yaml";
 import { Jira } from "@jira";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { search } from "@lib/ui";
 import { readdirs, readfiles } from "@lib/utils";
 

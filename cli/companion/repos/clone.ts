@@ -1,7 +1,7 @@
 import { Dir } from "@files/dir";
 import { Gitlab } from "@glab";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { multiProgressBar } from "@lib/ui";
 
 export default {
