@@ -29,14 +29,6 @@ export async function findCIPipeline(app_repo: AppRepo) {
 }
 
 export async function findSyncPipeline(app_repo: AppRepo) {
-  const token = await getOcToken("brc");
-  const projects = await new Openshift(token, "brc").getProjects();
-  const cd_paas = projects.find((p) => p.name === "cd-paas");
-  if (!cd_paas) {
-    log.warning("Could not find cd-paas project");
-    return null;
-  }
-  return await app_repo.findPipeline(cd_paas, "sync");
 }
 
 export async function findArgoPipeline(app_repo: AppRepo, project: Project) {

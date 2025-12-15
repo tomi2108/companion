@@ -5,12 +5,11 @@ import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
 
-export async function loadExecutionContext({ prod }: { prod?: boolean }) {
+export async function loadExecutionContext({ prod, debug }: { prod?: boolean; debug?: boolean }) {
   const ctx = ExecutionContext.get();
   await ctx.load();
-  if (prod) {
-    await ctx.setProd();
-  }
+  if (prod) await ctx.setProd();
+  if (debug) ctx.setDebug();
 }
 
 export async function checkVersion() {

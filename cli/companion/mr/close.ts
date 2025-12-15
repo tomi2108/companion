@@ -1,6 +1,6 @@
 import { ExecutionContext } from "@lib/ctx";
-import { CloseMr } from "@lib/workflow/steps/close_mr";
-import { PromptMr } from "@lib/workflow/steps/prompt_mr";
+import { CloseMr } from "@lib/workflow/steps/mr/close_mr";
+import { PromptMr } from "@lib/workflow/steps/mr/prompt_mr";
 import { Workflow } from "@lib/workflow/workflow";
 
 export default {
@@ -13,6 +13,6 @@ export default {
       new PromptMr(),
       new CloseMr()
     ]);
-    wk.run(ctx, undefined);
+    await wk.run(ctx);
   }
 };

@@ -57,6 +57,7 @@ export class DeployYamlFormatter extends YamlFormatter<DeployYamlContent> {
   override validate(content: unknown) {
     DeployYamlContentSchema.parse(content);
   }
+
   override exception(path: string): Error | void {
     return new InvalidDeployYaml(path);
   }

@@ -1,48 +1,17 @@
 import { AppRepo } from "@interface/dirs/app_repo";
-import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log/default";
+import { PathKey } from "@lib/config/paths";
+import { ExecutionContext } from "@lib/ctx";
 import { isGitRepo } from "@lib/utils";
+import { GetApp } from "@lib/workflow/steps/app/get_app";
 import { Project } from "@oc/project";
 
 import { Dir } from "./dir";
 
-export function getAppPaths() {
-  const fe = Config.get().paths.frontend;
-  const be = Config.get().paths.backend;
-  return [
-    ...fe ? new Dir(fe).readDirs() : [],
-    ...be ? new Dir(be).readDirs() : []
-  ].filter((s) => s !== undefined)
-    .filter(isGitRepo);
-}
-
-function getDeploymentPaths() {
-  const dep_path = Config.get().paths.despliegues;
-  if (!dep_path) throw new ConfigError("paths.despliegues");
-  return new Dir(dep_path).readDirs()
-    .filter(isGitRepo);
-}
-
-export async function getApp(app_name: string) {
-  let deploy_repo: DeployRepo | null = null;
-  let app_repo: AppRepo | null = null;
-
-  for (const d of getDeploymentPaths() ?? []) {
-    deploy_repo = new DeployRepo(d);
-    const { name } = await deploy_repo.getInfo();
-    if (app_name === name) break;
-    deploy_repo = null;
-  }
-
-  for (const d of getAppPaths()) {
-    app_repo = new AppRepo(d);
-    const { name } = await app_repo.getInfo();
-    if (app_name === name) break;
-    app_repo = null;
-  }
-
-  return { deploy_repo, app_repo };
+export function getPaths(path: PathKey) {
+  const paths = Config.get().paths[path];
+  if (!paths) throw new ConfigError(`paths.${path}`);
+  return new Dir(paths).readDirs().filter(isGitRepo);
 }
 
 export async function getSubApps(
@@ -52,9 +21,10 @@ export async function getSubApps(
   callback?: (params: { res: string[]; already_added: boolean; app_repo: AppRepo; key: string; value: string; name: string }) => void,
   res: string[] = []
 ) {
-  const { app_repo, deploy_repo } = await getApp(app);
-  if (!app_repo) return log.error(`App repo not found for ${app}`);
-  if (!deploy_repo) return log.error(`Deploy repo not found for ${app}`);
+  const ctx = ExecutionContext.get();
+  const { app_repo, deploy_repo } = await new GetApp().run(ctx, app);
+  if (!app_repo) return ctx.logger.error(`App repo not found for ${app}`);
+  if (!deploy_repo) return ctx.logger.error(`Deploy repo not found for ${app}`);
   const env = app_repo.env;
 
   await env.copy(project, app_repo);
@@ -62,7 +32,7 @@ export async function getSubApps(
 
   const deployment = deploy_repo.getDeployment(project.name);
   const version = deployment?.getVersion();
-  if (!version) return log.error(`Version not found for ${app} in project ${project.name}`);
+  if (!version) return ctx.logger.error(`Version not found for ${app} in project ${project.name}`);
   await app_repo.checkout(version);
 
   const envEntries = Object.entries(env.read());

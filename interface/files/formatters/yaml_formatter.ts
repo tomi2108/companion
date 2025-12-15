@@ -26,8 +26,9 @@ export class YamlFormatter<T extends YamlMap = YamlMap> implements FileFormatter
   protected validate(_content: unknown) { }
 
   fromString(content: string): T {
-    this.validate(content);
-    return yaml.load(content) as T;
+    const obj = yaml.load(content) as T;
+    this.validate(obj);
+    return obj;
   }
 
   exception(path: string): Error | void {

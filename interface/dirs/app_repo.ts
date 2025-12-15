@@ -34,7 +34,7 @@ export class AppRepo extends Repo {
     if (!AppRepo.isAppRepo(dir)) throw new InvalidAppRepo(dir);
     super(dir);
     this.package = new PackageJson(dir.getFile("package.json").path);
-    this.env = new EnvFile(dir.getFile(".env").path);
+    this.env = new EnvFile(dir.createFile(".env").path);
   }
 
   private async npmRun(cmd: string, stdio?: StdioOptions) {

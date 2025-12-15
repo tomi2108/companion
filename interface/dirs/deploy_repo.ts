@@ -1,7 +1,8 @@
 
 import { DeployYaml } from "@files/deploy_yaml";
+import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
-import log from "@lib/log/default";
+import { ExecutionContext } from "@lib/ctx";
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
 
@@ -11,6 +12,13 @@ import { LintDeploymentFilesAction } from "./actions/lint_deployment_files";
 export class DeployRepo extends Repo {
   deployments: DeployYaml[] = [];
   override actions: RepoAction[] = [new LintDeploymentFilesAction()];
+
+  constructor(dir: Dir) {
+    super(dir);
+    const files = this.dir.readFiles();
+    const yaml_files = files.filter(DeployYaml.isDeployYamlFile);
+    this.deployments = yaml_files.map((f) => new DeployYaml(f.path));
+  }
 
   getDeployment(namespace: string) {
     return this.deployments.find((d) => d.namespace === namespace);
@@ -37,7 +45,7 @@ export class DeployRepo extends Repo {
 
     const c = await this.commit(version);
     if (!c) {
-      log.warning("No changes made");
+      ExecutionContext.get().logger.warning("No changes made");
       return false;
     }
     await this.createAndMergeMr(targetBranch);

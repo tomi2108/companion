@@ -24,13 +24,13 @@ export type PipelineRunResponse = {
   };
 };
 
-export const PipelineStatus = {
+export const PIPELINE_STATUS = {
   succeeded: "Succeeded",
   failed: "Failed",
   running: "Running"
 } as const;
 
-type PipelineStatus = typeof PipelineStatus[keyof typeof PipelineStatus];
+export type PipelineStatus = typeof PIPELINE_STATUS[keyof typeof PIPELINE_STATUS];
 
 export class PipelineRun {
   name: string;

@@ -37,7 +37,7 @@ export class DeployYaml extends YamlFile<DeployYamlContent> {
     const content = this.read();
     const secrets = content["helm-chart-master"].secrets ?? {};
     const i = Object.values(secrets).length;
-    const key = secrets ? "secret1" : `secret${i + 1}`;
+    const key = i === 0 ? "secret1" : `secret${i + 1}`;
     const update = { "helm-chart-master": { secrets: { [key]: name } } };
     this.writePartial(update);
     this.fillGaps("secrets");
@@ -55,7 +55,7 @@ export class DeployYaml extends YamlFile<DeployYamlContent> {
     const content = this.read();
     const configmaps = content["helm-chart-master"].configmaps ?? {};
     const i = Object.values(configmaps).length;
-    const key = configmaps ? "configmap1" : `configmap${i + 1}`;
+    const key = i === 0 ? "configmap1" : `configmap${i + 1}`;
     const update = { "helm-chart-master": { configmaps: { [key]: name } } };
     this.writePartial(update);
     this.fillGaps("configmaps");
