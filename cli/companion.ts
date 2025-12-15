@@ -16,7 +16,6 @@ import project from "@cli/project";
 import repos from "@cli/repos";
 import route from "@cli/route";
 import tasks from "@cli/tasks";
-import ticket from "@cli/ticket";
 import upgrade from "@cli/upgrade";
 
 import { initLogger, loadConfig } from "./middleware";
@@ -46,7 +45,6 @@ yargs
   .command(repos)
   .command(route)
   .command(tasks)
-  .command(ticket)
   .command(upgrade)
   .demandCommand(1, "Please specify a command")
   .strict()
