@@ -5,8 +5,10 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowStep } from "..";
 
-type Out = { deploy_repo: DeployRepo | null; app_repo: AppRepo | null };
-export class GetApp implements WorkflowStep<string, Out> {
+type Reads = string;
+type Writes = { deploy_repo: DeployRepo | null; app_repo: AppRepo | null };
+
+export class GetApp implements WorkflowStep<Reads, Writes> {
 
   async run(_: ExecutionContext, input: string) {
     let deploy_repo: DeployRepo | null = null;

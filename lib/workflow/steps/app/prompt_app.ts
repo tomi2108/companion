@@ -8,8 +8,10 @@ import { loading, search } from "@lib/ui";
 import { WorkflowStep } from "..";
 import { GetApp } from "./get_app";
 
-type Out = { deploy_repo: DeployRepo; app_repo: AppRepo | null };
-export class PromptApp implements WorkflowStep<void, Out> {
+type Reads = {};
+type Writes = { deploy_repo: DeployRepo; app_repo: AppRepo | null };
+
+export class PromptApp implements WorkflowStep<Reads, Writes> {
 
   async run(ctx: ExecutionContext) {
     const dep_path = ctx.config.paths.despliegues;
@@ -23,6 +25,8 @@ export class PromptApp implements WorkflowStep<void, Out> {
     // think more about this
     const spinner = loading("Getting app");
     const app = await new GetApp().run(ctx, app_name);
+    console.log(app);
+    process.exit(1);
     spinner.succeed();
     return app as { deploy_repo: DeployRepo; app_repo: AppRepo | null };
   }
