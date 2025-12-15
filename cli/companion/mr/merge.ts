@@ -2,9 +2,7 @@ import { getApp } from "@files";
 import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
 import { promptForMr, promptForOcResource } from "@interface/prompts";
-import log from "@lib/log";
 import { confirm } from "@lib/ui";
-import { getCurrentPath } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
@@ -16,7 +14,7 @@ export default {
   aliases: [],
   describe: "Merge merge request",
   handler: async () => {
-    const dir = new Dir(getCurrentPath());
+    const dir = new Dir(cu);
     const repo = new Repo(dir);
     const mr = await promptForMr(repo);
     const { name } = await repo.getInfo();

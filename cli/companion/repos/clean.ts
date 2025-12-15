@@ -3,7 +3,7 @@ import { Argv } from "yargs";
 import { Repo } from "@interface/dirs/repo";
 import { promptSourcesOrOne } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, progressBar } from "@lib/ui";
 
 export default {

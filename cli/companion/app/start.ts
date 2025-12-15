@@ -9,7 +9,7 @@ import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";

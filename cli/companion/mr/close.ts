@@ -1,16 +1,18 @@
-import { Dir } from "@files/dir";
-import { Repo } from "@interface/dirs/repo";
-import { promptForMr } from "@interface/prompts";
-import { getCurrentPath } from "@lib/utils";
+import { ExecutionContext } from "@lib/ctx";
+import { CloseMr } from "@lib/workflow/steps/mr/close_mr";
+import { PromptMr } from "@lib/workflow/steps/mr/prompt_mr";
+import { Workflow } from "@lib/workflow/workflow";
 
 export default {
   command: "close",
   aliases: [],
   describe: "Close merge request",
   handler: async () => {
-    const dir = new Dir(getCurrentPath());
-    const repo = new Repo(dir);
-    const mr = await promptForMr(repo);
-    await mr.close();
+    const ctx = ExecutionContext.get();
+    const wk = new Workflow([
+      new PromptMr(),
+      new CloseMr()
+    ]);
+    wk.run(ctx, undefined);
   }
 };

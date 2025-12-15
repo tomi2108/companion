@@ -1,5 +1,4 @@
 import yaml from "js-yaml";
-import { cwd } from "node:process";
 
 import { Dir } from "@files/dir";
 
@@ -31,10 +30,6 @@ export function removeSuffix(str: string, suffix: string) {
 
 export function kebabToCamel(str: string) {
   return str.replace(/-./g, (x) => x[1]?.toUpperCase() ?? "");
-}
-
-export function getCurrentPath() {
-  return cwd();
 }
 
 export function removeDuplicates<T>(arr: T[]) {

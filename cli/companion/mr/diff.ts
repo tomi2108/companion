@@ -2,7 +2,7 @@ import { Dir } from "@files/dir";
 import { git } from "@glab/api";
 import { Repo } from "@interface/dirs/repo";
 import { promptForMr } from "@interface/prompts";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { getCurrentPath } from "@lib/utils";
 
 export default {

@@ -6,7 +6,7 @@ import { createDirIfNotExists } from "@files/utils";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { search } from "@lib/ui";
 import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";

@@ -4,7 +4,7 @@ import { Dir } from "@files/dir";
 import { glab } from "@glab/api";
 import { Repo } from "@interface/dirs/repo";
 import { Config } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { loading, ProgressBar } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 import { Project } from "@oc/project";

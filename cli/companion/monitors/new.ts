@@ -9,7 +9,7 @@ import { Repo } from "@interface/dirs/repo";
 import { HttpFile } from "@interface/http/http_file";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, input, search } from "@lib/ui";
 import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";

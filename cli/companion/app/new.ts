@@ -9,7 +9,7 @@ import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { confirm, input, loading, search } from "@lib/ui";
 import { arrayDifference, kebabToCamel } from "@lib/utils";
 import { Openshift } from "@oc";

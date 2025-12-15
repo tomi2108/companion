@@ -4,7 +4,7 @@ import { executeScript } from "@interface/cmd";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { loading, search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";

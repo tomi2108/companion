@@ -1,25 +1,16 @@
 import chalk from "chalk";
 import path from "node:path";
-import yargs from "yargs";
 
 import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
-import { Config } from "@lib/config";
-import { storage } from "@lib/log";
+import { ExecutionContext } from "@lib/ctx";
 
-export async function loadConfig({ prod }: { prod?: boolean }) {
-  const config = Config.get();
-  await config.load();
+export async function loadExecutionContext({ prod }: { prod?: boolean }) {
+  const ctx = ExecutionContext.get();
+  await ctx.load();
   if (prod) {
-    await config.prod();
+    await ctx.setProd();
   }
-}
-
-export async function initLogger({ $0, _: args, debug }: yargs.ArgumentsCamelCase<{ debug: boolean | undefined }>
-) {
-  const command = `${$0} ${args.join(" ")}`;
-  const startTime = new Date().getTime();
-  storage.enterWith({ command, startTime, debug: debug ?? false });
 }
 
 export async function checkVersion() {

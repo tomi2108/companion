@@ -3,7 +3,7 @@ import { Dir } from "@files/dir";
 import { Gitlab } from "@glab";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log";
+import log from "@lib/log/default";
 import { input, loading, search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
