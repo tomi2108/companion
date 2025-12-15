@@ -12,6 +12,6 @@ export default {
     await new Workflow([
       new PromptMr(),
       new OpenMr()
-    ]).run(ctx, undefined);
+    ]).run(ctx);
   }
 };
