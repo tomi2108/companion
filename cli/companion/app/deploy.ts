@@ -1,6 +1,10 @@
-import { promptForApp, promptForOcResource } from "@interface/prompts";
+import { promptForOcResource } from "@interface/prompts";
+import { ExecutionContext } from "@lib/ctx";
 import log from "@lib/log/default";
 import { confirm, input, loading, search } from "@lib/ui";
+import { PromptApp } from "@lib/workflow/steps/app/prompt_app";
+import { PromptNamespaceDeploy } from "@lib/workflow/steps/app/prompt_namespace_deploy";
+import { Workflow } from "@lib/workflow/workflow";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { ConfigMap } from "@oc/configmap";
@@ -12,13 +16,12 @@ export default {
   aliases: ["dep"],
   describe: "Deploy specific app version",
   handler: async () => {
-    const { app_repo, deploy_repo } = await promptForApp();
 
-    await deploy_repo.update();
-    const choices = deploy_repo.deployments.map((d) => d.toChoice());
-
-    const selectedNamespaces = await search({ message: "Select environment", multiple: true, choices });
-    if (selectedNamespaces.length === 0) return process.exit(1);
+    const ctx = ExecutionContext.get();
+    new Workflow([
+      new PromptApp(),
+      new PromptNamespaceDeploy()
+    ]).run(ctx, undefined);
 
     const versionsSpinner = loading("Getting versions");
     let version = null;

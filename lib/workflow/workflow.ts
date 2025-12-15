@@ -36,7 +36,7 @@ export class Workflow<Steps extends readonly WorkflowStep<any, any>[]> {
 
   async run(
     ctx: ExecutionContext,
-    initialInput?: InputOf<First<Steps>>
+    initialInput: InputOf<First<Steps>>
   ): Promise<OutputOf<Last<Steps>>> {
     let acc = initialInput;
 

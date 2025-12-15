@@ -13,6 +13,6 @@ export default {
       new PromptMr(),
       new CloseMr()
     ]);
-    wk.run(ctx, undefined);
+    await wk.run(ctx, undefined);
   }
 };
