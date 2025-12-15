@@ -86,6 +86,13 @@ export class Dir {
     return path.relative(path.resolve(this.path), path.resolve(file.path));
   }
 
+  getRelative(relativePath: string) {
+    const files = this.traverse();
+    const file = files.find((f) => this.relativePathTo(f) === relativePath);
+    if (!file) throw new FileNotFound(path.join(this.path, relativePath));
+    return file;
+  }
+
   async openInEditor() {
     await openEditor([{ file: this.path }],
       { editor: Config.get().preferences.editor }

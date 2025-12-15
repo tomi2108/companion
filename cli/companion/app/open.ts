@@ -1,9 +1,10 @@
-import fs from "node:fs";
-import path from "node:path";
 
+import { Dir } from "@files/dir";
+import { JsonFile } from "@files/json_file";
 import { HttpFile } from "@interface/http/http_file";
 import { promptForOcResource } from "@interface/prompts";
-import { Config, ConfigError, openInBrowser } from "@lib/config";
+import { Config, ConfigError } from "@lib/config";
+import { openInBrowser } from "@lib/editor";
 import { search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
@@ -35,10 +36,12 @@ export default {
     const routes_file = config.app.open?.routes_file;
     if (!routes_file) throw new ConfigError("app.open.token_file");
 
-    const http = new HttpFile(path.join(rest_path, token_file));
+    const rest_dir = new Dir(rest_path);
+    const file = rest_dir.getRelative(token_file);
 
-    const token_req = http.requests[0];
-    if (!token_req) throw new Error(`Missing request in ${http.file_path}`);
+    const http = new HttpFile(file.path);
+    const token_req = http.getRequests()[0];
+    if (!token_req) throw new Error(`Missing request in ${http}`);
 
     const projects = await new Openshift(await getOcToken()).getProjects();
     const choices = [{ name: "Local" }, ...projects.map((p) => p.toChoice())];
@@ -51,11 +54,12 @@ export default {
       return `http://${token_app}-${token_namespace}.apps.${config.openshift.server_name}.cuyorh.tcloud.ar`;
     })();
 
-    const routes = fs.readFileSync(path.join(rest_path, routes_file)).toString().split("\n");
+    const routes = rest_dir.getRelative(routes_file).read().split("\n");
     const pathname = await search({ choices: routes, message: "Choose route" });
 
-    const data_file = fs.readFileSync(path.join(rest_path, data_dir, `${token_namespace}.json`)).toString();
-    const options = JSON.parse(data_file);
+    // TODO: consider making a ChoicesJsonFile
+    const data_file = new JsonFile<{ name: string }[]>(new Dir(rest_path).sub(data_dir).getFile(`${token_namespace}.json`).path);
+    const options = data_file.read();
     const chosen_data_name = await search({ message: "Choose data", choices: options });
     const chose_data = options.find((o: { name: string }) => o.name === chosen_data_name);
 

@@ -1,4 +1,5 @@
 import { getApp } from "@files";
+import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
@@ -17,8 +18,8 @@ export default {
   aliases: [],
   describe: "Create and merge mr",
   handler: async () => {
-    const full_path = getCurrentPath();
-    const repo = new Repo(full_path);
+    const dir = new Dir(getCurrentPath());
+    const repo = new Repo(dir);
     const branches = await repo.getBranches();
     const activeBranch = await repo.getActiveBranch();
     const targetBranches = branches.filter((b) => b !== activeBranch);
@@ -32,7 +33,7 @@ export default {
 
     const { name } = await repo.getInfo();
     const { deploy_repo, app_repo } = await getApp(name);
-    if (merge && AppRepo.isAppRepo(full_path)) {
+    if (merge && AppRepo.isAppRepo(dir)) {
       deploys = await confirm({ message: "Deploy?" });
       if (deploys) {
         const token = await getOcToken();
