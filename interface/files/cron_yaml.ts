@@ -1,16 +1,17 @@
 import yaml from "js-yaml";
-import fs, { Dirent } from "node:fs";
+import fs from "node:fs";
 
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
 
+import { File } from "./file";
 import { YamlFile } from "./yaml_file";
 import { AppRepo } from "../dirs/app_repo";
 import { Container, CronYamlContent, CronYamlFormatter } from "./formatters/cron_yaml_formatter";
 
 export class CronYaml extends YamlFile<CronYamlContent> {
-  static isCronYaml(file: Dirent) {
-    return file.isFile() && file.name.includes("cronjob");
+  static isCronYaml(file: File<unknown>) {
+    return file.name().includes("cronjob");
   }
 
   static create(file_path: string) {

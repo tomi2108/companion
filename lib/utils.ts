@@ -3,6 +3,8 @@ import { cwd } from "node:process";
 
 import { Dir } from "@files/dir";
 
+import { Choice } from "./constants";
+
 // do not bother with typing this, adds no value
 export function deepMerge(obj1: any, obj2: any) {
   for (const key in obj2) {
@@ -77,3 +79,5 @@ export function mapObject<
     )
   ) as Record<K, V>;
 }
+
+export const mapToChoice = (e: { toChoice(): Choice }) => e.toChoice();

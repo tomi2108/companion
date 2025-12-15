@@ -1,14 +1,13 @@
 import chalk from "chalk";
 import Table from "cli-table3";
-import path from "node:path";
 
 import { getApp } from "@files";
+import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { SonarQube } from "@interface/sonar";
 import { Config } from "@lib/config";
 import { loading } from "@lib/ui";
-import { readdirs } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -22,9 +21,11 @@ export default {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
     const project = await promptForOcResource(projects);
+    const fe = Config.get().paths.frontend;
+    const be = Config.get().paths.backend;
     const apps = [
-      ...readdirs(Config.get().paths.frontend) ?? [],
-      ...readdirs(Config.get().paths.backend) ?? []
+      ...fe ? new Dir(fe).readDirs() : [],
+      ...be ? new Dir(be).readDirs() : []
     ];
 
     const table = new Table({
@@ -46,7 +47,7 @@ export default {
       const toProcess = apps.slice(index, index + 20);
       await Promise.all(
         toProcess.map(async (dir) => {
-          const app_repo = new AppRepo(path.join(dir.parentPath, dir.name));
+          const app_repo = new AppRepo(dir);
           const info = await app_repo.getInfo();
           const deployment = await project.getDeployment(info.name).catch(() => null);
           const secrets = deployment?.getSecrets() ?? null;

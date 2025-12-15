@@ -5,7 +5,8 @@ import { Argv } from "yargs";
 
 import { promptForApp } from "@interface/prompts";
 import { SonarQube } from "@interface/sonar";
-import { Config, openInBrowser } from "@lib/config";
+import { Config } from "@lib/config";
+import { openInBrowser } from "@lib/editor";
 import { confirm } from "@lib/ui";
 
 const comparators = {
@@ -37,8 +38,7 @@ export default {
     const { app_repo } = await promptForApp();
     if (!app_repo) return;
     const { name } = await app_repo.getInfo();
-    const full_path = app_repo.full_path;
-    process.chdir(full_path);
+    process.chdir(app_repo.dir.path);
     const sonar = new SonarQube();
     const projects = await sonar.getProjects();
     const project = projects.find((p) => p.key.includes(name));
@@ -100,7 +100,7 @@ export default {
     }
     console.log(table.toString());
     console.log(second_table.toString());
-    const open = await confirm({ message: "Do you want to open report in browser?" });
+    const open = await confirm({ message: "Open report in browser?" });
     if (open) openInBrowser(`${config.sonar.server}/dashboard?id=${project.key}`);
   }
 };

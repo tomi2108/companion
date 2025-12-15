@@ -2,16 +2,15 @@ import chalk from "chalk";
 import httpProxy from "http-proxy";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
 import http from "node:http";
-import path from "node:path";
 import { Argv } from "yargs";
 
 import { getSubApps } from "@files";
+import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log";
 import { search } from "@lib/ui";
-import { readdirs } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -27,15 +26,15 @@ export default {
     .alias("noedit", ["ne"])
     .describe("noedit", "Do not start apps nor edit files, only show list"),
   handler: async ({ raw, noedit }: { raw?: boolean; noedit?: boolean }) => {
-    const backend = Config.get().paths.backend ?? "";
-    if (!backend) return log.error("Backend path not set");
+    const backend_path = Config.get().paths.backend ?? "";
+    if (!backend_path) return log.error("Backend path not set");
 
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
+    const projects = await new Openshift(await getOcToken()).getProjects();
     const project = await promptForOcResource(projects);
 
-    const apps = readdirs(backend) ?? [];
-    const choices = apps.map((d) => d.name);
+    const backend = new Dir(backend_path);
+    const apps = backend.readDirs() ?? [];
+    const choices = apps.map((d) => d.toChoice());
     const selected_apps = await search({ choices, message: "Choose app", multiple: true });
 
     const proxy_port = 8080;
@@ -45,7 +44,7 @@ export default {
     for (const app of selected_apps) {
       await getSubApps(
         app,
-        apps.map((a) => a.name),
+        apps.map((a) => a.name()),
         project,
         ({ key, app_repo, already_added, name }) => {
           const env = app_repo.env;
@@ -71,7 +70,7 @@ export default {
 
     const children: ChildProcessWithoutNullStreams[] = [];
     const promises = Object.entries(toStart).map(async ([app, port], i) => {
-      const repo = new AppRepo(path.join(backend, app));
+      const repo = new AppRepo(backend);
       await repo.install();
       const color = colors[i % colors.length];
       const { promise, process } = repo.dev(port, { raw, prefix: color?.(app) });
