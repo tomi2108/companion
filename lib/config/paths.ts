@@ -19,7 +19,11 @@ const paths = [
 ] as const;
 export type PathKey = typeof paths[number];
 
-const schema = z.object(Object.fromEntries(paths.map((p) => [p, z.string().optional()])));
+const schema = z.object(
+  Object.fromEntries(
+    paths.map((p) => [p, z.string().optional()])
+  ) as { [k in PathKey]?: string }
+);
 type Schema = z.infer<typeof schema>;
 
 export class PathsConfig implements IntegrationConfig, Schema {
@@ -41,14 +45,13 @@ export class PathsConfig implements IntegrationConfig, Schema {
   }
 
   async setup() {
-    const paths_keys = Object.keys(schema.shape);
-    const paths: Record<string, string> = {};
+    const configured_paths: Record<string, string> = {};
 
-    for (const key of paths_keys) {
+    for (const key of paths) {
       const value = await input({ message: `Where do you store ${key} repositories?` });
-      paths[key] = value;
+      configured_paths[key] = value;
     }
-    return paths;
+    return configured_paths;
   }
 
 }

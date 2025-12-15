@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import openEditor from "open-editor";
+
+import { Config } from "@lib/config";
 
 import { FileNotFound } from "./errors";
 import { File } from "./file";
@@ -81,6 +84,12 @@ export class Dir {
   relativePathTo(file: File<unknown>): string | null {
     if (!this.contains(file)) return null;
     return path.relative(path.resolve(this.path), path.resolve(file.path));
+  }
+
+  async openInEditor() {
+    await openEditor([{ file: this.path }],
+      { editor: Config.get().preferences.editor }
+    );
   }
 
   traverse() {

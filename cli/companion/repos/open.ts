@@ -1,26 +1,27 @@
-import path from "node:path";
-
-import { Config, openInEditor } from "@lib/config";
+import { Dir } from "@files/dir";
+import { Config } from "@lib/config";
 import { search } from "@lib/ui";
-import { readdirs } from "@lib/utils";
 
 export default {
   command: "open",
   aliases: [],
   describe: "Open repository",
   handler: async () => {
-    const choices = [
-      ...readdirs(Config.get().paths.despliegues) ?? [],
-      ...readdirs(Config.get().paths.frontend) ?? [],
-      ...readdirs(Config.get().paths.backend) ?? []
-    ].map((p) => ({ name: path.join(p.parentPath, p.name) }));
+    const dirs: Dir[] = [];
+    const paths = Object.values(Config.get().paths) as (string | undefined)[];
 
-    const selectedProjects = await search({ choices, multiple: true, message: "Select projects to open" });
-    if (selectedProjects.length === 0) return process.exit(1);
+    for (const path of paths) {
+      if (path) dirs.push(...new Dir(path).readDirs());
+    }
 
-    for (const project of selectedProjects) {
-      process.cwd = () => project;
-      openInEditor(project);
+    const choices = dirs.map((d) => d.toChoice());
+    const choice = await search({ choices, multiple: true, message: "Select projects to open" });
+    if (choice.length === 0) return process.exit(1);
+
+    for (const project of choice) {
+      const dir = dirs.find((d) => d.toChoice().name === project)!;
+      process.cwd = () => dir.path;
+      dir.openInEditor();
     }
   }
 };

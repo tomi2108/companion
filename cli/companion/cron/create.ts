@@ -1,7 +1,7 @@
-import path from "node:path";
 
 import { getApp, getAppPaths } from "@files";
 import { CronYaml } from "@files/cron_yaml";
+import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
 import { promptForOcResource } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
@@ -26,7 +26,7 @@ export default {
 
     const name = await input({ message: "Cron job name:" });
     const schedule = await input({ message: "Cron job schedule:" });
-    const paths = getAppPaths().filter((p) => p !== undefined).map((p) => path.basename(p));
+    const paths = getAppPaths().map((d) => d.toChoice());
     const app_name = await search({ message: "Choose app", choices: paths });
     const { app_repo } = await getApp(app_name);
     if (!app_repo) throw new Error("Could not find app repo");
@@ -53,23 +53,22 @@ export default {
       configmaps = await promptForOcResource(configmaps_availabie, { message: "Select configmaps", multiple: true });
     }
 
-    const repo_path = path.join(namespaces_path, project.name);
-    const cron_file = path.join(repo_path, "templates", `${name}-cronjob.yaml`);
+    const repo_path = new Dir(namespaces_path).sub(project.name);
+    const cron_file = repo_path.sub("templates").getFile(`${name}-cronjob.yaml`);
     const repo = new Repo(repo_path);
     await repo.stash(async () => {
       await repo.update();
       const { original_branch } = await repo.switchBranchIfExists("master");
       const temp_branch = `feature/add-cron-${name}`;
       await repo.createNewBranch(temp_branch);
-      const file = CronYaml.create(cron_file);
+      const file = CronYaml.create(cron_file.path);
       file.setVersion(version);
       file.setNameSpace(namespace);
-      file.setDeployment(app_repo);
+      await file.setDeployment(app_repo);
       secrets.forEach((s) => file.addSecret(s));
       configmaps.forEach((c) => file.addConfigmap(c));
       file.setName(name);
       file.setSchedule(schedule);
-      file.save();
       await repo.add(cron_file);
       const commit = await repo.commit(name);
       if (!commit) {
