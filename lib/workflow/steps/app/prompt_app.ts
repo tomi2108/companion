@@ -25,8 +25,6 @@ export class PromptApp implements WorkflowStep<Reads, Writes> {
     // think more about this
     const spinner = loading("Getting app");
     const app = await new GetApp().run(ctx, app_name);
-    console.log(app);
-    process.exit(1);
     spinner.succeed();
     return app as { deploy_repo: DeployRepo; app_repo: AppRepo | null };
   }
