@@ -15,7 +15,7 @@ type Writes = { secrets: Secret[]; configmaps: ConfigMap[]; name: string };
 export class PromptDeploymentEnvs implements WorkflowStep<Reads, Writes> {
 
   async run(_: ExecutionContext, { namespace }: Reads) {
-    const addsSecrets = await confirm({ message: "Secrets?", initial: false });
+    const addsSecrets = await confirm({ message: `Secrets? (${namespace})`, initial: false });
     const token = addsSecrets ? await getOcToken() : null;
     let secrets: Secret[] = [];
     let configmaps: ConfigMap[] = [];
@@ -26,7 +26,7 @@ export class PromptDeploymentEnvs implements WorkflowStep<Reads, Writes> {
       secrets = await promptForOcResource(secrets_available, { message: "Select configmaps", multiple: true });
     }
 
-    const addsConfigmaps = await confirm({ message: "Configmaps?", initial: false });
+    const addsConfigmaps = await confirm({ message: `Configmaps? (${namespace})`, initial: false });
     if (addsConfigmaps) {
       const tokenn = token ?? await getOcToken();
       const project = await new Openshift(tokenn).getProject(namespace);

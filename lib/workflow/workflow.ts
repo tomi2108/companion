@@ -16,10 +16,18 @@ export class Workflow {
     let state = initialState;
 
     for (const step of this.steps) {
-      const output = await step.run(ctx, state);
-      state = { ...state, ...output };
+      try {
+        ctx.logger.debug("Running step", step.constructor.name);
+        const output = await step.run(ctx, state);
+        ctx.logger.debug("Exited with", output);
+        const newState = { ...state, ...output };
+        state = newState;
+        ctx.logger.debug("New state", newState);
+      } catch (err) {
+        ctx.logger.error(err as string);
+        throw err;
+      }
     }
-
     return state;
   }
 }

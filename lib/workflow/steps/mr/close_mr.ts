@@ -3,9 +3,13 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowStep } from "..";
 
-export class CloseMr implements WorkflowStep<MergeRequest, void> {
+type Reads = { mr: MergeRequest };
+type Writes = {};
 
-  async run(_: ExecutionContext, mr: MergeRequest) {
+export class CloseMr implements WorkflowStep<Reads, Writes> {
+
+  async run(_: ExecutionContext, { mr }: Reads) {
     await mr.close();
+    return {};
   }
 }

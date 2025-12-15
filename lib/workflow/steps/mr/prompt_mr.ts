@@ -5,7 +5,10 @@ import { search } from "@lib/ui";
 
 import { WorkflowStep } from "..";
 
-export class PromptMr implements WorkflowStep<void, MergeRequest> {
+type Reads = {};
+type Writes = { mr: MergeRequest };
+
+export class PromptMr implements WorkflowStep<Reads, Writes> {
 
   async run(ctx: ExecutionContext) {
     const repo = new Repo(ctx.cwd);
@@ -13,6 +16,7 @@ export class PromptMr implements WorkflowStep<void, MergeRequest> {
     const choices = mrs.map((mr) => mr.toChoice());
     const choice = await search({ choices, message: "Select merge request" });
     if (!choice) return process.exit(1);
-    return mrs.find((mr) => mr.id === Number(choice))!;
+    const mr = mrs.find((mr) => mr.id === Number(choice))!;
+    return { mr };
   }
 }

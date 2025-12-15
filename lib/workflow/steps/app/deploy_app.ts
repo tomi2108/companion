@@ -19,7 +19,7 @@ type Writes = {};
 export class DeployApp implements WorkflowStep<Reads, Writes> {
 
   async run(_: ExecutionContext, { deploy_repo, namespaces, version }: Reads) {
-    deploy_repo.deploy(namespaces, version);
+    await deploy_repo.deploy(namespaces, version);
     return {};
   }
 }

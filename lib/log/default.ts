@@ -6,21 +6,20 @@ import { Logger } from ".";
 
 export class DefaultLogger implements Logger {
 
-  success(message: string) {
-    console.log(`[SUCCESS]: ${message}`);
+  success(...messages: string[]) {
+    console.log("[SUCCESS]:", ...messages);
   }
 
   info() { }
 
   debug() { }
 
-  error(message: string): undefined {
-    console.log(`[ERROR]: ${message}`);
-    process.exit(1);
+  error(...messages: string[]) {
+    console.log("[ERROR]:", ...messages);
   }
 
-  warning(message: string) {
-    console.log(`[WARNING]: ${message}`);
+  warning(...messages: string[]) {
+    console.log("[WARNING]:", ...messages);
   }
 
 }

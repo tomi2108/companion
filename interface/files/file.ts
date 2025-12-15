@@ -38,9 +38,8 @@ export class File<T> {
     return name;
   }
 
-  // TODO:this is only used in EnvFiles, could be moved to formatter or deleted honestly
-  append(content: string) {
-    fs.appendFileSync(this.path, content);
+  writeLine(content: string) {
+    fs.appendFileSync(this.path, `${content}\n`);
   }
 
   exists() {

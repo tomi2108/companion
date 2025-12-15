@@ -5,6 +5,7 @@ import { PromptAppVersion } from "@lib/workflow/steps/app/prompt_app_version";
 import { PromptDeploymentEnvs } from "@lib/workflow/steps/app/prompt_deployment_envs";
 import { PromptNamespaceDeploy } from "@lib/workflow/steps/app/prompt_namespace_deploy";
 import { ForEachStep } from "@lib/workflow/steps/for_each";
+import { WaitPipeline } from "@lib/workflow/steps/pipeline/wait_pipeline";
 import { Workflow } from "@lib/workflow/workflow";
 
 export default {
@@ -12,7 +13,6 @@ export default {
   aliases: ["dep"],
   describe: "Deploy specific app version",
   handler: async () => {
-
     const ctx = ExecutionContext.get();
     new Workflow([
       new PromptApp(),
@@ -21,17 +21,15 @@ export default {
       new ForEachStep({
         step: new PromptDeploymentEnvs(),
         items: (state: { namespaces: string[] }) => state.namespaces,
-        collectAs: "namespaces"
+        collectAs: "namespaces",
+        item: "namespace"
       }),
-      new ForEachStep({
-        step: new DeployApp(),
-        items: (state: { namespaces: string[] }) => state.namespaces
+      new DeployApp(),
+      new WaitPipeline({
+        projectName: "cd-paas",
+        q: "sync",
+        server: "brc"
       })
     ]).run(ctx);
-
-    // if (!app_repo) return;
-    // const pipeline = await findSyncPipeline(app_repo);
-    // if (!pipeline) return log.error("Could not find sync pipeline");
-    // await waitForPipeline(pipeline);
   }
 };

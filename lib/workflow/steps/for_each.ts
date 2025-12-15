@@ -15,14 +15,16 @@ type ForEachOptions<
 > =
   | {
     items: (state: Reads) => Item[];
-    step: WorkflowStep<InnerReads & { item: Item }, InnerWrites>;
+    item: string;
+    step: WorkflowStep<InnerReads, InnerWrites>;
     collectAs?: undefined;
   }
   | (InnerWrites extends void
     ? never
     : {
       items: (state: Reads) => Item[];
-      step: WorkflowStep<InnerReads & { item: Item }, InnerWrites>;
+      item: string;
+      step: WorkflowStep<InnerReads, InnerWrites>;
       collectAs: string;
     });
 
@@ -50,7 +52,7 @@ export class ForEachStep<
     for (const item of this.options.items(state)) {
       const output = await this.options.step.run(ctx, {
         ...state,
-        item
+        [this.options.item]: item
       });
 
       if ("collectAs" in this.options && output) {

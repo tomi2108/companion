@@ -3,9 +3,13 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowStep } from "..";
 
-export class OpenMr implements WorkflowStep<MergeRequest, void> {
+type Reads = { mr: MergeRequest };
+type Writes = {};
 
-  async run(_: ExecutionContext, mr: MergeRequest) {
+export class OpenMr implements WorkflowStep<Reads, Writes> {
+
+  async run(_: ExecutionContext, { mr }: Reads) {
     mr.openInBrowser();
+    return {};
   }
 }

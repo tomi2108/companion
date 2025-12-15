@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { FileNotFound, InvalidJsonFile } from "@files/errors";
 import { JsonFile } from "@files/json_file";
-import log from "@lib/log/default";
+import log, { DefaultLogger } from "@lib/log/default";
 import { confirm, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 
