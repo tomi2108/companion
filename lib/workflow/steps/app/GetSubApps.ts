@@ -1,28 +1,63 @@
+import { getPaths } from "@files";
+import { AppRepo } from "@interface/dirs/app_repo";
+import { ExecutionContext } from "@lib/ctx";
+import { loading } from "@lib/ui";
+import { Project } from "@oc/project";
 
-// TODO: implement from getSubApps()
-// type In = string;
-// type Out = { deploy_repo: DeployRepo | null; app_repo: AppRepo | null };
-//
-// export class GetApp implements WorkflowStep<In, Out> {
-//
-//   async run(_: ExecutionContext, input: string) {
-//     let deploy_repo: DeployRepo | null = null;
-//     let app_repo: AppRepo | null = null;
-//
-//     for (const d of getPaths("despliegues") ?? []) {
-//       deploy_repo = new DeployRepo(d);
-//       const { name } = await deploy_repo.getInfo();
-//       if (input === name) break;
-//       deploy_repo = null;
-//     }
-//
-//     for (const d of [...getPaths("frontend"), ...getPaths("backend")]) {
-//       app_repo = new AppRepo(d);
-//       const { name } = await app_repo.getInfo();
-//       if (input === name) break;
-//       app_repo = null;
-//     }
-//
-//     return { deploy_repo, app_repo };
-//   }
-// }
+import { WorkflowStep } from "..";
+import { GetDeployRepo } from "./GetDeployRepo";
+
+type Reads = {
+  app_repo: AppRepo;
+  project: Project;
+};
+type Writes = { sub_apps: AppRepo[] };
+
+export class GetSubApps extends WorkflowStep<Reads, Writes> {
+
+  async run(ctx: ExecutionContext, { app_repo, project }: Reads) {
+    const backend = getPaths("backend");
+    const apps = backend.map((b) => new AppRepo(b));
+    const sub_apps: AppRepo[] = [];
+
+    async function getSubApps(repo: AppRepo) {
+      const { name: app } = await repo.getInfo();
+      const env = repo.env;
+      await env.copy(project, repo);
+      env.internal();
+      const { deploy_repo } = await new GetDeployRepo().run(ctx, { app_repo: repo });
+      const deployment = deploy_repo.getDeployment(project.name);
+      const version = deployment?.getVersion();
+      if (!version) throw new Error(`Version not found for ${app} in project ${project.name}`);
+      await repo.checkout(version);
+
+      const envEntries = Object.entries(env.read());
+      for (const [_, value] of envEntries) {
+        if (typeof value !== "string") continue;
+        const host = URL.canParse(value) ? new URL(value).hostname : null;
+        if (!host) continue;
+        const sub_app_name = host.split(".")[0];
+
+        const found = await Promise.all(
+          apps.map(async (a) => {
+            const { name } = await a.getInfo();
+            return sub_app_name === name;
+          }));
+        const foundIndex = found.findIndex(Boolean);
+        if (foundIndex === -1) continue;
+
+        const sub_app = apps[foundIndex]!;
+        const already_added = sub_apps.some((r) => r.dir.path === sub_app.dir.path);
+        if (already_added) continue;
+        const sub_app_repo = new AppRepo(sub_app.dir);
+        sub_apps.push(sub_app_repo);
+        await getSubApps(sub_app_repo);
+      }
+    }
+
+    const spinner = loading("Getting subapps");
+    await getSubApps(app_repo);
+    spinner.succeed();
+    return { sub_apps };
+  }
+}

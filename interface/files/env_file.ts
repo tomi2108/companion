@@ -27,6 +27,11 @@ export class EnvFile extends ObjectFile<EnvFileContent> {
     super(path, new EnvFormatter());
   }
 
+  override writePartial(partial: { [x: string]: string | number | undefined }): void {
+    if (!this.exists()) this.write({});
+    super.writePartial(partial);
+  }
+
   add(key: string, value: string | number) {
     this.writePartial({ [key]: value });
   }
