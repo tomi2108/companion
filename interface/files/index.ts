@@ -14,6 +14,12 @@ export function getPaths(path: PathKey) {
   return new Dir(paths).readDirs().filter(isGitRepo);
 }
 
+export function getPath(path: PathKey) {
+  const paths = Config.get().paths[path];
+  if (!paths) throw new ConfigError(`paths.${path}`);
+  return new Dir(paths);
+}
+
 export async function getSubApps(
   app: string,
   apps: string[],

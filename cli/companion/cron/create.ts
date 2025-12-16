@@ -61,7 +61,8 @@ export default {
       const { original_branch } = await repo.switchBranchIfExists("master");
       const temp_branch = `feature/add-cron-${name}`;
       await repo.createNewBranch(temp_branch);
-      const file = CronYaml.create(cron_file.path);
+      const file = new CronYaml(cron_file.path);
+      file.init();
       file.setVersion(version);
       file.setNameSpace(namespace);
       await file.setDeployment(app_repo);

@@ -3,17 +3,23 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { loading } from "@lib/ui";
+import { Deployment } from "@oc/deployment";
 
 import { WorkflowStep } from "..";
 
-type Reads = { app_repo: AppRepo };
+type Reads = {
+  app_repo?: AppRepo;
+  deployment?: Deployment;
+};
 type Writes = { deploy_repo: DeployRepo };
 
 export class GetDeployRepo extends WorkflowStep<Reads, Writes> {
 
-  async run(_: ExecutionContext, { app_repo }: Reads) {
+  async run(_: ExecutionContext, { app_repo, deployment }: Reads) {
     let deploy_repo: DeployRepo | null = null;
-    const { name: search } = await app_repo.getInfo();
+
+    const { name: search } = await app_repo?.getInfo() ?? { name: deployment?.name };
+    if (!search) throw new Error("Missing name in GetDeployRepo");
 
     const spinner = loading("Getting deploy repo");
     for (const d of getPaths("despliegues")) {

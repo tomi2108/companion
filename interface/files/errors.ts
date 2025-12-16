@@ -35,6 +35,12 @@ export class InvalidCronYaml extends Error {
   }
 }
 
+export class InvalidThreescaleYaml extends Error {
+  constructor(path: string) {
+    super(`${path} is not a valid threescale yaml`);
+  }
+}
+
 export class InvalidHttpFile extends Error {
   constructor(file_path: string, reason = "") {
     super(`Invalid http file ${file_path} ${reason}`);

@@ -6,7 +6,6 @@ import { Project } from "@oc/project";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
-type Reads = {};
 type Writes = { project: Project };
 type Options<Reads> = {
   server: "brc" | "cuyo";

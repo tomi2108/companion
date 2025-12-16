@@ -1,5 +1,3 @@
-import yaml from "js-yaml";
-import fs from "node:fs";
 
 import { ConfigMap } from "@oc/configmap";
 import { Secret } from "@oc/secret";
@@ -14,8 +12,7 @@ export class CronYaml extends YamlFile<CronYamlContent> {
     return file.name().includes("cronjob");
   }
 
-  static create(file_path: string) {
-    if (fs.existsSync(file_path)) throw new Error(`${file_path} already exists, cannot create cron yaml`);
+  init() {
     const initial_cron_yaml = {
       apiVersion: "batch/v1",
       kind: "CronJob",
@@ -43,8 +40,7 @@ export class CronYaml extends YamlFile<CronYamlContent> {
         }
       }
     };
-    fs.writeFileSync(file_path, yaml.dump(initial_cron_yaml));
-    return new CronYaml(file_path);
+    this.write(initial_cron_yaml);
   }
 
   constructor(path: string) {
