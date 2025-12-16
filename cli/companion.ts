@@ -15,7 +15,6 @@ import pod from "@cli/pod";
 import project from "@cli/project";
 import repos from "@cli/repos";
 import route from "@cli/route";
-import tasks from "@cli/tasks";
 import upgrade from "@cli/upgrade";
 
 import { loadExecutionContext } from "./middleware";
@@ -43,7 +42,6 @@ yargs
   .command(project)
   .command(repos)
   .command(route)
-  .command(tasks)
   .command(upgrade)
   .demandCommand(1, "Please specify a command")
   .strict()
