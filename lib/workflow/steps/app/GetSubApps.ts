@@ -6,6 +6,7 @@ import { Project } from "@oc/project";
 
 import { WorkflowStep } from "..";
 import { GetDeployRepo } from "./GetDeployRepo";
+import { CopyEnv } from "../env/CopyEnv";
 
 type Reads = {
   app_repo: AppRepo;
@@ -23,7 +24,7 @@ export class GetSubApps extends WorkflowStep<Reads, Writes> {
     async function getSubApps(repo: AppRepo) {
       const { name: app } = await repo.getInfo();
       const env = repo.env;
-      await env.copy(project, repo);
+      await new CopyEnv().run(ctx, { app_repo: repo, project });
       env.internal();
       const { deploy_repo } = await new GetDeployRepo().run(ctx, { app_repo: repo });
       const deployment = deploy_repo.getDeployment(project.name);
