@@ -1,6 +1,6 @@
 import { ExecutionContext } from "@lib/ctx";
-import { OpenMr } from "@lib/workflow/steps/mr/open_mr";
-import { PromptMr } from "@lib/workflow/steps/mr/prompt_mr";
+import { OpenMr } from "@lib/workflow/steps/mr/OpenMr";
+import { PromptMr } from "@lib/workflow/steps/mr/PromptMr";
 import { Workflow } from "@lib/workflow/workflow";
 
 export default {

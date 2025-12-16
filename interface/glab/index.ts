@@ -5,7 +5,7 @@ import { glab } from "@glab/api";
 import { Repo } from "@interface/dirs/repo";
 import { Config } from "@lib/config";
 import log from "@lib/log/default";
-import { loading, ProgressBar } from "@lib/ui";
+import { ProgressBar } from "@lib/ui";
 import { isGitRepo } from "@lib/utils";
 import { Project } from "@oc/project";
 
@@ -19,12 +19,10 @@ export class Gitlab {
     const title = `${appName}-${project.name}`;
     const description = `platform:openshift\r\nproject:${Config.get().openshift.project}\r\nnamespace:${project.name}\r\ndeployment:${appName}\r\nversion:${version}`;
 
-    const spinner = loading(`Creating issues for: ${appName}`);
     await new Repo(new Dir(argocd_path)).createIssue({
       title,
       description
     });
-    spinner.succeed();
   }
 
   constructor() {

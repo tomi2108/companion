@@ -5,7 +5,9 @@ import { Config } from "@lib/config";
 import { EXCLUDED_SECRETS } from "@lib/constants";
 import { Secret } from "@oc/secret";
 
+let token: string | null = null;
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
+  if (token) return token;
   const oc_config = Config.get().openshift;
 
   const authUrl = {
@@ -30,9 +32,11 @@ export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
     return "";
   } catch (err) {
     if (axios.isAxiosError(err) && err.response?.headers.location) {
-      return new URLSearchParams(
+      const access_token = new URLSearchParams(
         new URL(err.response?.headers.location).hash.slice(1)
       ).get("access_token") ?? "";
+      token = access_token;
+      return access_token;
     } else {
       console.dir(err, { depth: null });
       throw err;
