@@ -12,7 +12,7 @@ import { WorkflowStep } from "..";
 type Reads = { namespace: string };
 type Writes = { secrets: Secret[]; configmaps: ConfigMap[]; name: string };
 
-export class PromptDeploymentEnvs implements WorkflowStep<Reads, Writes> {
+export class PromptDeploymentEnvs extends WorkflowStep<Reads, Writes> {
 
   async run(_: ExecutionContext, { namespace }: Reads) {
     const addsSecrets = await confirm({ message: `Secrets? (${namespace})`, initial: false });

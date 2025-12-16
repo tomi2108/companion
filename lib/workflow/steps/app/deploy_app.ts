@@ -14,9 +14,8 @@ type Reads = {
     configmaps: ConfigMap[];
   }[];
 };
-type Writes = {};
 
-export class DeployApp implements WorkflowStep<Reads, Writes> {
+export class DeployApp extends WorkflowStep<Reads> {
 
   async run(_: ExecutionContext, { deploy_repo, namespaces, version }: Reads) {
     await deploy_repo.deploy(namespaces, version);

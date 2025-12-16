@@ -19,9 +19,6 @@ export default {
   aliases: ["e"],
   describe: "Expose app in 3scale",
   handler: async () => {
-    const repo_path = Config.get().paths.threescale;
-    if (!repo_path) throw new ConfigError("paths.threescale");
-
     const repo = new Repo(repo_path);
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
@@ -30,6 +27,9 @@ export default {
 
     const deployment = await promptForOcResource(deployments);
     const namespace = project.name;
+
+    const repo_path = Config.get().paths.threescale;
+    if (!repo_path) throw new ConfigError("paths.threescale");
 
     const system_name = Config.get().threescale.products?.[namespace];
     if (!system_name) throw new ConfigError(`threescale.products.${namespace}`);

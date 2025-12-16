@@ -7,20 +7,21 @@ import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { PIPELINE_STATUS, PipelineStatus } from "@oc/pipelinerun";
 
-import { WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "..";
 
 type Reads = { app_repo: AppRepo };
 type Writes = { status: PipelineStatus };
+type Options = {
+  projectName: string;
+  server: "brc" | "cuyo";
+  q: string;
+};
 
-export class WaitPipeline implements WorkflowStep<Reads, Writes> {
+export class WaitPipeline extends WorkflowStep<Reads, Writes, Options> {
 
-  constructor(
-    private options: {
-      projectName: string;
-      server: "brc" | "cuyo";
-      q: string;
-    }
-  ) { }
+  constructor(override options: WorkflowOptions<Options, Writes>) {
+    super(options);
+  }
 
   async run(_: ExecutionContext, { app_repo }: Reads) {
     const token = await getOcToken(this.options.server);

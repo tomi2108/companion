@@ -8,7 +8,7 @@ import { WorkflowStep } from "..";
 type Reads = { deploy_repo: DeployRepo };
 type Writes = { namespaces: string[] };
 
-export class PromptNamespaceDeploy implements WorkflowStep<Reads, Writes> {
+export class PromptNamespaceDeploy extends WorkflowStep<Reads, Writes> {
 
   async run(_: ExecutionContext, { deploy_repo }: Reads) {
     await deploy_repo.update();

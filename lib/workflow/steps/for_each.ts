@@ -1,6 +1,6 @@
 import { ExecutionContext } from "@lib/ctx";
 
-import { WorkflowStep } from ".";
+import { WorkflowOptions, WorkflowStep } from ".";
 
 type ForEachWrites<
   InnerWrites,
@@ -11,12 +11,13 @@ type ForEachOptions<
   Reads,
   Item,
   InnerReads,
-  InnerWrites
+  InnerWrites,
+  InnerOptions
 > =
   | {
     items: (state: Reads) => Item[];
     item: string;
-    step: WorkflowStep<InnerReads, InnerWrites>;
+    step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
     collectAs?: undefined;
   }
   | (InnerWrites extends void
@@ -24,7 +25,7 @@ type ForEachOptions<
     : {
       items: (state: Reads) => Item[];
       item: string;
-      step: WorkflowStep<InnerReads, InnerWrites>;
+      step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
       collectAs: string;
     });
 
@@ -33,15 +34,17 @@ export class ForEachStep<
   Item,
   InnerReads,
   InnerWrites,
+  InnerOptions,
   Key extends string
-> implements WorkflowStep<
+> extends WorkflowStep<
   Reads & InnerReads,
-  ForEachWrites<InnerWrites, Key>
-> {
+    ForEachWrites<InnerWrites, Key>,
+    ForEachOptions<Reads, Item, InnerReads, InnerWrites, InnerOptions>
+  > {
 
-  constructor(
-    private options: ForEachOptions<Reads, Item, InnerReads, InnerWrites>
-  ) { }
+  constructor(override options: WorkflowOptions<ForEachOptions<Reads, Item, InnerReads, InnerWrites, InnerOptions>, ForEachWrites<InnerWrites, Key>>) {
+    super();
+  }
 
   async run(
     ctx: ExecutionContext,

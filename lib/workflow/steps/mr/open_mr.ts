@@ -4,9 +4,8 @@ import { ExecutionContext } from "@lib/ctx";
 import { WorkflowStep } from "..";
 
 type Reads = { mr: MergeRequest };
-type Writes = {};
 
-export class OpenMr implements WorkflowStep<Reads, Writes> {
+export class OpenMr extends WorkflowStep<Reads> {
 
   async run(_: ExecutionContext, { mr }: Reads) {
     mr.openInBrowser();

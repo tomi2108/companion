@@ -7,7 +7,7 @@ import { WorkflowStep } from "..";
 type Reads = { app_repo: AppRepo | null };
 type Writes = { version: string };
 
-export class PromptAppVersion implements WorkflowStep<Reads, Writes> {
+export class PromptAppVersion extends WorkflowStep<Reads, Writes> {
 
   async run(ctx: ExecutionContext, { app_repo }: Reads) {
     const logger = ctx.logger;

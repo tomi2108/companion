@@ -8,7 +8,7 @@ import { WorkflowStep } from "..";
 type Reads = {};
 type Writes = { mr: MergeRequest };
 
-export class PromptMr implements WorkflowStep<Reads, Writes> {
+export class PromptMr extends WorkflowStep<Reads, Writes> {
 
   async run(ctx: ExecutionContext) {
     const repo = new Repo(ctx.cwd);

@@ -20,7 +20,8 @@ export class Workflow {
         ctx.logger.debug("Running step", step.constructor.name);
         const output = await step.run(ctx, state);
         ctx.logger.debug("Exited with", output);
-        const newState = { ...state, ...output };
+        const transformed = step.options?.transform?.(output) ?? output;
+        const newState = { ...state, ...transformed };
         state = newState;
         ctx.logger.debug("New state", newState);
       } catch (err) {
