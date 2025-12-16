@@ -16,12 +16,9 @@ export class PromptPaths extends WorkflowStep<Reads, Writes, Options> {
   }
 
   async run() {
-    const dirs: Dir[] = [];
+    const dirs: Dir[] = this.options.paths
+      .flatMap((p) => getPaths(p));
 
-    for (const path of this.options.paths) {
-      const paths = getPaths(path);
-      dirs.push(...paths);
-    }
     const choices = dirs.map((d) => d.toChoice());
     const choice = await search({ choices, message: "Choose path" });
     const path = dirs.find((d) => d.toChoice().name === choice)!;
