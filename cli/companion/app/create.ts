@@ -1,4 +1,5 @@
 import { AppRepo } from "@interface/dirs/app_repo";
+import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { CreateApp } from "@lib/workflow/steps/app/CreateApp";
 import { GetDeployRepo } from "@lib/workflow/steps/app/GetDeployRepo";
@@ -20,7 +21,11 @@ export default {
         transform: ({ path }) => ({ app_repo: new AppRepo(path) })
       }),
       new GetDeployRepo(),
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcProject<{ deploy_repo: DeployRepo }>({
+        server: "cuyo",
+        filter: (project, { deploy_repo }) =>
+          !deploy_repo.deployments.map((d) => d.namespace).includes(project.name)
+      }),
       new PromptAppVersion(),
       new CreateApp()
     ]).run(ctx);
