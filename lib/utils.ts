@@ -1,5 +1,3 @@
-import yaml from "js-yaml";
-
 import { Dir } from "@files/dir";
 
 import { Choice } from "./constants";
@@ -48,10 +46,6 @@ export function parseKeyVal(str: string) {
   return Object.fromEntries(str.trim().split("\n").filter(Boolean).map((l) => l.split("=").filter(Boolean)).filter(Boolean));
 }
 
-export function toYaml(obj: object) {
-  return yaml.dump(obj, {});
-}
-
 export function isGitRepo(dir: Dir) {
   return dir.sub(".git").exists();
 }
@@ -76,3 +70,4 @@ export function mapObject<
 }
 
 export const mapToChoice = (e: { toChoice(): Choice }) => e.toChoice();
+

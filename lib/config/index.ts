@@ -166,14 +166,25 @@ export class Config {
 
 }
 
+export function getByPath(obj: Config, path: ConfigKey) {
+  return path.split(".")
+    .reduce<unknown>((acc, key) => {
+      if (acc && typeof acc === "object" && key in acc) {
+        return (acc as Record<string, unknown>)[key];
+      }
+      return undefined;
+    }, obj);
+}
+
 type DotPrefix<T extends string> = T extends "" ? "" : `.${T}`;
 
 type DotNestedKeys<T> = (T extends object ?
   { [K in Exclude<keyof T, symbol>]: `${K}${DotPrefix<DotNestedKeys<T[K]>>}` }[Exclude<keyof T, symbol>]
   : "") extends infer D ? Extract<D, string> : never;
 
+export type ConfigKey = DotNestedKeys<Omit<Config, "config">>;
 export class ConfigError extends Error {
-  constructor(key: DotNestedKeys<Omit<Config, "config">>) {
+  constructor(key: ConfigKey) {
     const msg = `${key} not set`;
     log.error(`ConfigError: ${msg}`);
     super(msg);

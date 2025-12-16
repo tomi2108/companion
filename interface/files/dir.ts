@@ -61,7 +61,7 @@ export class Dir {
   }
 
   join(dir: Dir) {
-    return new Dir(this.path).sub(dir.path);
+    return new Dir(path.join(this.path, dir.path));
   }
 
   exists() {

@@ -15,8 +15,8 @@ export function sha1(input: string) {
 
 export function createLogFile(file_name: string, subDir?: Dir) {
   const log_dir = new Dir(Config.get().preferences.logs_path);
-  const file_dir = log_dir;
-  if (subDir) file_dir.join(subDir);
+  let file_dir = log_dir;
+  if (subDir) file_dir = file_dir.join(subDir);
   file_dir.create();
   return file_dir.createFile(file_name);
 }
