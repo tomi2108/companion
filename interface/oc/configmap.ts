@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 
-import { removeDuplicates, toYaml } from "@lib/utils";
+import { removeDuplicates } from "@lib/utils";
 import { Resource } from "@oc/resource";
 
 export type ConfigMapResponse = {
@@ -25,8 +25,8 @@ export class ConfigMap extends Resource {
   apiVersion?: string = "v1";
 
   static fromConfigMapResponse(configMapResponse: ConfigMapResponse, oc: AxiosInstance) {
-    const cm = new ConfigMap(configMapResponse.metadata.name, oc);
-    cm.namespace = configMapResponse.metadata.namespace;
+    const namespace = configMapResponse.metadata.namespace;
+    const cm = new ConfigMap(configMapResponse.metadata.name, namespace, oc);
     cm.uid = configMapResponse.metadata.uid;
     cm.resourceVersion = configMapResponse.metadata.resourceVersion;
     cm.creationTimestamp = configMapResponse.metadata.creationTimestamp;
@@ -65,8 +65,8 @@ export class ConfigMap extends Resource {
     await this.oc.delete(`/api/v1/namespaces/${this.namespace}/configmaps/${this.name}`);
   }
 
-  async toYaml(): Promise<string> {
-    return toYaml({
+  async toYaml() {
+    return {
       apiVersion: this.apiVersion,
       data: await this.getData(),
       kind: this.kind,
@@ -77,6 +77,6 @@ export class ConfigMap extends Resource {
         resourceVersion: this.resourceVersion,
         uid: this.uid
       }
-    });
+    };
   }
 }

@@ -4,7 +4,7 @@ import { Choice } from "@lib/constants";
 
 export abstract class Resource {
   name: string;
-  namespace?: string;
+  namespace: string;
   public data?: Record<string, string>;
 
   abstract kind: string;
@@ -16,8 +16,9 @@ export abstract class Resource {
   abstract save(opts?: { update?: boolean }): void;
   abstract delete(): Promise<void>;
 
-  constructor(name: string, oc: typeof this.oc) {
+  constructor(name: string, namespace: string, oc: typeof this.oc) {
     this.name = name;
+    this.namespace = namespace;
     this.oc = oc;
   }
 

@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 
 import { Config } from "@lib/config";
-import { removeDuplicates, toYaml } from "@lib/utils";
+import { removeDuplicates } from "@lib/utils";
 import { Resource } from "@oc/resource";
 import { vault } from "@vault/api";
 
@@ -14,8 +14,7 @@ export class Secret extends Resource {
     namespace: string,
     oc: AxiosInstance
   ) {
-    super(name, oc);
-    this.namespace = namespace;
+    super(name, namespace, oc);
     this.vault = vault();
   }
 
@@ -39,14 +38,14 @@ export class Secret extends Resource {
     await this.vault.delete(`${Config.get().vault.project}/metadata/${this.namespace}/${this.name}`);
   }
 
-  async toYaml(): Promise<string> {
-    return toYaml({
-      data: await this.getData(),
+  async toYaml() {
+    return {
+      data: await this.getData() ?? {},
       kind: this.kind,
       metadata: {
         name: this.name,
         namespace: this.namespace
       }
-    });
+    };
   }
 }

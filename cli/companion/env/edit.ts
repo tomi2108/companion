@@ -2,6 +2,7 @@ import yaml from "js-yaml";
 import { setTimeout } from "node:timers/promises";
 
 import { TempFile } from "@files/temp_file";
+import { YamlFile } from "@files/yaml_file";
 import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log/default";
@@ -44,7 +45,10 @@ export default {
 
     const secrets = await project.getSecrets();
     const secret = await promptChoice(secrets);
-    const { changed, new_content } = await new TempFile({ content: await secret.toYaml(), ext: "yaml" }).prompt();
+    const file_content = await secret.toYaml();
+    const tmp_file = new TempFile({ ext: "yaml" });
+    new YamlFile(tmp_file.path).write(file_content);
+    const { changed, new_content } = await tmp_file.prompt();
     if (!changed || !new_content) return log.info("Edit canceled, no changes made");
     const y = yaml.load(new_content);
     if (!y

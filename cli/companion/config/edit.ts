@@ -1,4 +1,5 @@
-import { config_file } from "@lib/config";
+import { JsonFile } from "@files/json_file";
+import { getConfigPath } from "@lib/config";
 import { openInEditor } from "@lib/editor";
 
 export default {
@@ -6,6 +7,6 @@ export default {
   aliases: ["o", "open", "e"],
   describe: "Edit config in editor",
   handler: async () => {
-    openInEditor(config_file);
+    openInEditor(new JsonFile(getConfigPath()));
   }
 };

@@ -26,9 +26,10 @@ import { VaultConfig } from "./vault";
 
 const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
-export const config_file = new JsonFile(process.env.COMPANION_CONFIG ?? getConfigPath());
+export const config_file = new JsonFile(getConfigPath());
 
-function getConfigPath() {
+export function getConfigPath() {
+  if (process.env.COMPANION_CONFIG) return process.env.COMPANION_CONFIG;
   if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "companion", "config.json");
   else if (process.platform === "darwin" || process.platform === "linux") return path.join(homeDir, ".config", "companion", "config.json");
   throw new Error("Unknown platform");
