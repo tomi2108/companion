@@ -7,7 +7,9 @@ type Reads = {};
 type Writes = {};
 type Options = {
   message: string;
-  step: WorkflowStep;
+  initial?: boolean;
+  onAccept: WorkflowStep;
+  onReject?: WorkflowStep;
 };
 
 export class Confirm extends WorkflowStep<Reads> {
@@ -17,8 +19,10 @@ export class Confirm extends WorkflowStep<Reads> {
   }
 
   async run(ctx: ExecutionContext, reads: Reads) {
-    const sure = await confirm({ message: this.options.message });
-    if (!sure) return {};
-    return this.options.step.run(ctx, reads);
+    const { message, onAccept, onReject, initial } = this.options;
+    const sure = await confirm({ message: message, initial });
+    if (!sure && onReject) return onReject.run(ctx, reads);
+    if (sure) return onAccept.run(ctx, reads);
+    return {};
   }
 }

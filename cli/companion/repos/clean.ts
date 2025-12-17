@@ -53,7 +53,8 @@ export default {
       }),
       new Confirm({
         message: "Are you sure you want to clean repositories?",
-        step: new ForEachStep({
+        initial: true,
+        onAccept: new ForEachStep({
           item: "repo",
           items: (state: { repos: Repo[] }) => state.repos,
           progressBar: {

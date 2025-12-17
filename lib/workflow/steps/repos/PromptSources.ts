@@ -1,6 +1,7 @@
 import { getPaths } from "@files";
 import { Dir } from "@files/dir";
 import { PathKey } from "@lib/config/paths";
+import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 import { PromptPaths } from "../app/PromptPaths";
@@ -17,13 +18,13 @@ export class PromptSources extends WorkflowStep<Reads, Writes, Options> {
     super(options);
   }
 
-  async run() {
+  async run(ctx: ExecutionContext) {
     const dirs = this.options.sources
       .filter((o) => o.enabled)
       .flatMap((o) => getPaths(o.path));
 
     if (dirs.length === 0) {
-      const { path: dir } = await new PromptPaths({ paths: this.options.sources.map((s) => s.path) }).run();
+      const { path: dir } = await new PromptPaths({ paths: this.options.sources.map((s) => s.path) }).run(ctx);
       return { dirs: [dir] };
     }
     return { dirs };

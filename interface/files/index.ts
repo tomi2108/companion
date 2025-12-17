@@ -7,7 +7,8 @@ import { Dir } from "./dir";
 export function getPaths(path: PathKey) {
   const paths = Config.get().paths[path];
   if (!paths) throw new ConfigError(`paths.${path}`);
-  return new Dir(paths).readDirs().filter(isGitRepo);
+  const path_dir = getPath(path);
+  return [path_dir, ...path_dir.readDirs()].filter(isGitRepo);
 }
 
 export function getPath(path: PathKey) {

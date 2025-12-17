@@ -1,4 +1,5 @@
-import { Config, ConfigError, ConfigKey, getByPath } from "@lib/config";
+import { ConfigError, ConfigKey, getByPath } from "@lib/config";
+import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
@@ -11,9 +12,9 @@ export class ValidateConfig extends WorkflowStep<Reads, Writes, Options> {
     super(options);
   }
 
-  async run() {
+  async run(ctx: ExecutionContext) {
     for (const key of this.options.keys) {
-      const config = Config.get();
+      const config = ctx.config;
       const value = getByPath(config, key);
       if (!value) throw new ConfigError(key);
     }
