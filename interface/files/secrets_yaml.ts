@@ -2,8 +2,6 @@ import yaml from "js-yaml";
 import fs, { Dirent } from "node:fs";
 import { z } from "zod/v4";
 
-import { toYaml } from "@lib/utils";
-
 const YamlContentSchema = z.record(z.string(), z.string());
 type Content = z.infer<typeof YamlContentSchema>;
 
@@ -24,10 +22,6 @@ export class SecretsYaml {
 
     this.content = YamlContentSchema.parse(yaml_content);
     this.file_path = file_path;
-  }
-
-  toString() {
-    return toYaml({ "externalSecret": this.content });
   }
 
   save() {

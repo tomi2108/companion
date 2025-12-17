@@ -1,4 +1,3 @@
-import { getApp } from "@files";
 import { InvalidHttpFile } from "@files/errors";
 import { HttpFileContent, HttpFormatter } from "@files/formatters/http_formatter";
 import { ObjectFile } from "@files/object_file";
@@ -27,11 +26,4 @@ export class HttpFile extends ObjectFile<HttpFileContent> {
     return this.read().requests.map((r) => new Req(r));
   }
 
-  async getInfo() {
-    const { app_repo } = await getApp(this.service);
-    if (!app_repo) throw new Error(`Could not find app_repo for app ${this.service}`);
-    const description = app_repo.getPackage().description;
-    const version = app_repo.getPackage().version ?? "1.0.0";
-    return { description, version };
-  }
 }

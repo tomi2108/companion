@@ -1,3 +1,4 @@
+import { AppRepo } from "@interface/dirs/app_repo";
 import { HttpFile } from "@interface/http/http_file";
 import { Req, varRegex } from "@interface/http/req";
 
@@ -5,13 +6,15 @@ import { SwaggerFile, SwaggerPathItem } from "./types";
 
 export class Swagger {
   file: HttpFile;
+  app_repo: AppRepo;
 
-  constructor(file: HttpFile) {
+  constructor(file: HttpFile, app_repo: AppRepo) {
     this.file = file;
+    this.app_repo = app_repo;
   }
 
   async generate(): Promise<SwaggerFile> {
-    const { description, version } = await this.file.getInfo();
+    const { description, version } = this.app_repo.getPackage();
     return {
       openapi: "3.0.2",
       info: {
