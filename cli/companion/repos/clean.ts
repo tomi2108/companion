@@ -2,10 +2,11 @@ import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
+import { confirm } from "@lib/ui";
 import { PromptSources } from "@steps/repos/PromptSources";
 import { RepoClean } from "@steps/repos/RepoClean";
-import { Confirm } from "@workflow/steps/flow/Confirm";
 import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { If } from "@workflow/steps/flow/If";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -51,17 +52,17 @@ export default {
         ],
         transform: ({ dirs }) => ({ repos: dirs.map((dir) => new Repo(dir)) })
       }),
-      new Confirm({
-        message: "Are you sure you want to clean repositories?",
-        initial: true,
-        onAccept: new ForEachStep({
+      new If({
+        condition: () => confirm({ message: "Are you sure you want to clean repositories?" }),
+        then: new ForEachStep({
           item: "repo",
           items: (state: { repos: Repo[] }) => state.repos,
-          progressBar: {
-            type: "single",
-            prefix: "Cleaning:",
-            sufix: (repo) => repo.dir.name()
-          },
+          // TODO: add progress bar
+          // progressBar: {
+          //   type: "single",
+          //   prefix: "Cleaning:",
+          //   sufix: (repo) => repo.dir.name()
+          // },
           step: new RepoClean({ force })
         })
       })

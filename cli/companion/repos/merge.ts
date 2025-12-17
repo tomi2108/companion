@@ -1,11 +1,13 @@
 import { Argv } from "yargs";
 
-import { Dir } from "@files/dir";
-import { AppRepo } from "@interface/dirs/app_repo";
-import { promptSourcesOrOne } from "@interface/prompts";
-import { Config } from "@lib/config";
-import log from "@lib/log/default";
-import { input, progressBar } from "@lib/ui";
+import { Repo } from "@interface/dirs/repo";
+import { ExecutionContext } from "@lib/ctx";
+import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { Input } from "@workflow/steps/flow/Input";
+import { CreateMr } from "@workflow/steps/mr/CreateMr";
+import { PromptSources } from "@workflow/steps/repos/PromptSources";
+import { RepoUpdate } from "@workflow/steps/repos/RepoUpdate";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "merge",
@@ -23,51 +25,41 @@ export default {
     .describe("backend", "Whether to run the script for all backend repositories")
     .conflicts("all", ["frontend", "backend"]),
   handler: async ({ all, frontend, backend }: { all?: boolean; frontend?: boolean; backend?: boolean }) => {
-    const config = Config.get();
-    const dirs = await promptSourcesOrOne([
-      { enabled: Boolean(all || frontend), path: config.paths.frontend },
-      { enabled: Boolean(all || backend), path: config.paths.backend }
-    ]);
-    if (!dirs) return log.info("No apps found, set config.paths.frontend or config.paths.backend");
-
-    const source_branch = await input({ message: "Input source branch" });
-    const target_branch = await input({ message: "Input target branch" });
-
-    const bar = progressBar(dirs.length);
-    const skipped: Dir[] = [];
-    for (const d of dirs) {
-      const ignores = Config.get().repos.merge?.ignores;
-      if (ignores?.includes(d.name())) continue;
-      const repo = new AppRepo(d);
-      const { name } = await repo.getInfo();
-      bar.setSufix(name);
-      await repo.stash(async () => {
-        const temporary_branch = `nivelacion/${source_branch}-${target_branch}`;
-        await repo.update();
-        if ((await repo.getBranches()).includes(temporary_branch)) {
-          skipped.push(d);
-          return;
+    const ctx = ExecutionContext.get();
+    // TODO: loading with progress bars
+    new Workflow([
+      new PromptSources({
+        sources: [
+          { enabled: Boolean(all || frontend), path: "frontend" },
+          { enabled: Boolean(all || backend), path: "backend" }
+        ],
+        transform: ({ dirs }) => ({ repos: dirs.map((dir) => new Repo(dir)) })
+      }),
+      new Input({
+        message: "Input source branch",
+        write: "source_branch"
+      }),
+      new Input({
+        message: "Input target branch",
+        write: "target_branch"
+      }),
+      new ForEachStep({
+        item: "repo",
+        items: (state: { repos: Repo[] }) => state.repos,
+        step: new Workflow([
+          new RepoUpdate(),
+          new CreateMr({
+            temporary_branch: ({ source_branch, target_branch }) => `nivelacion/${source_branch}-${target_branch}`
+          })
+        ]),
+        collectAs: "repos_skipped",
+        concurrency: 5,
+        onEnd: ({ repos_skipped }) => {
+          if (repos_skipped.length > 0) {
+            repos_skipped.forEach((d) => ctx.logger.warning(`Skipped: ${d}`));
+          }
         }
-        const { original_branch } = await repo.switchBranchIfExists(target_branch);
-        if (original_branch === temporary_branch) await repo.deleteBranch(temporary_branch);
-        await repo.pull(target_branch);
-
-        await repo.switchBranchIfExists(source_branch);
-        await repo.pull(source_branch);
-
-        await repo.createNewBranch(temporary_branch);
-        await repo.createMr(target_branch, { title: `Nivelacion ${source_branch} - ${target_branch}` });
-        const { switched } = await repo.switchBranchIfExists(original_branch);
-        if (!switched) await repo.switchBranchIfExists("master");
-        await repo.deleteBranch(temporary_branch);
-      });
-      bar.increment(1);
-    }
-    bar.stop();
-
-    if (skipped.length > 0) {
-      console.log("Skipped:");
-      skipped.forEach((d) => console.log(d.path));
-    }
+      })
+    ]).run(ctx);
   }
 };

@@ -3,6 +3,7 @@ import { ProgressScope } from "@workflow/progress/types";
 
 export type WorkflowOptions<Options, Writes> = Options & {
   transform?: (output: Writes) => Record<string, any>;
+  onEnd?: (output: Writes) => void;
 };
 
 export type WorkflowRuntime = {

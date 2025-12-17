@@ -10,7 +10,6 @@ import http from "@cli/http";
 import mongo from "@cli/mongo";
 import monitors from "@cli/monitors";
 import mr from "@cli/mr";
-import pipeline from "@cli/pipeline";
 import pod from "@cli/pod";
 import project from "@cli/project";
 import repos from "@cli/repos";
@@ -37,7 +36,6 @@ yargs
   .command(mongo)
   .command(monitors)
   .command(mr)
-  .command(pipeline)
   .command(pod)
   .command(project)
   .command(repos)
