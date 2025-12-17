@@ -1,8 +1,8 @@
 import { getPaths } from "@files";
 import { Dir } from "@files/dir";
+import { promptChoice } from "@interface/prompts";
 import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
-import { search } from "@lib/ui";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
@@ -22,9 +22,7 @@ export class PromptPaths extends WorkflowStep<Reads, Writes, Options> {
     const dirs: Dir[] = (this.options?.paths ?? all_paths)
       .flatMap((p) => getPaths(p));
 
-    const choices = dirs.map((d) => d.toChoice());
-    const choice = await search({ choices, message: "Choose path" });
-    const path = dirs.find((d) => d.toChoice().name === choice)!;
+    const path = await promptChoice(dirs, { message: "Choose path" });
     return { path };
   }
 }

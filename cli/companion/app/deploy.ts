@@ -1,3 +1,4 @@
+import { DeployYaml } from "@files/deploy_yaml";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { DeployApp } from "@steps/app/DeployApp";
@@ -27,9 +28,9 @@ export default {
       new PromptAppVersion(),
       new ForEachStep({
         step: new PromptDeploymentEnvs(),
-        items: (state: { namespaces: string[] }) => state.namespaces,
-        collectAs: "namespaces",
-        item: "namespace"
+        items: (state: { deploy_yamls: DeployYaml[] }) => state.deploy_yamls,
+        collectAs: "deploy_yamls",
+        item: "deploy_yaml"
       }),
       new DeployApp(),
       new FindProject({ server: "brc", projectName: "cd-paas" }),

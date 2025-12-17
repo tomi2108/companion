@@ -102,7 +102,7 @@ export class PipelineRun {
 
   async status(): Promise<PipelineStatus> {
     const data: PipelineRunResponse = (await this.oc.get(`/apis/tekton.dev/v1/namespaces/${this.namespace}/pipelineruns/${this.name}`)).data;
-    return data.status.conditions?.[0]?.reason ?? PipelineStatus.failed;
+    return data.status.conditions?.[0]?.reason ?? PIPELINE_STATUS.failed;
   }
 
   toChoice(): Choice {

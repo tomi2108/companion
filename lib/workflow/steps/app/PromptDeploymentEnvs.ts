@@ -1,4 +1,5 @@
 
+import { DeployYaml } from "@files/deploy_yaml";
 import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 import { confirm } from "@lib/ui";
@@ -9,12 +10,13 @@ import { Secret } from "@oc/secret";
 
 import { WorkflowStep } from "..";
 
-type Reads = { namespace: string };
+type Reads = { deploy_yaml: DeployYaml };
 type Writes = { secrets: Secret[]; configmaps: ConfigMap[]; name: string };
 
 export class PromptDeploymentEnvs extends WorkflowStep<Reads, Writes> {
 
-  async run(_: ExecutionContext, { namespace }: Reads) {
+  async run(_: ExecutionContext, { deploy_yaml }: Reads) {
+    const namespace = deploy_yaml.namespace;
     const addsSecrets = await confirm({ message: `Secrets? (${namespace})`, initial: false });
     const token = addsSecrets ? await getOcToken() : null;
     let secrets: Secret[] = [];
