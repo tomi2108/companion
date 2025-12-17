@@ -1,7 +1,7 @@
 import { ExecutionContext } from "@lib/ctx";
-import { CloseMr } from "@lib/workflow/steps/mr/CloseMr";
-import { PromptMr } from "@lib/workflow/steps/mr/PromptMr";
-import { Workflow } from "@lib/workflow/workflow";
+import { CloseMr } from "@steps/mr/CloseMr";
+import { PromptMr } from "@steps/mr/PromptMr";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "close",

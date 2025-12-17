@@ -1,9 +1,9 @@
 import { ExecutionContext } from "@lib/ctx";
-import { CreateLogFile } from "@lib/workflow/steps/log/CreateLogFile";
-import { PromptMongoFile } from "@lib/workflow/steps/mongo/PromptMongoFile";
-import { RunMongoFile } from "@lib/workflow/steps/mongo/RunMongoFile";
-import { PromptOcProject } from "@lib/workflow/steps/oc/PromptOcProject";
-import { Workflow } from "@lib/workflow/workflow";
+import { CreateLogFile } from "@steps/log/CreateLogFile";
+import { PromptMongoFile } from "@steps/mongo/PromptMongoFile";
+import { RunMongoFile } from "@steps/mongo/RunMongoFile";
+import { PromptOcProject } from "@steps/oc/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "migration",

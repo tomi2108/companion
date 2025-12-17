@@ -20,7 +20,7 @@ export class PromptMongoFile extends WorkflowStep<Reads, Writes, Options> {
   }
 
   async run(ctx: ExecutionContext) {
-    new ValidateConfig({ keys: ["paths.mongo"] }).run();
+    new ValidateConfig({ keys: ["paths.mongo"] }).run(ctx);
     const mongo_path = ctx.config.paths.mongo;
     const dir = new Dir(mongo_path!);
     const scripts_dir = dir.sub("src", this.options.type);

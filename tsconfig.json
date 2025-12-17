@@ -33,6 +33,12 @@
       "@vault/*": [
         "interface/vault/*"
       ],
+      "@workflow/*": [
+        "lib/workflow/*"
+      ],
+      "@steps/*": [
+        "lib/workflow/steps/*"
+      ],
       "@files": [
         "interface/files/index"
       ],

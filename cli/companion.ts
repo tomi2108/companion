@@ -17,7 +17,7 @@ import repos from "@cli/repos";
 import route from "@cli/route";
 import upgrade from "@cli/upgrade";
 
-import { loadExecutionContext } from "./middleware";
+import { checkVersion, loadExecutionContext } from "./middleware";
 
 yargs
   .scriptName("companion")
@@ -28,7 +28,7 @@ yargs
   .alias("prod", ["p"])
   .describe("prod", "Wheter to use the production servers")
   .middleware(loadExecutionContext, true)
-  // .middleware(checkVersion)
+  .middleware(checkVersion)
   .command(app)
   .command(config)
   .command(cron)

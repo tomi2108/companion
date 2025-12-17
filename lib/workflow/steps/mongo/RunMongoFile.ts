@@ -22,7 +22,7 @@ export class RunMongoFile extends WorkflowStep<Reads, Writes, Options> {
   }
 
   async run(ctx: ExecutionContext, { mongo_file, project }: Reads) {
-    new ValidateConfig({ keys: ["paths.mongo"] }).run();
+    new ValidateConfig({ keys: ["paths.mongo"] }).run(ctx);
     const config = ctx.config;
     const mongo_path = config.paths.mongo;
     const migration_secrets = config.migrations.secrets ?? [];

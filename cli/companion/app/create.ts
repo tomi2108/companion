@@ -1,12 +1,12 @@
 import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { CreateApp } from "@lib/workflow/steps/app/CreateApp";
-import { GetDeployRepo } from "@lib/workflow/steps/app/GetDeployRepo";
-import { PromptAppVersion } from "@lib/workflow/steps/app/PromptAppVersion";
-import { PromptPaths } from "@lib/workflow/steps/app/PromptPaths";
-import { PromptOcProject } from "@lib/workflow/steps/oc/PromptOcProject";
-import { Workflow } from "@lib/workflow/workflow";
+import { CreateApp } from "@steps/app/CreateApp";
+import { GetDeployRepo } from "@steps/app/GetDeployRepo";
+import { PromptAppVersion } from "@steps/app/PromptAppVersion";
+import { PromptPaths } from "@steps/app/PromptPaths";
+import { PromptOcProject } from "@steps/oc/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "create",

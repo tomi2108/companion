@@ -1,14 +1,14 @@
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { DeployApp } from "@lib/workflow/steps/app/DeployApp";
-import { GetAppRepo } from "@lib/workflow/steps/app/GetAppRepo";
-import { PromptAppVersion } from "@lib/workflow/steps/app/PromptAppVersion";
-import { PromptDeploymentEnvs } from "@lib/workflow/steps/app/PromptDeploymentEnvs";
-import { PromptNamespaceDeploy } from "@lib/workflow/steps/app/PromptNamespaceDeploy";
-import { PromptPaths } from "@lib/workflow/steps/app/PromptPaths";
-import { ForEachStep } from "@lib/workflow/steps/ForEach";
-import { WaitPipeline } from "@lib/workflow/steps/oc/WaitPipeline";
-import { Workflow } from "@lib/workflow/workflow";
+import { DeployApp } from "@steps/app/DeployApp";
+import { GetAppRepo } from "@steps/app/GetAppRepo";
+import { PromptAppVersion } from "@steps/app/PromptAppVersion";
+import { PromptDeploymentEnvs } from "@steps/app/PromptDeploymentEnvs";
+import { PromptNamespaceDeploy } from "@steps/app/PromptNamespaceDeploy";
+import { PromptPaths } from "@steps/app/PromptPaths";
+import { ForEachStep } from "@steps/ForEach";
+import { WaitPipeline } from "@steps/oc/WaitPipeline";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "deploy",

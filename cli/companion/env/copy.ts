@@ -1,9 +1,9 @@
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { PromptPaths } from "@lib/workflow/steps/app/PromptPaths";
-import { CopyEnv } from "@lib/workflow/steps/env/CopyEnv";
-import { PromptOcProject } from "@lib/workflow/steps/oc/PromptOcProject";
-import { Workflow } from "@lib/workflow/workflow";
+import { PromptPaths } from "@steps/app/PromptPaths";
+import { CopyEnv } from "@steps/env/CopyEnv";
+import { PromptOcProject } from "@steps/oc/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "copy",

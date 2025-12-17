@@ -16,10 +16,12 @@ export async function checkVersion() {
   const root = path.resolve(__dirname, "../../");
   const repo = new AppRepo(new Dir(root));
   const current_version = repo.getPackage().version;
-  const release = await repo.getLatestRelease();
-  const remote_version = release.name;
-  if (current_version !== remote_version) {
-    console.log("New version", chalk.green(`v${remote_version}`), "is available!, You are using", chalk.red(`v${current_version}`));
-    console.log("Upgrade now with: companion upgrade");
-  }
+  repo.getLatestRelease().then((release) => {
+    const remote_version = release.name;
+    if (current_version !== remote_version) {
+      console.log("New version", chalk.green(`v${remote_version}`), "is available!, You are using", chalk.red(`v${current_version}`));
+      console.log("Upgrade now with: companion upgrade");
+    }
+    return;
+  }).catch(() => { });
 }
