@@ -8,6 +8,7 @@ import { PromptNamespaceDeploy } from "@steps/app/PromptNamespaceDeploy";
 import { PromptPaths } from "@steps/app/PromptPaths";
 import { WaitPipeline } from "@steps/oc/WaitPipeline";
 import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { FindProject } from "@workflow/steps/oc/FindProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -31,11 +32,8 @@ export default {
         item: "namespace"
       }),
       new DeployApp(),
-      new WaitPipeline({
-        projectName: "cd-paas",
-        q: "sync",
-        server: "brc"
-      })
+      new FindProject({ server: "brc", projectName: "cd-paas" }),
+      new WaitPipeline({ q: "sync" })
     ]).run(ctx);
   }
 };

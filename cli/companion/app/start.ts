@@ -7,7 +7,7 @@ import { Argv } from "yargs";
 import { getSubApps } from "@files";
 import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log/default";
 import { search } from "@lib/ui";
@@ -30,7 +30,7 @@ export default {
     if (!backend_path) return log.error("Backend path not set");
 
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
 
     const backend = new Dir(backend_path);
     const apps = backend.readDirs() ?? [];

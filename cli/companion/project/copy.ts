@@ -1,6 +1,6 @@
 import { getApp } from "@files";
 import { Gitlab } from "@glab";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log/default";
 import { arrayDifference } from "@lib/utils";
@@ -16,8 +16,8 @@ export default {
     const config = Config.get();
     const exclusions = config.project.copy?.exclusions ?? [];
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const from = await promptForOcResource(projects, { message: "Choose project to copy from" });
-    const to = await promptForOcResource(projects, { message: "Choose project to copy to" });
+    const from = await promptChoice(projects, { message: "Choose project to copy from" });
+    const to = await promptChoice(projects, { message: "Choose project to copy to" });
 
     const from_deployments = await from.getDeployments();
     const to_deployments = await to.getDeployments();

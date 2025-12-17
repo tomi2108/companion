@@ -6,7 +6,7 @@ import { createDirIfNotExists, insertLine, removeLine, replace } from "@files/ut
 import { Gitlab } from "@glab";
 import { AppRepo, Dependency } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log/default";
@@ -71,7 +71,7 @@ export default {
     const description = await input({ message: "Enter description" });
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const projects_to_deploy = await promptForOcResource(projects, { message: "Select projects to deploy", multiple: true });
+    const projects_to_deploy = await promptChoice(projects, { message: "Select projects to deploy", multiple: true });
 
     const replaceName = (file: string) => replace("{{name}}", name, file);
     const replaceAppName = (file: string) => replace("{{appName}}", kebabToCamel(name.split("app-")?.[1] ?? ""), file);

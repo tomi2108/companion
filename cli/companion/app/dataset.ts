@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { getAppCollections } from "@files/http";
 import { createLogFile } from "@files/utils";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Sql } from "@interface/sql/sql";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log/default";
@@ -31,7 +31,7 @@ export default {
     if (!fs.existsSync(queries_path)) return log.error(`Postscripts results folder not found at ${postscripts_path}`);
 
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const sql = new Sql(project.name);
 
     const http_files = getAppCollections();

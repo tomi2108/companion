@@ -1,7 +1,7 @@
 import { Argv } from "yargs";
 
 import { getApp } from "@files";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import log from "@lib/log/default";
 import { confirm, input, progressBar } from "@lib/ui";
 import { Openshift } from "@oc";
@@ -34,14 +34,14 @@ export default {
   }) => {
     let toUpdate: Deployment[] = [];
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const deployments = await project.getDeployments();
 
     if (all || frontend) toUpdate = [...toUpdate, ...deployments.filter(filterFrontendDeployments)];
     if (all || backend) toUpdate = [...toUpdate, ...deployments.filter((d) => !filterFrontendDeployments(d))];
 
     if (toUpdate.length === 0) {
-      toUpdate = await promptForOcResource(deployments, { multiple: true, message: "Select repositories to install" });
+      toUpdate = await promptChoice(deployments, { multiple: true, message: "Select repositories to install" });
     }
 
     const name = await input({ message: "Enter dependency name" });

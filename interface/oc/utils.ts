@@ -1,18 +1,17 @@
 import { setTimeout } from "node:timers/promises";
 
 import { AppRepo } from "@interface/dirs/app_repo";
-import log from "@lib/log/default";
 import { loading } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import { PipelineRun, PipelineStatus } from "@oc/pipelinerun";
+import { PIPELINE_STATUS, PipelineRun } from "@oc/pipelinerun";
 import { Project } from "@oc/project";
 
 export async function waitForPipeline(pipeline: PipelineRun, loadingText?: string) {
   const spinner = loading(loadingText ?? "Running pipeline");
-  while (await pipeline.status() === PipelineStatus.running) setTimeout(15 * 1000);
+  while (await pipeline.status() === PIPELINE_STATUS.running) setTimeout(15 * 1000);
   const status = await pipeline.status();
-  if (status === PipelineStatus.succeeded) spinner.succeed("Pipeline succeeded");
+  if (status === PIPELINE_STATUS.succeeded) spinner.succeed("Pipeline succeeded");
   else spinner.fail("Pipeline failed");
   return status;
 }
@@ -26,9 +25,6 @@ export async function findCIPipeline(app_repo: AppRepo) {
     return null;
   }
   return await app_repo.findPipeline(ci_paas, "ci");
-}
-
-export async function findSyncPipeline(app_repo: AppRepo) {
 }
 
 export async function findArgoPipeline(app_repo: AppRepo, project: Project) {

@@ -1,5 +1,5 @@
 import { getApp } from "@files";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
 
@@ -9,7 +9,7 @@ export default {
   describe: "Upgrade all apps to the latest version in a project",
   handler: async () => {
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptForOcResource(projects, { message: "Choose project to upgrade" });
+    const project = await promptChoice(projects, { message: "Choose project to upgrade" });
 
     const deployments = await project.getDeployments();
 

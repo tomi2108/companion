@@ -4,7 +4,6 @@ import path from "node:path";
 
 import { FileNotFound, InvalidJsonFile } from "@files/errors";
 import { JsonFile } from "@files/json_file";
-import log from "@lib/log/default";
 import { confirm, search } from "@lib/ui";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 
@@ -84,7 +83,8 @@ export class Config {
     const exists = fs.existsSync(dir);
     if (!exists) fs.mkdirSync(dir, { recursive: true });
     config_file.write(config_to_write);
-    log.success("Configuration was set up correctly");
+    // const log = ExecutionContext.get().logger;
+    // log.success(`Configuration written to ${config_file}`);
   }
 
   async prod() {
@@ -92,7 +92,8 @@ export class Config {
   }
 
   private async newConfigPrompt() {
-    log.warning("Configuration file config.json for Companion was not found");
+    // const log = ExecutionContext.get().logger;
+    // log.warning("Configuration file config.json for Companion was not found");
     const setup = await confirm({ message: "Would you like to setup a config interactively?" });
     if (setup) await this.setup();
     process.exit(0);
@@ -186,7 +187,8 @@ export type ConfigKey = DotNestedKeys<Omit<Config, "config">>;
 export class ConfigError extends Error {
   constructor(key: ConfigKey) {
     const msg = `${key} not set`;
-    log.error(`ConfigError: ${msg}`);
+    // const log = ExecutionContext.get().logger;
+    // log.error(`ConfigError: ${msg}`);
     super(msg);
   }
 }

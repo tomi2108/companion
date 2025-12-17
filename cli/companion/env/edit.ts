@@ -2,7 +2,7 @@ import yaml from "js-yaml";
 import { setTimeout } from "node:timers/promises";
 
 import { TempFile } from "@files/temp_file";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log/default";
 import { confirm, search } from "@lib/ui";
@@ -17,7 +17,7 @@ export default {
     if (!Config.get().paths.namespaces) throw new ConfigError("paths.namespaces");
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
 
     const choices = ["configmap", "secret"];
     const type = await search({ message: "Choose type of resource to edit", choices });
@@ -25,7 +25,7 @@ export default {
 
     if (type === "configmap") {
       const configmaps = await project.getConfigMaps();
-      const configmap = await promptForOcResource(configmaps);
+      const configmap = await promptChoice(configmaps);
       const { changed, new_content } = await new TempFile({ content: await configmap.toYaml(), ext: "yaml" }).prompt();
       if (!changed || !new_content) return log.info("Edit canceled, no changes made");
       const y = yaml.load(new_content);
@@ -43,7 +43,7 @@ export default {
     }
 
     const secrets = await project.getSecrets();
-    const secret = await promptForOcResource(secrets);
+    const secret = await promptChoice(secrets);
     const { changed, new_content } = await new TempFile({ content: await secret.toYaml(), ext: "yaml" }).prompt();
     if (!changed || !new_content) return log.info("Edit canceled, no changes made");
     const y = yaml.load(new_content);

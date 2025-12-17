@@ -1,4 +1,4 @@
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -10,10 +10,10 @@ export default {
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
 
     const pods = await project.getPods();
-    const pod = await promptForOcResource(pods);
+    const pod = await promptChoice(pods);
     pod.remoteSession();
   }
 };

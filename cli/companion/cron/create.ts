@@ -3,7 +3,7 @@ import { getApp, getAppPaths } from "@files";
 import { CronYaml } from "@files/cron_yaml";
 import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { confirm, input, loading, search } from "@lib/ui";
 import { Openshift } from "@oc";
@@ -21,7 +21,7 @@ export default {
 
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const namespace = project.name;
 
     const name = await input({ message: "Cron job name:" });
@@ -42,7 +42,7 @@ export default {
     if (addsSecrets) {
       const project = await new Openshift(token as string).getProject(namespace);
       const secrets_available = await project.getSecrets();
-      secrets = await promptForOcResource(secrets_available, { message: "Select secrets", multiple: true });
+      secrets = await promptChoice(secrets_available, { message: "Select secrets", multiple: true });
     }
 
     const addsConfigmaps = await confirm({ message: `Add configmaps to the cron job? (${namespace})`, initial: false });
@@ -50,7 +50,7 @@ export default {
       const tokenn = token ?? await getOcToken();
       const project = await new Openshift(tokenn).getProject(namespace);
       const configmaps_availabie = await project.getConfigMaps();
-      configmaps = await promptForOcResource(configmaps_availabie, { message: "Select configmaps", multiple: true });
+      configmaps = await promptChoice(configmaps_availabie, { message: "Select configmaps", multiple: true });
     }
 
     const repo_path = new Dir(namespaces_path).sub(project.name);

@@ -1,4 +1,4 @@
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import log from "@lib/log/default";
 import { confirm, search } from "@lib/ui";
 import { Openshift } from "@oc";
@@ -12,7 +12,7 @@ export default {
   handler: async () => {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
 
     const choices = ["configmap", "secret"];
     const type = await search({ message: "Choose type of resource to delete", choices });
@@ -21,11 +21,11 @@ export default {
     let r: Resource;
     if (type === "configmap") {
       const configmaps = await project.getConfigMaps();
-      const configmap = await promptForOcResource(configmaps);
+      const configmap = await promptChoice(configmaps);
       r = configmap;
     } else {
       const secrets = await project.getSecrets();
-      const secret = await promptForOcResource(secrets);
+      const secret = await promptChoice(secrets);
       r = secret;
     }
 

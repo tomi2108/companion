@@ -1,6 +1,6 @@
 import { Argv } from "yargs";
 
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
@@ -15,9 +15,9 @@ export default {
   handler: async ({ raw }: { raw?: boolean }) => {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const deployments = await project.getDeployments();
-    const deployment = await promptForOcResource(deployments);
+    const deployment = await promptChoice(deployments);
     const pods = await deployment.getPods();
     await Promise.all(pods.map((p) => p.followLogs({ raw })));
   }

@@ -2,19 +2,14 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { loading } from "@lib/ui";
 import { sleep } from "@lib/utils";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
 import { PIPELINE_STATUS, PipelineStatus } from "@oc/pipelinerun";
+import { Project } from "@oc/project";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
-type Reads = { app_repo: AppRepo };
-type Writes = { status: PipelineStatus };
-type Options = {
-  projectName: string;
-  server: "brc" | "cuyo";
-  q: string;
-};
+type Reads = { project: Project; app_repo: AppRepo };
+type Writes = { pipeline_status: PipelineStatus };
+type Options = { q: string };
 
 export class WaitPipeline extends WorkflowStep<Reads, Writes, Options> {
 
@@ -22,12 +17,7 @@ export class WaitPipeline extends WorkflowStep<Reads, Writes, Options> {
     super(options);
   }
 
-  async run(_: ExecutionContext, { app_repo }: Reads) {
-    const token = await getOcToken(this.options.server);
-    const projects = await new Openshift(token, this.options.server).getProjects();
-    const project = projects.find((p) => p.name === this.options.projectName);
-
-    if (!project) throw new Error(`Could not find project ${project}`);
+  async run(_: ExecutionContext, { app_repo, project }: Reads) {
     const pipeline = await app_repo.findPipeline(project, this.options.q);
 
     if (!pipeline) throw new Error("Could not find pipeline");
@@ -38,6 +28,6 @@ export class WaitPipeline extends WorkflowStep<Reads, Writes, Options> {
     if (status === PIPELINE_STATUS.succeeded) spinner.succeed("Pipeline succeeded");
     else spinner.fail("Pipeline failed");
 
-    return { status };
+    return { pipeline_status: status };
   }
 }

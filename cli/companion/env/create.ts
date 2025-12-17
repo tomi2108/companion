@@ -3,7 +3,7 @@ import { Dir } from "@files/dir";
 import { SecretsYaml } from "@files/secrets_yaml";
 import { TempFile } from "@files/temp_file";
 import { Repo } from "@interface/dirs/repo";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log/default";
 import { input, search } from "@lib/ui";
@@ -20,7 +20,7 @@ export default {
     if (!namespaces_path) throw new ConfigError("paths.namespaces");
 
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
 
     const choices = ["configmap", "secret"];
     const resource = await search({ message: "Choose type of resource to create", choices });

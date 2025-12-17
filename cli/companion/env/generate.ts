@@ -1,6 +1,6 @@
 import { Argv } from "yargs";
 
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config } from "@lib/config";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
@@ -17,7 +17,7 @@ export default {
     const config = Config.get();
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
 
     const prefix = config.envs.generate?.prefix ?? "";
     const excluded = config.envs.generate?.exclusions ?? [];
@@ -29,7 +29,7 @@ export default {
       .filter((d) => !excluded_prefix.some((p) => d.name.split(prefix)[1]?.startsWith(p)));
 
     const configmaps = await project.getConfigMaps();
-    const deployments = all ? choices : [await promptForOcResource(choices)];
+    const deployments = all ? choices : [await promptChoice(choices)];
     for (const d of deployments) {
       if (configmaps.some((c) => c.name === d.name)) {
         console.log("Configmap", `'${d.name}'`, "already exists");

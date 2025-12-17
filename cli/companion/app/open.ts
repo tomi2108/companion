@@ -2,7 +2,7 @@
 import { Dir } from "@files/dir";
 import { JsonFile } from "@files/json_file";
 import { HttpFile } from "@interface/http/http_file";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { openInBrowser } from "@lib/editor";
 import { search } from "@lib/ui";
@@ -47,7 +47,7 @@ export default {
     const choices = [{ name: "Local" }, ...projects.map((p) => p.toChoice())];
     const namespace = await search({ choices, message: "Choose project" });
     const isLocal = namespace === "Local";
-    const token_namespace = !isLocal ? namespace : (await promptForOcResource(projects, { message: "Choose namespace to get token from" })).name;
+    const token_namespace = !isLocal ? namespace : (await promptChoice(projects, { message: "Choose namespace to get token from" })).name;
 
     const url = (() => {
       if (!isLocal) return `http://${token_app}-${namespace}.apps.${config.openshift.server_name}.cuyorh.tcloud.ar`;

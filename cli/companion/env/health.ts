@@ -4,7 +4,7 @@ import { Argv } from "yargs";
 
 import { getApp } from "@files";
 import { TextFile } from "@files/text_file";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config } from "@lib/config";
 import log from "@lib/log/default";
 import { Openshift } from "@oc";
@@ -26,11 +26,11 @@ export default {
   handler: async ({ all }: { all?: boolean }) => {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     let deployments = (await project.getDeployments()).filter((e) => !filterFrontendDeployments(e));
 
     if (!all) {
-      const deployment = await promptForOcResource(deployments);
+      const deployment = await promptChoice(deployments);
       deployments = [deployment];
     }
 

@@ -1,4 +1,4 @@
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
@@ -25,7 +25,7 @@ export class PromptOcProject<Reads extends {} = {}> extends WorkflowStep<Reads, 
       ? projects.filter((p) => this.options.filter!(p, reads))
       : projects;
 
-    const project = await promptForOcResource(filtered, { message: "Select project" });
+    const project = await promptChoice(filtered, { message: "Select project" });
     return { project };
   }
 }

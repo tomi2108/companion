@@ -4,7 +4,7 @@ import Table from "cli-table3";
 import { getApp } from "@files";
 import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { SonarQube } from "@interface/sonar";
 import { Config } from "@lib/config";
 import { loading } from "@lib/ui";
@@ -20,7 +20,7 @@ export default {
     const sonar_projects = await sonar.getProjects();
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const fe = Config.get().paths.frontend;
     const be = Config.get().paths.backend;
     const apps = [

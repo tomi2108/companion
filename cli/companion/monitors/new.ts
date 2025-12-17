@@ -7,7 +7,7 @@ import { MonitorYaml } from "@files/monitor_yaml";
 import { createDirIfNotExists } from "@files/utils";
 import { Repo } from "@interface/dirs/repo";
 import { HttpFile } from "@interface/http/http_file";
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import log from "@lib/log/default";
 import { confirm, input, search } from "@lib/ui";
@@ -27,7 +27,7 @@ export default {
     if (!monitors_path) throw new ConfigError("paths.monitors");
     const http_files = getAppCollections();
     const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const name = await input({ message: "User flow name" });
     const services_doc_link = await input({ message: "Services documentation url" });
     const choices = http_files

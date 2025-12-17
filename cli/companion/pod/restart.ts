@@ -1,6 +1,6 @@
 import { Argv } from "yargs";
 
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
 import { Deployment } from "@oc/deployment";
@@ -36,12 +36,12 @@ export default {
   }) => {
     const token = await getOcToken();
     const projects = await new Openshift(token).getProjects();
-    const project = await promptForOcResource(projects);
+    const project = await promptChoice(projects);
     const deployments = await project.getDeployments();
 
     if (secret) {
       const secrets = await project.getSecrets();
-      const s = await promptForOcResource(secrets);
+      const s = await promptChoice(secrets);
       for (const d of deployments) {
         if (!d.getSecrets()?.some((ss) => ss.name === s.name)) continue;
         await d.restart();
@@ -54,7 +54,7 @@ export default {
     if (all || backend) to_restart = [...to_restart, ...deployments.filter((d) => !filterFrontendDeployments(d))];
 
     if (to_restart.length === 0) {
-      const deployment = await promptForOcResource(deployments);
+      const deployment = await promptChoice(deployments);
       if (deployment) to_restart = [deployment];
     }
     await Promise.all(to_restart.map((d) => d.restart()));

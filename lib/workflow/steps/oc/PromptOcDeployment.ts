@@ -1,4 +1,4 @@
-import { promptForOcResource } from "@interface/prompts";
+import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 import { Deployment } from "@oc/deployment";
 import { Project } from "@oc/project";
@@ -23,7 +23,7 @@ export class PromptOcDeployment<R extends Reads = Reads> extends WorkflowStep<R,
       ? deployments.filter((d) => this.options?.filter!(d, reads))
       : deployments;
 
-    const deployment = await promptForOcResource(filtered, { message: "Select deployment" });
+    const deployment = await promptChoice(filtered, { message: "Select deployment" });
     return { deployment };
   }
 }

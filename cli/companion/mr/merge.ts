@@ -1,7 +1,7 @@
 import { getApp } from "@files";
 import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
-import { promptForMr, promptForOcResource } from "@interface/prompts";
+import { promptChoice, promptForMr } from "@interface/prompts";
 import { confirm } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
@@ -27,7 +27,7 @@ export default {
       if (deploys) {
         const token = await getOcToken();
         const projects = await new Openshift(token).getProjects();
-        deploy_projects = await promptForOcResource(projects, { message: "Choose projects", multiple: true });
+        deploy_projects = await promptChoice(projects, { message: "Choose projects", multiple: true });
       }
     }
 
