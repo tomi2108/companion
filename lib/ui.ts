@@ -1,4 +1,4 @@
-import { MultiBar, Presets, SingleBar } from "cli-progress";
+import { MultiBar as MultiProgressBar, Presets, SingleBar } from "cli-progress";
 import { prompt } from "enquirer";
 
 import { Spinner } from "@topcli/spinner";
@@ -66,19 +66,20 @@ export function progressBar(total?: number, start?: number, prefix?: string) {
   return { update, increment, stop, setTotal, setSufix, setPrefix };
 }
 
-export type ProgressBar = SingleBar & { setPrefix: (s: string) => void; setSufix: (s: string) => void };
-
+export type ProgressBar = ReturnType<typeof progressBar>;
+export type MultiBar = ReturnType<typeof multiProgressBar>;
 export function multiProgressBar() {
-  const multi = new MultiBar({
+  const multi = new MultiProgressBar({
     format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
     autopadding: true,
     barCompleteChar: "#"
   }, Presets.legacy);
 
-  const create = (total?: number, start?: number) => {
-    const bar = multi.create(total ?? 0, start ?? 0, { prefix: "", sufix: "" }) as ProgressBar;
-    bar.setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(12 - prefix.length) });
+  const create = (total?: number, start?: number, prefix?: string): ProgressBar => {
+    const bar = multi.create(total ?? 0, start ?? 0, { prefix: "", sufix: "" }) as SingleBar & { setPrefix: (i: string) => void; setSufix: (i: string) => void };
+    bar.setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(Math.max(12 - prefix.length, 0)) });
     bar.setSufix = (sufix: string) => bar.increment(0, { sufix });
+    if (prefix) bar.setPrefix(prefix);
     return bar;
   };
 

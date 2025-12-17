@@ -6,8 +6,8 @@ import { PromptAppVersion } from "@steps/app/PromptAppVersion";
 import { PromptDeploymentEnvs } from "@steps/app/PromptDeploymentEnvs";
 import { PromptNamespaceDeploy } from "@steps/app/PromptNamespaceDeploy";
 import { PromptPaths } from "@steps/app/PromptPaths";
-import { ForEachStep } from "@steps/ForEach";
 import { WaitPipeline } from "@steps/oc/WaitPipeline";
+import { ForEachStep } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 
 export default {

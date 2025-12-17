@@ -1,10 +1,10 @@
 import { ExecutionContext } from "@lib/ctx";
 import { filterFrontendDeployments } from "@oc/api";
 import { Deployment } from "@oc/deployment";
-import { ForEachStep } from "@steps/ForEach";
 import { GetDeployments } from "@steps/oc/GetDeployments";
 import { PromptOcProject } from "@steps/oc/PromptOcProject";
 import { GenerateFrontendRoutes } from "@steps/routes/GenerateFrontendRoutes";
+import { ForEachStep } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 
 export default {

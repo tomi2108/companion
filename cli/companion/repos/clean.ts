@@ -2,10 +2,10 @@ import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { Confirm } from "@steps/Confirm";
-import { ForEachStep } from "@steps/ForEach";
 import { PromptSources } from "@steps/repos/PromptSources";
 import { RepoClean } from "@steps/repos/RepoClean";
+import { Confirm } from "@workflow/steps/flow/Confirm";
+import { ForEachStep } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 
 export default {

@@ -1,7 +1,7 @@
 import { ExecutionContext } from "@lib/ctx";
 import { confirm } from "@lib/ui";
 
-import { WorkflowOptions, WorkflowStep } from ".";
+import { WorkflowOptions, WorkflowStep } from "..";
 
 type Reads = {};
 type Writes = {};
