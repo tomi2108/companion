@@ -42,10 +42,13 @@ export function loading(startText: string) {
   return { succeed, fail, text, elapsedTime };
 }
 
-export function progressBar(total?: number, start?: number, prefix?: string) {
+export function progressBar(total?: number, prefix?: string) {
   const bar = new SingleBar({
     format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
     autopadding: true,
+    forceRedraw: true,
+    gracefulExit: true,
+    stopOnComplete: true,
     barCompleteChar: "#"
   }, Presets.legacy);
 
@@ -59,8 +62,6 @@ export function progressBar(total?: number, start?: number, prefix?: string) {
     if (!total && !bar.isActive) bar.start(to, 0);
     bar.setTotal(to);
   };
-
-  if (total) bar.start(total, start ?? 0);
   setPrefix(prefix ?? "");
 
   return { update, increment, stop, setTotal, setSufix, setPrefix };
@@ -71,12 +72,15 @@ export type MultiBar = ReturnType<typeof multiProgressBar>;
 export function multiProgressBar() {
   const multi = new MultiProgressBar({
     format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
+    forceRedraw: true,
+    gracefulExit: true,
     autopadding: true,
+    stopOnComplete: true,
     barCompleteChar: "#"
   }, Presets.legacy);
 
-  const create = (total?: number, start?: number, prefix?: string): ProgressBar => {
-    const bar = multi.create(total ?? 0, start ?? 0, { prefix: "", sufix: "" }) as SingleBar & { setPrefix: (i: string) => void; setSufix: (i: string) => void };
+  const create = (total?: number, prefix?: string): ProgressBar => {
+    const bar = multi.create(total ?? 0, 0, { prefix: "", sufix: "" }) as SingleBar & { setPrefix: (i: string) => void; setSufix: (i: string) => void };
     bar.setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(Math.max(12 - prefix.length, 0)) });
     bar.setSufix = (sufix: string) => bar.increment(0, { sufix });
     if (prefix) bar.setPrefix(prefix);

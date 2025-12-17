@@ -3,9 +3,9 @@ import { Gitlab } from "@glab";
 import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 import { RepoClone } from "./RepoClone";
-import { ConcurrentForEach } from "../flow/ConcurrentForEach";
+import { ForEachStep } from "../flow/ForEach";
 
 type Reads = { path: PathKey };
 type Writes = {};
@@ -17,7 +17,7 @@ export class PathClone extends WorkflowStep<Reads, Writes, Options> {
     super(options);
   }
 
-  async run(ctx: ExecutionContext, reads: Reads) {
+  async run(ctx: ExecutionContext, reads: Reads, runtime?: WorkflowRuntime) {
     const config = ctx.config;
     const log = ctx.logger;
     const repos = config.gitlab.repos;
@@ -35,12 +35,16 @@ export class PathClone extends WorkflowStep<Reads, Writes, Options> {
       const projects = await glab.getProjects(id);
       const repos = projects.map((p) => ({ id: p.id, dir }));
 
-      await new ConcurrentForEach({
+      await new ForEachStep({
         concurrency: 10,
         item: "repo",
         items: () => repos,
+        progress: {
+          prefix: key,
+          suffix: (i) => String(i.id)
+        },
         step: new RepoClone({ current: false })
-      }).run(ctx, reads);
+      }).run(ctx, reads as any, runtime);
 
     } catch (err) {
       if (
