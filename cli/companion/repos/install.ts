@@ -1,12 +1,11 @@
 import { Argv } from "yargs";
 
-import { getApp } from "@files";
 import { promptChoice } from "@interface/prompts";
-import log from "@lib/log/default";
+import { ExecutionContext } from "@lib/ctx";
 import { confirm, input, progressBar } from "@lib/ui";
-import { Openshift } from "@oc";
-import { filterFrontendDeployments, getOcToken } from "@oc/api";
-import { Deployment } from "@oc/deployment";
+import { filterFrontendDeployments } from "@oc/api";
+import { PromptSources } from "@workflow/steps/repos/PromptSources";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "install",
@@ -32,17 +31,15 @@ export default {
     backend?: boolean;
     dev?: boolean;
   }) => {
-    let toUpdate: Deployment[] = [];
-    const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptChoice(projects);
-    const deployments = await project.getDeployments();
-
-    if (all || frontend) toUpdate = [...toUpdate, ...deployments.filter(filterFrontendDeployments)];
-    if (all || backend) toUpdate = [...toUpdate, ...deployments.filter((d) => !filterFrontendDeployments(d))];
-
-    if (toUpdate.length === 0) {
-      toUpdate = await promptChoice(deployments, { multiple: true, message: "Select repositories to install" });
-    }
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new PromptSources({
+        sources: [
+          { enabled: Boolean(all || frontend), path: "frontend" },
+          { enabled: Boolean(all || backend), path: "backend" }
+        ]
+      })
+    ]).run(ctx);
 
     const name = await input({ message: "Enter dependency name" });
     const version = await input({ message: "Enter version" });

@@ -9,7 +9,7 @@ type WorkflowOptions = {
 
 export class Workflow {
   private steps: WorkflowStep<any, any>[];
-  private options: WorkflowOptions;
+  options: WorkflowOptions;
 
   constructor(steps: WorkflowStep<any, any>[], options?: WorkflowOptions) {
     this.steps = steps;
