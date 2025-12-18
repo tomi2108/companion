@@ -1,6 +1,5 @@
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 import { Project } from "@oc/project";
 
 import { WorkflowStep } from "..";
@@ -13,7 +12,6 @@ type Reads = {
 export class CopyEnv extends WorkflowStep<Reads> {
   async run(_: ExecutionContext, { app_repo, project }: Reads) {
     const { name } = await app_repo.getInfo();
-    const spinner = loading(`Copying env for ${name} from ${project.name}`);
     const deployment = await project.getDeployment(name);
     const configMaps = await deployment.getConfigMaps() ?? [];
     const secrets = deployment.getSecrets() ?? [];
@@ -35,7 +33,6 @@ export class CopyEnv extends WorkflowStep<Reads> {
       env.add(key, value);
     });
     env.external();
-    spinner.succeed();
     return {};
   }
 }

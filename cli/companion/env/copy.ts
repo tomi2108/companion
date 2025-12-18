@@ -3,6 +3,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { PromptPaths } from "@steps/app/PromptPaths";
 import { CopyEnv } from "@steps/env/CopyEnv";
 import { PromptOcProject } from "@steps/oc/PromptOcProject";
+import { Spinner } from "@workflow/steps/ui/Spinner";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -17,7 +18,13 @@ export default {
         transform: ({ path }) => ({ app_repo: new AppRepo(path) })
       }),
       new PromptOcProject({ server: "cuyo" }),
-      new CopyEnv()
+      new Spinner({
+        step: new CopyEnv(),
+        message: async ({ app_repo, project }) => {
+          const { name } = await app_repo.getInfo();
+          return `Copying envs for ${name} from ${project.name}`;
+        }
+      })
     ]).run(ctx);
   }
 };

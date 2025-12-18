@@ -3,10 +3,10 @@ import { Argv } from "yargs";
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
 import { ForEachStep } from "@workflow/steps/flow/ForEach";
-import { Input } from "@workflow/steps/flow/Input";
 import { CreateMr } from "@workflow/steps/mr/CreateMr";
 import { PromptSources } from "@workflow/steps/repos/PromptSources";
 import { RepoUpdate } from "@workflow/steps/repos/RepoUpdate";
+import { Input } from "@workflow/steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -49,15 +49,14 @@ export default {
         step: new Workflow([
           new RepoUpdate(),
           new CreateMr({
+            title: ({ target_branch, source_branch }) => `Nivelacion ${source_branch} - ${target_branch}`,
             temporary_branch: ({ source_branch, target_branch }) => `nivelacion/${source_branch}-${target_branch}`
           })
         ]),
         collectAs: "repos_skipped",
         concurrency: 5,
         onEnd: ({ repos_skipped }) => {
-          if (repos_skipped.length > 0) {
-            repos_skipped.forEach((d) => ctx.logger.warning(`Skipped: ${d}`));
-          }
+          if (repos_skipped.length > 0) repos_skipped.forEach((d) => ctx.logger.warning(`Skipped: ${d}`));
         }
       })
     ]).run(ctx);
