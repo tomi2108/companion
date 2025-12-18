@@ -2,6 +2,7 @@ import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
 import { PromptPaths } from "@steps/app/PromptPaths";
 import { RepoWeb } from "@steps/repos/RepoWeb";
+import { ForEach } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -10,11 +11,16 @@ export default {
   describe: "Open repository in web",
   handler: async () => {
     const ctx = ExecutionContext.get();
-    new Workflow([
+    await new Workflow([
       new PromptPaths({
-        transform: ({ path }) => ({ repo: new Repo(path) })
+        multiple: true,
+        transform: ({ paths }) => ({ repos: paths.map((p) => new Repo(p)) })
       }),
-      new RepoWeb({})
+      new ForEach({
+        items: (state: { repos: Repo[] }) => state.repos,
+        item: "repo",
+        step: new RepoWeb()
+      })
     ]).run(ctx);
   }
 };

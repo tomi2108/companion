@@ -1,35 +1,34 @@
-import { getApp } from "@files";
-import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
 import { promptChoice } from "@interface/prompts";
-import { Config } from "@lib/config";
-import log from "@lib/log/default";
-import { confirm, loading, search } from "@lib/ui";
-import { getCurrentPath } from "@lib/utils";
+import { ExecutionContext } from "@lib/ctx";
+import { confirm, loading } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import { PipelineStatus } from "@oc/pipelinerun";
-import { Project } from "@oc/project";
-import { findCIPipeline, waitForPipeline } from "@oc/utils";
+import { If } from "@workflow/steps/flow/If";
+import { Sleep } from "@workflow/steps/flow/Sleep";
+import { PromptBranch } from "@workflow/steps/git/PromptBranches";
+import { CreateMr } from "@workflow/steps/mr/CreateMr";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "create",
   aliases: [],
   describe: "Create and merge mr",
   handler: async () => {
-    const dir = new Dir(getCurrentPath());
-    const repo = new Repo(dir);
-    const branches = await repo.getBranches();
-    const activeBranch = await repo.getActiveBranch();
-    const targetBranches = branches.filter((b) => b !== activeBranch);
-    const targetBranch = await search({ choices: targetBranches, message: "Choose target branch" });
-    const default_reviewer = Config.get().gitlab.default_reviewer;
-    const add_reviewer = await confirm({ initial: false, message: `Add default reviewer? (${default_reviewer})` });
-    let merge = false;
-    let deploys = false;
-    let deploy_projects: Project[] = [];
-    if (!add_reviewer) merge = await confirm({ message: "Merge?" });
+    const ctx = ExecutionContext.get();
+    const repo = new Repo(ctx.cwd);
+    await new Workflow([
+      new PromptBranch(),
+      new If({
+        condition: () => confirm({ message: "Merge?" }),
+        then: new Workflow([
+          new CreateMr(),
+          new Sleep({ seconds: 60 }),
+          new MergeMr()
+        ])
+      })
+    ]).run(ctx, { repo, source_branch: await repo.getActiveBranch() });
 
     const { name } = await repo.getInfo();
     const { deploy_repo, app_repo } = await getApp(name);
