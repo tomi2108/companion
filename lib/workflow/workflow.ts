@@ -1,17 +1,20 @@
 import { ExecutionContext } from "@lib/ctx";
 
 import { ProgressController } from "./progress/types";
-import { WorkflowStep } from "./steps";
+import { WorkflowOptions, WorkflowStep } from "./steps";
 
-type WorkflowOptions = {
+type Reads = {};
+type Writes = {};
+type Options = {
   progressController?: ProgressController;
 };
 
-export class Workflow {
+export class Workflow extends WorkflowStep<Reads, Writes, Options> {
   private steps: WorkflowStep<any, any>[];
-  options: WorkflowOptions;
+  override options: WorkflowOptions<Options, Writes>;
 
-  constructor(steps: WorkflowStep<any, any>[], options?: WorkflowOptions) {
+  constructor(steps: WorkflowStep<any, any>[], options?: WorkflowOptions<Options, Writes>) {
+    super();
     this.steps = steps;
     this.options = options ?? {};
   }
@@ -25,19 +28,18 @@ export class Workflow {
 
     for (const step of this.steps) {
       try {
-        ctx.logger.debug("Running step", step.constructor.name);
         const output = await step.run(ctx, state, runtime);
-        ctx.logger.debug("Exited with", output);
         const transformed = step.options?.transform?.(output) ?? output;
         const newState = { ...state, ...transformed };
         state = newState;
-        ctx.logger.debug("New state", newState);
       } catch (err) {
         ctx.logger.error(err as string);
         throw err;
       }
     }
     runtime.progress?.close();
+    // TODO: maybe return {} if we dont want to share
+    // state between nested workflows
     return state;
   }
 }

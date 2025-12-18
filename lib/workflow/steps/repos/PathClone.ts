@@ -5,7 +5,7 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 import { RepoClone } from "./RepoClone";
-import { ForEachStep } from "../flow/ForEach";
+import { ForEach } from "../flow/ForEach";
 
 type Reads = { path: PathKey };
 type Writes = {};
@@ -35,7 +35,7 @@ export class PathClone extends WorkflowStep<Reads, Writes, Options> {
       const projects = await glab.getProjects(id);
       const repos = projects.map((p) => ({ id: p.id, dir }));
 
-      await new ForEachStep({
+      await new ForEach({
         concurrency: 10,
         item: "repo",
         items: () => repos,

@@ -2,7 +2,7 @@ import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { ForEach } from "@workflow/steps/flow/ForEach";
 import { CreateMr } from "@workflow/steps/mr/CreateMr";
 import { PromptSources } from "@workflow/steps/repos/PromptSources";
 import { RepoUpdate } from "@workflow/steps/repos/RepoUpdate";
@@ -43,7 +43,7 @@ export default {
         message: "Input target branch",
         write: "target_branch"
       }),
-      new ForEachStep({
+      new ForEach({
         item: "repo",
         items: (state: { repos: Repo[] }) => state.repos,
         step: new Workflow([

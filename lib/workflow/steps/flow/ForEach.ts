@@ -10,7 +10,7 @@ type Options<Item> = {
     suffix?: (i: Item) => string;
   };
 };
-export class ForEachStep<
+export class ForEach<
   Reads,
   Item,
   InnerReads,
@@ -45,7 +45,7 @@ export class ForEachStep<
     })();
 
     for (let i = 0; i < items.length; i += delta) {
-      const slice = items.slice(0, i + delta);
+      const slice = items.slice(i, i + delta);
       await Promise.all(slice.map(async (item) => {
         const output = await this.options.step.run(
           ctx,

@@ -1,10 +1,12 @@
 import { Argv } from "yargs";
 
-import { promptChoice } from "@interface/prompts";
+import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { confirm, input, progressBar } from "@lib/ui";
-import { filterFrontendDeployments } from "@oc/api";
-import { PromptSources } from "@workflow/steps/repos/PromptSources";
+import { confirm } from "@lib/ui";
+import { If } from "@steps/flow/If";
+import { PromptSources } from "@steps/repos/PromptSources";
+import { Input } from "@steps/ui/Input";
+import { ForEach } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -31,55 +33,58 @@ export default {
     backend?: boolean;
     dev?: boolean;
   }) => {
+    // TODO: add  loading
     const ctx = ExecutionContext.get();
     await new Workflow([
       new PromptSources({
         sources: [
           { enabled: Boolean(all || frontend), path: "frontend" },
           { enabled: Boolean(all || backend), path: "backend" }
-        ]
+        ],
+        transform: ({ dirs }) => ({ app_repos: dirs.map((dir) => new AppRepo(dir)) })
+      }),
+      new Input({ message: "Enter dependecy name", write: "dependency" }),
+      new Input({ message: "Enter version", write: "version" }),
+      new Input({ message: "Source branch", write: "source_branch" }),
+      new If({
+        condition: () => confirm({ message: "Merge?" }),
+        then: new ForEach({
+          item: "app_repo",
+          items: (state: { app_repos: AppRepo[] }) => state.app_repos,
+
+        })
       })
     ]).run(ctx);
 
-    const name = await input({ message: "Enter dependency name" });
-    const version = await input({ message: "Enter version" });
-    const sourceBranch = await input({ message: "Source branch" });
-    const merge = await confirm({ message: "Merge?" });
-
-    const bar = progressBar(toUpdate.length, 0, "Installing");
-
-    for (let i = 0; i < toUpdate.length; i += 3) {
-      const slice = toUpdate.slice(i, i + 3);
-      await Promise.all(
-        slice.map(async (d) => {
-          bar.setSufix(d.name);
-          const { app_repo } = await getApp(d.name);
-          if (!app_repo) return log.warning(`Could not find app repo for ${d.name}, skipping`);
-          await app_repo.stash(async () => {
-            await app_repo.switchBranchIfExists(sourceBranch);
-            await app_repo.pull(sourceBranch);
-            const new_branch_name = `bump/${name}-${version}`;
-            if ((await app_repo.getBranches()).some((b) => b.includes(new_branch_name))) return bar.increment(1);
-            await app_repo.createNewBranch(new_branch_name);
-            const repo_package = app_repo.getPackage();
-            const dependencies = dev
-              ? repo_package.devDependencies
-              : { ...repo_package.dependencies, ...repo_package.peerDependencies };
-            const current_version = dependencies?.[name];
-            if (current_version && current_version.includes(version)) return bar.increment(1);
-            await app_repo.install([{ name, version }], { dev });
-            await app_repo.build();
-            await app_repo.add(app_repo.package);
-            await app_repo.commit(`feat: bump ${name} to ${version}`);
-            if (merge) await app_repo.createAndMergeMr(sourceBranch);
-            else await app_repo.createMr(sourceBranch);
-            await app_repo.switchBranchIfExists(sourceBranch);
-            await app_repo.deleteBranch(new_branch_name);
-            bar.increment(1);
-          });
-        })
-      );
-    }
-    bar.stop();
+    // for (let i = 0; i < toUpdate.length; i += 4) {
+    //   const slice = toUpdate.slice(i, i + 3);
+    //   await Promise.all(
+    //     slice.map(async (d) => {
+    //       const { app_repo } = await getApp(d.name);
+    //       if (!app_repo) return log.warning(`Could not find app repo for ${d.name}, skipping`);
+    //       await app_repo.stash(async () => {
+    //         await app_repo.switchBranchIfExists(sourceBranch);
+    //         await app_repo.pull(sourceBranch);
+    //         const new_branch_name = `bump/${name}-${version}`;
+    //         if ((await app_repo.getBranches()).some((b) => b.includes(new_branch_name))) return bar.increment(1);
+    //         await app_repo.createNewBranch(new_branch_name);
+    //         const repo_package = app_repo.getPackage();
+    //         const dependencies = dev
+    //           ? repo_package.devDependencies
+    //           : { ...repo_package.dependencies, ...repo_package.peerDependencies };
+    //         const current_version = dependencies?.[name];
+    //         if (current_version && current_version.includes(version)) return bar.increment(1);
+    //         await app_repo.install([{ name, version }], { dev });
+    //         await app_repo.build();
+    //         await app_repo.add(app_repo.package);
+    //         await app_repo.commit(`feat: bump ${name} to ${version}`);
+    //         if (merge) await app_repo.createAndMergeMr(sourceBranch);
+    //         else await app_repo.createMr(sourceBranch);
+    //         await app_repo.switchBranchIfExists(sourceBranch);
+    //         await app_repo.deleteBranch(new_branch_name);
+    //       });
+    //     })
+    //   );
+    // }
   }
 };

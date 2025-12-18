@@ -15,6 +15,7 @@ import project from "@cli/project";
 import repos from "@cli/repos";
 import route from "@cli/route";
 import upgrade from "@cli/upgrade";
+import debug from "@cli/debug";
 
 import { checkVersion, loadExecutionContext } from "./middleware";
 
@@ -41,6 +42,7 @@ yargs
   .command(repos)
   .command(route)
   .command(upgrade)
+  .command(debug)
   .demandCommand(1, "Please specify a command")
   .strict()
   .help()

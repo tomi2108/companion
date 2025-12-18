@@ -8,7 +8,7 @@ import { PromptDeploymentEnvs } from "@steps/app/PromptDeploymentEnvs";
 import { PromptNamespaceDeploy } from "@steps/app/PromptNamespaceDeploy";
 import { PromptPaths } from "@steps/app/PromptPaths";
 import { WaitPipeline } from "@steps/oc/WaitPipeline";
-import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { ForEach } from "@workflow/steps/flow/ForEach";
 import { FindProject } from "@workflow/steps/oc/FindProject";
 import { Workflow } from "@workflow/workflow";
 
@@ -26,7 +26,7 @@ export default {
       new GetAppRepo(),
       new PromptNamespaceDeploy(),
       new PromptAppVersion(),
-      new ForEachStep({
+      new ForEach({
         step: new PromptDeploymentEnvs(),
         items: (state: { deploy_yamls: DeployYaml[] }) => state.deploy_yamls,
         collectAs: "deploy_yamls",

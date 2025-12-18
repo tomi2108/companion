@@ -4,7 +4,7 @@ import { Deployment } from "@oc/deployment";
 import { GetDeployments } from "@steps/oc/GetDeployments";
 import { PromptOcProject } from "@steps/oc/PromptOcProject";
 import { GenerateFrontendRoutes } from "@steps/routes/GenerateFrontendRoutes";
-import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { ForEach } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -20,7 +20,7 @@ export default {
         transform: ({ deployments }) => ({ deployments: deployments.filter(filterFrontendDeployments) })
       }),
       // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/66]: backend routes
-      new ForEachStep({
+      new ForEach({
         item: "deployment",
         items: (state: { deployments: Deployment[] }) => state.deployments,
         step: new GenerateFrontendRoutes()

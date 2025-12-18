@@ -8,7 +8,6 @@ export class DebugLogger implements Logger {
 
   constructor() {
     this.log_file = createLogFile(new Date().toISOString());
-    console.log(this.log_file);
   }
 
   success(...messages: string[]) {

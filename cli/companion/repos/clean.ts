@@ -5,7 +5,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { confirm } from "@lib/ui";
 import { PromptSources } from "@steps/repos/PromptSources";
 import { RepoClean } from "@steps/repos/RepoClean";
-import { ForEachStep } from "@workflow/steps/flow/ForEach";
+import { ForEach } from "@workflow/steps/flow/ForEach";
 import { If } from "@workflow/steps/flow/If";
 import { Workflow } from "@workflow/workflow";
 
@@ -54,7 +54,7 @@ export default {
       }),
       new If({
         condition: () => confirm({ message: "Are you sure you want to clean repositories?" }),
-        then: new ForEachStep({
+        then: new ForEach({
           item: "repo",
           items: (state: { repos: Repo[] }) => state.repos,
           // TODO: add progress bar
