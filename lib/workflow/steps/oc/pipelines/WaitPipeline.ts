@@ -5,7 +5,7 @@ import { sleep } from "@lib/utils";
 import { PIPELINE_STATUS, PipelineStatus } from "@oc/pipelinerun";
 import { Project } from "@oc/project";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "../..";
 
 type Reads = { project: Project; app_repo: AppRepo };
 type Writes = { pipeline_status: PipelineStatus };

@@ -4,7 +4,7 @@ import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { Project } from "@oc/project";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "../..";
 
 type Writes = { project: Project };
 type Options<Reads> = {

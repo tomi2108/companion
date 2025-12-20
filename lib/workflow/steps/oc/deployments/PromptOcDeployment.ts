@@ -3,12 +3,12 @@ import { ExecutionContext } from "@lib/ctx";
 import { Deployment } from "@oc/deployment";
 import { Project } from "@oc/project";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "../..";
 
 type Writes = { deployment: Deployment };
 type Reads = { project: Project };
 type Options<Reads> = {
-  filter?: (project: Deployment, reads: Reads) => boolean;
+  filter?: (deployment: Deployment, reads: Reads) => boolean;
 };
 
 export class PromptOcDeployment<R extends Reads = Reads> extends WorkflowStep<R, Writes, Options<R>> {

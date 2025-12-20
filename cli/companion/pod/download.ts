@@ -1,11 +1,14 @@
 import { Argv } from "yargs";
 
-import { JsonFormatter } from "@files/formatters/json_formatter";
-import { createLogFile } from "@files/utils";
-import { promptChoice } from "@interface/prompts";
-import log from "@lib/log/default";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
+import { ExecutionContext } from "@lib/ctx";
+import { Pod } from "@oc/pod";
+import { ForEach } from "@workflow/steps/flow/ForEach";
+import { CreateLogFile } from "@workflow/steps/log/CreateLogFile";
+import { DownloadPodLogs } from "@workflow/steps/oc/pods/DownloadPodLogs";
+import { GetPods } from "@workflow/steps/oc/pods/GetPods";
+import { PromptOcPod } from "@workflow/steps/oc/pods/PromptOcPod";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "download-logs",
@@ -16,28 +19,21 @@ export default {
     .alias("raw", ["r"])
     .describe("raw", "Whether to download raw logs, by default logs are formatted as JSON, and every line which is not valid JSON is omitted from logs"),
   handler: async ({ raw }: { raw?: boolean }) => {
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
-    const project = await promptChoice(projects);
-    const pods = await project.getPods();
-    const pod = await promptChoice(pods);
-
-    const formatter = new JsonFormatter();
-    const logs = await pod.getLogs();
-    const formattedLogs = raw
-      ? logs
-      : formatter.toString(
-        logs.split("\n").map((l) =>
-          formatter.tryFromString(l)
-        ).filter(Boolean)
-      );
-
-    for (const p of pods.filter((p) => p.container === pod.container)) {
-      const date = new Date().toISOString();
-      const file_name = `[${date}]_${p.name}`;
-      const log_file = createLogFile(file_name);
-      log_file.write(formattedLogs);
-      log.success(`Downloaded at ${log_file}`);
-    }
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new PromptOcProject({
+        server: "cuyo"
+      }),
+      new GetPods(),
+      new PromptOcPod(),
+      new ForEach({
+        items: (state: { pods: Pod[]; pod: Pod }) => state.pods.filter((p) => p.container === state.pod.container),
+        item: "pod",
+        step: new Workflow([
+          new DownloadPodLogs({ raw }),
+          new CreateLogFile()
+        ])
+      })
+    ]).run(ctx);
   }
 };

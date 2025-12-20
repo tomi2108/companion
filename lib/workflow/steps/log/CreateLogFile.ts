@@ -4,7 +4,7 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
-type Reads = { log_file: { name: string; dir: Dir; log: string } };
+type Reads = { log_file: { name: string; dir?: Dir; log: string } };
 type Writes = {};
 type Options = {};
 

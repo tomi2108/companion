@@ -1,8 +1,8 @@
 import { ExecutionContext } from "@lib/ctx";
 import { filterFrontendDeployments } from "@oc/api";
 import { Deployment } from "@oc/deployment";
-import { GetDeployments } from "@steps/oc/GetDeployments";
-import { PromptOcProject } from "@steps/oc/PromptOcProject";
+import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { GenerateFrontendRoutes } from "@steps/routes/GenerateFrontendRoutes";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";

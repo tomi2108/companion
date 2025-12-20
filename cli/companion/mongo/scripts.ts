@@ -2,7 +2,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { CreateLogFile } from "@steps/log/CreateLogFile";
 import { PromptMongoFile } from "@steps/mongo/PromptMongoFile";
 import { RunMongoFile } from "@steps/mongo/RunMongoFile";
-import { PromptOcProject } from "@steps/oc/PromptOcProject";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

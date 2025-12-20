@@ -3,7 +3,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { PipelineRun } from "@oc/pipelinerun";
 import { Project } from "@oc/project";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "../..";
 
 type Writes = { pipeline: PipelineRun };
 type Reads = { project: Project };

@@ -5,8 +5,8 @@ import { DeployApp } from "@workflow/steps/app/DeployApp";
 import { GetAppRepo } from "@workflow/steps/app/GetAppRepo";
 import { GetDeployRepo } from "@workflow/steps/app/GetDeployRepo";
 import { ForEach } from "@workflow/steps/flow/ForEach";
-import { GetDeployments } from "@workflow/steps/oc/GetDeployments";
-import { PromptOcProject } from "@workflow/steps/oc/PromptOcProject";
+import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

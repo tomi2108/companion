@@ -2,7 +2,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { Deployment } from "@oc/deployment";
 import { Project } from "@oc/project";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "../..";
 
 type Writes = { deployments: Deployment[] };
 type Reads = { project: Project };
