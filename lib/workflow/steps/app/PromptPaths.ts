@@ -10,7 +10,7 @@ type Reads = {};
 type Writes<Multiple extends boolean> = Multiple extends true ? { paths: Dir[] } : { path: Dir };
 type Options<Multiple extends boolean> = { paths?: PathKey[]; multiple?: Multiple };
 
-export class PromptPaths<Multiple extends boolean> extends WorkflowStep<Reads, Writes<Multiple>, Options<Multiple>> {
+export class PromptPaths<Multiple extends boolean = false> extends WorkflowStep<Reads, Writes<Multiple>, Options<Multiple>> {
 
   constructor(override options?: WorkflowOptions<Options<Multiple>, Writes<Multiple>>) {
     super(options);
@@ -24,9 +24,9 @@ export class PromptPaths<Multiple extends boolean> extends WorkflowStep<Reads, W
 
     const path = await promptChoice(dirs, {
       message: "Choose path",
-      multiple: this.options?.multiple ?? false
+      multiple: Boolean(this.options?.multiple)
     });
-    if (this.options?.multiple) return { paths: path } as { paths: Dir[] };
-    return { path } as { path: Dir };
+    if (this.options?.multiple) return { paths: path };
+    return { path };
   }
 }
