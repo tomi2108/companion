@@ -3,10 +3,10 @@ import { Argv } from "yargs";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { confirm } from "@lib/ui";
-import { If } from "@steps/flow/If";
 import { PromptSources } from "@steps/repos/PromptSources";
 import { Input } from "@steps/ui/Input";
 import { ForEach } from "@workflow/steps/flow/ForEach";
+import { Write } from "@workflow/steps/flow/Write";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -46,13 +46,15 @@ export default {
       new Input({ message: "Enter dependecy name", write: "dependency" }),
       new Input({ message: "Enter version", write: "version" }),
       new Input({ message: "Source branch", write: "source_branch" }),
-      new If({
-        condition: () => confirm({ message: "Merge?" }),
-        then: new ForEach({
-          item: "app_repo",
-          items: (state: { app_repos: AppRepo[] }) => state.app_repos,
-
-        })
+      new Write({
+        write: () => ({ merge: confirm({ message: "Merge?" }) })
+      }),
+      new ForEach({
+        concurrency: 4,
+        item: "app_repo",
+        items: (state: { app_repos: AppRepo[] }) => state.app_repos,
+        // TODO: implement
+        step: new RepoInstall({ dev })
       })
     ]).run(ctx);
 
