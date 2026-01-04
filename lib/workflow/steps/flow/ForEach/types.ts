@@ -1,6 +1,4 @@
-import { MultiBar } from "@lib/ui";
-
-import { WorkflowStep } from "..";
+import { WorkflowStep } from "../..";
 
 export type ForEachWrites<
   InnerWrites,
@@ -31,8 +29,3 @@ export type ForEachOptions<
       step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
       collectAs: string;
     });
-
-export type ForEachReads = {
-  multibar?: MultiBar;
-};
-
