@@ -14,7 +14,7 @@ export class SonarQube {
     if (!server) throw new ConfigError("sonar.server");
     if (!token) throw new ConfigError("sonar.token");
 
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/54]: try to stick to one
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/54]: try to stick to one
     this.client = SonarQubeClient.withBasicAuth(server, token);
     this.sonar = axios.create({
       baseURL: server,

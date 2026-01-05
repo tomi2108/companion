@@ -24,7 +24,7 @@ export class JiraConfig implements IntegrationConfig, Schema {
   board_id?: Schema["board_id"];
   username: Schema["username"] = "";
   token: Schema["token"] = "";
-  server = process.env.COMPANION_JIRA_SERVER ?? "";
+  server = process.env.RISHI_JIRA_SERVER ?? "";
 
   validate(config: unknown) {
     return schema.parse(config);

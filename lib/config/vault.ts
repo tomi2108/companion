@@ -12,7 +12,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 export class VaultConfig implements IntegrationConfig, Schema {
-  server = process.env.COMPANION_VAULT_SERVER ?? "";
+  server = process.env.RISHI_VAULT_SERVER ?? "";
   project?: Schema["project"];
   token = "";
 

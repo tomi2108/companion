@@ -29,9 +29,14 @@ const configs_dir = path.resolve(__dirname, "../../../configs");
 export const config_file = new JsonFile(getConfigPath());
 
 export function getConfigPath() {
-  if (process.env.COMPANION_CONFIG) return process.env.COMPANION_CONFIG;
-  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "companion", "config.json");
-  else if (process.platform === "darwin" || process.platform === "linux") return path.join(homeDir, ".config", "companion", "config.json");
+  if (process.env.RISHI_CONFIG) return process.env.RISHI_CONFIG;
+  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "rishi", "config.json");
+  else if (process.platform === "darwin" || process.platform === "linux") {
+    const rishi = path.join(homeDir, ".config", "rishi", "config.json");
+    const companion = path.join(homeDir, ".config", "companion", "config.json");
+    if (fs.existsSync(rishi)) return rishi;
+    return companion;
+  }
   throw new Error("Unknown platform");
 }
 
@@ -94,7 +99,7 @@ export class Config {
 
   private async newConfigPrompt() {
     // const log = ExecutionContext.get().logger;
-    // log.warning("Configuration file config.json for Companion was not found");
+    // log.warning("Configuration file config.json for rishi was not found");
     const setup = await confirm({ message: "Would you like to setup a config interactively?" });
     if (setup) await this.setup();
     process.exit(0);

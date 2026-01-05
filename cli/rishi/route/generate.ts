@@ -19,7 +19,7 @@ export default {
       new GetDeployments({
         transform: ({ deployments }) => ({ deployments: deployments.filter(filterFrontendDeployments) })
       }),
-      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/66]: backend routes
+      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/66]: backend routes
       new ForEach({
         item: "deployment",
         items: (state: { deployments: Deployment[] }) => state.deployments,

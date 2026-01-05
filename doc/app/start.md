@@ -1,14 +1,14 @@
-# companion app start
+# rishi app start
 
 Start an app and its sub-apps locally.
 
 ## Usage
 
 ```bash
-companion app start
+rishi app start
 
 # With raw logs
-companion app start --raw
+rishi app start --raw
 ```
 
 ## Arguments

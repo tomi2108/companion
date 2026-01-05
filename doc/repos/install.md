@@ -1,4 +1,4 @@
-# companion repos install
+# rishi repos install
 
 Installs or updates dependencies in selected repositories.
 It supports targeting all repositories, frontend repositories, backend repositories,
@@ -9,16 +9,16 @@ The command handles the installation process, including creating a new branch, c
 
 ```bash
 # Install a dependency in all repositories:
-companion repos install --all
+rishi repos install --all
 
 # Install a dependency only in frontend repositories:
-companion repos install --frontend
+rishi repos install --frontend
 
 # Install as a dev dependency in backend repositories:
-companion repos install --backend --dev
+rishi repos install --backend --dev
 
 # Install a dependency in a single repository selected interactively:
-companion repos install
+rishi repos install
 ```
 
 ## Arguments

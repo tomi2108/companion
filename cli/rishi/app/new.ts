@@ -250,7 +250,7 @@ export default {
         ];
 
         if (c === DaoConnections.mongo) return [
-          // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/49]: add tests for bau connection to template
+          // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/49]: add tests for bau connection to template
           // { from: path.join(tests_configuration, "mongoose.tests.ts"), to: path.join(configuration, "db.tests.ts") },
           { from: path.join(configuration, "bau_db.ts"), to: path.join(configuration, "db.ts") }
         ];
@@ -389,7 +389,7 @@ export default {
       if (status === PipelineStatus.failed) log.error(`Argo pipeline failed for project ${project.name}`);
     }
 
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/59]: clone only deploy repo created
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/59]: clone only deploy repo created
     await glab.cloneGroupOrProject(deploy_id, deploy_path);
     const { deploy_repo } = await getApp(name);
     if (!deploy_repo) return log.error("Could not find deploy repo");
@@ -401,7 +401,7 @@ export default {
     if (cd_status === PipelineStatus.failed) return log.error("CI pipeline failed");
 
     if (type === "fcd") {
-      // TODO [https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/73]: expose in 3scale
+      // TODO [https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/73]: expose in 3scale
     }
 
     log.success(`New app ${name} created successfully`);

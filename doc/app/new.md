@@ -1,11 +1,11 @@
-# companion app new
+# rishi app new
 
 Create a new application from a predefined template.
 
 ## Usage
 
 ```bash
-companion app new
+rishi app new
 ```
 
 ## Arguments

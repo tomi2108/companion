@@ -20,7 +20,7 @@ import debug from "@cli/debug";
 import { checkVersion, loadExecutionContext } from "./middleware";
 
 yargs
-  .scriptName("companion")
+  .scriptName("rishi")
   .usage("$0 <command> [subcommand]")
   .boolean("debug")
   .describe("debug", "Run on debug mode")

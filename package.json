@@ -1,7 +1,7 @@
 {
-  "name": "companion",
-  "version": "1.1.0",
-  "main": "./dist/cli/companion.js",
+  "name": "rishi",
+  "version": "2.0.0",
+  "main": "./dist/cli/rishi.js",
   "scripts": {
     "lint": "eslint .",
     "build": "tsc --project ./tsconfig.json ; tsc-alias -p tsconfig.json",
@@ -16,6 +16,7 @@
   "license": "ISC",
   "type": "commonjs",
   "bin": {
+    "rishi": "./dist/cli/app.js",
     "companion": "./dist/cli/app.js"
   },
   "engines": {

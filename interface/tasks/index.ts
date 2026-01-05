@@ -20,7 +20,7 @@ export const getTasksFromFile = (project: Dir, fileInDir: TextFile) => {
       const col = match.index;
       const title = match[1]?.trim() ?? "";
       const file_location = { file: fileInDir, row: row + 1, col: col + 1 };
-      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/36]: Task.description from file
+      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/36]: Task.description from file
       results.push(new Task({ title, project, file_location }));
     }
   }

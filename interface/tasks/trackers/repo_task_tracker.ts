@@ -76,14 +76,14 @@ ${task.description} `;
   //   task.save(task_path);
   // }
 
-  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/37]: move to TaskRepo
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/37]: move to TaskRepo
   // private static parseFileLocation(raw: string): FileLocation {
   //   const [file_path, row, col] = raw.split(":");
   //   if (!file_path) throw new Error(`Could not parse file location ${raw} file_path missing`);
   //   return { file_path, row: Number(row), col: Number(col) };
   // }
 
-  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/63]: move to TaskRepo
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/63]: move to TaskRepo
   // static fromTaskFile(file: string) {
   //   const raw = fs.readFileSync(file, "utf8");
   //

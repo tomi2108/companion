@@ -13,7 +13,7 @@ export class Board {
   }
 
   getEpics() {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/companion/-/issues/46]: Should only fetch Epic issues
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/46]: Should only fetch Epic issues
     // maybe we need labels here ? but in movistar-empresas
     // parent issues ("Features") do not have labels, at least no the ones listed in theConfig.get()
     return this.getIssues({ type: "Feature" });

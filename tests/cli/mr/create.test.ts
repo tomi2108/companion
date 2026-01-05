@@ -1,4 +1,4 @@
-// import create from "../../../src/cli/companion/mr/create";
+// import create from "../../../src/cli/rishi/mr/create";
 import { it } from "vitest";
 it("", () => { });
 // import * as ui from "../../../src/lib/ui";

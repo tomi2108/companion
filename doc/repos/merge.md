@@ -1,4 +1,4 @@
-# companion repos merge
+# rishi repos merge
 
 Creates a merge request to merge a source branch into a target branch for selected repositories
 using a temporary in between branch.
@@ -7,16 +7,16 @@ using a temporary in between branch.
 
 ```bash
 # Merge branches for all repositories
-companion repos merge --all
+rishi repos merge --all
 
 # Merge branches for frontend repositories only
-companion repos merge --frontend
+rishi repos merge --frontend
 
 # Merge branches for backend repositories only
-companion repos merge --backend
+rishi repos merge --backend
 
 # Merge branches for a single repository selected interactively
-companion repos merge 
+rishi repos merge 
 ```
 
 ## Arguments

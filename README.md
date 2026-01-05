@@ -1,46 +1,70 @@
-# Companion
+# 🧘‍♂️ Rishi
 
-**Companion** es una herramienta de asistencia para desarrolladores diseñada para:
+**Rishi** es una herramienta CLI de asistencia para desarrolladores y equipos técnicos.
 
-- Simplificar y acelerar la configuración de entornos locales.
-- Automatizar tareas diarias comunes relacionadas con OpenShift, GitLab y Jira.
-- Proporcionar configuraciones predefinidas según el equipo o proyecto.
-- Mejorar la productividad del equipo al unificar flujos de trabajo.
+En la tradición védica, un *rishi* es un sabio que observa, entiende patrones complejos
+y transmite conocimiento práctico para mantener el orden del mundo.
 
-Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,  
-**Companion** te acompaña en todo momento para que puedas concentrarte en lo que más importa: ¡codificar!
+Este **Rishi** hace algo parecido, pero con:
+OpenShift, GitLab, Jira, Vault… y tu entorno local.
+
+Rishi no reemplaza tus herramientas.
+Las entiende, las conecta y te ahorra repetir los mismos rituales todos los días.
+
+---
+
+## ✨ ¿Para qué sirve Rishi?
+
+* Simplificar y acelerar la configuración de entornos locales.
+* Automatizar tareas repetitivas relacionadas con OpenShift, GitLab y Jira.
+* Centralizar configuraciones según equipo o proyecto.
+* Unificar flujos de trabajo sin perder flexibilidad.
+* Reducir el “conocimiento tribal” necesario para operar un proyecto.
+
+Rishi está pensado tanto para:
+
+* incorporar nuevos miembros sin fricción
+* como para desarrolladores experimentados que ya saben *demasiado*.
 
 ---
 
 ## ✨ Funcionalidades
 
-- 🔧 **Inicialización de Entornos**  
-  Configura automáticamente entornos locales con configuraciones preestablecidas según el equipo o proyecto.
+### 🔧 Inicialización de Entornos
 
-- 🧠 **Configuraciones por Equipo**  
-  Carga y cambia configuraciones basadas en tu equipo o proyecto, asegurando entornos coherentes y comportamientos personalizados.
+Configura automáticamente entornos locales usando configuraciones predefinidas según el equipo o proyecto.
 
-- 🚀 **Integración con OpenShift**  
-  Interactúa fácilmente con clústeres de OpenShift para operaciones comunes como desplegar aplicaciones, ver logs, gestionar pods y más.
+### 🧠 Configuraciones por Equipo
 
-- 🔁 **Utilidades para GitLab**  
-  Simplifica operaciones cotidianas de GitLab como gestionar *merge requests*, clonar repositorios, revisar pipelines y asignar revisores.
+Carga y cambia configuraciones basadas en tu equipo, manteniendo coherencia sin sacrificar personalización.
 
-- 📋 **Integración con Jira**  
-  Crea, actualiza y gestiona tickets de Jira directamente desde la terminal. Automatiza transiciones de tickets según la actividad en tu rama.
+### 🚀 Integración con OpenShift
 
-- 📈 **Integración con Dynatrace**  
-  Interfaz directa con Dynatrace para monitorear el rendimiento de tus aplicaciones y facilitar el diagnóstico
+Interactúa con clústeres de OpenShift para tareas comunes como deploys, logs, pods, secretos y debugging.
 
-- 🛡️ **Integración con Vault**  
-  Conexión a Vault para manejar secretos de forma segura y centralizada
+### 🔁 Utilidades para GitLab
 
-- 🗄️ **Utilidades para MongoDB**  
-  Acceso rápido a operaciones básicas sobre bases de datos MongoDB
+Automatiza flujos diarios de GitLab: repositorios, ramas, merge requests, pipelines y revisores.
+
+### 📋 Integración con Jira
+
+Gestiona tickets directamente desde la terminal y reduce el cambio de contexto.
+
+### 📈 Integración con Dynatrace
+
+Consulta métricas y estado de aplicaciones para diagnosticar problemas sin salir del flujo.
+
+### 🛡️ Integración con Vault
+
+Accede y gestiona secretos de forma segura y centralizada.
+
+### 🗄️ Utilidades para MongoDB
+
+Acceso rápido a operaciones comunes sobre bases de datos MongoDB.
 
 ---
 
-## ✅ Checklist funcionalidades de Companion
+## ✅ Checklist funcionalidaderishi 
 
 ### 🔧 Inicialización de Entornos
 - [x] Generación automática de estructura de carpetas para el proyecto
@@ -49,7 +73,7 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 ### 🧠 Configuraciones por Equipo/Proyecto
 - [x] Carga condicional de configuración basada en clave `"team"`
 - [x] Fallback a configuraciones por defecto si no se encuentra personalización
-- [x] Comando interactivo `companion setup` para facilitar configuración 
+- [x] Comando interactivo `rishi setup` para facilitar configuración 
 - [x] Validación automática de esquemas de configuración.
 
 ### 🚀 Integración con OpenShift
@@ -96,8 +120,42 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 ### 🛠 Otras Utilidades
 - [ ] Generación de documentación interna 
 - [ ] Notificaciones locales o vía Slack en eventos clave
-- [x] Comando `companion upgrade` para autoactualización de la herramienta
-- [x] Comando `companion open` para abrir un repositorio en el editor 
+- [x] Comando `rishi upgrade` para autoactualización de la herramienta
+- [x] Comando `rishi open` para abrir un repositorio en el editor 
+
+---
+
+## 🧭 Filosofía del proyecto
+
+Rishi es una **herramienta interna**, diseñada para servir a equipos reales, con flujos reales y restricciones reales.
+
+No busca ser genérica ni cubrir todos los casos posibles. Busca ser **útil**, **predecible** y **opinionada** cuando hace falta.
+
+La filosofía de Rishi se basa en algunos principios simples:
+
+* 📐 **Convenciones claras sobre configuraciones implícitas**
+  Es mejor una convención explícita y compartida que infinitas opciones mal documentadas.
+
+* 🧠 **Conocimiento codificado**
+  Decisiones, rituales y buenas prácticas del equipo viven en el código, no solo en la memoria de unas pocas personas.
+
+* 🔁 **Menos fricción, menos contexto**
+  Si una tarea es repetitiva, Rishi debería encargarse de ella.
+
+* 🛠️ **Automatizar lo aburrido, no lo importante**
+  Rishi no decide por el equipo: ejecuta lo que el equipo ya decidió.
+
+Como todo buen rishi, la herramienta observa, aprende y transmite.
+
+Aunque Rishi es **opinionada por diseño**, un buen rishi mantiene siempre una mente abierta.
+
+Por eso, la herramienta está construida para ser **fácilmente extensible** y adaptable a cambios en el ecosistema:
+
+* Integraciones alternativas
+* Nuevas plataformas, servicios o flujos que el equipo adopte con el tiempo.
+
+Rishi no asume que las herramientas actuales serán eternas.
+Asume que el cambio es parte del camino, y se prepara para acompañarlo.
 
 ---
 
@@ -109,90 +167,84 @@ Ya sea para incorporar nuevos miembros o para optimizar la rutina de desarrollo,
 
 ---
 
-## 🤝 Contribuciones
+## 🔧 Sistema de Configuración (en capas)
 
-¡Tu colaboración es más que bienvenida!  
-Companion es un proyecto abierto que busca crecer con el aporte de la comunidad.  
-Si tienes ideas para nuevas funcionalidades, mejoras en la experiencia de uso,  
-o simplemente notaste algo que podría hacerse mejor, no dudes en participar.
+Rishi utiliza un sistema de configuración jerárquico que equilibra
+flexibilidad individual con coherencia de equipo.
 
-Puedes contribuir de las siguientes maneras:
+El orden de prioridad es:
 
-- 💡 Sugerir nuevas funcionalidades
-- 🐛 Reportar errores
-- 🛠️ Enviar mejoras de código o documentación
-- ✨ Proponer integraciones adicionales
+1. **Configuración personal (`config.json`)**
+   Tiene prioridad absoluta.
 
----
+2. **Configuración del equipo**
+   Definida por la clave `"team"` en tu configuración personal.
 
-## 🔧 Explicación del Sistema de Configuración
+3. **Valores predeterminados del sistema**
+   Opciones sensatas cuando nada más está definido.
 
-La herramienta *companion* utiliza un sistema de configuración en **capas** que te ofrece flexibilidad sin perder configuraciones predeterminadas útiles. Los valores de configuración se cargan en el siguiente orden de prioridad:
+Este enfoque evita duplicación, reduce errores y mantiene consistencia.
+Un buen rishi no repite conocimiento innecesariamente.
 
-1. **Tu archivo personal `config.json`** – Este archivo tiene la prioridad más alta. Cualquier valor definido aquí **sobrescribirá todos los demás**.
-2. **Configuración del equipo** – Si tu `config.json` incluye una clave `"team"` (por ejemplo: `"team": "frontend"`), la herramienta cargará la configuración compartida correspondiente al equipo. Cualquier valor **no definido** en tu configuración personal se tomará del archivo del equipo.
-3. **Valores predeterminados del sistema** – Si una opción no está definida ni en tu configuración personal ni en la del equipo, se aplicarán **valores predeterminados sensatos**.
-
-Este sistema asegura un equilibrio entre personalización individual y coherencia dentro del equipo.
-
-### 🛠 Cómo Configurar tu Archivo
-
-Para simplificar el proceso, la herramienta ofrece un comando interactivo:
+### 🛠 Configuración asistida
 
 ```bash
-companion setup 
+rishi setup
 ```
 
 ---
 
-## 🛠️ Herramientas y Documentación
+## 🛠️ Herramientas y APIs utilizadas
 
-Companion utiliza y extiende funcionalidades de herramientas oficiales y de la comunidad.  
-Aquí tienes enlaces útiles para conocer más sobre ellas:
+Rishi se apoya en APIs oficiales y bien documentadas:
 
 ### ☁️ OpenShift
 
-- 🌐 **API REST de OpenShift (Kubernetes Core)**  
-  Permite interacción directa con el clúster (pods, deployments, namespaces, etc.).  
-  [📚 Referencia API](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18#API%20Reference)
-
----
+* API REST de Kubernetes / OpenShift
+  [📚 Referencia API](https://docs.redhat.com/en/documentation/openshift_container_platform)
 
 ### 🧪 GitLab
 
-- 🌐 **API REST de GitLab**  
-  Acceso completo a proyectos, repos, issues, pipelines, etc.  
+* API REST de GitLab
   [📚 Referencia API](https://docs.gitlab.com/api/rest/)
-
----
 
 ### 📋 Jira
 
-- 🌐 **API REST de Jira (Cloud)**  
-  Permite crear, actualizar y buscar tickets, usuarios, sprints, etc.  
-  [📚 Referencia API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)
+* API REST de Jira Cloud
+  [📚 Referencia API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
+
+### 🛡️ Vault
+
+* API REST de HashiCorp Vault
+ [📚 Referencia API](https://developer.hashicorp.com/vault/api-docs)
 
 ---
 
-### 🛡️ Vault (HashiCorp)
+## 🤝 Contribuciones
 
-- 🌐 **API REST de Vault**  
-  Permite leer, escribir y gestionar secretos de forma programática.  
-  [📚 Referencia API](https://developer.hashicorp.com/vault/api-docs)
+Rishi es un proyecto abierto y evoluciona con la experiencia del equipo.
+
+Puedes contribuir:
+
+* 💡 proponiendo nuevas funcionalidades
+* 🐛 reportando bugs
+* 🛠️ enviando mejoras de código o documentación
+* ✨ sugiriendo nuevas integraciones
 
 ---
 
-## 📬 Comentarios y Soporte
+## 📬 Feedback y soporte
 
-¿Tienes una sugerencia o encontraste un problema?
+Si algo no funciona, o si Rishi podría ser más sabio:
 
-1. 📂 Visita la pestaña [Issues](https://github.com/tomi2108/companion/issues)
-2. 📝 Abre un nuevo *issue* explicando claramente el contexto y cómo reproducirlo si es un error
-3. ✅ Etiquétalo como `bug`, `feature request`, o `question` según corresponda
+1. Ve a la sección **Issues**
+2. Abre un issue con contexto claro
+3. Etiquétalo como `bug`, `feature` o `question`
 
-También puedes darle seguimiento a problemas ya reportados y votar por aquellos que consideres prioritarios.
+El conocimiento se comparte.
+La fricción se elimina.
 
-Tu opinión es clave para que Companion siga mejorando y adaptándose a las necesidades reales de los desarrolladores.
+---
 
-¡Gracias por ser parte del proyecto! 🙌
-
+🧘 **Rishi**
+*Automatizando rituales técnicos desde tiempos inmemoriales.*

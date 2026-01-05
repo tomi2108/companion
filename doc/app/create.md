@@ -1,11 +1,11 @@
-# companion app create
+# rishi app create
 
 Create GitLab issues for app deployment in ArgoCD.
 
 ## Usage
 
 ```bash
-companion app create
+rishi app create
 ```
 
 ## Arguments
