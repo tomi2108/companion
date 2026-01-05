@@ -22,7 +22,7 @@ export class PromptPaths<Multiple extends boolean = false> extends WorkflowStep<
     const dirs: Dir[] = (this.options?.paths ?? all_paths)
       .flatMap((p) => getPaths(p));
 
-    const path = await promptChoice(dirs, {
+    const path = await promptChoice(ctx.ui, dirs, {
       message: "Choose path",
       multiple: Boolean(this.options?.multiple)
     });

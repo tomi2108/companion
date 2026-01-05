@@ -9,6 +9,7 @@ import { If } from "@workflow/steps/flow/If";
 import { Sleep } from "@workflow/steps/flow/Sleep";
 import { PromptBranch } from "@workflow/steps/git/PromptBranches";
 import { CreateMr } from "@workflow/steps/mr/CreateMr";
+import { MergeMr } from "@workflow/steps/mr/MergeMr";
 import { Workflow } from "@workflow/workflow";
 
 export default {

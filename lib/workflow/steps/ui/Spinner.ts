@@ -4,7 +4,7 @@ import { loading } from "@lib/ui";
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 
 type Options<Reads, Writes> = {
-  message: (reads: Reads) => string | Promise<string>;
+  message: string | ((reads: Reads) => string | Promise<string>);
   step: WorkflowStep<Reads, Writes>;
 };
 
@@ -15,7 +15,11 @@ export class Spinner<Reads, Writes> extends WorkflowStep<Reads, Writes> {
   }
 
   async run(ctx: ExecutionContext, reads: Reads, runtime: WorkflowRuntime) {
-    const spinner = loading(await this.options.message(reads));
+    const spinner = loading(
+      typeof this.options.message === "string"
+        ? this.options.message
+        : await this.options.message(reads)
+    );
     try {
       const output = await this.options.step.run(ctx, reads, runtime);
       spinner.succeed();

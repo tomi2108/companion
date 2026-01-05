@@ -1,6 +1,7 @@
 import { ExecutionContext } from "@lib/ctx";
 import { MergeMr } from "@workflow/steps/mr/MergeMr";
 import { PromptMr } from "@workflow/steps/mr/PromptMr";
+import { Spinner } from "@workflow/steps/ui/Spinner";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -11,7 +12,10 @@ export default {
     const ctx = ExecutionContext.get();
     await new Workflow([
       new PromptMr(),
-      new MergeMr()
+      new Spinner({
+        message: "Merging merge request",
+        step: new MergeMr()
+      })
     ]).run(ctx);
     // TODO: Once waiting for pipelines works
     //

@@ -5,11 +5,14 @@ import { Config } from "@lib/config";
 import { Logger } from "@lib/log";
 import { DebugLogger } from "@lib/log/debug";
 import { DefaultLogger } from "@lib/log/default";
+import { UI } from "@lib/ui";
+import { DefaultUI } from "@lib/ui/default";
 
 export class ExecutionContext {
   static ctx: ExecutionContext | null = null;
   config: Config = Config.get();
   logger: Logger = new DefaultLogger();
+  ui: UI = new DefaultUI();
   cwd: Dir = new Dir(cwd());
   // TODO: check everywhere for process.env and replace
   env: NodeJS.ProcessEnv = process.env;
