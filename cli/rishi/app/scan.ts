@@ -3,11 +3,9 @@ import Table from "cli-table3";
 import SonarScanner from "sonarqube-scanner";
 import { Argv } from "yargs";
 
-import { promptForApp } from "@interface/prompts";
 import { SonarQube } from "@interface/sonar";
 import { Config } from "@lib/config";
 import { openInBrowser } from "@lib/editor";
-import { confirm } from "@lib/ui";
 
 const comparators = {
   GT: "<",

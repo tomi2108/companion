@@ -2,7 +2,6 @@ import { getPaths } from "@files";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 
 import { WorkflowStep } from "..";
 
@@ -11,11 +10,11 @@ type Writes = { app_repo: AppRepo };
 
 export class GetAppRepo extends WorkflowStep<Reads, Writes> {
 
-  async run(_: ExecutionContext, { deploy_repo }: Reads) {
+  async run(ctx: ExecutionContext, { deploy_repo }: Reads) {
     let app_repo: AppRepo | null = null;
     const { name: search } = await deploy_repo.getInfo();
 
-    const spinner = loading("Getting app repo");
+    const spinner = ctx.ui.loading("Getting app repo");
     for (const d of [...getPaths("frontend"), ...getPaths("backend")]) {
       app_repo = new AppRepo(d);
       const { name } = await app_repo.getInfo();

@@ -4,13 +4,9 @@ import { ChildProcessWithoutNullStreams } from "node:child_process";
 import http from "node:http";
 import { Argv } from "yargs";
 
-import { getSubApps } from "@files";
 import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
-import { promptChoice } from "@interface/prompts";
 import { Config } from "@lib/config";
-import log from "@lib/log/default";
-import { search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 

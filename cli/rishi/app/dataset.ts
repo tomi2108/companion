@@ -4,12 +4,8 @@ import path from "node:path";
 
 import { getAppCollections } from "@files/http";
 import { createLogFile } from "@files/utils";
-import { promptChoice } from "@interface/prompts";
 import { Sql } from "@interface/sql/sql";
 import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log/default";
-import { search } from "@lib/ui";
-import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 

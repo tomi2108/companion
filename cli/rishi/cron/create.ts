@@ -1,9 +1,7 @@
-
 import { getApp, getAppPaths } from "@files";
 import { CronYaml } from "@files/cron_yaml";
 import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
-import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { confirm, input, loading, search } from "@lib/ui";
 import { Openshift } from "@oc";

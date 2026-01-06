@@ -3,10 +3,10 @@ import { ExecutionContext } from "@lib/ctx";
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 
 type Writes = {};
-type Options<Reads> = {
+type Options<Reads, ThenWrites, ElseWrites> = {
   condition: (state: Reads) => boolean | Promise<boolean>;
-  then: WorkflowStep;
-  else?: WorkflowStep;
+  then: WorkflowStep<Reads, ThenWrites>;
+  else?: WorkflowStep<Reads, ElseWrites>;
 };
 
 export class If<
@@ -15,7 +15,7 @@ export class If<
   ElseWrites extends {}
 > extends WorkflowStep<Reads, Partial<ThenWrites & ElseWrites>> {
 
-  constructor(override options: WorkflowOptions<Options<Reads>, Writes>) {
+  constructor(override options: WorkflowOptions<Options<Reads, ThenWrites, ElseWrites>, Writes>) {
     super(options);
   }
 

@@ -4,7 +4,6 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
 import { Config, ConfigError } from "@lib/config";
 import { ExecutionContext } from "@lib/ctx";
-import { search } from "@lib/ui";
 import { Deployment } from "@oc/deployment";
 import { Project } from "@oc/project";
 
@@ -20,7 +19,7 @@ const availabe_methods = ["GET", "POST"];
 export class ExposeApp extends WorkflowStep<Reads> {
 
   async run(ctx: ExecutionContext, { app_repo, deployment, project }: Reads) {
-    const logger = ctx.logger;
+    const { logger, ui } = ctx;
     const namespace = project.name;
     const system_name = Config.get().threescale.products?.[namespace];
     if (!system_name) throw new ConfigError(`threescale.products.${namespace}`);
@@ -34,7 +33,7 @@ export class ExposeApp extends WorkflowStep<Reads> {
     const dir = threescale.sub(dir_name);
     const file = new ThreescaleYaml(dir.createFile(file_name).path);
 
-    const methods = await search({ choices: availabe_methods, message: "Select methods", multiple: true });
+    const methods = await ui.search({ choices: availabe_methods, message: "Select methods", multiple: true });
 
     const description = app_repo.package.read().description ?? "";
     if (!description) logger.warning("Could not find app_repo, using empty description");

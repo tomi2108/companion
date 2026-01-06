@@ -6,10 +6,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { WorkflowOptions, WorkflowStep } from "..";
 
 type Reads = { target_branch: string; source_branch: string; repo: Repo };
-type Writes = {
-  skipped?: Dir;
-  mr?: MergeRequest;
-};
+type Writes = { skipped: Dir } | { mr: MergeRequest };
 type Options = {
   temporary_branch?: (reads: Reads) => string;
   title?: (reads: Reads) => string;
@@ -22,9 +19,6 @@ export class CreateMr extends WorkflowStep<Reads, Writes, Options> {
   }
 
   async run(ctx: ExecutionContext, { target_branch, source_branch, repo }: Reads) {
-    const ignores = ctx.config.repos.merge?.ignores;
-    if (ignores?.includes(repo.dir.name())) return {};
-
     const temporary_branch = this.options?.temporary_branch?.({ target_branch, source_branch, repo });
     if (temporary_branch && (await repo.getBranches()).includes(temporary_branch)) return { skipped: repo.dir };
 

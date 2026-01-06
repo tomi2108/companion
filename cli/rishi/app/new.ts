@@ -6,7 +6,6 @@ import { createDirIfNotExists, insertLine, removeLine, replace } from "@files/ut
 import { Gitlab } from "@glab";
 import { AppRepo, Dependency } from "@interface/dirs/app_repo";
 import { Repo } from "@interface/dirs/repo";
-import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { APP_TYPES, AppType } from "@lib/constants";
 import log from "@lib/log/default";

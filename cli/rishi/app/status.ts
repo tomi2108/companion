@@ -1,13 +1,10 @@
 import chalk from "chalk";
 import Table from "cli-table3";
 
-import { getApp } from "@files";
 import { Dir } from "@files/dir";
 import { AppRepo } from "@interface/dirs/app_repo";
-import { promptChoice } from "@interface/prompts";
 import { SonarQube } from "@interface/sonar";
 import { Config } from "@lib/config";
-import { loading } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 

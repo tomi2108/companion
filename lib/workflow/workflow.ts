@@ -31,6 +31,7 @@ export class Workflow extends WorkflowStep<Reads, Writes, Options> {
         const output = await step.run(ctx, state, runtime);
         const transformed = step.options?.transform?.(output) ?? output;
         const newState = { ...state, ...transformed };
+        await step.options?.onEnd?.(newState);
         state = newState;
       } catch (err) {
         ctx.logger.error(err as string);

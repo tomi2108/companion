@@ -1,11 +1,8 @@
-
 import { Dir } from "@files/dir";
 import { JsonFile } from "@files/json_file";
 import { HttpFile } from "@interface/http/http_file";
-import { promptChoice } from "@interface/prompts";
 import { Config, ConfigError } from "@lib/config";
 import { openInBrowser } from "@lib/editor";
-import { search } from "@lib/ui";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
 

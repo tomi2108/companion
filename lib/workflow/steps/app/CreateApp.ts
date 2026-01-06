@@ -1,7 +1,6 @@
 import { Gitlab } from "@glab";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 import { Project } from "@oc/project";
 
 import { WorkflowStep } from "..";
@@ -14,9 +13,9 @@ type Reads = {
 
 export class CreateApp extends WorkflowStep<Reads> {
 
-  async run(_: ExecutionContext, { app_repo, version, project }: Reads) {
+  async run(ctx: ExecutionContext, { app_repo, version, project }: Reads) {
     const { name } = await app_repo.getInfo();
-    const spinner = loading(`Creating issue for: ${name}`);
+    const spinner = ctx.ui.loading(`Creating issue for: ${name}`);
     await new Gitlab().createArgoIssue(name, version, project);
     spinner.succeed();
     return {};
