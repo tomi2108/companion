@@ -1,7 +1,7 @@
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
 import { PromptPaths } from "@steps/app/PromptPaths";
-import { RepoWeb } from "@steps/repos/RepoWeb";
+import { RepoWeb } from "@workflow/steps/repos/RepoInstall";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { Workflow } from "@workflow/workflow";
 

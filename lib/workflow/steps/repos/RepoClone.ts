@@ -4,7 +4,7 @@ import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
 import { isGitRepo } from "@lib/utils";
 
-import { WorkflowOptions, WorkflowStep } from "..";
+import { WorkflowStep } from "..";
 import { RepoUpdate } from "./RepoUpdate";
 
 type Reads = { repo: { id: number; dir: Dir } };
@@ -12,10 +12,6 @@ type Writes = {};
 type Options = { current?: boolean };
 
 export class RepoClone extends WorkflowStep<Reads, Writes, Options> {
-
-  constructor(override options?: WorkflowOptions<Options, Writes>) {
-    super(options);
-  }
 
   async run(_: ExecutionContext, { repo: { id, dir } }: Reads) {
     const glab = new Gitlab();
