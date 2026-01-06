@@ -19,12 +19,12 @@ export class DefaultUI {
     return (res as { selected: string }).selected;
   }
 
-  private async search<T>(opts: ArrayPromptOptions<T>) {
+  async search<K, R = K extends true ? string[] : string>(opts: ArrayPromptOptions<K>) {
     // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/34]: would be cool if search filtered hints as you type
     // I dont think this is doable with "enquirer" might have to move away from it
     // maybe look at Inquirer ??
     const res = await prompt({ ...opts, type: "autocomplete", scroll: true, separator: true, sort: true, name: "selected" });
-    return (res as { selected: T extends true ? string[] : string }).selected;
+    return (res as { selected: R }).selected;
   }
 
   async promptChoice<T extends {

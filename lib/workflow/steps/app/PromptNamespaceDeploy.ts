@@ -1,7 +1,6 @@
 
 import { DeployYaml } from "@files/deploy_yaml";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
-import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowStep } from "..";
@@ -14,7 +13,7 @@ export class PromptNamespaceDeploy extends WorkflowStep<Reads, Writes> {
 
   async run(ctx: ExecutionContext, { deploy_repo }: Reads) {
     await new RepoUpdate().run(ctx, { repo: deploy_repo });
-    const choice = await promptChoice(
+    const choice = await ctx.ui.promptChoice(
       deploy_repo.deployments, { message: "Select environment", multiple: true }
     );
 

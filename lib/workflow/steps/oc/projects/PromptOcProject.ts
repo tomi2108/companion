@@ -1,4 +1,3 @@
-import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
@@ -18,14 +17,14 @@ export class PromptOcProject<Reads extends {} = {}> extends WorkflowStep<Reads, 
     super(options);
   }
 
-  async run(_: ExecutionContext, reads: Reads) {
+  async run(ctx: ExecutionContext, reads: Reads) {
     const token = await getOcToken(this.options.server);
     const projects = await new Openshift(token, this.options.server).getProjects();
     const filtered = this.options.filter
       ? projects.filter((p) => this.options.filter!(p, reads))
       : projects;
 
-    const project = await promptChoice(filtered, { message: "Select project" });
+    const project = await ctx.ui.promptChoice(filtered, { message: "Select project" });
     return { project };
   }
 }

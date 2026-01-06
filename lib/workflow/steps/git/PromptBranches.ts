@@ -1,6 +1,5 @@
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { search } from "@lib/ui";
 
 import { WorkflowStep } from "..";
 
@@ -9,11 +8,11 @@ type Writes = { branch: string };
 
 export class PromptBranch extends WorkflowStep<Reads, Writes> {
 
-  async run(_: ExecutionContext, { repo }: Reads) {
+  async run(ctx: ExecutionContext, { repo }: Reads) {
     const branches = await repo.getBranches();
     const activeBranch = await repo.getActiveBranch();
     const targetBranches = branches.filter((b) => b !== activeBranch);
-    const branch = await search({ choices: targetBranches, message: "Choose branch" });
+    const branch = await ctx.ui.search({ choices: targetBranches, message: "Choose branch" });
     return { branch };
   }
 }
