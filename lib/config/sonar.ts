@@ -1,6 +1,6 @@
 import z from "zod/v4";
 
-import { password } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 
 import { IntegrationConfig } from "./interface";
 
@@ -18,8 +18,8 @@ export class SonarConfig implements IntegrationConfig, Schema {
     return schema.parse(config);
   }
 
-  async setup() {
-    const token = await password({ message: `Enter Sonar auth token (${this.server}/account/security)` });
+  async setup(ctx: ExecutionContext) {
+    const token = await ctx.ui.password({ message: `Enter Sonar auth token (${this.server}/account/security)` });
     return { token };
   }
 

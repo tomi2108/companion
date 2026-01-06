@@ -1,7 +1,6 @@
 import { getPaths } from "@files";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 import { Project } from "@oc/project";
 
 import { WorkflowStep } from "..";
@@ -56,7 +55,7 @@ export class GetSubApps extends WorkflowStep<Reads, Writes> {
       }
     }
 
-    const spinner = loading("Getting subapps");
+    const spinner = ctx.ui.loading("Getting subapps");
     await getSubApps(app_repo);
     spinner.succeed();
     return { sub_apps };

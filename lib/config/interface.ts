@@ -1,4 +1,6 @@
+import { ExecutionContext } from "@lib/ctx";
+
 export interface IntegrationConfig {
-  setup(): Promise<object> | void;
+  setup(ctx: ExecutionContext): Promise<object> | void;
   validate(config: unknown): object;
 }

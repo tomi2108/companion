@@ -2,9 +2,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { FileNotFound, InvalidJsonFile } from "@files/errors";
 import { JsonFile } from "@files/json_file";
-import { confirm, search } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 import { deepMerge, removePrefix, removeSuffix } from "@lib/utils";
 
 import { AppConfig } from "./app";
@@ -26,7 +25,6 @@ import { VaultConfig } from "./vault";
 
 const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
-export const config_file = new JsonFile(getConfigPath());
 
 export function getConfigPath() {
   if (process.env.RISHI_CONFIG) return process.env.RISHI_CONFIG;
@@ -66,62 +64,52 @@ export class Config {
 
   private constructor() { }
 
-  async setup() {
+  async setup(ctx: ExecutionContext) {
     const presets = this.getAvailablePresets();
 
-    const preset = await search({
+    const preset = await ctx.ui.search({
       message: "Select a preset or default config",
       choices: [...presets, "default"]
     });
 
     const config_to_write = {
       team: preset !== "default" ? preset : null,
-      openshift: await this.openshift.setup(),
-      gitlab: await this.gitlab.setup(),
-      paths: await this.paths.setup(),
-      jira: await this.jira.setup(),
-      sonar: await this.sonar.setup(),
-      vault: await this.vault.setup(),
-      preferences: await this.preferences.setup()
+      openshift: await this.openshift.setup(ctx),
+      gitlab: await this.gitlab.setup(ctx),
+      paths: await this.paths.setup(ctx),
+      jira: await this.jira.setup(ctx),
+      sonar: await this.sonar.setup(ctx),
+      vault: await this.vault.setup(ctx),
+      preferences: await this.preferences.setup(ctx)
     };
 
     const dir = path.dirname(getConfigPath());
     const exists = fs.existsSync(dir);
     if (!exists) fs.mkdirSync(dir, { recursive: true });
-    config_file.write(config_to_write);
-    // const log = ExecutionContext.get().logger;
-    // log.success(`Configuration written to ${config_file}`);
+    this.file().write(config_to_write);
+    const log = ctx.logger;
+    log.success(`Configuration written to ${this.file()}`);
   }
 
   async prod() {
     this.openshift.prod();
   }
 
-  private async newConfigPrompt() {
-    // const log = ExecutionContext.get().logger;
-    // log.warning("Configuration file config.json for rishi was not found");
-    const setup = await confirm({ message: "Would you like to setup a config interactively?" });
-    if (setup) await this.setup();
+  async create(ctx: ExecutionContext) {
+    const log = ctx.logger;
+    const ui = ctx.ui;
+    log.warning("Configuration file config.json for rishi was not found");
+    const setup = await ui.confirm({ message: "Would you like to setup a config interactively?" });
+    if (setup) await this.setup(ctx);
     process.exit(0);
   }
 
-  async load() {
-    let config;
-    try {
-      config = config_file.read();
-      if (
-        !config
-        || Array.isArray(config)
-        || typeof config !== "object"
-      ) throw new Error();
-    } catch (err) {
-      if (
-        err instanceof InvalidJsonFile
-        || err instanceof FileNotFound
-      ) return await this.newConfigPrompt();
-      else throw err;
-    }
+  file() {
+    return new JsonFile(getConfigPath());
+  }
 
+  async load() {
+    const config = this.file().read();
     const configKeys = Object.keys(this);
     const team = config.team
       && typeof config.team === "string"

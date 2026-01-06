@@ -2,7 +2,7 @@ import z from "zod/v4";
 
 import { DeployYamlContentSchema } from "@files/formatters/deploy_yaml_formatter";
 import { APP_TYPES } from "@lib/constants";
-import { input, password } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 
 import { IntegrationConfig } from "./interface";
 
@@ -57,9 +57,9 @@ export class OpenShiftConfig implements IntegrationConfig, Schema {
     this.auth_server_cuyo = process.env.RISHI_PROD_OC_AUTH_SERVER_CUYO ?? "";
   }
 
-  async setup() {
-    const username = await input({ message: "Enter Openshift username" });
-    const oc_password = await password({ message: "Enter Openshift password" });
+  async setup(ctx: ExecutionContext) {
+    const username = await ctx.ui.input({ message: "Enter Openshift username" });
+    const oc_password = await ctx.ui.password({ message: "Enter Openshift password" });
     return { username, password: oc_password };
   }
 

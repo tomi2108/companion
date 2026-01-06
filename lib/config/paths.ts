@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-import { input } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 
 import { IntegrationConfig } from "./interface";
 
@@ -44,11 +44,11 @@ export class PathsConfig implements IntegrationConfig, Schema {
     return schema.parse(config);
   }
 
-  async setup() {
+  async setup(ctx: ExecutionContext) {
     const configured_paths: Record<string, string> = {};
 
     for (const key of paths) {
-      const value = await input({ message: `Where do you store ${key} repositories?` });
+      const value = await ctx.ui.input({ message: `Where do you store ${key} repositories?` });
       configured_paths[key] = value;
     }
     return configured_paths;

@@ -1,6 +1,7 @@
 import { cwd } from "node:process";
 
 import { Dir } from "@files/dir";
+import { FileNotFound, InvalidJsonFile } from "@files/errors";
 import { Config } from "@lib/config";
 import { Logger } from "@lib/log";
 import { DebugLogger } from "@lib/log/debug";
@@ -25,7 +26,15 @@ export class ExecutionContext {
   }
 
   async load() {
-    await this.config.load();
+    try {
+      await this.config.load();
+    } catch (err) {
+      if (
+        err instanceof InvalidJsonFile
+        || err instanceof FileNotFound
+      ) return await this.config.create(this);
+      else throw err;
+    }
   }
 
   setDebug() {

@@ -1,7 +1,7 @@
 import path from "node:path";
 import z from "zod/v4";
 
-import { input } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 
 import { IntegrationConfig } from "./interface";
 
@@ -30,10 +30,10 @@ export class PreferencesConfig implements IntegrationConfig, Schema {
     return schema.parse(config);
   }
 
-  async setup() {
-    const editor = await input({ message: "What is your favourite editor? (code, nvim, vim, nano)", initial: this.editor ?? default_editor });
-    const browser = await input({ message: "What is your favourite browser? (google-chrome, firefox, brave-browser, qutebrowser)", initial: this.browser ?? default_browser });
-    const logs_path = await input({ message: "Where do you store log files?", initial: this.logs_path ?? default_log_path });
+  async setup(ctx: ExecutionContext) {
+    const editor = await ctx.ui.input({ message: "What is your favourite editor? (code, nvim, vim, nano)", initial: this.editor ?? default_editor });
+    const browser = await ctx.ui.input({ message: "What is your favourite browser? (google-chrome, firefox, brave-browser, qutebrowser)", initial: this.browser ?? default_browser });
+    const logs_path = await ctx.ui.input({ message: "Where do you store log files?", initial: this.logs_path ?? default_log_path });
     return { editor, browser, logs_path };
   }
 

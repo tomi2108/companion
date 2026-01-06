@@ -1,6 +1,6 @@
 import z from "zod/v4";
 
-import { input, password } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 
 import { IntegrationConfig } from "./interface";
 import { PathKey } from "./paths";
@@ -31,9 +31,9 @@ export class GitlabConfig implements IntegrationConfig, Schema {
     return schema.parse(config);
   }
 
-  async setup() {
-    const username = await input({ message: "Enter Gitlab username" });
-    const token = await password({ message: `Enter Gitlab auth token (${this.server}/-/user_settings/personal_access_tokens)` });
+  async setup(ctx: ExecutionContext) {
+    const username = await ctx.ui.input({ message: "Enter Gitlab username" });
+    const token = await ctx.ui.password({ message: `Enter Gitlab auth token (${this.server}/-/user_settings/personal_access_tokens)` });
     return { username, token };
   }
 
