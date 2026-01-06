@@ -1,4 +1,3 @@
-import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 import { PipelineRun } from "@oc/pipelinerun";
 import { Project } from "@oc/project";
@@ -17,13 +16,13 @@ export class PromptOcPipeline<R extends Reads = Reads> extends WorkflowStep<R, W
     super(options);
   }
 
-  async run(_: ExecutionContext, reads: Reads) {
+  async run(ctx: ExecutionContext, reads: Reads) {
     const pipelines = await reads.project.getPipelineRuns();
     const filtered = this.options?.filter
       ? pipelines.filter((p) => this.options?.filter!(p, reads))
       : pipelines;
 
-    const pipeline = await promptChoice(filtered, { message: "Select pipeline" });
+    const pipeline = await ctx.ui.promptChoice(filtered, { message: "Select pipeline" });
     return { pipeline };
   }
 }

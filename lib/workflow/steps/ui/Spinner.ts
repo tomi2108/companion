@@ -1,5 +1,4 @@
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 
@@ -15,7 +14,7 @@ export class Spinner<Reads, Writes> extends WorkflowStep<Reads, Writes> {
   }
 
   async run(ctx: ExecutionContext, reads: Reads, runtime: WorkflowRuntime) {
-    const spinner = loading(
+    const spinner = ctx.ui.loading(
       typeof this.options.message === "string"
         ? this.options.message
         : await this.options.message(reads)

@@ -1,4 +1,5 @@
-import { input } from "@lib/ui";
+
+import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
@@ -17,8 +18,8 @@ export class Input<K extends string> extends WorkflowStep<Reads, Writes<K>> {
     super(options);
   }
 
-  async run() {
-    const out = await input({ message: this.options.message });
+  async run(ctx: ExecutionContext) {
+    const out = await ctx.ui.input({ message: this.options.message });
     return { [this.options.write]: out } as Writes<K>;
   }
 }

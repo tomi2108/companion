@@ -1,6 +1,5 @@
 import { getPaths } from "@files";
 import { Dir } from "@files/dir";
-import { promptChoice } from "@interface/prompts";
 import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
 
@@ -22,11 +21,11 @@ export class PromptPaths<Multiple extends boolean = false> extends WorkflowStep<
     const dirs: Dir[] = (this.options?.paths ?? all_paths)
       .flatMap((p) => getPaths(p));
 
-    const path = await promptChoice(ctx.ui, dirs, {
+    const path = await ctx.ui.promptChoice(dirs, {
       message: "Choose path",
       multiple: Boolean(this.options?.multiple)
     });
-    if (this.options?.multiple) return { paths: path };
+    if (Array.isArray(path)) return { paths: path };
     return { path };
   }
 }

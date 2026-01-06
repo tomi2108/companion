@@ -3,7 +3,6 @@ import { TextFile } from "@files/text_file";
 import { executeScript } from "@interface/cmd";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 import { Project } from "@oc/project";
 
 import { WorkflowOptions, WorkflowStep } from "..";
@@ -31,7 +30,7 @@ export class RunMongoFile extends WorkflowStep<Reads, Writes, Options> {
     const repo = new AppRepo(dir);
 
     if (!dir.sub("node_modules").exists()) {
-      const spinner = loading("Installing missing dependencies");
+      const spinner = ctx.ui.loading("Installing missing dependencies");
       await repo.install();
       spinner.succeed();
     }

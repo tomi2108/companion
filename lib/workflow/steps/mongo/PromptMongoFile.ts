@@ -1,8 +1,6 @@
 import { Dir } from "@files/dir";
 import { TextFile } from "@files/text_file";
 import { ExecutionContext } from "@lib/ctx";
-import { search } from "@lib/ui";
-import { mapToChoice } from "@lib/utils";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 import { ValidateConfig } from "../config/ValidateConfig";
@@ -24,9 +22,8 @@ export class PromptMongoFile extends WorkflowStep<Reads, Writes, Options> {
     const mongo_path = ctx.config.paths.mongo;
     const dir = new Dir(mongo_path!);
     const scripts_dir = dir.sub("src", this.options.type);
-    const choices = scripts_dir.readFiles().map(mapToChoice);
-    const choice = await search({ message: "Choose script", choices });
-    const mongo_file = scripts_dir.getFile(choice);
+    const files = scripts_dir.readFiles();
+    const mongo_file = await ctx.ui.promptChoice(files, { message: "Choose script" });
     return { mongo_file };
   }
 }

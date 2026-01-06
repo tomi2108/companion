@@ -1,4 +1,3 @@
-import { promptChoice } from "@interface/prompts";
 import { ExecutionContext } from "@lib/ctx";
 import { Deployment } from "@oc/deployment";
 import { Project } from "@oc/project";
@@ -17,13 +16,13 @@ export class PromptOcDeployment<R extends Reads = Reads> extends WorkflowStep<R,
     super(options);
   }
 
-  async run(_: ExecutionContext, reads: Reads) {
+  async run(ctx: ExecutionContext, reads: Reads) {
     const deployments = await reads.project.getDeployments();
     const filtered = this.options?.filter
       ? deployments.filter((d) => this.options?.filter!(d, reads))
       : deployments;
 
-    const deployment = await promptChoice(filtered, { message: "Select deployment" });
+    const deployment = await ctx.ui.promptChoice(filtered, { message: "Select deployment" });
     return { deployment };
   }
 }

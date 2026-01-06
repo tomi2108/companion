@@ -1,10 +1,15 @@
 import { ExecutionContext } from "@lib/ctx";
 
-import { WorkflowOptions, WorkflowStep } from "../..";
+import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "../..";
 import { ForEachOptions, ForEachWrites } from "./types";
 
-type Options = {
+type Options<Item> = {
   concurrency?: number | true;
+  item: string;
+  progress?: {
+    prefix: string;
+    suffix?: (i: Item) => string;
+  };
 };
 
 export class ForEach<
@@ -17,16 +22,19 @@ export class ForEach<
 > extends WorkflowStep<
   Reads & InnerReads,
     ForEachWrites<InnerWrites, Key>,
-    ForEachOptions<Reads, Options, Item, InnerReads, InnerWrites, InnerOptions>
+    ForEachOptions<Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>
   > {
 
-  constructor(override options: WorkflowOptions<ForEachOptions<Reads, Options, Item, InnerReads, InnerWrites, InnerOptions>, ForEachWrites<InnerWrites, Key>>) {
+  constructor(override options: WorkflowOptions<ForEachOptions<Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>, ForEachWrites<InnerWrites, Key>>) {
     super();
   }
 
   async run(
     ctx: ExecutionContext,
-    state: Reads & InnerReads
+    state: Reads & InnerReads,
+    // TODO: Use this to implement progress bars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _runtime?: WorkflowRuntime
   ): Promise<ForEachWrites<InnerWrites, Key>> {
     const results: InnerWrites[] = [];
     const items = this.options.items(state);

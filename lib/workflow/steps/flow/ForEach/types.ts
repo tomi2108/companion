@@ -5,10 +5,6 @@ export type ForEachWrites<
   Key extends string | undefined
 > = Key extends string ? InnerWrites extends void ? never : { [K in Key]: InnerWrites[] } : {};
 
-type CommonOptions<Options> = Options & {
-  item: string;
-};
-
 export type ForEachOptions<
   Reads,
   Options,
@@ -17,14 +13,14 @@ export type ForEachOptions<
   InnerWrites,
   InnerOptions
 > =
-  | CommonOptions<Options> & {
+  | Options & {
     items: (state: Reads) => Item[];
     step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
     collectAs?: undefined;
   }
   | (InnerWrites extends void
     ? never
-    : CommonOptions<Options> & {
+    : Options & {
       items: (state: Reads) => Item[];
       step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
       collectAs: string;

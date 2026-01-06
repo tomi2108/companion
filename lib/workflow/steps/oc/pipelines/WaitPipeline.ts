@@ -1,6 +1,5 @@
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 import { sleep } from "@lib/utils";
 import { PIPELINE_STATUS, PipelineStatus } from "@oc/pipelinerun";
 import { Project } from "@oc/project";
@@ -17,12 +16,12 @@ export class WaitPipeline extends WorkflowStep<Reads, Writes, Options> {
     super(options);
   }
 
-  async run(_: ExecutionContext, { app_repo, project }: Reads) {
+  async run(ctx: ExecutionContext, { app_repo, project }: Reads) {
     const pipeline = await app_repo.findPipeline(project, this.options.q);
 
     if (!pipeline) throw new Error("Could not find pipeline");
 
-    const spinner = loading("Running pipeline");
+    const spinner = ctx.ui.loading("Running pipeline");
     while (await pipeline.status() === PIPELINE_STATUS.running) sleep(15 * 1000);
     const status = await pipeline.status();
     if (status === PIPELINE_STATUS.succeeded) spinner.succeed("Pipeline succeeded");

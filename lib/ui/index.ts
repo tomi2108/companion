@@ -8,8 +8,11 @@ export type ArrayPromptOptions<T = false> = ExtractFromPrompt<"autocomplete" | "
 export type BooleanPromptOptions = ExtractFromPrompt<"confirm">;
 export type PromptChoiceOptions<K> = Omit<ArrayPromptOptions<K>, "choices">;
 
+export type Spinner = {
+  succeed: (text?: string) => void;
+  fail: (text?: string) => void;
+};
 // TODO: Type this
-export type Spinner = {};
 export type ProgressBar = {};
 export type MultiProgressBar = {};
 
