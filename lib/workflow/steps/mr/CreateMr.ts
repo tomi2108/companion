@@ -1,4 +1,3 @@
-import { Dir } from "@files/dir";
 import { MergeRequest } from "@glab/merge_request";
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
@@ -6,7 +5,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { WorkflowOptions, WorkflowStep } from "..";
 
 type Reads = { target_branch: string; source_branch: string; repo: Repo };
-type Writes = { skipped: Dir } | { mr: MergeRequest };
+type Writes = { mr: MergeRequest };
 type Options = {
   temporary_branch?: (reads: Reads) => string;
   title?: (reads: Reads) => string;
@@ -18,9 +17,13 @@ export class CreateMr extends WorkflowStep<Reads, Writes, Options> {
     super(options);
   }
 
-  async run(ctx: ExecutionContext, { target_branch, source_branch, repo }: Reads) {
+  async run(_: ExecutionContext, { target_branch, source_branch, repo }: Reads) {
     const temporary_branch = this.options?.temporary_branch?.({ target_branch, source_branch, repo });
-    if (temporary_branch && (await repo.getBranches()).includes(temporary_branch)) return { skipped: repo.dir };
+    const mrs = await repo.getMrs();
+    const existing_mr = mrs.find(
+      (mr) => mr.source_branch === (temporary_branch ?? source_branch)
+    );
+    if (existing_mr) return { mr: existing_mr };
 
     const mr = await repo.stash(async () => {
       const { original_branch } = await repo.switchBranchIfExists(target_branch);

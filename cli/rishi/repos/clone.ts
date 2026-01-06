@@ -1,6 +1,5 @@
 import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
-import { loading } from "@lib/ui";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { PathClone } from "@workflow/steps/repos/PathClone";
 import { Workflow } from "@workflow/workflow";
@@ -14,7 +13,7 @@ export default {
     const config = ctx.config;
     const paths = Object.keys(config.paths);
     // TODO: improve this with loading bars
-    const spinner = loading("Cloning");
+    const spinner = ctx.ui.loading("Cloning");
     await new Workflow([
       new ForEach({
         concurrency: true,

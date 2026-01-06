@@ -2,7 +2,6 @@ import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { confirm } from "@lib/ui";
 import { PromptSources } from "@steps/repos/PromptSources";
 import { RepoClean } from "@steps/repos/RepoClean";
 import { ForEach } from "@workflow/steps/flow/ForEach";
@@ -53,7 +52,7 @@ export default {
         transform: ({ dirs }) => ({ repos: dirs.map((dir) => new Repo(dir)) })
       }),
       new If({
-        condition: () => confirm({ message: "Are you sure you want to clean repositories?" }),
+        condition: () => ctx.ui.confirm({ message: "Are you sure you want to clean repositories?" }),
         then: new ForEach({
           item: "repo",
           items: (state: { repos: Repo[] }) => state.repos,
