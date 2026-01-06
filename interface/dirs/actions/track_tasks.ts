@@ -1,19 +1,19 @@
 import { Repo } from "@interface/dirs/repo";
 import { getTasksFromDir } from "@interface/tasks";
 import { TaskTracker } from "@interface/tasks/trackers/task_tracker";
-import { loading } from "@lib/ui";
 
 import { RepoAction } from ".";
 
-export class CreateMissingTasksAction implements RepoAction {
+export class CreateMissingTasksAction extends RepoAction {
   tracker: TaskTracker;
 
   constructor(tracker: TaskTracker) {
+    super();
     this.tracker = tracker;
   }
 
   async onMrCreate(repo: Repo) {
-    const spinner = loading("Generate missing issues");
+    const spinner = this.ui.loading("Generate missing issues");
     const tasks = getTasksFromDir(repo.dir);
     if (
       tasks.length === 0 || tasks.every((t) => this.tracker.isTracked(t))

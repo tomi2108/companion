@@ -1,7 +1,6 @@
 import { DeployYamlContent } from "@files/formatters/deploy_yaml_formatter";
 import { Config } from "@lib/config";
 import { AppType } from "@lib/constants";
-import { loading } from "@lib/ui";
 
 import { RepoAction } from ".";
 import { DeployRepo } from "../deploy_repo";
@@ -35,10 +34,10 @@ function getDeploymentOption(
   return get(content, path);
 }
 
-export class LintDeploymentFilesAction implements RepoAction {
+export class LintDeploymentFilesAction extends RepoAction {
   // TODO: fix this mess... make a way to iterate this stuff please
   async onMrCreate(repo: DeployRepo) {
-    const spinner = loading("Preparing deploy files");
+    const spinner = this.ui.loading("Preparing deploy files");
     // TODO: run only for touched deployments
     const files = repo.deployments;
     const { name, type } = await repo.getInfo();
@@ -103,6 +102,5 @@ export class LintDeploymentFilesAction implements RepoAction {
 
     spinner.succeed();
   }
-
 }
 

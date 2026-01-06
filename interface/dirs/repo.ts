@@ -8,7 +8,7 @@ import { MergeRequest } from "@glab/merge_request";
 import { GitlabUser } from "@glab/user";
 import { Config } from "@lib/config";
 import { APP_TYPES } from "@lib/constants";
-import { loading } from "@lib/ui";
+import { ExecutionContext } from "@lib/ctx";
 import { isGitRepo } from "@lib/utils";
 
 import { RepoAction } from "./actions";
@@ -18,6 +18,7 @@ export class Repo {
   glab: ReturnType<typeof glab>;
   dir: Dir;
   actions: RepoAction[] = [];
+  private ui = ExecutionContext.get().ui;
 
   static async cloneRepo(dir: Dir, link: string, current?: boolean) {
     dir.create();
@@ -77,13 +78,13 @@ export class Repo {
   }
 
   async add(file: File<unknown>) {
-    const spinner = loading(`Adding file: ${file}`);
+    const spinner = this.ui.loading(`Adding file: ${file}`);
     await this.git.add(file.path);
     spinner.succeed();
   }
 
   async commit(message: string) {
-    const spinner = loading(`Commiting with message: ${message}`);
+    const spinner = this.ui.loading(`Commiting with message: ${message}`);
     const c = await this.git.commit(message);
     if (!c.commit) {
       spinner.fail();
@@ -182,7 +183,7 @@ export class Repo {
   }
 
   async createAndMergeMr(targetBranch: string) {
-    const spinner = loading("Building merge request");
+    const spinner = this.ui.loading("Building merge request");
     const { id } = await this.getProject();
     const mr = await this.createMr(targetBranch, { projectId: id });
     await setTimeout(45 * 1000);
