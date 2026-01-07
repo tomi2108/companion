@@ -2,9 +2,9 @@ import { Argv } from "yargs";
 
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { PromptSources } from "@steps/repos/PromptSources";
 import { Input } from "@steps/ui/Input";
 import { ForEach } from "@workflow/steps/flow/ForEach";
+import { PromptPathSources } from "@workflow/steps/repos/PromptPathSources";
 import { RepoInstall } from "@workflow/steps/repos/RepoInstall";
 import { Workflow } from "@workflow/workflow";
 
@@ -35,10 +35,10 @@ export default {
     // TODO: add  loading
     const ctx = ExecutionContext.get();
     await new Workflow([
-      new PromptSources({
+      new PromptPathSources({
         sources: [
-          { enabled: Boolean(all || frontend), path: "frontend" },
-          { enabled: Boolean(all || backend), path: "backend" }
+          { enabled: Boolean(all || frontend), source: "frontend" },
+          { enabled: Boolean(all || backend), source: "backend" }
         ],
         transform: ({ dirs }) => ({ app_repos: dirs.map((dir) => new AppRepo(dir)) })
       }),

@@ -6,7 +6,7 @@ import { ForEach } from "@workflow/steps/flow/ForEach";
 import { If } from "@workflow/steps/flow/If";
 import { Write } from "@workflow/steps/flow/Write";
 import { CreateMr } from "@workflow/steps/mr/CreateMr";
-import { PromptSources } from "@workflow/steps/repos/PromptSources";
+import { PromptPathSources } from "@workflow/steps/repos/PromptPathSources";
 import { RepoUpdate } from "@workflow/steps/repos/RepoUpdate";
 import { Input } from "@workflow/steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
@@ -30,10 +30,10 @@ export default {
     const ctx = ExecutionContext.get();
     // TODO: loading with progress bars
     new Workflow([
-      new PromptSources({
+      new PromptPathSources({
         sources: [
-          { enabled: Boolean(all || frontend), path: "frontend" },
-          { enabled: Boolean(all || backend), path: "backend" }
+          { enabled: Boolean(all || frontend), source: "frontend" },
+          { enabled: Boolean(all || backend), source: "backend" }
         ],
         transform: ({ dirs }) => ({ repos: dirs.map((dir) => new Repo(dir)) })
       }),

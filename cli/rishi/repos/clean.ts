@@ -2,10 +2,10 @@ import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { PromptSources } from "@steps/repos/PromptSources";
 import { RepoClean } from "@steps/repos/RepoClean";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { If } from "@workflow/steps/flow/If";
+import { PromptPathSources } from "@workflow/steps/repos/PromptPathSources";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -43,11 +43,11 @@ export default {
   }) => {
     const ctx = ExecutionContext.get();
     await new Workflow([
-      new PromptSources({
+      new PromptPathSources({
         sources: [
-          { enabled: Boolean(all || frontend), path: "frontend" },
-          { enabled: Boolean(all || backend), path: "backend" },
-          { enabled: Boolean(all || despliegues), path: "despliegues" }
+          { enabled: Boolean(all || frontend), source: "frontend" },
+          { enabled: Boolean(all || backend), source: "backend" },
+          { enabled: Boolean(all || despliegues), source: "despliegues" }
         ],
         transform: ({ dirs }) => ({ repos: dirs.map((dir) => new Repo(dir)) })
       }),
