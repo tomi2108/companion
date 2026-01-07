@@ -1,21 +1,22 @@
-import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
-import { promptForMr } from "@interface/prompts";
-import log from "@lib/log/default";
-import { getCurrentPath } from "@lib/utils";
+import { ExecutionContext } from "@lib/ctx";
+import { Write } from "@workflow/steps/flow/Write";
+import { CheckoutMr } from "@workflow/steps/mr/CheckoutMr";
+import { PromptMr } from "@workflow/steps/mr/PromptMr";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "checkout",
   aliases: [],
   describe: "Checkout merge request",
   handler: async () => {
-    const dir = new Dir(getCurrentPath());
-    const repo = new Repo(dir);
-    const mr = await promptForMr(repo);
-
-    if (!mr.source_branch) return log.error("Could not find source_branch");
-
-    await repo.checkout(mr.source_branch);
-    await repo.pull(mr.source_branch);
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new Write({
+        write: () => ({ repo: new Repo(ctx.cwd) })
+      }),
+      new PromptMr(),
+      new CheckoutMr()
+    ]).run(ctx);
   }
 };

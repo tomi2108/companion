@@ -7,6 +7,7 @@ import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { If } from "@workflow/steps/flow/If";
 import { Sleep } from "@workflow/steps/flow/Sleep";
+import { Write } from "@workflow/steps/flow/Write";
 import { PromptBranch } from "@workflow/steps/git/PromptBranches";
 import { CreateMr } from "@workflow/steps/mr/CreateMr";
 import { MergeMr } from "@workflow/steps/mr/MergeMr";
@@ -20,6 +21,12 @@ export default {
     const ctx = ExecutionContext.get();
     const repo = new Repo(ctx.cwd);
     await new Workflow([
+      new Write({
+        write: async () => ({
+          repo: new Repo(ctx.cwd),
+          source_branch: await repo.getActiveBranch()
+        })
+      }),
       new PromptBranch(),
       new If({
         condition: () => confirm({ message: "Merge?" }),
@@ -29,7 +36,7 @@ export default {
           new MergeMr()
         ])
       })
-    ]).run(ctx, { repo, source_branch: await repo.getActiveBranch() });
+    ]).run(ctx);
 
     const { name } = await repo.getInfo();
     const { deploy_repo, app_repo } = await getApp(name);

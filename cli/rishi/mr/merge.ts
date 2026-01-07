@@ -1,4 +1,6 @@
+import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
+import { Write } from "@workflow/steps/flow/Write";
 import { MergeMr } from "@workflow/steps/mr/MergeMr";
 import { PromptMr } from "@workflow/steps/mr/PromptMr";
 import { Spinner } from "@workflow/steps/ui/Spinner";
@@ -11,6 +13,9 @@ export default {
   handler: async () => {
     const ctx = ExecutionContext.get();
     await new Workflow([
+      new Write({
+        write: () => ({ repo: new Repo(ctx.cwd) })
+      }),
       new PromptMr(),
       new Spinner({
         message: "Merging merge request",

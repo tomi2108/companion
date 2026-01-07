@@ -4,13 +4,12 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowStep } from "..";
 
-type Reads = {};
+type Reads = { repo: Repo };
 type Writes = { mr: MergeRequest };
 
 export class PromptMr extends WorkflowStep<Reads, Writes> {
 
-  async run(ctx: ExecutionContext) {
-    const repo = new Repo(ctx.cwd);
+  async run(ctx: ExecutionContext, { repo }: Reads) {
     const mrs = await repo.getMrs();
     const mr = await ctx.ui.promptChoice(mrs, { message: "Select merge request" });
     return { mr };

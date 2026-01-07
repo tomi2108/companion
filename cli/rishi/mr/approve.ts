@@ -1,16 +1,22 @@
-import { Dir } from "@files/dir";
 import { Repo } from "@interface/dirs/repo";
-import { promptForMr } from "@interface/prompts";
-import { getCurrentPath } from "@lib/utils";
+import { ExecutionContext } from "@lib/ctx";
+import { Write } from "@workflow/steps/flow/Write";
+import { ApproveMr } from "@workflow/steps/mr/ApproveMr";
+import { PromptMr } from "@workflow/steps/mr/PromptMr";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "approve",
   aliases: [],
   describe: "Approve merge request",
   handler: async () => {
-    const dir = new Dir(getCurrentPath());
-    const repo = new Repo(dir);
-    const mr = await promptForMr(repo);
-    await mr.approve();
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new Write({
+        write: () => ({ repo: new Repo(ctx.cwd) })
+      }),
+      new PromptMr(),
+      new ApproveMr()
+    ]).run(ctx);
   }
 };
