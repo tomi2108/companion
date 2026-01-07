@@ -1,8 +1,6 @@
 import { Argv } from "yargs";
 
 import { ExecutionContext } from "@lib/ctx";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
 import { Deployment } from "@oc/deployment";
 import { Secret } from "@oc/secret";
 import { ForEach } from "@workflow/steps/flow/ForEach";
@@ -43,11 +41,6 @@ export default {
     frontend?: boolean;
     backend?: boolean;
   }) => {
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
-    const project = await promptChoice(projects);
-    const deployments = await project.getDeployments();
-
     const ctx = ExecutionContext.get();
     await new Workflow([
       new PromptOcProject({ server: "cuyo" }),
