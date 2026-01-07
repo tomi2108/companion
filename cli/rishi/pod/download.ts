@@ -4,8 +4,8 @@ import { ExecutionContext } from "@lib/ctx";
 import { Pod } from "@oc/pod";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { CreateLogFile } from "@workflow/steps/log/CreateLogFile";
-import { DownloadPodLogs } from "@workflow/steps/oc/pods/DownloadPodLogs";
 import { GetPods } from "@workflow/steps/oc/pods/GetPods";
+import { PodDownloadLogs } from "@workflow/steps/oc/pods/PodDownloadLogs";
 import { PromptOcPod } from "@workflow/steps/oc/pods/PromptOcPod";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
@@ -30,7 +30,7 @@ export default {
         items: (state: { pods: Pod[]; pod: Pod }) => state.pods.filter((p) => p.container === state.pod.container),
         item: "pod",
         step: new Workflow([
-          new DownloadPodLogs({ raw }),
+          new PodDownloadLogs({ raw }),
           new CreateLogFile()
         ])
       })

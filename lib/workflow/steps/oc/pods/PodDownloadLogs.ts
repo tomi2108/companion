@@ -1,7 +1,7 @@
 import { JsonFormatter } from "@files/formatters/json_formatter";
 import { ExecutionContext } from "@lib/ctx";
 import { Pod } from "@oc/pod";
-import { WorkflowOptions, WorkflowStep } from "@workflow/steps";
+import { WorkflowStep } from "@workflow/steps";
 
 type Reads = { pod: Pod };
 type Writes = {};
@@ -9,11 +9,7 @@ type Options = {
   raw?: boolean;
 };
 
-export class DownloadPodLogs extends WorkflowStep<Reads, Writes, Options> {
-
-  constructor(override options?: WorkflowOptions<Options, Writes>) {
-    super();
-  }
+export class PodDownloadLogs extends WorkflowStep<Reads, Writes, Options> {
 
   async run(_: ExecutionContext, { pod }: Reads) {
     const formatter = new JsonFormatter();
