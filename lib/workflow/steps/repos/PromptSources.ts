@@ -1,32 +1,36 @@
-import { getPaths } from "@files";
-import { Dir } from "@files/dir";
-import { PathKey } from "@lib/config/paths";
+
 import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
-import { PromptPaths } from "../app/PromptPaths";
 
 type Reads = {};
-type Writes = { dirs: Dir[] };
-type Options = {
-  sources: { enabled: boolean; path: PathKey }[];
+type Writes<Key extends string, Return> = { [k in Key]: Return[] };
+type Options<Source> = {
+  sources: { enabled: boolean; source: Source }[];
 };
 
-export class PromptSources extends WorkflowStep<Reads, Writes, Options> {
+export abstract class PromptSources<Source, Return, Key extends string> extends WorkflowStep<Reads, Writes<Key, Return>, Options<Source>> {
 
-  constructor(override options: WorkflowOptions<Options, Writes>) {
+  constructor(override options: WorkflowOptions<Options<Source>, Writes<Key, Return>>) {
     super(options);
   }
 
-  async run(ctx: ExecutionContext) {
-    const dirs = this.options.sources
-      .filter((o) => o.enabled)
-      .flatMap((o) => getPaths(o.path));
+  protected abstract key: Key;
+  protected abstract promptSingle(ctx: ExecutionContext): Return | Promise<Return>;
+  protected transform(sources: Source[]): Return[] {
+    return sources as unknown as Return[];
+  }
 
-    if (dirs.length === 0) {
-      const { path: dir } = await new PromptPaths({ paths: this.options.sources.map((s) => s.path) }).run(ctx);
-      return { dirs: [dir] };
+  async run() {
+    const sources = this.transform(this.options.sources
+      .filter((o) => o.enabled)
+      .map((o) => o.source));
+
+    if (sources.length === 0) {
+      const single = await this.promptSingle(ctx);
+      return { [this.key]: [single] } as Writes<Key, Return>;
     }
-    return { dirs };
+
+    return { [this.key]: sources } as Writes<Key, Return>;
   }
 }

@@ -5,6 +5,7 @@ import yargs from "yargs";
 import app from "@cli/app";
 import config from "@cli/config";
 import cron from "@cli/cron";
+import debug from "@cli/debug";
 import env from "@cli/env";
 import http from "@cli/http";
 import mongo from "@cli/mongo";
@@ -15,7 +16,6 @@ import project from "@cli/project";
 import repos from "@cli/repos";
 import route from "@cli/route";
 import upgrade from "@cli/upgrade";
-import debug from "@cli/debug";
 
 import { checkVersion, loadExecutionContext } from "./middleware";
 

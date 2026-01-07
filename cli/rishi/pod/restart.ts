@@ -1,9 +1,17 @@
 import { Argv } from "yargs";
 
-import { promptChoice } from "@interface/prompts";
+import { ExecutionContext } from "@lib/ctx";
 import { Openshift } from "@oc";
 import { filterFrontendDeployments, getOcToken } from "@oc/api";
 import { Deployment } from "@oc/deployment";
+import { Secret } from "@oc/secret";
+import { ForEach } from "@workflow/steps/flow/ForEach";
+import { If } from "@workflow/steps/flow/If";
+import { DeploymentRestart } from "@workflow/steps/oc/deployments/DeploymentRestart";
+import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
+import { PromptOcSecret } from "@workflow/steps/oc/envs/PromptOcSecrets";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "restart",
@@ -39,15 +47,24 @@ export default {
     const project = await promptChoice(projects);
     const deployments = await project.getDeployments();
 
-    if (secret) {
-      const secrets = await project.getSecrets();
-      const s = await promptChoice(secrets);
-      for (const d of deployments) {
-        if (!d.getSecrets()?.some((ss) => ss.name === s.name)) continue;
-        await d.restart();
-      }
-      return;
-    }
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new PromptOcProject({ server: "cuyo" }),
+      new GetDeployments(),
+      new If({
+        condition: () => Boolean(secret),
+        then: new PromptOcSecret()
+      }),
+      new ForEach({
+        item: "deployment",
+        items: ({ deployments, secret }: { deployments: Deployment[]; secret?: Secret }) =>
+          deployments.filter(
+            (d) => !secret ? true : d.getSecrets()?.some((s) => s.name === secret.name)
+          ),
+        step: new DeploymentRestart(),
+        concurrency: 10
+      })
+    ]).run(ctx);
 
     let to_restart: Deployment[] = [];
     if (all || frontend) to_restart = [...to_restart, ...deployments.filter(filterFrontendDeployments)];
