@@ -8,13 +8,12 @@ import { If } from "@steps/flow/If";
 import { Sleep } from "@steps/flow/Sleep";
 import { DeploymentRestart } from "@steps/oc/deployments/DeploymentRestart";
 import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
-import { EditConfigMap } from "@steps/oc/envs/EditConfigmap";
-import { EditSecret } from "@steps/oc/envs/EditSecret";
 import { PromptOcConfigMaps } from "@steps/oc/envs/PromptOcConfigMaps";
 import { PromptOcSecrets } from "@steps/oc/envs/PromptOcSecrets";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Search } from "@steps/ui/Search";
 import { Spinner } from "@steps/ui/Spinner";
+import { EditResource } from "@workflow/steps/oc/envs/EditResource";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -33,15 +32,10 @@ export default {
       }),
       new If({
         condition: ({ choice }: { choice: typeof choices[number] }) => choice === "configmap",
-        then: new Workflow([
-          new PromptOcConfigMaps(),
-          new EditConfigMap()
-        ]),
-        else: new Workflow([
-          new PromptOcSecrets(),
-          new EditSecret()
-        ])
+        then: new PromptOcConfigMaps({ transform: ({ configmap }) => ({ resource: configmap }) }),
+        else: new PromptOcSecrets({ transform: ({ secret }) => ({ resource: secret }) })
       }),
+      new EditResource(),
       new If({
         condition: async ({ configmap, secret }: { configmap?: ConfigMap; secret?: Secret }) => {
           const resource = configmap ?? secret;

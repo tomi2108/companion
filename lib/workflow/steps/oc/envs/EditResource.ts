@@ -1,21 +1,22 @@
 import { YamlFormatter } from "@files/formatters/yaml_formatter";
 import { TempFile } from "@files/temp_file";
 import { ExecutionContext } from "@lib/ctx";
-import { ConfigMap } from "@oc/configmap";
+import { Resource } from "@oc/resource";
 
 import { WorkflowStep } from "../..";
 
-type Reads = { configmap: ConfigMap };
+type Reads = { resource: Resource };
 type Writes = {};
 type Options = {};
 
-export class EditConfigMap extends WorkflowStep<Reads, Writes, Options> {
+export class EditResource extends WorkflowStep<Reads, Writes, Options> {
 
-  async run(ctx: ExecutionContext, { configmap }: Reads) {
+  async run(ctx: ExecutionContext, { resource }: Reads) {
     const log = ctx.logger;
     const formatter = new YamlFormatter();
+
     const { changed, new_content } = await new TempFile({
-      content: formatter.toString(await configmap.toYaml()),
+      content: formatter.toString(await resource.toYaml()),
       ext: "yaml"
     }).prompt();
 
@@ -35,9 +36,9 @@ export class EditConfigMap extends WorkflowStep<Reads, Writes, Options> {
       return {};
     }
     const { data } = y;
-    configmap.setData(data as Record<string, string>);
-    await configmap.save({ update: true });
-    log.success("Config map saved succesfully");
+    resource.setData(data as Record<string, string>);
+    await resource.save({ update: true });
+    log.success(`${resource.kind} saved succesfully`);
     return {};
   }
 }

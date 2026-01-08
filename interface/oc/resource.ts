@@ -1,5 +1,6 @@
 import { AxiosInstance } from "axios";
 
+import { YamlMap } from "@files/formatters/yaml_formatter";
 import { Choice } from "@lib/constants";
 
 export abstract class Resource {
@@ -13,8 +14,9 @@ export abstract class Resource {
 
   abstract getData(): Promise<typeof this.data>;
 
-  abstract save(opts?: { update?: boolean }): void;
+  abstract save(opts?: { update?: boolean }): void | Promise<void>;
   abstract delete(): Promise<void>;
+  abstract toYaml(): YamlMap | Promise<YamlMap>;
 
   constructor(name: string, namespace: string, oc: typeof this.oc) {
     this.name = name;
