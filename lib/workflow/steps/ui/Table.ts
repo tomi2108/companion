@@ -8,8 +8,8 @@ type Options<Reads, T, Key extends string> = {
   step: WorkflowStep<Reads, Writes<T, Key>>;
   key: Key;
   head: (reads: Reads) => string[];
-  width: number[];
-  map: (item: T) => string[];
+  map: (item: T) => (string | number)[];
+  width?: number[];
   style?: { compact?: boolean };
 };
 type Writes<T, Key extends string> = { [K in Key]: T[] };

@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { Argv } from "yargs";
 
 import { ExecutionContext } from "@lib/ctx";
@@ -34,7 +35,10 @@ export default {
             key: "envs",
             step: new EnvHealth(),
             head: ({ deployment }: { deployment: Deployment }) => [deployment.name, "Status"],
-            map: (item) => [item.key, item.status],
+            map: (item) => {
+              const color = item.status === "missing" ? chalk.red : chalk.yellow;
+              return [item.key, color(item.status)];
+            },
             width: [50]
           })
         ])

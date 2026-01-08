@@ -22,10 +22,10 @@ export class ForEach<
 > extends WorkflowStep<
   Reads & InnerReads,
     ForEachWrites<InnerWrites, Key>,
-    ForEachOptions<Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>
+    ForEachOptions<Key, Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>
   > {
 
-  constructor(override options: WorkflowOptions<ForEachOptions<Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>, ForEachWrites<InnerWrites, Key>>) {
+  constructor(override options: WorkflowOptions<ForEachOptions<Key, Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>, ForEachWrites<InnerWrites, Key>>) {
     super();
   }
 
