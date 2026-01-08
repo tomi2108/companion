@@ -6,7 +6,7 @@ import { Resource } from "@oc/resource";
 import { WorkflowStep } from "../..";
 
 type Reads = { resource: Resource };
-type Writes = {};
+type Writes = { edited: boolean };
 type Options = {};
 
 export class EditResource extends WorkflowStep<Reads, Writes, Options> {
@@ -22,7 +22,7 @@ export class EditResource extends WorkflowStep<Reads, Writes, Options> {
 
     if (!changed || !new_content) {
       log.info("Edit canceled, no changes made");
-      return {};
+      return { edited: false };
     }
 
     const y = formatter.fromString(new_content);
@@ -33,12 +33,12 @@ export class EditResource extends WorkflowStep<Reads, Writes, Options> {
       || !y.data
     ) {
       log.error("Invalid yaml, please sepcify 'data' key");
-      return {};
+      return { edited: false };
     }
     const { data } = y;
     resource.setData(data as Record<string, string>);
     await resource.save({ update: true });
     log.success(`${resource.kind} saved succesfully`);
-    return {};
+    return { edited: true };
   }
 }

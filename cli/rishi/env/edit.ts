@@ -37,10 +37,10 @@ export default {
       }),
       new EditResource(),
       new If({
-        condition: async ({ configmap, secret }: { configmap?: ConfigMap; secret?: Secret }) => {
+        condition: async ({ configmap, secret, edited }: { configmap?: ConfigMap; secret?: Secret; edited: boolean }) => {
           const resource = configmap ?? secret;
           if (!resource) throw new Error("No resource found in env edit");
-          return await ctx.ui.confirm({
+          return edited && await ctx.ui.confirm({
             initial: true,
             message: `Do you want to restart every deployment affected by ${resource.name}?`
           });

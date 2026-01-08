@@ -42,10 +42,6 @@ export function arrayDifference<T>(
   return arr1.filter((a) => !arr2.some((b) => comparator(a, b)));
 }
 
-export function parseKeyVal(str: string) {
-  return Object.fromEntries(str.trim().split("\n").filter(Boolean).map((l) => l.split("=").filter(Boolean)).filter(Boolean));
-}
-
 export function isGitRepo(dir: Dir) {
   return dir.sub(".git").exists();
 }
