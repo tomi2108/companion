@@ -13,13 +13,18 @@ type Reads = {
   app_repo: AppRepo;
 };
 
-export class EnvHealth extends WorkflowStep<Reads> {
-  async run(ctx: ExecutionContext, {
-    deployment,
-    project,
-    app_repo,
-    deploy_repo
-  }: Reads) {
+type Writes = {
+  envs: { key: string; status: typeof status[keyof typeof status] }[];
+};
+
+const status = {
+  UNUSED: "unused",
+  MISSING: "missing"
+} as const;
+
+export class EnvHealth extends WorkflowStep<Reads, Writes> {
+  async run(ctx: ExecutionContext, reads: Reads) {
+    const { deployment, project, app_repo, deploy_repo } = reads;
     const deployment_file = deploy_repo.getDeployment(project.name);
     const version = deployment_file?.getVersion();
     const log = ctx.logger;
@@ -27,7 +32,7 @@ export class EnvHealth extends WorkflowStep<Reads> {
 
     if (!version) {
       log.warning(`Could not find version for ${deployment.name}`);
-      return {};
+      return { envs: [] };
     }
     const active_branch = await app_repo.getActiveBranch();
     await app_repo.checkout(version);
@@ -35,7 +40,7 @@ export class EnvHealth extends WorkflowStep<Reads> {
     const env_file = app_repo.dir.getFile(env_file_path);
     if (!env_file.exists()) {
       log.warning(`Could not find env file for ${deployment.name}`);
-      return {};
+      return { envs: [] };
     }
 
     const configMaps = await deployment.getConfigMaps() ?? [];
@@ -43,28 +48,21 @@ export class EnvHealth extends WorkflowStep<Reads> {
     const resources = await Promise.all([...secrets, ...configMaps].map((r) => r.getData()));
     const env = resources.filter((r) => r !== undefined).reduce((acc, curr) => ({ ...acc, ...curr }));
     const matches = env_file.read().matchAll(/process\.env\..*/g).toArray().map((m) => m[0].replace("process.env.", ""));
-    const envs_exclusions = Config.get().envs.health_exclusions ?? [];
+    const envs_exclusions = config.envs.health_exclusions ?? [];
     const keys = matches
       .map((m) => m.split(" ")?.[0]?.replaceAll(",", "") ?? "")
       .filter((k) => !envs_exclusions.includes(k));
 
-    const table = new Table({
-      head: [deployment.name, "Status"],
-      style: { compact: true },
-      colWidths: [50]
-    });
-
+    const envs = [];
     for (const key of keys) {
-      if (!env[key]) table.push([key, chalk.red(status.MISSING)]);
+      if (!env[key]) envs.push({ key, status: status.MISSING });
     }
 
     for (const key of Object.keys(env).filter((k) => !envs_exclusions.includes(k))) {
-      if (!keys.includes(key)) table.push([key, chalk.yellow(status.UNUSED)]);
+      if (!keys.includes(key)) envs.push({ key, status: status.UNUSED });
     }
 
     app_repo.switchBranchIfExists(active_branch);
-
-    if (table.length > 0) console.log(table.toString());
-    return {};
+    return { envs };
   }
 }
