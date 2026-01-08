@@ -1,11 +1,11 @@
-# clair app expose
+# dux app expose
 
 Configures an application for exposure in 3scale by generating a YAML configuration file and managing Git operations.
 
 ## Usage
 
 ```bash
-clair app expose
+dux app expose
 ```
 
 ## Arguments

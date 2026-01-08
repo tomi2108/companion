@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git pull
-npm uninstall -g clair
+npm uninstall -g dux
 npm run clean
 npm install
 npm run build

@@ -1,11 +1,11 @@
-# clair app create
+# dux app create
 
 Create GitLab issues for app deployment in ArgoCD.
 
 ## Usage
 
 ```bash
-clair app create
+dux app create
 ```
 
 ## Arguments

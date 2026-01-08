@@ -5,7 +5,7 @@ import setup from "@cli/config/setup";
 
 export default {
   command: "config <command>",
-  describe: "Manage clair local config",
+  describe: "Manage dux local config",
   aliases: ["cfg", "conf"],
   builder: (yargs: Argv) => yargs
     .command(edit)

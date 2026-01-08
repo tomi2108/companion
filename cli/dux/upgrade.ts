@@ -5,7 +5,7 @@ import { executeScript } from "@interface/cmd";
 export default {
   command: "upgrade",
   aliases: ["up"],
-  describe: "Upgrade clair",
+  describe: "Upgrade dux",
   handler: async () => {
     const full_path = path.resolve(__dirname, "../../../");
     // const repo = new Repo(full_path);

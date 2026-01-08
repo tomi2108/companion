@@ -1,11 +1,11 @@
-# clair app new
+# dux app new
 
 Create a new application from a predefined template.
 
 ## Usage
 
 ```bash
-clair app new
+dux app new
 ```
 
 ## Arguments

@@ -1,4 +1,4 @@
-# clair repos merge
+# dux repos merge
 
 Creates a merge request to merge a source branch into a target branch for selected repositories
 using a temporary in between branch.
@@ -7,16 +7,16 @@ using a temporary in between branch.
 
 ```bash
 # Merge branches for all repositories
-clair repos merge --all
+dux repos merge --all
 
 # Merge branches for frontend repositories only
-clair repos merge --frontend
+dux repos merge --frontend
 
 # Merge branches for backend repositories only
-clair repos merge --backend
+dux repos merge --backend
 
 # Merge branches for a single repository selected interactively
-clair repos merge 
+dux repos merge 
 ```
 
 ## Arguments

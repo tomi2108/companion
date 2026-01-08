@@ -46,7 +46,7 @@ export class Issue {
 
   async edit() {
     return await this.jira.updateIssue(this.id, {
-      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/45]: fields
+      // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/45]: fields
     });
   }
 
@@ -71,7 +71,7 @@ export class Issue {
   }
 
   view() {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/60]: implement
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/60]: implement
   }
 
   openInBrowser() {
@@ -79,7 +79,7 @@ export class Issue {
   }
 
   async link(issue: Issue, linkType: any) {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/52]: test
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/52]: test
     return await this.jira.issueLink({
       inwardIssue: { id: this.id },
       outWardIssue: { id: issue.id },
@@ -88,12 +88,12 @@ export class Issue {
   }
 
   async unlink(issue: Issue) {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/65]: implement
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/65]: implement
     console.log("issue:", issue);
   }
 
   async logWork(work: string) {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/61]: test, maybe make 'work' a :number in hours ?
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/61]: test, maybe make 'work' a :number in hours ?
     return await this.jira.addWorklog(this.id, { timeSpent: work });
   }
 
@@ -135,22 +135,22 @@ export class Issue {
   }
 
   async addToCurrentSprint() {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/43]: test
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/43]: test
     const board_id = Config.get().jira.board_id;
     if (!board_id) throw new Error("No board id set");
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/47]: fix circular dependency
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/47]: fix circular dependency
     // const sprint = await new Board(board_id).getCurrentSprint();
     // if (!sprint) throw new Error("There is no active sprint");
     // return await this.jira.addIssueToSprint(this.id, sprint.id);
   }
 
   async assign(user: string) {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/40]: test
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/40]: test
     return await this.jira.updateAssignee(this.key, user);
   }
 
   async estimate(estimacion: string) {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/50]: test
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/50]: test
     const board_id = Config.get().jira.board_id;
     if (!board_id) throw new Error("Board id not set");
     return await this.jira.estimateIssueForBoard(this.id, board_id, estimacion);

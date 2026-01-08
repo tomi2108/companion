@@ -1,14 +1,14 @@
-# clair app start
+# dux app start
 
 Start an app and its sub-apps locally.
 
 ## Usage
 
 ```bash
-clair app start
+dux app start
 
 # With raw logs
-clair app start --raw
+dux app start --raw
 ```
 
 ## Arguments

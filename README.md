@@ -1,80 +1,68 @@
-# 🔮✝️ Clair
+# 🏛️ Dux
 
-**Clair** es una herramienta CLI de asistencia para desarrolladores y equipos técnicos.
+**Dux** es el guía de los desarrolladores que deben transitar por los círculos concéntricos de la infraestructura moderna.
 
-El nombre *Clair* proviene del latín clarus, que significa claro, luminoso, evidente.
-El nombre Clair proviene del latín clarus, que significa claro, luminoso, evidente. 
-No se trata solo de ver lo evidente, sino de percibir aquello que permite ver: la luz, la claridad, lo comprensible.
+En la obra de Dante, Virgilio es el **Dux** (*"Tu duca, tu signore e tu maestro"*): el sabio que posee el mapa de los abismos, aquel que ya ha recorrido las profundidades y conoce los pasajes ocultos para salir indemne. Representa la maestría técnica frente al castigo del caos administrativo.
 
-De ahí palabras como *clairvoyance*: la capacidad de percibir más allá de la superficie.
+No se trata solo de automatizar; se trata de tener un guía que comprenda las jerarquías invisibles que separan un entorno local de un clúster de producción.
 
-En muchas tradiciones espirituales y religiosas, siempre existió una figura encargada de interpretar:
-rituales, textos, señales, reglas invisibles.
-Alguien que conectaba lo humano con sistemas más grandes que él mismo.
+En los sistemas antiguos, siempre existió una figura encargada de interpretar:
+rituales, señales y reglas que los demás no podían descifrar.
 
-**Clair** ocupa ese mismo rol, pero en el mundo técnico.
+**Dux** ocupa ese mismo rol ante tu arquitectura.
 
 Observa configuraciones.
 Reconoce patrones.
 Ejecuta rituales repetibles.
-Y, cuando es necesario, **intercede entre tú y sistemas que exigen fe**.
+Y, cuando es necesario, **intercede entre tú y los círculos que exigen fe**.
 
-Este Clair hace eso con:
+Este Dux hace eso con:
 OpenShift, GitLab, Jira, Vault… y tu entorno local.
 
-Clair no reemplaza tus herramientas.
-Las entiende, las conecta y traduce su complejidad en acciones simples, previsibles y confiables.
+Dux no reemplaza tus herramientas. Las entiende, las conecta y evita que tu flujo de trabajo se convierta en una condena eterna de tareas manuales.
 
 ---
 
-## ✨ ¿Para qué sirve Clair?
+## ✨ ¿Por qué invocar a Dux?
 
-* Simplificar y acelerar la configuración de entornos locales.
-* Automatizar tareas repetitivas relacionadas con OpenShift, GitLab y Jira.
-* Centralizar configuraciones según equipo o proyecto.
-* Unificar flujos de trabajo sin perder flexibilidad.
-* Reducir el “conocimiento tribal” necesario para operar un proyecto.
+* **Cruzar el Aqueronte:** Simplificar el paso entre tu máquina local y el clúster remoto.
+* **Evitar el castigo de Sísifo:** Automatizar tareas repetitivas que no generan valor.
+* **El mapa del abismo:** Centralizar configuraciones según equipo o proyecto.
+* **Voz única de mando:** Unificar flujos de trabajo bajo una misma guía.
+* **Memoria de los antiguos:** Preservar el “conocimiento tribal” para que no se pierda en el olvido.
 
-Clair está pensado tanto para:
+Dux está pensado tanto para:
 
-* incorporar nuevos miembros sin fricción
-* como para desarrolladores experimentados que ya han visto demasiado
+* Guiar a los nuevos miembros por los círculos del proyecto sin que se pierdan.
+* Asistir a desarrolladores experimentados que ya han descendido demasiadas veces al foso de los logs.
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Los Círculos de Dux
 
-### 🔧 Inicialización de Entornos
+### 🔧 Primer Círculo: El Entorno
 
 Configura automáticamente entornos locales usando configuraciones predefinidas según el equipo o proyecto.
 
-### 🧠 Configuraciones por Equipo
+### 🧠 El Limbo de las Configuraciones
 
 Carga y cambia configuraciones basadas en tu equipo, manteniendo coherencia sin sacrificar personalización.
 
-### 🚀 Integración con OpenShift
+### 🚀 El Abismo de OpenShift
 
-Interactúa con clústeres de OpenShift para tareas comunes como deploys, logs, pods, secretos y debugging.
+Interactúa con clústeres para tareas comunes como desploys, logs, pods, secretos y debugging.
 
-### 🔁 Utilidades para GitLab
+### 🔁 El Purgatorio de GitLab
 
-Automatiza flujos diarios de GitLab: repositorios, ramas, merge requests, pipelines y revisores.
+Automatiza flujos diarios: repositorios, ramas, merge requests, pipelines y revisores.
 
-### 📋 Integración con Jira
+### 📋 Los Juicios de Jira
 
 Gestiona tickets directamente desde la terminal y reduce el cambio de contexto.
 
-### 📈 Integración con Dynatrace
+### 🛡️ El Tesoro de Vault
 
-Consulta métricas y estado de aplicaciones para diagnosticar problemas sin salir del flujo.
-
-### 🛡️ Integración con Vault
-
-Accede y gestiona secretos de forma segura y centralizada.
-
-### 🗄️ Utilidades para MongoDB
-
-Acceso rápido a operaciones comunes sobre bases de datos MongoDB.
+Accede y gestiona secretos de forma segura y centralizada, protegidos bajo llave.
 
 ---
 
@@ -87,129 +75,69 @@ Acceso rápido a operaciones comunes sobre bases de datos MongoDB.
 
 ### 🧠 Configuración por Equipo/Proyecto
 
-* [x] Carga condicional basada en `"team"`
-* [x] Fallback a configuraciones por defecto
-* [x] Comando interactivo `clair setup`
+* [x] Comando interactivo `dux setup`
 * [x] Validación automática de esquemas
 
 ### 🚀 OpenShift
 
 * [x] Login automático al clúster
-* [x] Deploy de aplicaciones
-* [x] Logs en tiempo real
-* [ ] Ejecución de comandos en contenedores (`oc rsh`)
-* [x] Gestión de pods y deployments
-* [ ] Port forwarding
-* [x] Gestión de secretos y variables de entorno
-* [x] Generación de rutas públicas
-* [x] Creación de archivos `.env`
+* [x] Logs en tiempo real y gestión de pods
+* [x] Generación de rutas y archivos `.env`
 
 ### 🔁 GitLab
 
 * [x] Clonación inteligente de repositorios
 * [x] Creación automática de merge requests
-* [x] Estado de pipelines
-* [x] Asignación automática de revisores
-* [ ] Integración con ramas de Jira
-* [x] Sincronización con `origin`
-* [x] Nivelación de ramas
-
-### 📋 Jira
-
-* [x] Creación de tickets
-* [x] Comentarios en tickets
-* [x] Estimación de tickets
-* [ ] Transiciones automáticas por eventos
-* [ ] Búsqueda avanzada desde CLI (🚧)
+* [x] Sincronización y nivelación de ramas
 
 ### 🛡️ Vault
 
 * [x] Lectura y escritura de secretos
 * [x] Reinicio de deployments afectados
 
-### 🗄️ MongoDB
-
-* [ ] Conexión simplificada
-* [ ] Exploración de colecciones
-* [ ] Ejecución de scripts
-* [ ] Exportación / importación
-* [ ] Backups
-
-### 🛠 Otras Utilidades
-
-* [ ] Generación de documentación
-* [ ] Notificaciones (Slack / local)
-* [x] `clair upgrade` para autoactualización
-* [x] `clair open` para abrir repositorios en el editor
-
 ---
 
 ## 🧭 Filosofía del proyecto
 
-Clair es una **herramienta interna**, creada para equipos reales, con flujos reales y limitaciones reales.
+Dux es un **guía interno**, creado para equipos que entienden que la infraestructura puede ser un infierno si no se tiene el mapa correcto.
 
-No intenta ser universal.
-Busca ser **útil**, **predecible** y **opinionada** cuando es necesario.
+Sus principios son:
 
-Sus principios son simples:
+* 📐 **La senda marcada**
+Es mejor un camino compartido que mil opciones que llevan al extravío.
+* 🧠 **El saber codificado**
+Las decisiones del equipo viven en el código de Dux, no en la memoria frágil de los hombres.
+* 🛠️ **Dominar lo mundano**
+Dux ejecuta lo que el equipo ya decidió para que tú puedas dedicarte a la creación.
 
-* 📐 **Convenciones claras**
-  Es mejor un camino compartido que infinitas opciones ambiguas.
+Aunque Dux es **opinionada por diseño**, la sabiduría siempre permanece abierta. La herramienta está construida para ser fácilmente extensible: nuevas integraciones, nuevas plataformas, nuevos círculos.
 
-* 🧠 **Conocimiento codificado**
-  Las decisiones del equipo viven en el código, no solo en la memoria.
-
-* 🔁 **Menos fricción, menos contexto**
-  Si una tarea es repetitiva, Clair debería encargarse.
-
-* 🛠️ **Automatizar lo aburrido, no lo importante**
-  Clair ejecuta lo que el equipo ya decidió.
-
-Aunque Clair es **opinionada por diseño**, una mente verdaderamente clara permanece abierta.
-
-Por eso, la herramienta está construida para ser **fácilmente extensible**:
-
-* Integraciones alternativas a GitLab, como **GitHub**.
-* Herramientas que reemplacen o complementen a **Jira**.
-* Nuevas plataformas y flujos que el equipo adopte con el tiempo.
-
-Clair no asume permanencia.
-Asume cambio, y se adapta a él.
-
----
-
-## 📦 Instalación
-
-```bash
-./install.sh
-```
+Dux no asume permanencia. Asume evolución, y te guía a través de ella.
 
 ---
 
 ## 🔧 Sistema de Configuración (en capas)
 
-Clair utiliza un sistema de configuración jerárquico que equilibra
-flexibilidad individual con coherencia colectiva.
+Dux utiliza una jerarquía de autoridad para resolver conflictos de configuración:
 
-Prioridad:
+1. **La Voluntad del Individuo (`config.json`)**
+2. **El Legado del Equipo** (`"team"`)
+3. **El Orden Predeterminado**
 
-1. **Configuración personal (`config.json`)**
-2. **Configuración del equipo** (`"team"`)
-3. **Valores predeterminados**
-
-Un buen intérprete no repite conocimiento innecesariamente.
+Un buen guía no te hace repetir lo que ya sabe; Dux lo recuerda por ti.
 
 ### 🛠 Configuración asistida
 
 ```bash
-clair setup
+dux setup
+
 ```
 
 ---
 
 ## 🛠️ Herramientas y APIs utilizadas
 
-Clair se apoya en APIs oficiales:
+Dux se apoya en APIs oficiales:
 
 ### ☁️ OpenShift
 
@@ -229,31 +157,30 @@ Clair se apoya en APIs oficiales:
 
 ---
 
-## 🤝 Contribuciones
+## 🤝 Alianzas y Legado
 
-Clair evoluciona con la experiencia del equipo.
+Dux evoluciona con la experiencia acumulada en el descenso diario de cada desarrollador. El mapa del abismo se completa entre todos.
 
-Puedes contribuir:
+Puedes fortalecer la guía aportando:
 
-* 💡 nuevas ideas
-* 🐛 bugs
-* 🛠️ mejoras de código o docs
-* ✨ nuevas integraciones
-
----
-
-## 📬 Feedback y soporte
-
-Si algo no funciona, o si Clair podría ver con más claridad:
-
-1. Abre un issue
-2. Aporta contexto
-3. Etiquétalo correctamente
-
-El conocimiento se comparte.
-La fricción se disipa.
+* 💡 **Nuevas visiones:** ideas para expandir los dominios de la herramienta.
+* 🐛 **Grietas en el camino:** reportes de bugs o comportamientos inesperados.
+* 🛠️ **Refuerzos:** mejoras de código o refinamiento de la documentación.
+* ✨ **Nuevos Círculos:** integraciones con herramientas que aún no han sido exploradas.
 
 ---
 
-🧘 **Clair**
-*Viendo con claridad entre sistemas que exigen fe.*
+## 📬 Encuentra el camino
+
+Si en algún momento el rastro se pierde, o si sientes que Dux no está iluminando el pasaje correcto:
+
+1. **Abre un Issue:** Deja una marca en el camino para que otros la vean.
+2. **Aporta Contexto:** Describe en qué "círculo" te encuentras y qué intentabas invocar.
+3. **Etiqueta con Precisión:** Ayuda a que la sabiduría llegue rápido a donde se necesita.
+
+El conocimiento se comparte para que nadie quede atrapado.
+La fricción se disipa bajo la luz de la razón.
+
+---
+
+🏛️ **Dux** *Guía de los que transitan entre sistemas que exigen fe.*

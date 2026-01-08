@@ -9,7 +9,7 @@ import { JiraProject, JiraProjectReponse } from "./project";
 import { JiraUser, JiraUserResponse } from "./user";
 
 export class Jira {
-  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/42]: try to stick to one
+  // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/42]: try to stick to one
   private jira: ReturnType<typeof jira>;
   private api: AxiosInstance;
 
@@ -26,7 +26,7 @@ export class Jira {
   async getUsers() {
     const params = { project: Config.get().jira.project_key, maxResults: 1000 };
     const res = await this.api.get("/3/user/assignable/search", { params });
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/53]: test
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/53]: test
     const data = res.data as JiraUserResponse[];
     return data.map((u) => JiraUser.fromUserResponse(u));
   }

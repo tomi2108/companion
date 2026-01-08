@@ -19,7 +19,7 @@ export default {
     await new Workflow([
       new PromptOcProject({ server: "cuyo" }),
       new GetDeployments({
-        // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/67]: make this script also upgrade frontend deployments
+        // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/67]: make this script also upgrade frontend deployments
         transform: ({ deployments }) => ({ deployments: deployments.map((d) => !filterFrontendDeployments(d)) })
       }),
       new ForEach({

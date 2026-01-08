@@ -1,4 +1,4 @@
-# clair repos install
+# dux repos install
 
 Installs or updates dependencies in selected repositories.
 It supports targeting all repositories, frontend repositories, backend repositories,
@@ -9,16 +9,16 @@ The command handles the installation process, including creating a new branch, c
 
 ```bash
 # Install a dependency in all repositories:
-clair repos install --all
+dux repos install --all
 
 # Install a dependency only in frontend repositories:
-clair repos install --frontend
+dux repos install --frontend
 
 # Install as a dev dependency in backend repositories:
-clair repos install --backend --dev
+dux repos install --backend --dev
 
 # Install a dependency in a single repository selected interactively:
-clair repos install
+dux repos install
 ```
 
 ## Arguments

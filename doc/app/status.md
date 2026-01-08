@@ -1,4 +1,4 @@
-# clair app status
+# dux app status
 
 Retrieves and displays the status of applications deployed in a chosen OpenShift project.
 It presents the information in a tabular format with the following columns:
@@ -12,7 +12,7 @@ It presents the information in a tabular format with the following columns:
 ## Usage
 
 ```bash
-clair app status
+dux app status
 ```
 
 ## Arguments

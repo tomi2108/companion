@@ -1,4 +1,4 @@
-# clair repos clean
+# dux repos clean
 
 Cleans Git repositories by deleting branches matching specific patterns (e.g., `nivelacion`, `feature`, `bugfix`, `hotfix`, `fix`, `despliegue`) in the specified repositories. If no repositories are specified, it prompts the user to select a project and confirm the action. A progress bar tracks the cleaning process for multiple repositories.
 
@@ -6,13 +6,13 @@ Cleans Git repositories by deleting branches matching specific patterns (e.g., `
 
 ```bash
 # Clean all repositories
-clair repos clean --all
+dux repos clean --all
 
 # Clean only frontend repositories
-clair repos clean --frontend
+dux repos clean --frontend
 
 # Clean a specific repository by selecting it interactively
-clair repos clean
+dux repos clean
 ```
 
 ## Arguments

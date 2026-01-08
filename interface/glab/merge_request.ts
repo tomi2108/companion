@@ -46,12 +46,12 @@ export class MergeRequest {
   }
 
   async close() {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/62]: test
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/62]: test
     return await this.glab.MergeRequests.remove(this.project_id, this.iid);
   }
 
   async approve() {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/55]: fix this
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/55]: fix this
     return await this.glab.MergeRequests.accept(this.project_id, this.iid);
   }
 

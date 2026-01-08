@@ -50,7 +50,7 @@ export default {
           const secrets = deployment?.getSecrets() ?? null;
           const [last, current] = await Promise.all([
             (async () => {
-              // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/76]: for frontend repos look at -beta... -rc based on project
+              // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/76]: for frontend repos look at -beta... -rc based on project
               await app_repo.update();
               return (await app_repo.getTags())?.[0];
             })(),

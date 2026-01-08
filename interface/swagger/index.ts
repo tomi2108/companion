@@ -67,7 +67,7 @@ export class Swagger {
         requestBody: {
           content: {
             "application/json": {
-              // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/41]: infer body type
+              // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/41]: infer body type
               schema: {
                 type: "object"
               }

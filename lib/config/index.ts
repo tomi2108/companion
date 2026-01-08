@@ -27,12 +27,12 @@ const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
 
 export function getConfigPath() {
-  if (process.env.CLAIR_CONFIG) return process.env.CLAIR_CONFIG;
-  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "clair", "config.json");
+  if (process.env.DUX_CONFIG) return process.env.DUX_CONFIG;
+  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "dux", "config.json");
   else if (process.platform === "darwin" || process.platform === "linux") {
-    const clair = path.join(homeDir, ".config", "clair", "config.json");
+    const dux = path.join(homeDir, ".config", "dux", "config.json");
     const companion = path.join(homeDir, ".config", "companion", "config.json");
-    if (fs.existsSync(clair)) return clair;
+    if (fs.existsSync(dux)) return dux;
     return companion;
   }
   throw new Error("Unknown platform");
@@ -98,7 +98,7 @@ export class Config {
   async create(ctx: ExecutionContext) {
     const log = ctx.logger;
     const ui = ctx.ui;
-    log.warning("Configuration file config.json for clair was not found");
+    log.warning("Configuration file config.json for dux was not found");
     const setup = await ui.confirm({ message: "Would you like to setup a config interactively?" });
     if (setup) await this.setup(ctx);
     process.exit(0);
