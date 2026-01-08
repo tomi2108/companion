@@ -1,4 +1,4 @@
-# 🏛️ Dux
+# 🏮🧭  Dux
 
 **Dux** es el guía de los desarrolladores que deben transitar por los círculos concéntricos de la infraestructura moderna.
 
@@ -213,4 +213,4 @@ La fricción se disipa bajo la luz de la razón.
 
 ---
 
-🏛️ **Dux** *Guía de los que transitan entre sistemas que exigen fe.*
+🏮🧭 **Dux** *Guía de los que transitan entre sistemas que exigen fe.*
