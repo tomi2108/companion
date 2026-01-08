@@ -5,15 +5,14 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowStep } from "..";
 
-type Reads = { deploy_repo: DeployRepo };
+type Reads = { app_name?: string; deploy_repo: DeployRepo };
 type Writes = { app_repo: AppRepo };
 
 export class GetAppRepo extends WorkflowStep<Reads, Writes> {
 
-  async run(ctx: ExecutionContext, { deploy_repo }: Reads) {
+  async run(ctx: ExecutionContext, { deploy_repo, app_name }: Reads) {
     let app_repo: AppRepo | null = null;
-    const { name: search } = await deploy_repo.getInfo();
-
+    const search = app_name ?? (await deploy_repo.getInfo()).name;
     const spinner = ctx.ui.loading("Getting app repo");
     for (const d of [...getPaths("frontend"), ...getPaths("backend")]) {
       app_repo = new AppRepo(d);
