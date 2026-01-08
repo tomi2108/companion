@@ -66,34 +66,64 @@ Accede y gestiona secretos de forma segura y centralizada, protegidos bajo llave
 
 ---
 
-## ✅ Checklist de funcionalidades
+## ✅ Checklist funcionalidades de Companion
 
 ### 🔧 Inicialización de Entornos
+- [x] Generación automática de estructura de carpetas para el proyecto
+- [x] Carga de configuraciones según equipo (ej. frontend, backend, devops)
 
-* [x] Generación automática de estructura de carpetas
-* [x] Carga de configuraciones según equipo (frontend, backend, devops)
+### 🧠 Configuraciones por Equipo/Proyecto
+- [x] Carga condicional de configuración basada en clave `"team"`
+- [x] Fallback a configuraciones por defecto si no se encuentra personalización
+- [x] Comando interactivo `companion setup` para facilitar configuración 
+- [x] Validación automática de esquemas de configuración.
 
-### 🧠 Configuración por Equipo/Proyecto
+### 🚀 Integración con OpenShift
+- [x] Login automático al clúster mediante configuración guardada
+- [x] Despliegue de aplicaciones 
+- [x] Visualización de logs en tiempo real de pods específicos
+- [ ] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
+- [x] Eliminación, reinicio y monitoreo de pods y deployments
+- [ ] Forwarding de puertos para servicios específicos
+- [x] Gestión de secretos y configuración de variables de entorno
+- [x] Generación de rutas públicas para testing rápido
+- [x] Creación de archivos `.env` con la configuración de ambientes desplegados
 
-* [x] Comando interactivo `dux setup`
-* [x] Validación automática de esquemas
+### 🔁 Utilidades para GitLab
+- [x] Clonación inteligente de repositorios del grupo del proyecto
+- [x] Creación y asignación automática de *merge requests*
+- [x] Revisión del estado de pipelines asociados a una MR o branch
+- [x] Asignación de revisores automáticamente según reglas del equipo
+- [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
+- [x] Sincronización de ramas locales con `origin` automáticamente
+- [x] Nivelación de ramas
 
-### 🚀 OpenShift
+### 📋 Integración con Jira
+- [x] Creación de tickets 
+- [ ] Cambio automático de estado de ticket al crear una nueva rama
+- [x] Actualización del ticket con comentarios 
+- [ ] Enlace automático entre tickets y commits o MRs
+- [ ] Búsqueda de tickets abiertos asignados al usuario actual (🚧 en progreso)
+- [ ] Filtro de tickets por sprint, tipo o estado desde la CLI (🚧 en progreso)
+- [ ] Transiciones de estado automatizadas según evento (ej. push a `main`)
+- [x] Comando para estimar tickets 
 
-* [x] Login automático al clúster
-* [x] Logs en tiempo real y gestión de pods
-* [x] Generación de rutas y archivos `.env`
+### 🛡️ Integración con Vault  
+- [x] Lectura y escritura de secretos por entorno/proyecto
+- [x] Reinicio de deployments afectados por un secret luego de su actualizacion
 
-### 🔁 GitLab
+### 🗄️ Utilidades para MongoDB  
+- [ ] Conexión simplificada a instancias MongoDB.
+- [ ] Exploración rápida de colecciones y conteo de documentos  
+- [ ] Ejecución de consultas predefinidas o scripts desde archivos `.js`  
+- [ ] Exportación e importación de datos.
+- [ ] Generación de backups. 
 
-* [x] Clonación inteligente de repositorios
-* [x] Creación automática de merge requests
-* [x] Sincronización y nivelación de ramas
-
-### 🛡️ Vault
-
-* [x] Lectura y escritura de secretos
-* [x] Reinicio de deployments afectados
+### 🛠 Otras Utilidades
+- [ ] Generación de documentación interna 
+- [ ] Notificaciones locales o vía Slack en eventos clave
+- [x] Comando `companion upgrade` para autoactualización de la herramienta
+- [x] Comando `companion open` para abrir un repositorio en el editor 
 
 ---
 
