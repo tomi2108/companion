@@ -10,17 +10,18 @@ const schema = z.object({
   token: z.string(),
   labels: z.array(z.string()).optional(),
   board_id: z.number().optional(),
-  monitors_project_key: z.string().optional(),
-  monitors_parent_issue_key: z.string().optional()
+  monitors: z.object({
+    project_key: z.string().optional(),
+    parent_issue_key: z.string().optional()
+  })
 });
 
 type Schema = z.infer<typeof schema>;
 
 export class JiraConfig implements IntegrationConfig, Schema {
   project_key?: Schema["project_key"];
-  monitors_project_key?: Schema["project_key"];
+  monitors: Schema["monitors"] = {};
   labels?: Schema["labels"];
-  monitors_parent_issue_key?: Schema["project_key"];
   board_id?: Schema["board_id"];
   username: Schema["username"] = "";
   token: Schema["token"] = "";

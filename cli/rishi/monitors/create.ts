@@ -15,11 +15,11 @@ import { toYaml } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 
-import { createMonitorIssue } from "./doc";
+import { createMonitorIssue } from "./issue";
 
 export default {
-  command: "new",
-  aliases: ["n"],
+  command: "create",
+  aliases: ["c"],
   describe: "Create new monitor yaml",
   handler: async () => {
     const config = Config.get();

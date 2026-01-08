@@ -138,8 +138,10 @@
   "jira": {
     "project_key": "ECR",
     "board_id": 36,
-    "monitors_project_key": "AGOAW",
-    "monitors_parent_issue_key": "AGOAW-70",
+    "monitors": {
+      "project_key": "AGOAW",
+      "parent_issue_key": "AGOAW-70"
+    },
     "labels": [
       "ECR-Replacement",
       "ECR-Raplacement"
