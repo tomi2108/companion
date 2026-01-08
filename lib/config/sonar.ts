@@ -11,7 +11,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 export class SonarConfig implements IntegrationConfig, Schema {
-  server = process.env.DUX_SONAR_SERVER ?? "";
+  server = process.env.MARO_SONAR_SERVER ?? "";
   token: Schema["token"] = "";
 
   validate(config: unknown) {

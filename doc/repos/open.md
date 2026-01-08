@@ -1,4 +1,4 @@
-# dux repos open
+# maro repos open
 
 Opens selected Git repositories in the configured code editor.
 The command prompts the user to select one or more projects from the frontend, backend, or deployment repositories,
@@ -9,7 +9,7 @@ then opens each selected project in the editor.
 ```bash
 # Open one or more repositories by selecting them interactively
 
-dux repos open
+maro repos open
 ```
 
 ## Arguments

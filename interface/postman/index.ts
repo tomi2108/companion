@@ -20,7 +20,7 @@ export class Postman {
 
   mergeFiles(name: string, files: PostmanFile[]): PostmanFile {
     if (files.length === 0) throw new Error("Cannot merge empty array");
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/68]: Think about events and variables
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/maro/-/issues/68]: Think about events and variables
     return {
       item: files.map((f) => ({
         item: f.item,

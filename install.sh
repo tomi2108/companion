@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git pull
-npm uninstall -g dux
+npm uninstall -g maro
 npm run clean
 npm install
 npm run build

@@ -1,7 +1,7 @@
 {
-  "name": "dux",
+  "name": "maro",
   "version": "2.0.0",
-  "main": "./dist/cli/dux.js",
+  "main": "./dist/cli/maro.js",
   "scripts": {
     "lint": "eslint .",
     "build": "tsc --project ./tsconfig.json ; tsc-alias -p tsconfig.json",
@@ -16,7 +16,7 @@
   "license": "ISC",
   "type": "commonjs",
   "bin": {
-    "dux": "./dist/cli/app.js",
+    "maro": "./dist/cli/app.js",
     "companion": "./dist/cli/app.js"
   },
   "engines": {

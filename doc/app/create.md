@@ -1,11 +1,11 @@
-# dux app create
+# maro app create
 
 Create GitLab issues for app deployment in ArgoCD.
 
 ## Usage
 
 ```bash
-dux app create
+maro app create
 ```
 
 ## Arguments

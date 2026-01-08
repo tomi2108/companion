@@ -1,14 +1,14 @@
-# dux app start
+# maro app start
 
 Start an app and its sub-apps locally.
 
 ## Usage
 
 ```bash
-dux app start
+maro app start
 
 # With raw logs
-dux app start --raw
+maro app start --raw
 ```
 
 ## Arguments

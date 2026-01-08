@@ -20,9 +20,9 @@ type Schema = z.infer<typeof schema>;
 export class GitlabConfig implements IntegrationConfig, Schema {
   username: Schema["username"] = "";
   token: Schema["token"] = "";
-  server = process.env.DUX_GLAB_SERVER ?? "";
-  ms_template_id = Number(process.env.DUX_GLAB_MS_TEMPLATE_ID) ?? -1;
-  mf_template_id = Number(process.env.DUX_GLAB_MF_TEMPLATE_ID) ?? -1;
+  server = process.env.MARO_GLAB_SERVER ?? "";
+  ms_template_id = Number(process.env.MARO_GLAB_MS_TEMPLATE_ID) ?? -1;
+  mf_template_id = Number(process.env.MARO_GLAB_MF_TEMPLATE_ID) ?? -1;
   repos: { [K in PathKey]?: number } = {};
   ci_webhook: Schema["ci_webhook"];
   default_reviewer: Schema["default_reviewer"];

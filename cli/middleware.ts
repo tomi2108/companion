@@ -20,7 +20,7 @@ export async function checkVersion() {
     const remote_version = release.name;
     if (current_version !== remote_version) {
       console.log("New version", chalk.green(`v${remote_version}`), "is available!, You are using", chalk.red(`v${current_version}`));
-      console.log("Upgrade now with: dux upgrade");
+      console.log("Upgrade now with: maro upgrade");
     }
     return;
   }).catch(() => { });

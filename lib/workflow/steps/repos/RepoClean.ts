@@ -16,7 +16,7 @@ export class RepoClean extends WorkflowStep<Reads, Writes, Options> {
   }
 
   async run(_: ExecutionContext, { repo }: Reads) {
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/dux/-/issues/75]: make a team , user overrideable config
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/maro/-/issues/75]: make a team , user overrideable config
     const to_delete = ["nivelacion", "feature", "bugfix", "hotfix", "fix", "despliegue", "bump"];
 
     if (this.options?.force) await repo.reset();

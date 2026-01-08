@@ -1,4 +1,4 @@
-# dux repos merge
+# maro repos merge
 
 Creates a merge request to merge a source branch into a target branch for selected repositories
 using a temporary in between branch.
@@ -7,16 +7,16 @@ using a temporary in between branch.
 
 ```bash
 # Merge branches for all repositories
-dux repos merge --all
+maro repos merge --all
 
 # Merge branches for frontend repositories only
-dux repos merge --frontend
+maro repos merge --frontend
 
 # Merge branches for backend repositories only
-dux repos merge --backend
+maro repos merge --backend
 
 # Merge branches for a single repository selected interactively
-dux repos merge 
+maro repos merge 
 ```
 
 ## Arguments

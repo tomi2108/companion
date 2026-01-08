@@ -5,7 +5,7 @@ import { Workflow } from "@workflow/workflow";
 export default {
   command: "setup",
   aliases: [],
-  describe: "Setup dux",
+  describe: "Setup maro",
   handler: async () => {
     const ctx = ExecutionContext.get();
     await new Workflow([

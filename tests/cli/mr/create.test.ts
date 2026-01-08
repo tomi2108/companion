@@ -1,4 +1,4 @@
-// import create from "../../../src/cli/dux/mr/create";
+// import create from "../../../src/cli/maro/mr/create";
 import { it } from "vitest";
 it("", () => { });
 // import * as ui from "../../../src/lib/ui";

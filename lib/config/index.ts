@@ -27,12 +27,12 @@ const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
 
 export function getConfigPath() {
-  if (process.env.DUX_CONFIG) return process.env.DUX_CONFIG;
-  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "dux", "config.json");
+  if (process.env.MARO_CONFIG) return process.env.MARO_CONFIG;
+  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "maro", "config.json");
   else if (process.platform === "darwin" || process.platform === "linux") {
-    const dux = path.join(homeDir, ".config", "dux", "config.json");
+    const maro = path.join(homeDir, ".config", "maro", "config.json");
     const companion = path.join(homeDir, ".config", "companion", "config.json");
-    if (fs.existsSync(dux)) return dux;
+    if (fs.existsSync(maro)) return maro;
     return companion;
   }
   throw new Error("Unknown platform");
@@ -98,7 +98,7 @@ export class Config {
   async create(ctx: ExecutionContext) {
     const log = ctx.logger;
     const ui = ctx.ui;
-    log.warning("Configuration file config.json for dux was not found");
+    log.warning("Configuration file config.json for maro was not found");
     const setup = await ui.confirm({ message: "Would you like to setup a config interactively?" });
     if (setup) await this.setup(ctx);
     process.exit(0);

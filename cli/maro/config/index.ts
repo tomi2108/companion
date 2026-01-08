@@ -5,7 +5,7 @@ import setup from "@cli/config/setup";
 
 export default {
   command: "config <command>",
-  describe: "Manage dux local config",
+  describe: "Manage maro local config",
   aliases: ["cfg", "conf"],
   builder: (yargs: Argv) => yargs
     .command(edit)

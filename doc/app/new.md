@@ -1,11 +1,11 @@
-# dux app new
+# maro app new
 
 Create a new application from a predefined template.
 
 ## Usage
 
 ```bash
-dux app new
+maro app new
 ```
 
 ## Arguments
