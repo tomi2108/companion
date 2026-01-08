@@ -13,14 +13,14 @@ const schema = z.object({
   monitors: z.object({
     project_key: z.string().optional(),
     parent_issue_key: z.string().optional()
-  })
+  }).optional()
 });
 
 type Schema = z.infer<typeof schema>;
 
 export class JiraConfig implements IntegrationConfig, Schema {
   project_key?: Schema["project_key"];
-  monitors: Schema["monitors"] = {};
+  monitors?: Schema["monitors"] = {};
   labels?: Schema["labels"];
   board_id?: Schema["board_id"];
   username: Schema["username"] = "";

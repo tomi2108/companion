@@ -139,7 +139,6 @@ export class Config {
       }
       this[k] = deepMerge(this[k], validatedConfig[key]);
     });
-
   }
 
   private getAvailablePresets() {

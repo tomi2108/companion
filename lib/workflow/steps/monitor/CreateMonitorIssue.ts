@@ -12,10 +12,15 @@ type Options = {};
 export class CreateMonitorIssue extends WorkflowStep<Reads, Writes, Options> {
 
   async run(ctx: ExecutionContext, { monitor_file }: Reads) {
-    new ValidateConfig({ keys: ["jira.monitors.project_key", "jira.monitors.parent_issue_key"] }).run(ctx);
+    new ValidateConfig({
+      keys: [
+        "jira.monitors.project_key",
+        "jira.monitors.parent_issue_key"
+      ]
+    }).run(ctx);
     const doc = monitor_file.getDoc();
-    const project_key = ctx.config.jira.monitors.project_key!;
-    const parent_issue_key = ctx.config.jira.monitors.parent_issue_key!;
+    const project_key = ctx.config.jira.monitors?.project_key ?? "";
+    const parent_issue_key = ctx.config.jira.monitors?.parent_issue_key ?? "";
     const jira = new Jira();
     const reporter = await jira.getCurrentUser();
     const project = await jira.getProject(project_key);

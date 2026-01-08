@@ -1,4 +1,3 @@
-import { getAppCollections } from "@files/http";
 import { Postman } from "@interface/postman";
 
 export default {

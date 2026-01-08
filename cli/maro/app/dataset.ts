@@ -2,7 +2,6 @@ import axios from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
-import { getAppCollections } from "@files/http";
 import { createLogFile } from "@files/utils";
 import { Sql } from "@interface/sql/sql";
 import { Config, ConfigError } from "@lib/config";
