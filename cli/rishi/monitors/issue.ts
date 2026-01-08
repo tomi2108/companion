@@ -1,5 +1,5 @@
 import { ExecutionContext } from "@lib/ctx";
-import { MonitorIssue } from "@workflow/steps/monitor/MonitorIssue";
+import { CreateMonitorIssue } from "@workflow/steps/monitor/CreateMonitorIssue";
 import { PromptMonitorFile } from "@workflow/steps/monitor/PromptMonitorFile";
 import { Workflow } from "@workflow/workflow";
 
@@ -11,7 +11,7 @@ export default {
     const ctx = ExecutionContext.get();
     await new Workflow([
       new PromptMonitorFile(),
-      new MonitorIssue()
+      new CreateMonitorIssue()
     ]).run(ctx);
   }
 };

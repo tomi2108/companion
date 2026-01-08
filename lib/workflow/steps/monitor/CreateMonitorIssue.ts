@@ -9,7 +9,7 @@ type Reads = { monitor_file: MonitorYaml };
 type Writes = {};
 type Options = {};
 
-export class MonitorIssue extends WorkflowStep<Reads, Writes, Options> {
+export class CreateMonitorIssue extends WorkflowStep<Reads, Writes, Options> {
 
   async run(ctx: ExecutionContext, { monitor_file }: Reads) {
     new ValidateConfig({ keys: ["jira.monitors.project_key", "jira.monitors.parent_issue_key"] }).run(ctx);

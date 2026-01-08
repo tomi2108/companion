@@ -3,7 +3,7 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { Project } from "@oc/project";
 
-import { WorkflowStep } from "..";
+import { WorkflowOptions, WorkflowStep } from "..";
 import { GetDeployRepo } from "./GetDeployRepo";
 import { CopyEnv } from "../env/CopyEnv";
 
@@ -12,13 +12,20 @@ type Reads = {
   project: Project;
 };
 type Writes = { sub_apps: AppRepo[] };
+type Options = { include_initial?: boolean };
 
 export class GetSubApps extends WorkflowStep<Reads, Writes> {
+
+  constructor(override options?: WorkflowOptions<Options, Writes>) {
+    super(options);
+  }
 
   async run(ctx: ExecutionContext, { app_repo, project }: Reads) {
     const backend = getPaths("backend");
     const apps = backend.map((b) => new AppRepo(b));
     const sub_apps: AppRepo[] = [];
+
+    if (this.options?.include_initial) sub_apps.push(app_repo);
 
     async function getSubApps(repo: AppRepo) {
       const { name: app } = await repo.getInfo();

@@ -2,7 +2,7 @@ import { InvalidHttpFile } from "@files/errors";
 
 import { FileFormatter } from ".";
 
-const valid_methods = [
+export const valid_methods = [
   "GET",
   "PUT",
   "POST",

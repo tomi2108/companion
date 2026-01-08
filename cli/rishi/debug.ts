@@ -1,9 +1,8 @@
 import { ExecutionContext } from "@lib/ctx";
-import { confirm } from "@lib/ui";
 import { Debug } from "@steps/Debug";
-import { Input } from "@steps/ui/Input";
 import { ForEach } from "@steps/flow/ForEach";
 import { If } from "@steps/flow/If";
+import { Input } from "@steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -22,7 +21,7 @@ export default {
     new Workflow([
       new Input({ message: "haha", write: "aaaa" }),
       new If({
-        condition: () => confirm({ message: "AAAA" }),
+        condition: () => ctx.ui.confirm({ message: "AAAA" }),
         then: pipe,
         else: new Workflow([pipe, new Debug()])
       })

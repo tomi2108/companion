@@ -3,6 +3,7 @@ import z from "zod/v4";
 import { InvalidMonitorYaml } from "@files/errors";
 import { APP_TYPES } from "@lib/constants";
 
+import { valid_methods } from "./http_formatter";
 import { YamlFormatter } from "./yaml_formatter";
 
 const MonitorYamlContentSchema = z.object(
@@ -19,7 +20,7 @@ const MonitorYamlContentSchema = z.object(
         routes: z.array(
           z.object({
             endpoint: z.string(),
-            method: z.enum(["GET", "POST"])
+            method: z.enum(valid_methods)
           }))
       })
     )
