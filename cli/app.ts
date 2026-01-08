@@ -3,9 +3,9 @@
 import cp from "node:child_process";
 import path from "node:path";
 
-const rishi = path.join(__dirname, "rishi");
+const clair = path.join(__dirname, "clair");
 const env = path.resolve(__dirname, "../../.env");
-const cmd = `node --env-file ${env} --no-warnings ${rishi}`;
+const cmd = `node --env-file ${env} --no-warnings ${clair}`;
 const args = process.argv.slice(2);
 
 cp.spawnSync(cmd, args, {

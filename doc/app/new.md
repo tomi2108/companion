@@ -1,11 +1,11 @@
-# rishi app new
+# clair app new
 
 Create a new application from a predefined template.
 
 ## Usage
 
 ```bash
-rishi app new
+clair app new
 ```
 
 ## Arguments

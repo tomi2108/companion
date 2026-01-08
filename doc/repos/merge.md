@@ -1,4 +1,4 @@
-# rishi repos merge
+# clair repos merge
 
 Creates a merge request to merge a source branch into a target branch for selected repositories
 using a temporary in between branch.
@@ -7,16 +7,16 @@ using a temporary in between branch.
 
 ```bash
 # Merge branches for all repositories
-rishi repos merge --all
+clair repos merge --all
 
 # Merge branches for frontend repositories only
-rishi repos merge --frontend
+clair repos merge --frontend
 
 # Merge branches for backend repositories only
-rishi repos merge --backend
+clair repos merge --backend
 
 # Merge branches for a single repository selected interactively
-rishi repos merge 
+clair repos merge 
 ```
 
 ## Arguments

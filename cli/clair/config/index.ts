@@ -5,7 +5,7 @@ import setup from "@cli/config/setup";
 
 export default {
   command: "config <command>",
-  describe: "Manage rishi local config",
+  describe: "Manage clair local config",
   aliases: ["cfg", "conf"],
   builder: (yargs: Argv) => yargs
     .command(edit)

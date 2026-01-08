@@ -1,11 +1,11 @@
-# rishi app expose
+# clair app expose
 
 Configures an application for exposure in 3scale by generating a YAML configuration file and managing Git operations.
 
 ## Usage
 
 ```bash
-rishi app expose
+clair app expose
 ```
 
 ## Arguments

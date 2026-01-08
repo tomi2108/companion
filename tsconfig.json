@@ -7,7 +7,7 @@
     "baseUrl": "./",
     "paths": {
       "@cli/*": [
-        "cli/rishi/*"
+        "cli/clair/*"
       ],
       "@oc": [
         "interface/oc/index"

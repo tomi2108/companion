@@ -1,11 +1,11 @@
-# rishi app create
+# clair app create
 
 Create GitLab issues for app deployment in ArgoCD.
 
 ## Usage
 
 ```bash
-rishi app create
+clair app create
 ```
 
 ## Arguments

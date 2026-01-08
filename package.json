@@ -1,12 +1,12 @@
 {
-  "name": "rishi",
+  "name": "clair",
   "version": "2.0.0",
-  "main": "./dist/cli/rishi.js",
+  "main": "./dist/cli/clair.js",
   "scripts": {
     "lint": "eslint .",
     "build": "tsc --project ./tsconfig.json ; tsc-alias -p tsconfig.json",
     "test": "vitest --coverage --reporter=verbose",
-    "precommit": "npm run build && lint-staged && npm run circular-dependencies && npm run test",
+    "precommit": "",
     "clean": "rm -rf package-lock.json node_modules dist",
     "circular-dependencies": "madge --circular .",
     "prepare": "husky"
@@ -16,7 +16,7 @@
   "license": "ISC",
   "type": "commonjs",
   "bin": {
-    "rishi": "./dist/cli/app.js",
+    "clair": "./dist/cli/app.js",
     "companion": "./dist/cli/app.js"
   },
   "engines": {

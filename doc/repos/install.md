@@ -1,4 +1,4 @@
-# rishi repos install
+# clair repos install
 
 Installs or updates dependencies in selected repositories.
 It supports targeting all repositories, frontend repositories, backend repositories,
@@ -9,16 +9,16 @@ The command handles the installation process, including creating a new branch, c
 
 ```bash
 # Install a dependency in all repositories:
-rishi repos install --all
+clair repos install --all
 
 # Install a dependency only in frontend repositories:
-rishi repos install --frontend
+clair repos install --frontend
 
 # Install as a dev dependency in backend repositories:
-rishi repos install --backend --dev
+clair repos install --backend --dev
 
 # Install a dependency in a single repository selected interactively:
-rishi repos install
+clair repos install
 ```
 
 ## Arguments

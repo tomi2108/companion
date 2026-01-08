@@ -27,12 +27,12 @@ const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
 
 export function getConfigPath() {
-  if (process.env.RISHI_CONFIG) return process.env.RISHI_CONFIG;
-  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "rishi", "config.json");
+  if (process.env.CLAIR_CONFIG) return process.env.CLAIR_CONFIG;
+  if (process.platform === "win32") return path.join(homeDir, "AppData", "Roaming", "clair", "config.json");
   else if (process.platform === "darwin" || process.platform === "linux") {
-    const rishi = path.join(homeDir, ".config", "rishi", "config.json");
+    const clair = path.join(homeDir, ".config", "clair", "config.json");
     const companion = path.join(homeDir, ".config", "companion", "config.json");
-    if (fs.existsSync(rishi)) return rishi;
+    if (fs.existsSync(clair)) return clair;
     return companion;
   }
   throw new Error("Unknown platform");
@@ -98,7 +98,7 @@ export class Config {
   async create(ctx: ExecutionContext) {
     const log = ctx.logger;
     const ui = ctx.ui;
-    log.warning("Configuration file config.json for rishi was not found");
+    log.warning("Configuration file config.json for clair was not found");
     const setup = await ui.confirm({ message: "Would you like to setup a config interactively?" });
     if (setup) await this.setup(ctx);
     process.exit(0);

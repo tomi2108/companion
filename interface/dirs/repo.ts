@@ -252,7 +252,7 @@ export class Repo {
     const pathname = url.pathname.slice(0, -4).slice(1);
     const name = pathname.split("/").at(-1) ?? "";
     let type = Config.get().openshift.default_ms_type || APP_TYPES[0];
-    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/rishi/-/issues/56]: Not the best idea, find a better way
+    // TODO[https://gitlab-ee.agil.movistar.com.ar/movar_app/tools/clair/-/issues/56]: Not the best idea, find a better way
     APP_TYPES.forEach((t) => name?.includes(t) ? type = t : undefined);
     return { name, pathname, type };
   }

@@ -20,7 +20,7 @@ import upgrade from "@cli/upgrade";
 import { checkVersion, loadExecutionContext } from "./middleware";
 
 yargs
-  .scriptName("rishi")
+  .scriptName("clair")
   .usage("$0 <command> [subcommand]")
   .boolean("debug")
   .describe("debug", "Run on debug mode")

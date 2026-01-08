@@ -34,11 +34,11 @@ type Schema = z.infer<typeof schema>;
 export class OpenShiftConfig implements IntegrationConfig, Schema {
   username: Schema["username"] = "";
   password: Schema["password"] = "";
-  server_name = process.env.RISHI_OC_SERVER_NAME ?? "";
-  auth_server_cuyo = process.env.RISHI_OC_AUTH_SERVER_CUYO ?? "";
-  auth_server_barracas = process.env.RISHI_OC_AUTH_SERVER_BARRACAS ?? "";
-  server_cuyo = process.env.RISHI_OC_SERVER_CUYO ?? "";
-  server_barracas = process.env.RISHI_OC_SERVER_BARRACAS ?? "";
+  server_name = process.env.CLAIR_OC_SERVER_NAME ?? "";
+  auth_server_cuyo = process.env.CLAIR_OC_AUTH_SERVER_CUYO ?? "";
+  auth_server_barracas = process.env.CLAIR_OC_AUTH_SERVER_BARRACAS ?? "";
+  server_cuyo = process.env.CLAIR_OC_SERVER_CUYO ?? "";
+  server_barracas = process.env.CLAIR_OC_SERVER_BARRACAS ?? "";
   namespace_prefix?: Schema["namespace_prefix"];
   mf_host_template?: Schema["mf_host_template"];
   project?: Schema["project"];
@@ -52,9 +52,9 @@ export class OpenShiftConfig implements IntegrationConfig, Schema {
   }
 
   prod() {
-    this.server_name = process.env.RISHI_PROD_OC_SERVER_NAME ?? "";
-    this.server_cuyo = process.env.RISHI_PROD_OC_SERVER_CUYO ?? "";
-    this.auth_server_cuyo = process.env.RISHI_PROD_OC_AUTH_SERVER_CUYO ?? "";
+    this.server_name = process.env.CLAIR_PROD_OC_SERVER_NAME ?? "";
+    this.server_cuyo = process.env.CLAIR_PROD_OC_SERVER_CUYO ?? "";
+    this.auth_server_cuyo = process.env.CLAIR_PROD_OC_AUTH_SERVER_CUYO ?? "";
   }
 
   async setup(ctx: ExecutionContext) {

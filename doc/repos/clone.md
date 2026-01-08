@@ -1,4 +1,4 @@
-# rishi repos clone
+# clair repos clone
 
 Clones all specified GitLab repositories into their respective directories as defined in the configuration.
 If a repository already exists in the directory, it updates it.
@@ -7,7 +7,7 @@ The command uses concurrent operations with progress bars to track the cloning o
 ## Usage
 
 ```bash
-rishi repos clone
+clair repos clone
 ```
 
 ## Arguments

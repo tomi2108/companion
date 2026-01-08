@@ -1,14 +1,14 @@
-# rishi app start
+# clair app start
 
 Start an app and its sub-apps locally.
 
 ## Usage
 
 ```bash
-rishi app start
+clair app start
 
 # With raw logs
-rishi app start --raw
+clair app start --raw
 ```
 
 ## Arguments

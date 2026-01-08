@@ -1,23 +1,33 @@
-# 🧙‍♂️✝️  Clerc
+# 🔮✝️ Clair
 
-**Clerc** es una herramienta CLI de asistencia para desarrolladores y equipos técnicos.
+**Clair** es una herramienta CLI de asistencia para desarrolladores y equipos técnicos.
 
-En la tradición europea medieval, un *clerc* no era solo alguien que sabía leer y escribir.
-Era un **intérprete del mundo**, un mediador entre lo cotidiano y lo sagrado, entre sistemas incomprensibles y conocimiento aplicable.
+El nombre *Clair* proviene del latín clarus, que significa claro, luminoso, evidente.
+El nombre Clair proviene del latín clarus, que significa claro, luminoso, evidente. 
+No se trata solo de ver lo evidente, sino de percibir aquello que permite ver: la luz, la claridad, lo comprensible.
 
-El clerc estudiaba textos, observaba patrones, seguía rituales… y, cuando era necesario,
-**invocaba lo invisible** para que el orden se mantuviera.
+De ahí palabras como *clairvoyance*: la capacidad de percibir más allá de la superficie.
 
-Este **Clerc** hace algo parecido, pero con:
+En muchas tradiciones espirituales y religiosas, siempre existió una figura encargada de interpretar:
+rituales, textos, señales, reglas invisibles.
+Alguien que conectaba lo humano con sistemas más grandes que él mismo.
+
+**Clair** ocupa ese mismo rol, pero en el mundo técnico.
+
+Observa configuraciones.
+Reconoce patrones.
+Ejecuta rituales repetibles.
+Y, cuando es necesario, **intercede entre tú y sistemas que exigen fe**.
+
+Este Clair hace eso con:
 OpenShift, GitLab, Jira, Vault… y tu entorno local.
 
-Clerc no reemplaza tus herramientas.
-Las entiende, las conecta y actúa como intermediario entre tú y sistemas que a veces parecen divinos,
-traduciendo su complejidad en rituales simples y repetibles.
+Clair no reemplaza tus herramientas.
+Las entiende, las conecta y traduce su complejidad en acciones simples, previsibles y confiables.
 
 ---
 
-## ✨ ¿Para qué sirve Rishi?
+## ✨ ¿Para qué sirve Clair?
 
 * Simplificar y acelerar la configuración de entornos locales.
 * Automatizar tareas repetitivas relacionadas con OpenShift, GitLab y Jira.
@@ -25,10 +35,10 @@ traduciendo su complejidad en rituales simples y repetibles.
 * Unificar flujos de trabajo sin perder flexibilidad.
 * Reducir el “conocimiento tribal” necesario para operar un proyecto.
 
-Rishi está pensado tanto para:
+Clair está pensado tanto para:
 
 * incorporar nuevos miembros sin fricción
-* como para desarrolladores experimentados que ya saben *demasiado*.
+* como para desarrolladores experimentados que ya han visto demasiado
 
 ---
 
@@ -79,7 +89,7 @@ Acceso rápido a operaciones comunes sobre bases de datos MongoDB.
 
 * [x] Carga condicional basada en `"team"`
 * [x] Fallback a configuraciones por defecto
-* [x] Comando interactivo `rishi setup`
+* [x] Comando interactivo `clair setup`
 * [x] Validación automática de esquemas
 
 ### 🚀 OpenShift
@@ -129,43 +139,42 @@ Acceso rápido a operaciones comunes sobre bases de datos MongoDB.
 
 * [ ] Generación de documentación
 * [ ] Notificaciones (Slack / local)
-* [x] `rishi upgrade` para autoactualización
-* [x] `rishi open` para abrir repositorios en el editor
+* [x] `clair upgrade` para autoactualización
+* [x] `clair open` para abrir repositorios en el editor
 
 ---
 
 ## 🧭 Filosofía del proyecto
 
-Rishi es una **herramienta interna**, diseñada para servir a equipos reales, con flujos reales y restricciones reales.
+Clair es una **herramienta interna**, creada para equipos reales, con flujos reales y limitaciones reales.
 
-No busca ser genérica ni cubrir todos los casos posibles. Busca ser **útil**, **predecible** y **opinionada** cuando hace falta.
+No intenta ser universal.
+Busca ser **útil**, **predecible** y **opinionada** cuando es necesario.
 
-La filosofía de Rishi se basa en algunos principios simples:
+Sus principios son simples:
 
-* 📐 **Convenciones claras sobre configuraciones implícitas**
-  Es mejor una convención explícita y compartida que infinitas opciones mal documentadas.
+* 📐 **Convenciones claras**
+  Es mejor un camino compartido que infinitas opciones ambiguas.
 
 * 🧠 **Conocimiento codificado**
-  Decisiones, rituales y buenas prácticas del equipo viven en el código, no solo en la memoria de unas pocas personas.
+  Las decisiones del equipo viven en el código, no solo en la memoria.
 
 * 🔁 **Menos fricción, menos contexto**
-  Si una tarea es repetitiva, Rishi debería encargarse de ella.
+  Si una tarea es repetitiva, Clair debería encargarse.
 
 * 🛠️ **Automatizar lo aburrido, no lo importante**
-  Rishi no decide por el equipo: ejecuta lo que el equipo ya decidió.
+  Clair ejecuta lo que el equipo ya decidió.
 
-Como todo buen rishi, la herramienta observa, aprende y transmite.
+Aunque Clair es **opinionada por diseño**, una mente verdaderamente clara permanece abierta.
 
-Aunque Rishi es **opinionada por diseño**, un buen rishi mantiene siempre una mente abierta.
+Por eso, la herramienta está construida para ser **fácilmente extensible**:
 
-Por eso, la herramienta está construida para ser **fácilmente extensible** y adaptable a cambios en el ecosistema:
-
-* Integraciones alternativas a GitLab, como **GitHub** u otros proveedores.
+* Integraciones alternativas a GitLab, como **GitHub**.
 * Herramientas que reemplacen o complementen a **Jira**.
-* Nuevas plataformas, servicios o flujos que el equipo adopte con el tiempo.
+* Nuevas plataformas y flujos que el equipo adopte con el tiempo.
 
-Rishi no asume que las herramientas actuales serán eternas.
-Asume que el cambio es parte del camino, y se prepara para acompañarlo.
+Clair no asume permanencia.
+Asume cambio, y se adapta a él.
 
 ---
 
@@ -179,82 +188,72 @@ Asume que el cambio es parte del camino, y se prepara para acompañarlo.
 
 ## 🔧 Sistema de Configuración (en capas)
 
-Rishi utiliza un sistema de configuración jerárquico que equilibra
-flexibilidad individual con coherencia de equipo.
+Clair utiliza un sistema de configuración jerárquico que equilibra
+flexibilidad individual con coherencia colectiva.
 
-El orden de prioridad es:
+Prioridad:
 
 1. **Configuración personal (`config.json`)**
-   Tiene prioridad absoluta.
+2. **Configuración del equipo** (`"team"`)
+3. **Valores predeterminados**
 
-2. **Configuración del equipo**
-   Definida por la clave `"team"` en tu configuración personal.
-
-3. **Valores predeterminados del sistema**
-   Opciones sensatas cuando nada más está definido.
-
-Este enfoque evita duplicación, reduce errores y mantiene consistencia.
-Un buen rishi no repite conocimiento innecesariamente.
+Un buen intérprete no repite conocimiento innecesariamente.
 
 ### 🛠 Configuración asistida
 
 ```bash
-rishi setup
+clair setup
 ```
 
 ---
 
 ## 🛠️ Herramientas y APIs utilizadas
 
-Rishi se apoya en APIs oficiales y bien documentadas:
+Clair se apoya en APIs oficiales:
 
 ### ☁️ OpenShift
 
-* API REST de Kubernetes / OpenShift
-  📚 [https://docs.redhat.com/en/documentation/openshift_container_platform](https://docs.redhat.com/en/documentation/openshift_container_platform)
+[https://docs.redhat.com/en/documentation/openshift_container_platform](https://docs.redhat.com/en/documentation/openshift_container_platform)
 
 ### 🧪 GitLab
 
-* API REST de GitLab
-  📚 [https://docs.gitlab.com/api/rest/](https://docs.gitlab.com/api/rest/)
+[https://docs.gitlab.com/api/rest/](https://docs.gitlab.com/api/rest/)
 
 ### 📋 Jira
 
-* API REST de Jira Cloud
-  📚 [https://developer.atlassian.com/cloud/jira/platform/rest/v3/](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
+[https://developer.atlassian.com/cloud/jira/platform/rest/v3/](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
 
 ### 🛡️ Vault
 
-* API REST de HashiCorp Vault
-  📚 [https://developer.hashicorp.com/vault/api-docs](https://developer.hashicorp.com/vault/api-docs)
+[https://developer.hashicorp.com/vault/api-docs](https://developer.hashicorp.com/vault/api-docs)
 
 ---
 
 ## 🤝 Contribuciones
 
-Rishi es un proyecto abierto y evoluciona con la experiencia del equipo.
+Clair evoluciona con la experiencia del equipo.
 
 Puedes contribuir:
 
-* 💡 proponiendo nuevas funcionalidades
-* 🐛 reportando bugs
-* 🛠️ enviando mejoras de código o documentación
-* ✨ sugiriendo nuevas integraciones
+* 💡 nuevas ideas
+* 🐛 bugs
+* 🛠️ mejoras de código o docs
+* ✨ nuevas integraciones
 
 ---
 
 ## 📬 Feedback y soporte
 
-Si algo no funciona, o si Rishi podría ser más sabio:
+Si algo no funciona, o si Clair podría ver con más claridad:
 
-1. Ve a la sección **Issues**
-2. Abre un issue con contexto claro
-3. Etiquétalo como `bug`, `feature` o `question`
+1. Abre un issue
+2. Aporta contexto
+3. Etiquétalo correctamente
 
 El conocimiento se comparte.
-La fricción se elimina.
+La fricción se disipa.
 
 ---
 
-🧘 **Rishi**
-*Automatizando rituales técnicos desde tiempos inmemoriales.*
+🧘 **Clair**
+*Viendo con claridad entre sistemas que exigen fe.*
