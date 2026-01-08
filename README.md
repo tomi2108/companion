@@ -1,15 +1,19 @@
-# 🧘‍♂️ Rishi
+# 🧙‍♂️✝️  Clerc
 
-**Rishi** es una herramienta CLI de asistencia para desarrolladores y equipos técnicos.
+**Clerc** es una herramienta CLI de asistencia para desarrolladores y equipos técnicos.
 
-En la tradición védica, un *rishi* es un sabio que observa, entiende patrones complejos
-y transmite conocimiento práctico para mantener el orden del mundo.
+En la tradición europea medieval, un *clerc* no era solo alguien que sabía leer y escribir.
+Era un **intérprete del mundo**, un mediador entre lo cotidiano y lo sagrado, entre sistemas incomprensibles y conocimiento aplicable.
 
-Este **Rishi** hace algo parecido, pero con:
+El clerc estudiaba textos, observaba patrones, seguía rituales… y, cuando era necesario,
+**invocaba lo invisible** para que el orden se mantuviera.
+
+Este **Clerc** hace algo parecido, pero con:
 OpenShift, GitLab, Jira, Vault… y tu entorno local.
 
-Rishi no reemplaza tus herramientas.
-Las entiende, las conecta y te ahorra repetir los mismos rituales todos los días.
+Clerc no reemplaza tus herramientas.
+Las entiende, las conecta y actúa como intermediario entre tú y sistemas que a veces parecen divinos,
+traduciendo su complejidad en rituales simples y repetibles.
 
 ---
 
@@ -64,64 +68,69 @@ Acceso rápido a operaciones comunes sobre bases de datos MongoDB.
 
 ---
 
-## ✅ Checklist funcionalidaderishi 
+## ✅ Checklist de funcionalidades
 
 ### 🔧 Inicialización de Entornos
-- [x] Generación automática de estructura de carpetas para el proyecto
-- [x] Carga de configuraciones según equipo (ej. frontend, backend, devops)
 
-### 🧠 Configuraciones por Equipo/Proyecto
-- [x] Carga condicional de configuración basada en clave `"team"`
-- [x] Fallback a configuraciones por defecto si no se encuentra personalización
-- [x] Comando interactivo `rishi setup` para facilitar configuración 
-- [x] Validación automática de esquemas de configuración.
+* [x] Generación automática de estructura de carpetas
+* [x] Carga de configuraciones según equipo (frontend, backend, devops)
 
-### 🚀 Integración con OpenShift
-- [x] Login automático al clúster mediante configuración guardada
-- [x] Despliegue de aplicaciones 
-- [x] Visualización de logs en tiempo real de pods específicos
-- [ ] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
-- [x] Eliminación, reinicio y monitoreo de pods y deployments
-- [ ] Forwarding de puertos para servicios específicos
-- [x] Gestión de secretos y configuración de variables de entorno
-- [x] Generación de rutas públicas para testing rápido
-- [x] Creación de archivos `.env` con la configuración de ambientes desplegados
+### 🧠 Configuración por Equipo/Proyecto
 
-### 🔁 Utilidades para GitLab
-- [x] Clonación inteligente de repositorios del grupo del proyecto
-- [x] Creación y asignación automática de *merge requests*
-- [x] Revisión del estado de pipelines asociados a una MR o branch
-- [x] Asignación de revisores automáticamente según reglas del equipo
-- [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
-- [x] Sincronización de ramas locales con `origin` automáticamente
-- [x] Nivelación de ramas
+* [x] Carga condicional basada en `"team"`
+* [x] Fallback a configuraciones por defecto
+* [x] Comando interactivo `rishi setup`
+* [x] Validación automática de esquemas
 
-### 📋 Integración con Jira
-- [x] Creación de tickets 
-- [ ] Cambio automático de estado de ticket al crear una nueva rama
-- [x] Actualización del ticket con comentarios 
-- [ ] Enlace automático entre tickets y commits o MRs
-- [ ] Búsqueda de tickets abiertos asignados al usuario actual (🚧 en progreso)
-- [ ] Filtro de tickets por sprint, tipo o estado desde la CLI (🚧 en progreso)
-- [ ] Transiciones de estado automatizadas según evento (ej. push a `main`)
-- [x] Comando para estimar tickets 
+### 🚀 OpenShift
 
-### 🛡️ Integración con Vault  
-- [x] Lectura y escritura de secretos por entorno/proyecto
-- [x] Reinicio de deployments afectados por un secret luego de su actualizacion
+* [x] Login automático al clúster
+* [x] Deploy de aplicaciones
+* [x] Logs en tiempo real
+* [ ] Ejecución de comandos en contenedores (`oc rsh`)
+* [x] Gestión de pods y deployments
+* [ ] Port forwarding
+* [x] Gestión de secretos y variables de entorno
+* [x] Generación de rutas públicas
+* [x] Creación de archivos `.env`
 
-### 🗄️ Utilidades para MongoDB  
-- [ ] Conexión simplificada a instancias MongoDB.
-- [ ] Exploración rápida de colecciones y conteo de documentos  
-- [ ] Ejecución de consultas predefinidas o scripts desde archivos `.js`  
-- [ ] Exportación e importación de datos.
-- [ ] Generación de backups. 
+### 🔁 GitLab
+
+* [x] Clonación inteligente de repositorios
+* [x] Creación automática de merge requests
+* [x] Estado de pipelines
+* [x] Asignación automática de revisores
+* [ ] Integración con ramas de Jira
+* [x] Sincronización con `origin`
+* [x] Nivelación de ramas
+
+### 📋 Jira
+
+* [x] Creación de tickets
+* [x] Comentarios en tickets
+* [x] Estimación de tickets
+* [ ] Transiciones automáticas por eventos
+* [ ] Búsqueda avanzada desde CLI (🚧)
+
+### 🛡️ Vault
+
+* [x] Lectura y escritura de secretos
+* [x] Reinicio de deployments afectados
+
+### 🗄️ MongoDB
+
+* [ ] Conexión simplificada
+* [ ] Exploración de colecciones
+* [ ] Ejecución de scripts
+* [ ] Exportación / importación
+* [ ] Backups
 
 ### 🛠 Otras Utilidades
-- [ ] Generación de documentación interna 
-- [ ] Notificaciones locales o vía Slack en eventos clave
-- [x] Comando `rishi upgrade` para autoactualización de la herramienta
-- [x] Comando `rishi open` para abrir un repositorio en el editor 
+
+* [ ] Generación de documentación
+* [ ] Notificaciones (Slack / local)
+* [x] `rishi upgrade` para autoactualización
+* [x] `rishi open` para abrir repositorios en el editor
 
 ---
 
@@ -151,7 +160,8 @@ Aunque Rishi es **opinionada por diseño**, un buen rishi mantiene siempre una m
 
 Por eso, la herramienta está construida para ser **fácilmente extensible** y adaptable a cambios en el ecosistema:
 
-* Integraciones alternativas
+* Integraciones alternativas a GitLab, como **GitHub** u otros proveedores.
+* Herramientas que reemplacen o complementen a **Jira**.
 * Nuevas plataformas, servicios o flujos que el equipo adopte con el tiempo.
 
 Rishi no asume que las herramientas actuales serán eternas.
@@ -201,22 +211,22 @@ Rishi se apoya en APIs oficiales y bien documentadas:
 ### ☁️ OpenShift
 
 * API REST de Kubernetes / OpenShift
-  [📚 Referencia API](https://docs.redhat.com/en/documentation/openshift_container_platform)
+  📚 [https://docs.redhat.com/en/documentation/openshift_container_platform](https://docs.redhat.com/en/documentation/openshift_container_platform)
 
 ### 🧪 GitLab
 
 * API REST de GitLab
-  [📚 Referencia API](https://docs.gitlab.com/api/rest/)
+  📚 [https://docs.gitlab.com/api/rest/](https://docs.gitlab.com/api/rest/)
 
 ### 📋 Jira
 
 * API REST de Jira Cloud
-  [📚 Referencia API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
+  📚 [https://developer.atlassian.com/cloud/jira/platform/rest/v3/](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
 
 ### 🛡️ Vault
 
 * API REST de HashiCorp Vault
- [📚 Referencia API](https://developer.hashicorp.com/vault/api-docs)
+  📚 [https://developer.hashicorp.com/vault/api-docs](https://developer.hashicorp.com/vault/api-docs)
 
 ---
 
