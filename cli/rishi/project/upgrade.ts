@@ -1,13 +1,13 @@
 import { ExecutionContext } from "@lib/ctx";
 import { filterFrontendDeployments } from "@oc/api";
 import { Deployment } from "@oc/deployment";
-import { DeployApp } from "@workflow/steps/app/DeployApp";
-import { GetAppRepo } from "@workflow/steps/app/GetAppRepo";
-import { GetAppLatestVersion } from "@workflow/steps/app/GetAppVersion";
-import { GetDeployRepo } from "@workflow/steps/app/GetDeployRepo";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { DeployApp } from "@steps/app/DeployApp";
+import { GetAppRepo } from "@steps/app/GetAppRepo";
+import { GetAppLatestVersion } from "@steps/app/GetAppVersion";
+import { GetDeployRepo } from "@steps/app/GetDeployRepo";
+import { ForEach } from "@steps/flow/ForEach";
+import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

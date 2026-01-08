@@ -5,7 +5,7 @@ import { CreateApp } from "@steps/app/CreateApp";
 import { GetDeployRepo } from "@steps/app/GetDeployRepo";
 import { PromptAppVersion } from "@steps/app/PromptAppVersion";
 import { PromptPaths } from "@steps/app/PromptPaths";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

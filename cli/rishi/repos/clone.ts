@@ -1,7 +1,7 @@
 import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { PathClone } from "@workflow/steps/repos/PathClone";
+import { ForEach } from "@steps/flow/ForEach";
+import { PathClone } from "@steps/repos/PathClone";
 import { Workflow } from "@workflow/workflow";
 
 export default {

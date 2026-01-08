@@ -1,10 +1,10 @@
 import { Argv } from "yargs";
 
 import { ExecutionContext } from "@lib/ctx";
-import { PromptOcDeployment } from "@workflow/steps/oc/deployments/PromptOcDeployment";
-import { GetPods } from "@workflow/steps/oc/pods/GetPods";
-import { PodFollowLogs } from "@workflow/steps/oc/pods/PodFollowLogs";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcDeployment } from "@steps/oc/deployments/PromptOcDeployment";
+import { GetPods } from "@steps/oc/pods/GetPods";
+import { PodFollowLogs } from "@steps/oc/pods/PodFollowLogs";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

@@ -2,13 +2,13 @@ import { Argv } from "yargs";
 
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { If } from "@workflow/steps/flow/If";
-import { Write } from "@workflow/steps/flow/Write";
-import { CreateMr } from "@workflow/steps/mr/CreateMr";
-import { PromptPathSources } from "@workflow/steps/repos/PromptPathSources";
-import { RepoUpdate } from "@workflow/steps/repos/RepoUpdate";
-import { Input } from "@workflow/steps/ui/Input";
+import { ForEach } from "@steps/flow/ForEach";
+import { If } from "@steps/flow/If";
+import { Write } from "@steps/flow/Write";
+import { CreateMr } from "@steps/mr/CreateMr";
+import { PromptPathSources } from "@steps/repos/PromptPathSources";
+import { RepoUpdate } from "@steps/repos/RepoUpdate";
+import { Input } from "@steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
 
 export default {

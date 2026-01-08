@@ -2,12 +2,12 @@ import { Argv } from "yargs";
 
 import { ExecutionContext } from "@lib/ctx";
 import { Pod } from "@oc/pod";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { CreateLogFile } from "@workflow/steps/log/CreateLogFile";
-import { GetPods } from "@workflow/steps/oc/pods/GetPods";
-import { PodDownloadLogs } from "@workflow/steps/oc/pods/PodDownloadLogs";
-import { PromptOcPod } from "@workflow/steps/oc/pods/PromptOcPod";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { ForEach } from "@steps/flow/ForEach";
+import { CreateLogFile } from "@steps/log/CreateLogFile";
+import { GetPods } from "@steps/oc/pods/GetPods";
+import { PodDownloadLogs } from "@steps/oc/pods/PodDownloadLogs";
+import { PromptOcPod } from "@steps/oc/pods/PromptOcPod";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

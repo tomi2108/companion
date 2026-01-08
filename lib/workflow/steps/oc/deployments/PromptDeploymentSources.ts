@@ -1,11 +1,11 @@
 import { ExecutionContext } from "@lib/ctx";
 import { filterFrontendDeployments } from "@oc/api";
 import { Deployment } from "@oc/deployment";
+import { PromptSources } from "@steps/repos/PromptSources";
 import { WorkflowOptions } from "@workflow/steps";
-import { PromptSources } from "@workflow/steps/repos/PromptSources";
 
 type Reads = { deployments: Deployment[] };
-type Writes = { deployment: Deployment };
+type Writes = {};
 type Options = {
   frontend?: boolean;
   backend?: boolean;

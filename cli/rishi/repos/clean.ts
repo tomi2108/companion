@@ -3,9 +3,9 @@ import { Argv } from "yargs";
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
 import { RepoClean } from "@steps/repos/RepoClean";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { If } from "@workflow/steps/flow/If";
-import { PromptPathSources } from "@workflow/steps/repos/PromptPathSources";
+import { ForEach } from "@steps/flow/ForEach";
+import { If } from "@steps/flow/If";
+import { PromptPathSources } from "@steps/repos/PromptPathSources";
 import { Workflow } from "@workflow/workflow";
 
 export default {

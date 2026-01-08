@@ -3,13 +3,13 @@ import { Argv } from "yargs";
 import { ExecutionContext } from "@lib/ctx";
 import { Deployment } from "@oc/deployment";
 import { Secret } from "@oc/secret";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { If } from "@workflow/steps/flow/If";
-import { DeploymentRestart } from "@workflow/steps/oc/deployments/DeploymentRestart";
-import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
-import { PromptDeploymentSources } from "@workflow/steps/oc/deployments/PromptDeploymentSources";
-import { PromptOcSecret } from "@workflow/steps/oc/envs/PromptOcSecrets";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { ForEach } from "@steps/flow/ForEach";
+import { If } from "@steps/flow/If";
+import { DeploymentRestart } from "@steps/oc/deployments/DeploymentRestart";
+import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
+import { PromptDeploymentSources } from "@steps/oc/deployments/PromptDeploymentSources";
+import { PromptOcSecrets } from "@steps/oc/envs/PromptOcSecrets";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -47,7 +47,7 @@ export default {
       new GetDeployments(),
       new If({
         condition: () => Boolean(secret),
-        then: new PromptOcSecret(),
+        then: new PromptOcSecrets(),
         else: new PromptDeploymentSources({
           backend: all || backend,
           frontend: all || frontend

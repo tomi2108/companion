@@ -1,9 +1,13 @@
 import { Argv } from "yargs";
 
-import { promptChoice } from "@interface/prompts";
-import { Config } from "@lib/config";
-import { Openshift } from "@oc";
-import { filterFrontendDeployments, getOcToken } from "@oc/api";
+import { ExecutionContext } from "@lib/ctx";
+import { Deployment } from "@oc/deployment";
+import { ForEach } from "@workflow/steps/flow/ForEach";
+import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
+import { PromptDeploymentSources } from "@workflow/steps/oc/deployments/PromptDeploymentSources";
+import { GenerateConfigMap } from "@workflow/steps/oc/envs/GenerateConfigMap";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "generate",
@@ -14,31 +18,34 @@ export default {
     .alias("all", ["a"])
     .describe("all", "Whether to run the script for all repositories"),
   handler: async ({ all }: { all?: boolean }) => {
-    const config = Config.get();
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
-    const project = await promptChoice(projects);
-
+    const ctx = ExecutionContext.get();
+    const config = ctx.config;
     const prefix = config.envs.generate?.prefix ?? "";
     const excluded = config.envs.generate?.exclusions ?? [];
     const excluded_prefix = config.envs.generate?.prefix_exclusions ?? [];
 
-    const choices = (await project.getDeployments())
-      .filter((d) => !filterFrontendDeployments(d))
-      .filter((d) => !excluded.includes(d.name))
-      .filter((d) => !excluded_prefix.some((p) => d.name.split(prefix)[1]?.startsWith(p)));
+    await new Workflow([
+      new PromptOcProject({ server: "cuyo" }),
+      new GetDeployments({
+        transform: ({
+          deployments
+        }) => ({
+          deployments:
+            deployments
+              .filter((d) => !excluded.includes(d.name))
+              .filter((d) => !excluded_prefix.some((p) => d.name.split(prefix)[1]?.startsWith(p)))
+        })
+      }),
+      new PromptDeploymentSources({
+        frontend: false,
+        backend: all
+      }),
+      new ForEach({
+        item: "deployment",
+        items: (state: { deployments: Deployment[] }) => state.deployments,
+        step: new GenerateConfigMap()
+      })
 
-    const configmaps = await project.getConfigMaps();
-    const deployments = all ? choices : [await promptChoice(choices)];
-    for (const d of deployments) {
-      if (configmaps.some((c) => c.name === d.name)) {
-        console.log("Configmap", `'${d.name}'`, "already exists");
-        continue;
-      }
-      const env_name = d.name.split(prefix)[1]?.toUpperCase().replaceAll("-", "_") + "_URL";
-      const env_value = `http://${d.name}.${project.name}.svc.cluster.local:8080`;
-      await project.createConfigMap(d.name, { [env_name]: env_value });
-      console.log("Created configmap", `'${d.name}'`);
-    }
+    ]).run(ctx);
   }
 };

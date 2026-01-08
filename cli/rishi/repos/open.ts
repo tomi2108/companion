@@ -1,8 +1,8 @@
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { PromptPaths } from "@workflow/steps/app/PromptPaths";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { RepoOpen } from "@workflow/steps/repos/RepoOpen";
+import { PromptPaths } from "@steps/app/PromptPaths";
+import { ForEach } from "@steps/flow/ForEach";
+import { RepoOpen } from "@steps/repos/RepoOpen";
 import { Workflow } from "@workflow/workflow";
 
 export default {

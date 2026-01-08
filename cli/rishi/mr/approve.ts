@@ -1,8 +1,8 @@
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { Write } from "@workflow/steps/flow/Write";
-import { ApproveMr } from "@workflow/steps/mr/ApproveMr";
-import { PromptMr } from "@workflow/steps/mr/PromptMr";
+import { Write } from "@steps/flow/Write";
+import { ApproveMr } from "@steps/mr/ApproveMr";
+import { PromptMr } from "@steps/mr/PromptMr";
 import { Workflow } from "@workflow/workflow";
 
 export default {

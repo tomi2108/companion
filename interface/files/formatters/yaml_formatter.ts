@@ -8,7 +8,8 @@ type YamlScalar =
   | string
   | number
   | boolean
-  | null;
+  | null
+  | undefined;
 
 type YamlSequence = YamlValue[];
 

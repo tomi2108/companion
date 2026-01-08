@@ -1,75 +1,78 @@
-import yaml from "js-yaml";
-import { setTimeout } from "node:timers/promises";
-
-import { TempFile } from "@files/temp_file";
-import { YamlFile } from "@files/yaml_file";
-import { promptChoice } from "@interface/prompts";
-import { Config, ConfigError } from "@lib/config";
-import log from "@lib/log/default";
-import { confirm, search } from "@lib/ui";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
+import { ExecutionContext } from "@lib/ctx";
+import { ConfigMap } from "@oc/configmap";
+import { Deployment } from "@oc/deployment";
+import { Secret } from "@oc/secret";
+import { ValidateConfig } from "@steps/config/ValidateConfig";
+import { ForEach } from "@steps/flow/ForEach";
+import { If } from "@steps/flow/If";
+import { Sleep } from "@steps/flow/Sleep";
+import { DeploymentRestart } from "@steps/oc/deployments/DeploymentRestart";
+import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
+import { EditConfigMap } from "@steps/oc/envs/EditConfigmap";
+import { EditSecret } from "@steps/oc/envs/EditSecret";
+import { PromptOcConfigMaps } from "@steps/oc/envs/PromptOcConfigMaps";
+import { PromptOcSecrets } from "@steps/oc/envs/PromptOcSecrets";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { Search } from "@steps/ui/Search";
+import { Spinner } from "@steps/ui/Spinner";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "edit",
   aliases: ["e"],
   describe: "Edit configmap or secret",
   handler: async () => {
-    if (!Config.get().paths.namespaces) throw new ConfigError("paths.namespaces");
-    const token = await getOcToken();
-    const projects = await new Openshift(token).getProjects();
-    const project = await promptChoice(projects);
-
-    const choices = ["configmap", "secret"];
-    const type = await search({ message: "Choose type of resource to edit", choices });
-    if (!type) process.exit(1);
-
-    if (type === "configmap") {
-      const configmaps = await project.getConfigMaps();
-      const configmap = await promptChoice(configmaps);
-      const { changed, new_content } = await new TempFile({ content: await configmap.toYaml(), ext: "yaml" }).prompt();
-      if (!changed || !new_content) return log.info("Edit canceled, no changes made");
-      const y = yaml.load(new_content);
-      if (!y
-        || typeof y !== "object"
-        || !("data" in y)
-        || typeof y.data !== "object"
-        || !y.data
-      ) return log.error("Invalid yaml, please sepcify 'data' key");
-      const { data } = y;
-      configmap.namespace = project.name;
-      configmap.setData(data as Record<string, string>);
-      await configmap.save({ update: true });
-      return log.success("Config map saved succesfully");
-    }
-
-    const secrets = await project.getSecrets();
-    const secret = await promptChoice(secrets);
-    const file_content = await secret.toYaml();
-    const tmp_file = new TempFile({ ext: "yaml" });
-    new YamlFile(tmp_file.path).write(file_content);
-    const { changed, new_content } = await tmp_file.prompt();
-    if (!changed || !new_content) return log.info("Edit canceled, no changes made");
-    const y = yaml.load(new_content);
-    if (!y
-      || typeof y !== "object"
-      || !("data" in y)
-      || typeof y.data !== "object"
-      || !y.data
-    ) return log.error("Invalid yaml, please sepcify 'data' key");
-    const { data } = y;
-
-    secret.setData(data as Record<string, string>);
-    await secret.save();
-    log.success("Secret saved succesfully");
-    const restarts = await confirm({
-      initial: true, message: `Do you want to restart every deployment affected by ${secret.name}?`
-    });
-    if (!restarts) return;
-
-    await setTimeout(10 * 1000);
-    const deployments = await project.getDeployments();
-    const toRestart = deployments.filter((d) => d.getSecrets()?.some((s) => s.name === secret.name));
-    await Promise.all(toRestart.map((d) => d.restart()));
+    const ctx = ExecutionContext.get();
+    const choices = ["configmap", "secret"] as const;
+    await new Workflow([
+      new ValidateConfig({ keys: ["paths.namespaces"] }),
+      new PromptOcProject({ server: "cuyo" }),
+      new Search({
+        choices,
+        message: "Choose type of resource to edit"
+      }),
+      new If({
+        condition: ({ choice }: { choice: typeof choices[number] }) => choice === "configmap",
+        then: new Workflow([
+          new PromptOcConfigMaps(),
+          new EditConfigMap()
+        ]),
+        else: new Workflow([
+          new PromptOcSecrets(),
+          new EditSecret()
+        ])
+      }),
+      new If({
+        condition: async ({ configmap, secret }: { configmap?: ConfigMap; secret?: Secret }) => {
+          const resource = configmap ?? secret;
+          if (!resource) throw new Error("No resource found in env edit");
+          return await ctx.ui.confirm({
+            initial: true,
+            message: `Do you want to restart every deployment affected by ${resource.name}?`
+          });
+        },
+        then: new Workflow([
+          new Spinner({
+            step: new Sleep({ seconds: 10 }),
+            message: "Restarting"
+          }),
+          new GetDeployments(),
+          new ForEach({
+            concurrency: true,
+            item: "deployment",
+            step: new DeploymentRestart(),
+            items: (state: {
+              secret?: Secret;
+              configmap?: ConfigMap;
+              deployments: Deployment[];
+            }) => state.deployments
+              .filter(async (d) =>
+                d.getSecrets()?.some((s) => s.name === state.secret?.name)
+                || (await d.getConfigMaps())?.some((cm) => cm.name === state.configmap?.name)
+              )
+          })
+        ])
+      })
+    ]).run(ctx);
   }
 };

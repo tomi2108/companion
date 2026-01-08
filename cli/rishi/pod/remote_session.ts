@@ -1,7 +1,7 @@
 import { ExecutionContext } from "@lib/ctx";
-import { PodRemoteSession } from "@workflow/steps/oc/pods/PodRemoteSession";
-import { PromptOcPod } from "@workflow/steps/oc/pods/PromptOcPod";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PodRemoteSession } from "@steps/oc/pods/PodRemoteSession";
+import { PromptOcPod } from "@steps/oc/pods/PromptOcPod";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

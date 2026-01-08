@@ -2,8 +2,8 @@ import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
 import { PromptPaths } from "@steps/app/PromptPaths";
 import { CopyEnv } from "@steps/env/CopyEnv";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
-import { Spinner } from "@workflow/steps/ui/Spinner";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { Spinner } from "@steps/ui/Spinner";
 import { Workflow } from "@workflow/workflow";
 
 export default {

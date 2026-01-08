@@ -5,12 +5,12 @@ import { ExecutionContext } from "@lib/ctx";
 import { confirm, loading } from "@lib/ui";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
-import { If } from "@workflow/steps/flow/If";
-import { Sleep } from "@workflow/steps/flow/Sleep";
-import { Write } from "@workflow/steps/flow/Write";
-import { PromptBranch } from "@workflow/steps/git/PromptBranches";
-import { CreateMr } from "@workflow/steps/mr/CreateMr";
-import { MergeMr } from "@workflow/steps/mr/MergeMr";
+import { If } from "@steps/flow/If";
+import { Sleep } from "@steps/flow/Sleep";
+import { Write } from "@steps/flow/Write";
+import { PromptBranch } from "@steps/git/PromptBranches";
+import { CreateMr } from "@steps/mr/CreateMr";
+import { MergeMr } from "@steps/mr/MergeMr";
 import { Workflow } from "@workflow/workflow";
 
 export default {

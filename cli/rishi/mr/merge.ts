@@ -1,9 +1,9 @@
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
-import { Write } from "@workflow/steps/flow/Write";
-import { MergeMr } from "@workflow/steps/mr/MergeMr";
-import { PromptMr } from "@workflow/steps/mr/PromptMr";
-import { Spinner } from "@workflow/steps/ui/Spinner";
+import { Write } from "@steps/flow/Write";
+import { MergeMr } from "@steps/mr/MergeMr";
+import { PromptMr } from "@steps/mr/PromptMr";
+import { Spinner } from "@steps/ui/Spinner";
 import { Workflow } from "@workflow/workflow";
 
 export default {

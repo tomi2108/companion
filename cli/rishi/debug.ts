@@ -2,8 +2,8 @@ import { ExecutionContext } from "@lib/ctx";
 import { confirm } from "@lib/ui";
 import { Debug } from "@steps/Debug";
 import { Input } from "@steps/ui/Input";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { If } from "@workflow/steps/flow/If";
+import { ForEach } from "@steps/flow/ForEach";
+import { If } from "@steps/flow/If";
 import { Workflow } from "@workflow/workflow";
 
 export default {

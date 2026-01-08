@@ -2,8 +2,8 @@ import { ExecutionContext } from "@lib/ctx";
 import { ExposeApp } from "@steps/app/ExposeApp";
 import { GetAppRepo } from "@steps/app/GetAppRepo";
 import { GetDeployRepo } from "@steps/app/GetDeployRepo";
-import { PromptOcDeployment } from "@workflow/steps/oc/deployments/PromptOcDeployment";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcDeployment } from "@steps/oc/deployments/PromptOcDeployment";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {

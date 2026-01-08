@@ -3,13 +3,13 @@ import { ExecutionContext } from "@lib/ctx";
 import { arrayDifference } from "@lib/utils";
 import { Deployment } from "@oc/deployment";
 import { Project } from "@oc/project";
-import { CreateApp } from "@workflow/steps/app/CreateApp";
-import { GetAppRepo } from "@workflow/steps/app/GetAppRepo";
-import { GetDeployRepo } from "@workflow/steps/app/GetDeployRepo";
-import { ForEach } from "@workflow/steps/flow/ForEach";
-import { Write } from "@workflow/steps/flow/Write";
-import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
-import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { CreateApp } from "@steps/app/CreateApp";
+import { GetAppRepo } from "@steps/app/GetAppRepo";
+import { GetDeployRepo } from "@steps/app/GetDeployRepo";
+import { ForEach } from "@steps/flow/ForEach";
+import { Write } from "@steps/flow/Write";
+import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
+import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
 
 export default {
