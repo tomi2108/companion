@@ -7,7 +7,7 @@ import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 type Options<Reads, T, Key extends string> = {
   step: WorkflowStep<Reads, Writes<T, Key>>;
   key: Key;
-  head: (reads: Reads) => string[];
+  head: (reads: Reads) => Promise<string[]> | string[];
   map: (item: T) => (string | number)[];
   width?: number[];
   style?: { compact?: boolean };
@@ -27,7 +27,7 @@ export class Table<Reads, T, Key extends string> extends WorkflowStep<Reads, Wri
     if (records.length === 0) return output;
 
     const table = new TableCli({
-      head: this.options.head(reads),
+      head: await this.options.head(reads),
       style: this.options.style,
       colWidths: this.options.width
     });

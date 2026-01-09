@@ -39,8 +39,6 @@ export class Workflow extends WorkflowStep<Reads, Writes, Options> {
       }
     }
     runtime.progress?.close();
-    // TODO: maybe return {} if we dont want to share
-    // state between nested workflows
     return state;
   }
 }
