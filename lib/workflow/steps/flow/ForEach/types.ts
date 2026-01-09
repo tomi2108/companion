@@ -1,5 +1,3 @@
-import { WorkflowStep } from "../..";
-
 export type ForEachWrites<
   InnerWrites,
   Key extends string | undefined
@@ -7,22 +5,10 @@ export type ForEachWrites<
 
 export type ForEachOptions<
   Key,
-  Reads,
   Options,
-  Item,
-  InnerReads,
-  InnerWrites,
-  InnerOptions
+  InnerWrites
 > =
-  | Options & {
-    items: (state: Reads) => Item[];
-    step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
-    collectAs?: undefined;
-  }
+  | Options & { collectAs?: undefined }
   | (InnerWrites extends void
     ? never
-    : Options & {
-      items: (state: Reads) => Item[];
-      step: WorkflowStep<InnerReads, InnerWrites, InnerOptions>;
-      collectAs: Key;
-    });
+    : Options & { collectAs: Key });

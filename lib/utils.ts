@@ -34,6 +34,10 @@ export function removeDuplicates<T>(arr: T[]) {
   return Array.from(new Set(arr));
 }
 
+export function removeDuplicatesByKey<T>(arr: T[], getKey: (item: T) => string) {
+  return Array.from(new Map(arr.map((item) => [getKey(item), item])).values());
+}
+
 export function arrayDifference<T>(
   arr1: T[],
   arr2: T[],

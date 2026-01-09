@@ -10,9 +10,13 @@ import { CopyEnv } from "../env/CopyEnv";
 type Reads = {
   app_repo: AppRepo;
   project: Project;
+  sub_apps?: AppRepo[];
 };
 type Writes = { sub_apps: AppRepo[] };
-type Options = { include_initial?: boolean };
+type Options = {
+  include_initial?: boolean;
+  reuse?: boolean;
+};
 
 export class GetSubApps extends WorkflowStep<Reads, Writes> {
 
@@ -20,10 +24,10 @@ export class GetSubApps extends WorkflowStep<Reads, Writes> {
     super(options);
   }
 
-  async run(ctx: ExecutionContext, { app_repo, project }: Reads) {
+  async run(ctx: ExecutionContext, { app_repo, project, ...state }: Reads) {
     const backend = getPaths("backend");
     const apps = backend.map((b) => new AppRepo(b));
-    const sub_apps: AppRepo[] = [];
+    const sub_apps: AppRepo[] = this.options?.reuse ? state.sub_apps ?? [] : [];
 
     if (this.options?.include_initial) sub_apps.push(app_repo);
 

@@ -3,9 +3,13 @@ import { ExecutionContext } from "@lib/ctx";
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "../..";
 import { ForEachOptions, ForEachWrites } from "./types";
 
-type Options<Item> = {
+type Options<Item, Reads, InnerReads, InnerWrites, InnerOptions> = {
   concurrency?: number | true;
   item: string;
+  items: (state: Reads) => Item[];
+  step:
+    | WorkflowStep<InnerReads, InnerWrites, InnerOptions>
+    | ((index: number) => WorkflowStep<InnerReads, InnerWrites, InnerOptions>);
   progress?: {
     prefix: string;
     suffix?: (i: Item) => string;
@@ -22,10 +26,10 @@ export class ForEach<
 > extends WorkflowStep<
   Reads & InnerReads,
     ForEachWrites<InnerWrites, Key>,
-    ForEachOptions<Key, Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>
+    ForEachOptions<Key, Options<Item, Reads, InnerReads, InnerWrites, InnerOptions>, InnerWrites>
   > {
 
-  constructor(override options: WorkflowOptions<ForEachOptions<Key, Reads, Options<Item>, Item, InnerReads, InnerWrites, InnerOptions>, ForEachWrites<InnerWrites, Key>>) {
+  constructor(override options: WorkflowOptions<ForEachOptions<Key, Options<Item, Reads, InnerReads, InnerWrites, InnerOptions>, InnerWrites>, ForEachWrites<InnerWrites, Key>>) {
     super();
   }
 
@@ -49,7 +53,9 @@ export class ForEach<
     for (let i = 0; i < items.length; i += delta) {
       const slice = items.slice(i, i + delta);
       await Promise.all(slice.map(async (item) => {
-        const output = await this.options.step.run(
+        const step = this.options.step;
+        const run = typeof step === "function" ? step(i) : step;
+        const output = await run.run(
           ctx,
           { ...state, [this.options.item]: item }
         );
