@@ -111,12 +111,14 @@ export class Config {
   async load() {
     const config = this.file().read();
     const configKeys = Object.keys(this);
-    const team = config.team
+    const team = "team" in config
+      && config.team
       && typeof config.team === "string"
       && this.isValidTeamKey(config.team)
       ? config.team
       : undefined;
 
+    if (Array.isArray(config)) throw new Error();
     const validatedConfig = {
       team,
       ...Object.fromEntries(
