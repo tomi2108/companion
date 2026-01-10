@@ -19,6 +19,7 @@ export class AppStart extends WorkflowStep<Reads> {
   }
 
   async run(_: ExecutionContext, { app_repo }: Reads) {
+    // TODO: this should be done on other apps
     // const env = app_repo.env;
     // env.remove(key);
     // env.add(key, `http://localhost:${port}`);

@@ -1,11 +1,12 @@
-import { Dirent } from "node:fs";
-import path from "node:path";
 import { Argv } from "yargs";
 
 import { AppRepo } from "@interface/dirs/app_repo";
-import { Config } from "@lib/config";
-import { input, search } from "@lib/ui";
-import { readdirs } from "@lib/utils";
+import { ExecutionContext } from "@lib/ctx";
+import { AppRename } from "@workflow/steps/app/AppRename";
+import { ForEach } from "@workflow/steps/flow/ForEach";
+import { PromptPathSources } from "@workflow/steps/repos/PromptPathSources";
+import { Input } from "@workflow/steps/ui/Input";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "rename",
@@ -23,67 +24,23 @@ export default {
     .describe("backend", "Whether to run the script for all backend repositories")
     .conflicts("all", ["frontend", "backend"]),
   handler: async ({ all, frontend, backend }: { all?: boolean; frontend?: boolean; backend?: boolean }) => {
-    let paths: Dirent[] = [];
-    if (all || frontend) paths = [...paths, ...readdirs(Config.get().paths.frontend) ?? []];
-    if (all || backend) paths = [...paths, ...readdirs(Config.get().paths.backend) ?? []];
-
-    if (paths.length === 0) {
-      const choices = [
-        ...readdirs(Config.get().paths.frontend) ?? [],
-        ...readdirs(Config.get().paths.backend) ?? []
-      ];
-      const choice = await search({ choices: choices.map((p) => ({ name: path.join(p.parentPath, p.name) })), message: "Select project" });
-      const selected = choices.find((p) => choice === path.join(p.parentPath, p.name));
-      if (selected) paths = [selected];
-    }
-
-    const branch = await input({ message: "Input branch" });
-    const name_template = await input({ message: "Input new name (use {{name}} as a replacement for repo name)" });
-    const skipped: string[] = [];
-
-    for (let index = 0; index < paths.length; index += 10) {
-      const toRename = paths.slice(index, index + 10);
-      await Promise.all(
-        toRename.map(
-          async (p) => {
-            const full_path = path.join(p.parentPath, p.name);
-            const repo = new AppRepo(full_path);
-            const { name } = await repo.getInfo();
-            const branches = await repo.getBranches();
-
-            if (!branches.includes(branch)) {
-              skipped.push(name);
-              return;
-            }
-
-            await repo.stash(async () => {
-              let return_branch = null;
-              if (await repo.getActiveBranch() !== branch) {
-                const { original_branch } = await repo.switchBranchIfExists(branch);
-                return_branch = original_branch;
-              }
-              await repo.pull(branch);
-              const new_name = name_template.replaceAll("{{name}}", name);
-
-              console.log({ active_branch: await repo.getActiveBranch() });
-              console.log({ package: repo.package, new_name });
-              if (repo.package === new_name) {
-                skipped.push(name);
-                return;
-              }
-              repo.package = new_name;
-              repo.save();
-              await repo.add(repo.package);
-              const commit = await repo.commit(`fix: rename to ${new_name}`);
-              if (!commit) return;
-              await repo.push(branch);
-              if (return_branch) await repo.switchBranchIfExists(return_branch);
-            });
-          }
-        )
-      );
-    }
-    console.log("Skipped:");
-    skipped.forEach((n) => console.log(n));
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new PromptPathSources({
+        sources: [
+          { enabled: Boolean(all || frontend), source: "frontend" },
+          { enabled: Boolean(all || backend), source: "backend" }
+        ],
+        transform: ({ dirs }) => ({ app_repos: dirs.map((d) => new AppRepo(d)) })
+      }),
+      new Input({ write: "branch", message: "Input branch" }),
+      new Input({ write: "name_template", message: "Input new name (use {{name}} as a replacement for repo name)" }),
+      new ForEach({
+        concurrency: 10,
+        item: "app_repo",
+        items: (state: { app_repos: AppRepo[] }) => state.app_repos,
+        step: new AppRename()
+      })
+    ]).run(ctx);
   }
 };

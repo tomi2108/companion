@@ -45,8 +45,8 @@ export class AppStatus extends WorkflowStep<Reads, Writes> {
         return deployment_file.getVersion();
       })()
     ]);
-    const sonar_project = sonar_projects.find((p) => p.key.includes(name));
-    const todos = (await sonar.getCodeSmells(sonar_project.key)).filter((i) => i.message.includes("TODO"));
+    const sonar_project = sonar_projects.find((p) => p.key.includes(name))!;
+    const todos = (await sonar_project.getCodeSmells()).filter((i) => i.message.includes("TODO"));
 
     const isUpdated = current && last ? current === last : null;
     const current_version = current ?? "-";
