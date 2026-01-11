@@ -1,11 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
-
-import { createLogFile } from "@files/utils";
 import { ExecutionContext } from "@lib/ctx";
 import { AppDataset } from "@workflow/steps/app/AppDataset";
 import { PromptHttpFile } from "@workflow/steps/http/PromptHttpFile";
-import { PromptHttpFileRoutes } from "@workflow/steps/http/PromptHttpFileRoutes";
+import { PromptHttpFileRequest } from "@workflow/steps/http/PromptHttpFileRoutes";
 import { CreateLogFile } from "@workflow/steps/log/CreateLogFile";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";
@@ -19,7 +15,7 @@ export default {
     await new Workflow([
       new PromptOcProject({ server: "cuyo" }),
       new PromptHttpFile(),
-      new PromptHttpFileRoutes(),
+      new PromptHttpFileRequest(),
       new AppDataset(),
       new CreateLogFile()
     ]).run(ctx);

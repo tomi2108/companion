@@ -13,7 +13,7 @@ type Options<Multiple> = {
   multiple?: Multiple;
 };
 
-export class PromptHttpFileRoutes<Multiple extends boolean = false>
+export class PromptHttpFileRequest<Multiple extends boolean = false>
   extends WorkflowStep<Reads, Writes<Multiple>, Options<Multiple>> {
 
   constructor(override options?: WorkflowOptions<Options<Multiple>, Writes<Multiple>>) {
