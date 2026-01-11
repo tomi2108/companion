@@ -1,5 +1,6 @@
 import { HttpMethod } from "@files/formatters/http_formatter";
 import { HttpFile } from "@interface/http/http_file";
+import { Req } from "@interface/http/req";
 import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
@@ -21,24 +22,16 @@ export class PromptHttpFileRoutes<Multiple extends boolean = false>
 
   async run(ctx: ExecutionContext, { http_file }: Reads) {
     const multiple = this.options?.multiple;
-    const routes = http_file.read().requests
-      .filter((r) => r.pathname !== "/health")
-      .map((r) => ({ method: r.method, endpoint: r.pathname }));
+    const requests = http_file.getRequests()
+      .filter((r) => r.pathname !== "/health");
     const service = http_file.service;
 
-    const services = await ctx.ui.search<Multiple>({
+    const services = await ctx.ui.promptChoice(requests, {
       multiple,
-      choices: routes.map((r) => `${r.method} ${r.endpoint}`),
-      message: `Choose routes for ${service}`
+      message: `Choose request for ${service}`
     });
 
-    const find = (r: string) => {
-      const [method, endpoint] = r.split(" ");
-      const found = routes.find((r) => r.method === method && r.endpoint === endpoint);
-      return found;
-    };
-
-    if (Array.isArray(services)) return { services: services.map(find) };
-    return { service: find(services) };
+    if (Array.isArray(services)) return { requests: services };
+    return { request: services as Req };
   }
 }

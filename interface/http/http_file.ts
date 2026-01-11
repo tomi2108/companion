@@ -25,5 +25,4 @@ export class HttpFile extends ObjectFile<HttpFileContent> {
   getRequests() {
     return this.read().requests.map((r) => new Req(r));
   }
-
 }

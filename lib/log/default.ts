@@ -10,7 +10,9 @@ export class DefaultLogger implements Logger {
     console.log("[SUCCESS]:", ...messages);
   }
 
-  info() { }
+  info(...messages: string[]) {
+    console.log("[INFO]:", ...messages);
+  }
 
   debug() { }
 

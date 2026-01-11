@@ -1,6 +1,6 @@
-import { HttpMethod } from "@files/formatters/http_formatter";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { HttpFile } from "@interface/http/http_file";
+import { Req } from "@interface/http/req";
 import { Config, ConfigError } from "@lib/config";
 import { ExecutionContext } from "@lib/ctx";
 import { GetAppRepo } from "@workflow/steps/app/GetAppRepo";
@@ -45,12 +45,12 @@ export default {
       new Write({
         write: async (state: {
           app_repo: AppRepo;
-          services: { method: HttpMethod; endpoint: string }[];
+          requests: Req[];
         }) => {
           const { type, name } = await state.app_repo.getInfo();
           const description = state.app_repo.package.read().description;
           return {
-            services: state.services.map((s) => ({ routes: s, name, description, type }))
+            services: state.requests.map((s) => ({ routes: s, name, description, type }))
           };
         }
       }),

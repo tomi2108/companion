@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { HttpMethod, ReqObj } from "@files/formatters/http_formatter";
+import { Choice } from "@lib/constants";
 
 export const varRegex = new RegExp("{{(.*?)}}", "g");
 
@@ -63,5 +64,13 @@ export class Req implements ReqObj {
         : []
     );
     return Array.from(new Set(res));
+  }
+
+  toString() {
+    return `${this.method} ${this.pathname}`;
+  }
+
+  toChoice(): Choice {
+    return { name: this.toString() };
   }
 }
