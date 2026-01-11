@@ -7,7 +7,7 @@ import { ExecutionContext } from "@lib/ctx";
 
 export async function loadExecutionContext({ prod, debug }: { prod?: boolean; debug?: boolean }) {
   const ctx = ExecutionContext.get();
-  await ctx.load();
+  await ctx.init();
   if (prod) await ctx.setProd();
   if (debug) ctx.setDebug();
 }

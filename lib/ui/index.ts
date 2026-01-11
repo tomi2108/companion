@@ -4,9 +4,9 @@ import { Choice } from "@lib/constants";
 type ExtractFromPrompt<T> = Omit<Extract<Parameters<typeof prompt>[0], { type: T }>, "type" | "name">;
 
 export type StringPromptOptions = ExtractFromPrompt<"input" | "invisible" | "list" | "password" | "text">;
-export type ArrayPromptOptions<T = false> = ExtractFromPrompt<"autocomplete" | "editable" | "form" | "multiselect" | "select" | "survey" | "list" | "scale"> & { multiple?: T };
+export type ArrayPromptOptions<T = false, K = false> = ExtractFromPrompt<"autocomplete" | "editable" | "form" | "multiselect" | "select" | "survey" | "list" | "scale"> & { multiple?: T; optional?: K };
 export type BooleanPromptOptions = ExtractFromPrompt<"confirm">;
-export type PromptChoiceOptions<K> = Omit<ArrayPromptOptions<K>, "choices">;
+export type PromptChoiceOptions<T = false, K = false> = Omit<ArrayPromptOptions<T, K>, "choices">;
 
 export type Spinner = {
   succeed: (text?: string) => void;
@@ -21,9 +21,9 @@ export interface UI {
   password(opts: StringPromptOptions): Promise<string>;
   confirm(opts: Omit<BooleanPromptOptions, "format">): Promise<boolean>;
   search<K, R = K extends true ? string[] : string>(opts: ArrayPromptOptions<K>): Promise<R>;
-  promptChoice<T extends { toChoice: () => Choice }, K, R = K extends true ? T[] : T>(
+  promptChoice<T extends { toChoice: () => Choice }, Multiple, Optional, R = Multiple extends true ? T[] : Optional extends true ? T | null : T>(
     resources: T[],
-    opts?: PromptChoiceOptions<K>
+    opts?: PromptChoiceOptions<Multiple, Optional>
   ): Promise<R>;
   loading(startText: string): Spinner;
   progressBar(total?: number, prefix?: string): ProgressBar;

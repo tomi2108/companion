@@ -39,7 +39,7 @@ export default {
         items: (state: { sub_apps: AppRepo[] }) => state.sub_apps,
         step: new Workflow([
           new GetHttpFile(),
-          new PromptHttpFileRoutes()
+          new PromptHttpFileRoutes({ multiple: true })
         ])
       }),
       new Write({

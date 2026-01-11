@@ -2,57 +2,60 @@ import axios from "axios";
 import fs from "node:fs";
 import path from "node:path";
 
+import { getPath } from "@files";
 import { createLogFile } from "@files/utils";
 import { Sql } from "@interface/sql/sql";
-import { Config, ConfigError } from "@lib/config";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
+import { ExecutionContext } from "@lib/ctx";
+import { PromptHttpFile } from "@workflow/steps/http/PromptHttpFile";
+import { PromptHttpFileRoutes } from "@workflow/steps/http/PromptHttpFileRoutes";
+import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { Workflow } from "@workflow/workflow";
 
 export default {
   command: "dataset",
   aliases: [],
   describe: "Creates a dataset that succeeds for a given request",
   handler: async () => {
-    const config = Config.get();
-    const dataset_repo_path = config.paths.dataset;
-    if (!dataset_repo_path) throw new ConfigError("paths.dataset");
-    const queries_path = path.join(dataset_repo_path, "queries");
-    if (!fs.existsSync(queries_path)) return log.error(`Queries folder not found at ${queries_path}`);
-    const dataset_path = path.join(dataset_repo_path, "dataset");
-    createDirIfNotExists(dataset_path);
-    const postscripts_path = path.join(dataset_repo_path, "postscripts", "scripts");
-    if (!fs.existsSync(queries_path)) return log.error(`Postscripts sciprts folder not found at ${postscripts_path}`);
-    const postscripts_results_path = path.join(dataset_repo_path, "postscripts", "results");
-    if (!fs.existsSync(queries_path)) return log.error(`Postscripts results folder not found at ${postscripts_path}`);
+    const ctx = ExecutionContext.get();
+    await new Workflow([
+      new PromptOcProject({ server: "cuyo" }),
+      new PromptHttpFile(),
+      new PromptHttpFileRoutes()
+    ]).run(ctx);
 
-    const projects = await new Openshift(await getOcToken()).getProjects();
-    const project = await promptChoice(projects);
+    const config = ctx.config;
+    const log = ctx.logger;
+    const repo = getPath("dataset");
+    const queries = repo.sub("queries");
+    if (!queries.exists()) {
+      log.error(`Queries folder not found at ${queries}`);
+      return {};
+    }
+
+    const dataset = repo.sub("dataset");
+    dataset.create();
+    const postscripts = repo.sub("postscripts", "scripts");
+    postscripts.create();
+    const postscripts_results = repo.sub("postscripts", "results");
+    postscripts_results.create();
+
     const sql = new Sql(project.name);
 
-    const http_files = getAppCollections();
-    const services = http_files
-      .map((f) => f.service)
-      .filter((s) => s !== null);
-    const service = await search({ choices: [...services], message: "Choose service" });
-    const file = http_files.find((f) => f.service === service);
-    if (!file) return log.error("File not found");
+    const query_files = queries.readFiles();
+    const query_file = await ctx.ui.promptChoice(query_files, { message: "Choose query to inject variables" });
 
-    const requests = file.requests.map((r) => `${r.method} ${r.pathname}`);
-    const requestString = await search({ choices: requests, message: `Choose request for ${service}` });
-    const req = file.requests.find((r) => `${r.method} ${r.pathname}` === requestString);
-    if (!req) return log.error("Request not found");
+    const postscripts_files = postscripts.readFiles();
+    const postscript_file = await ctx.ui.promptChoice(
+      postscripts_files,
+      {
+        message: "Choose query to inject variables",
+        optional: true
+      }
+    );
 
-    const query_dir = readfiles(queries_path);
-    const query_file = await search({ choices: query_dir, message: "Choose query to inject variables" });
-    const query_file_path = path.join(queries_path, query_file);
+    const postscript = postscript_file ? (await import(postscript_file.path)).default : () => { };
 
-    const postscripts_dir = readfiles(postscripts_path);
-    const postscripts_file = await search({ choices: ["None", ...postscripts_dir], message: "Choose postscript to run for every request" });
-    const postscripts_file_path = path.join(postscripts_path, postscripts_file);
-    const postscript = postscripts_file === "None" ? () => { } : (await import(postscripts_file_path)).default;
-    if (typeof postscript !== "function") return log.error(`Postscript ${postscripts_file} does not have an export default function`);
-
-    const query = fs.readFileSync(query_file_path).toString();
+    const query = query_file.read();
     const queryRes = await sql.query(query);
 
     const results = await Promise.all(

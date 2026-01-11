@@ -27,19 +27,25 @@ export class DefaultUI {
     return (res as { selected: R }).selected;
   }
 
-  async promptChoice<T extends {
-    toChoice: () => Choice;
-  }, K, R = K extends true ? T[] : T>(
-    resources: T[],
-    promptOpts?: PromptChoiceOptions<K>
-  ) {
+  async promptChoice<T extends { toChoice: () => Choice },
+    Multiple,
+    Optional,
+    R = Multiple extends true ? T[] : Optional extends true ? T | null : T
+  >(resources: T[], promptOpts?: PromptChoiceOptions<Multiple, Optional>): Promise<R> {
     const opts = promptOpts || {};
+    const mapped = resources.map(mapToChoice);
+
+    const choices = promptOpts?.optional && !promptOpts.multiple
+      ? [{ name: "None" }, ...mapped]
+      : mapped;
+
     const resource = await this.search({
-      choices: resources.map(mapToChoice),
+      choices,
       message: "",
       ...opts
     });
     if (Array.isArray(resource)) return resource.map((r1) => resources.find((r) => r.toChoice().name === r1)) as R;
+    if (promptOpts?.optional && resource === "None") return null as R;
     return resources.find((r) => r.toChoice().name === resource) as R;
   }
 

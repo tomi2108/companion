@@ -108,7 +108,7 @@ export class Config {
     return new JsonFile(getConfigPath());
   }
 
-  async load() {
+  async init() {
     const config = this.file().read();
     const configKeys = Object.keys(this);
     const team = "team" in config

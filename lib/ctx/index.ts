@@ -25,9 +25,9 @@ export class ExecutionContext {
     return this.ctx;
   }
 
-  async load() {
+  async init() {
     try {
-      await this.config.load();
+      await this.config.init();
     } catch (err) {
       if (
         err instanceof InvalidJsonFile
