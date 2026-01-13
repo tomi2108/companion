@@ -1,14 +1,11 @@
-import { HttpMethod } from "@files/formatters/http_formatter";
 import { HttpFile } from "@interface/http/http_file";
 import { Req } from "@interface/http/req";
 import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowStep } from "..";
 
-type Service = { method: HttpMethod; endpoint: string };
-
 type Reads = { http_file: HttpFile };
-type Writes<Multiple> = Multiple extends true ? { services: Service[] } : { service: Service };
+type Writes<Multiple> = Multiple extends true ? { requests: Req[] } : { request: Req };
 type Options<Multiple> = {
   multiple?: Multiple;
 };
@@ -31,7 +28,7 @@ export class PromptHttpFileRequest<Multiple extends boolean = false>
       message: `Choose request for ${service}`
     });
 
-    if (Array.isArray(services)) return { requests: services };
-    return { request: services as Req };
+    if (Array.isArray(services)) return { requests: services } as Writes<Multiple>;
+    return { request: services } as Writes<Multiple>;
   }
 }

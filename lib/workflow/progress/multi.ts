@@ -1,21 +1,24 @@
-import { MultiBar, multiProgressBar, ProgressBar } from "@lib/ui";
+import { MultiProgressBar, ProgressBar, UI } from "@lib/ui";
 
 import { ProgressController, ProgressScope } from "./types";
 
 export class MultiProgressController implements ProgressController {
-  constructor(private multibar = multiProgressBar()) { }
+
+  constructor(
+    private ui: UI,
+    private multibar?: MultiProgressBar
+  ) { }
 
   root(): ProgressScope {
-    return new MultiProgressScope(
-      this.multibar
-    );
+    const multibar = this.multibar ?? this.ui.multiProgressBar();
+    return new MultiProgressScope(multibar);
   }
 
 }
 
 class MultiProgressScope implements ProgressScope {
   constructor(
-    private multibar: MultiBar,
+    private multibar: MultiProgressBar,
     private bar?: ProgressBar
   ) { }
 

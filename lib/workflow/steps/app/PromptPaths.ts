@@ -25,7 +25,7 @@ export class PromptPaths<Multiple extends boolean = false> extends WorkflowStep<
       message: "Choose path",
       multiple: Boolean(this.options?.multiple)
     });
-    if (Array.isArray(path)) return { paths: path };
-    return { path };
+    if (Array.isArray(path)) return { paths: path } as Writes<Multiple>;
+    return { path } as Writes<Multiple>;
   }
 }

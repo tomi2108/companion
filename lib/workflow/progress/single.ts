@@ -1,11 +1,16 @@
-import { progressBar, ProgressBar } from "@lib/ui";
+import { ProgressBar, UI } from "@lib/ui";
 
 import { ProgressController, ProgressScope } from "./types";
 
 export class SingleProgressController implements ProgressController {
+
+  constructor(private ui: UI) { }
+
   root(label = "", total = 0): ProgressScope {
-    return new SingleProgressScope(progressBar(total, label));
+    const bar = this.ui.progressBar(total, label);
+    return new SingleProgressScope(bar);
   }
+
 }
 
 class SingleProgressScope implements ProgressScope {

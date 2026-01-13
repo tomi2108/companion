@@ -12,9 +12,18 @@ export type Spinner = {
   succeed: (text?: string) => void;
   fail: (text?: string) => void;
 };
-// TODO: Type this
-export type ProgressBar = {};
-export type MultiProgressBar = {};
+
+export type ProgressBar = {
+  setSufix(sufix: string): void;
+  setPrefix(prefix: string): void;
+  setTotal(total: number): void;
+  increment(by: number): void;
+  stop(): void;
+};
+
+export type MultiProgressBar = {
+  create(total: number, label: string): ProgressBar;
+};
 
 export interface UI {
   input(opts: StringPromptOptions): Promise<string>;
