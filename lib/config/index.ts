@@ -22,6 +22,7 @@ import { SqlConfig } from "./sql";
 import { TasksConfig } from "./tasks";
 import { ThreescaleConfig } from "./threescale";
 import { VaultConfig } from "./vault";
+import { MongoConfig } from "./mongo";
 
 const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");
@@ -55,6 +56,7 @@ export class Config {
   app = new AppConfig();
   project = new ProjectConfig();
   sql = new SqlConfig();
+  mongo = new MongoConfig();
   tasks = new TasksConfig();
 
   static get() {

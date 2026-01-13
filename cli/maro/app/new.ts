@@ -14,7 +14,7 @@ import { arrayDifference, kebabToCamel } from "@lib/utils";
 import { Openshift } from "@oc";
 import { getOcToken } from "@oc/api";
 import { PipelineStatus } from "@oc/pipelinerun";
-import { findArgoPipeline, findCIPipeline, findSyncPipeline, waitForPipeline } from "@oc/utils";
+// import { findArgoPipeline, findCIPipeline, findSyncPipeline, waitForPipeline } from "@oc/utils";
 
 const IntConnections = {
   apigw: "apigw",

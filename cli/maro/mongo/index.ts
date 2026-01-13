@@ -6,7 +6,7 @@ import scripts from "@cli/mongo/scripts";
 export default {
   command: "mongo <command>",
   describe: "Run MongoDb scripts and migrations",
-  aliases: ["pods"],
+  aliases: [],
   builder: (yargs: Argv) => yargs
     .command(migration)
     .command(scripts)

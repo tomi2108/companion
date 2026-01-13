@@ -16,24 +16,23 @@ export class PromptDeploymentEnvs extends WorkflowStep<Reads, Writes> {
     const namespace = deploy_yaml.namespace;
     const ui = ctx.ui;
 
-    const addsSecrets = await ui.confirm({ message: `Secrets? (${namespace})`, initial: false });
-    const token = addsSecrets ? await getOcToken() : null;
-    let secrets: Secret[] = [];
-    let configmaps: ConfigMap[] = [];
+    const token = await getOcToken();
+    const project = await new Openshift(token).getProject(namespace);
 
-    if (addsSecrets) {
-      const project = await new Openshift(token as string).getProject(namespace);
-      const secrets_available = await project.getSecrets();
-      secrets = await ui.promptChoice(secrets_available, { message: "Select configmaps", multiple: true });
-    }
+    const secrets_available = await project.getSecrets();
+    const configmaps_availabie = await project.getConfigMaps();
 
-    const addsConfigmaps = await ui.confirm({ message: `Configmaps? (${namespace})`, initial: false });
-    if (addsConfigmaps) {
-      const tokenn = token ?? await getOcToken();
-      const project = await new Openshift(tokenn).getProject(namespace);
-      const configmaps_availabie = await project.getConfigMaps();
-      configmaps = await ui.promptChoice(configmaps_availabie, { message: "Select secrets", multiple: true });
-    }
+    const secrets = await ui.confirmAndSearch(
+      secrets_available,
+      { message: `Secrets? (${namespace})`, initial: false },
+      { message: "Select secrets", multiple: true }
+    ) ?? [];
+
+    const configmaps = await ui.confirmAndSearch(
+      configmaps_availabie,
+      { message: `Configmaps? (${namespace})`, initial: false },
+      { message: "Select configmaps", multiple: true }
+    ) ?? [];
 
     return { secrets, configmaps, name: namespace };
   }

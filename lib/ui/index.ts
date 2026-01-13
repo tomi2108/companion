@@ -20,6 +20,14 @@ export interface UI {
   input(opts: StringPromptOptions): Promise<string>;
   password(opts: StringPromptOptions): Promise<string>;
   confirm(opts: Omit<BooleanPromptOptions, "format">): Promise<boolean>;
+  confirmAndSearch<T extends { toChoice: () => Choice },
+    Multiple,
+    Optional,
+    R = Multiple extends true ? T[] : Optional extends true ? T | null : T
+  >(
+    resources: T[],
+    confirmOpts: Omit<BooleanPromptOptions, "format">,
+    searchOpts: PromptChoiceOptions<Multiple, Optional>): Promise<R | null>;
   search<K, R = K extends true ? string[] : string>(opts: ArrayPromptOptions<K>): Promise<R>;
   promptChoice<T extends { toChoice: () => Choice }, Multiple, Optional, R = Multiple extends true ? T[] : Optional extends true ? T | null : T>(
     resources: T[],

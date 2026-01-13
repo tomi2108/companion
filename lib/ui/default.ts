@@ -5,9 +5,9 @@ import { Choice } from "@lib/constants";
 import { mapToChoice } from "@lib/utils";
 import { Spinner } from "@topcli/spinner";
 
-import { ArrayPromptOptions, BooleanPromptOptions, ProgressBar, PromptChoiceOptions, StringPromptOptions } from ".";
+import { ArrayPromptOptions, BooleanPromptOptions, ProgressBar, PromptChoiceOptions, StringPromptOptions, UI } from ".";
 
-export class DefaultUI {
+export class DefaultUI implements UI {
 
   async input(opts: StringPromptOptions) {
     const res = await prompt({ ...opts, type: "input", name: "selected" });
@@ -25,6 +25,22 @@ export class DefaultUI {
     // maybe look at Inquirer ??
     const res = await prompt({ ...opts, type: "autocomplete", scroll: true, separator: true, sort: true, name: "selected" });
     return (res as { selected: R }).selected;
+  }
+
+  async confirmAndSearch<T extends { toChoice: () => Choice },
+    Multiple,
+    Optional,
+    R = Multiple extends true ? T[] : Optional extends true ? T | null : T
+  >(
+    resources: T[],
+    confirmOpts: Omit<BooleanPromptOptions, "format">,
+    searchOpts: PromptChoiceOptions<Multiple, Optional>): Promise<R | null> {
+    const c = await this.confirm(confirmOpts);
+    if (c) {
+      const res = await this.promptChoice(resources, searchOpts);
+      return res as R;
+    }
+    return null;
   }
 
   async promptChoice<T extends { toChoice: () => Choice },

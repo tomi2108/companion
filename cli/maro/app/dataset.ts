@@ -1,7 +1,7 @@
 import { ExecutionContext } from "@lib/ctx";
 import { AppDataset } from "@workflow/steps/app/AppDataset";
 import { PromptHttpFile } from "@workflow/steps/http/PromptHttpFile";
-import { PromptHttpFileRequest } from "@workflow/steps/http/PromptHttpFileRoutes";
+import { PromptHttpFileRequest } from "@workflow/steps/http/PromptHttpFileRequest";
 import { CreateLogFile } from "@workflow/steps/log/CreateLogFile";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { Workflow } from "@workflow/workflow";

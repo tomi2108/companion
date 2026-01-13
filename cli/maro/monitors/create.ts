@@ -10,7 +10,7 @@ import { If } from "@workflow/steps/flow/If";
 import { Write } from "@workflow/steps/flow/Write";
 import { GetHttpFile } from "@workflow/steps/http/GetHttpFile";
 import { PromptHttpFile } from "@workflow/steps/http/PromptHttpFile";
-import { PromptHttpFileRequest } from "@workflow/steps/http/PromptHttpFileRoutes";
+import { PromptHttpFileRequest } from "@workflow/steps/http/PromptHttpFileRequest";
 import { CreateMonitorFile } from "@workflow/steps/monitor/CreateMonitorFile";
 import { CreateMonitorIssue } from "@workflow/steps/monitor/CreateMonitorIssue";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
