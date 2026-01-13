@@ -1,8 +1,8 @@
 import { Repo } from "@interface/dirs/repo";
 import { ExecutionContext } from "@lib/ctx";
+import { Write } from "@steps/flow/Write";
 import { CloseMr } from "@steps/mr/CloseMr";
 import { PromptMr } from "@steps/mr/PromptMr";
-import { Write } from "@steps/flow/Write";
 import { Workflow } from "@workflow/workflow";
 
 export default {

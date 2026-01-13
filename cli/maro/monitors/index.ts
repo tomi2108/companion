@@ -1,7 +1,7 @@
 import { Argv } from "yargs";
 
-import issue from "@cli/monitors/issue";
 import create from "@cli/monitors/create";
+import issue from "@cli/monitors/issue";
 
 export default {
   command: "monitors <command>",

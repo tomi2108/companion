@@ -12,6 +12,7 @@ import { EnvsConfig } from "./envs";
 import { GitlabConfig } from "./glab";
 import { JiraConfig } from "./jira";
 import { MigrationsConfig } from "./migrations";
+import { MongoConfig } from "./mongo";
 import { OpenShiftConfig } from "./oc";
 import { PathsConfig } from "./paths";
 import { PreferencesConfig } from "./preferences";
@@ -22,7 +23,6 @@ import { SqlConfig } from "./sql";
 import { TasksConfig } from "./tasks";
 import { ThreescaleConfig } from "./threescale";
 import { VaultConfig } from "./vault";
-import { MongoConfig } from "./mongo";
 
 const homeDir = os.homedir();
 const configs_dir = path.resolve(__dirname, "../../../configs");

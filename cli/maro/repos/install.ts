@@ -2,10 +2,10 @@ import { Argv } from "yargs";
 
 import { AppRepo } from "@interface/dirs/app_repo";
 import { ExecutionContext } from "@lib/ctx";
-import { Input } from "@steps/ui/Input";
 import { ForEach } from "@steps/flow/ForEach";
 import { PromptPathSources } from "@steps/repos/PromptPathSources";
 import { RepoInstall } from "@steps/repos/RepoInstall";
+import { Input } from "@steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
 
 export default {
