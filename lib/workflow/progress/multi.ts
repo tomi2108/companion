@@ -28,7 +28,7 @@ class MultiProgressScope implements ProgressScope {
   }
 
   increment(n = 1, label?: string) {
-    if (label) this.bar?.setSufix(label);
+    if (label) this.bar?.setSuffix(label);
     this.bar?.increment(n);
   }
 

@@ -7,6 +7,7 @@ import { GetAppRepo } from "@workflow/steps/app/GetAppRepo";
 import { GetDeployRepo } from "@workflow/steps/app/GetDeployRepo";
 import { EnvHealth } from "@workflow/steps/env/EnvHealth";
 import { ForEach } from "@workflow/steps/flow/ForEach";
+import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
 import { PromptDeploymentSources } from "@workflow/steps/oc/deployments/PromptDeploymentSources";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
 import { Table } from "@workflow/steps/ui/Table";
@@ -24,6 +25,7 @@ export default {
     const ctx = ExecutionContext.get();
     await new Workflow([
       new PromptOcProject({ server: "cuyo" }),
+      new GetDeployments(),
       new PromptDeploymentSources({ backend: all }),
       new ForEach({
         item: "deployment",

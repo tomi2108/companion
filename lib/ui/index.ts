@@ -14,7 +14,7 @@ export type Spinner = {
 };
 
 export type ProgressBar = {
-  setSufix(sufix: string): void;
+  setSuffix(suffix: string): void;
   setPrefix(prefix: string): void;
   setTotal(total: number): void;
   addToTotal(n: number): void;

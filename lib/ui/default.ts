@@ -82,7 +82,7 @@ export class DefaultUI implements UI {
 
   progressBar(total?: number, prefix?: string) {
     const bar = new SingleBar({
-      format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
+      format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {suffix}",
       autopadding: true,
       forceRedraw: true,
       gracefulExit: true,
@@ -94,7 +94,7 @@ export class DefaultUI implements UI {
     const increment = (by: number) => bar.increment(by);
     const stop = () => bar.stop();
     const setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(Math.max(12 - prefix.length, 0)) });
-    const setSufix = (sufix: string) => bar.increment(0, { sufix });
+    const setSuffix = (suffix: string) => bar.increment(0, { suffix });
 
     const setTotal = (to: number) => {
       if (!total && !bar.isActive) bar.start(to, 0);
@@ -108,12 +108,12 @@ export class DefaultUI implements UI {
 
     setPrefix(prefix ?? "");
 
-    return { update, increment, stop, setTotal, setSufix, setPrefix, addToTotal };
+    return { update, increment, stop, setTotal, setSuffix, setPrefix, addToTotal };
   }
 
   multiProgressBar() {
     const multi = new MultiProgressBar({
-      format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {sufix}",
+      format: "{prefix}{prefixPadding}[{bar}] {percentage}% | {value}/{total} | {suffix}",
       forceRedraw: true,
       gracefulExit: true,
       autopadding: true,
@@ -122,9 +122,14 @@ export class DefaultUI implements UI {
     }, Presets.legacy);
 
     const create = (total?: number, prefix?: string): ProgressBar => {
-      const bar = multi.create(total ?? 0, 0, { prefix: "", sufix: "" }) as SingleBar & { setPrefix: (i: string) => void; setSufix: (i: string) => void };
+      const bar = multi.create(total ?? 0, 0, { prefix: "", suffix: "" }) as SingleBar & {
+        setPrefix: (prefix: string) => void;
+        setSuffix: (suffix: string) => void;
+        addToTotal: (n: number) => void;
+      };
       bar.setPrefix = (prefix: string) => bar.increment(0, { prefix, prefixPadding: " ".repeat(Math.max(12 - prefix.length, 0)) });
-      bar.setSufix = (sufix: string) => bar.increment(0, { sufix });
+      bar.setSuffix = (suffix: string) => bar.increment(0, { suffix });
+      bar.addToTotal = (n: number) => bar.setTotal(bar.getTotal() + n);
       if (prefix) bar.setPrefix(prefix);
       return bar;
     };

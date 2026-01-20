@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-git pull
+# git pull
 npm uninstall -g maro
 npm run clean
 npm install
