@@ -6,6 +6,7 @@ import { ForEach } from "@steps/flow/ForEach";
 import { PromptPathSources } from "@steps/repos/PromptPathSources";
 import { RepoInstall } from "@steps/repos/RepoInstall";
 import { Input } from "@steps/ui/Input";
+import { SingleProgressController } from "@workflow/progress/single";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -32,7 +33,6 @@ export default {
     backend?: boolean;
     dev?: boolean;
   }) => {
-    // TODO: add  loading
     const ctx = ExecutionContext.get();
     await new Workflow([
       new PromptPathSources({
@@ -46,12 +46,15 @@ export default {
       new Input({ message: "Enter version", write: "version" }),
       new Input({ message: "Source branch", write: "source_branch" }),
       new ForEach({
+        progress: {
+          prefix: "Installing",
+          suffix: (i) => i.dir.name()
+        },
         concurrency: 4,
         item: "app_repo",
         items: (state: { app_repos: AppRepo[] }) => state.app_repos,
-        // TODO: Loading bars...
         step: new RepoInstall({ dev })
       })
-    ]).run(ctx);
+    ], { progressController: new SingleProgressController(ctx.ui) }).run(ctx);
   }
 };

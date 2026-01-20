@@ -9,6 +9,7 @@ import { CreateMr } from "@steps/mr/CreateMr";
 import { PromptPathSources } from "@steps/repos/PromptPathSources";
 import { RepoUpdate } from "@steps/repos/RepoUpdate";
 import { Input } from "@steps/ui/Input";
+import { SingleProgressController } from "@workflow/progress/single";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -28,7 +29,6 @@ export default {
     .conflicts("all", ["frontend", "backend"]),
   handler: async ({ all, frontend, backend }: { all?: boolean; frontend?: boolean; backend?: boolean }) => {
     const ctx = ExecutionContext.get();
-    // TODO: loading with progress bars
     new Workflow([
       new PromptPathSources({
         sources: [
@@ -46,6 +46,10 @@ export default {
         write: "target_branch"
       }),
       new ForEach({
+        progress: {
+          prefix: "Merging",
+          suffix: (repo) => repo.dir.name()
+        },
         item: "repo",
         items: (state: { repos: Repo[] }) => state.repos,
         step: new If({
@@ -71,6 +75,8 @@ export default {
           if (skipped.length > 0) skipped.forEach((d) => ctx.logger.warning(`Skipped: ${d}`));
         }
       })
-    ]).run(ctx);
+    ], {
+      progressController: new SingleProgressController(ctx.ui)
+    }).run(ctx);
   }
 };

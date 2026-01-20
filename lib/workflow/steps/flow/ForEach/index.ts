@@ -50,7 +50,12 @@ export class ForEach<
     })();
 
     let scope: ProgressScope | undefined;
-    if (this.options.progress) scope = runtime?.progress?.child(this.options.progress?.prefix, items.length);
+    if (this.options.progress) {
+      const p = this.options.progress?.prefix;
+      const prefix = typeof p === "string" ? p : p(state);
+      scope = runtime?.progress?.child(prefix, items.length);
+    }
+
     for (let i = 0; i < items.length; i += delta) {
       const slice = items.slice(i, i + delta);
       await Promise.all(slice.map(async (item) => {

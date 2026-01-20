@@ -6,6 +6,7 @@ import { ForEach } from "@steps/flow/ForEach";
 import { If } from "@steps/flow/If";
 import { PromptPathSources } from "@steps/repos/PromptPathSources";
 import { RepoClean } from "@steps/repos/RepoClean";
+import { SingleProgressController } from "@workflow/progress/single";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -56,16 +57,17 @@ export default {
         then: new ForEach({
           item: "repo",
           items: (state: { repos: Repo[] }) => state.repos,
-          // TODO: add progress bar
-          // progressBar: {
-          //   type: "single",
-          //   prefix: "Cleaning:",
-          //   sufix: (repo) => repo.dir.name()
-          // },
+          progress: {
+            prefix: "Cleaning",
+            suffix: (repo) => repo.dir.name()
+          },
           step: new RepoClean({ force })
         })
       })
-    ]).run(ctx);
+    ], {
+      progressController: new SingleProgressController(ctx.ui)
+    }
+    ).run(ctx);
   }
 };
 
