@@ -17,6 +17,7 @@ export type ProgressBar = {
   setSufix(sufix: string): void;
   setPrefix(prefix: string): void;
   setTotal(total: number): void;
+  addToTotal(n: number): void;
   increment(by: number): void;
   stop(): void;
 };

@@ -1,4 +1,5 @@
 import { ExecutionContext } from "@lib/ctx";
+import { ProgressScope } from "@workflow/progress/types";
 
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "../..";
 import { ForEachOptions, ForEachWrites } from "./types";
@@ -36,9 +37,7 @@ export class ForEach<
   async run(
     ctx: ExecutionContext,
     state: Reads & InnerReads,
-    // TODO: Use this to implement progress bars
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _runtime?: WorkflowRuntime
+    runtime?: WorkflowRuntime
   ): Promise<ForEachWrites<InnerWrites, Key>> {
     const results: InnerWrites[] = [];
     const items = this.options.items(state);
@@ -50,6 +49,8 @@ export class ForEach<
       return concurrency;
     })();
 
+    let scope: ProgressScope | undefined;
+    if (this.options.progress) scope = runtime?.progress?.child(this.options.progress?.prefix, items.length);
     for (let i = 0; i < items.length; i += delta) {
       const slice = items.slice(i, i + delta);
       await Promise.all(slice.map(async (item) => {
@@ -57,11 +58,14 @@ export class ForEach<
         const run = typeof step === "function" ? step(i) : step;
         const output = await run.run(
           ctx,
-          { ...state, [this.options.item]: item }
+          { ...state, [this.options.item]: item },
+          runtime
         );
+        scope?.increment(1, this.options.progress?.suffix?.(item));
         if ("collectAs" in this.options && output) results.push(output);
       }));
     }
+    scope?.close();
 
     if ("collectAs" in this.options && typeof this.options.collectAs === "string") return { [this.options.collectAs]: results } as ForEachWrites<InnerWrites, Key>;
     return {} as ForEachWrites<InnerWrites, Key>;

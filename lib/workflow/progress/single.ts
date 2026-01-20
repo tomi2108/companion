@@ -18,7 +18,7 @@ class SingleProgressScope implements ProgressScope {
 
   child(label?: string, total?: number): ProgressScope {
     if (label) this.bar.setPrefix(label);
-    if (typeof total === "number") this.bar.setTotal(total);
+    if (typeof total === "number") this.bar.addToTotal(total);
     return this;
   }
 

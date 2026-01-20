@@ -100,9 +100,15 @@ export class DefaultUI implements UI {
       if (!total && !bar.isActive) bar.start(to, 0);
       bar.setTotal(to);
     };
+
+    const addToTotal = (n: number) => {
+      if (!total && !bar.isActive) bar.start(0, 0);
+      bar.setTotal(bar.getTotal() + n);
+    };
+
     setPrefix(prefix ?? "");
 
-    return { update, increment, stop, setTotal, setSufix, setPrefix };
+    return { update, increment, stop, setTotal, setSufix, setPrefix, addToTotal };
   }
 
   multiProgressBar() {

@@ -24,7 +24,9 @@ export class Workflow extends WorkflowStep<Reads, Writes, Options> {
     initialState = {}
   ) {
     let state = initialState;
-    const runtime = { progress: this.options.progressController?.root() };
+    const runtime = {
+      progress: this.options.progressController?.root()
+    };
 
     for (const step of this.steps) {
       try {

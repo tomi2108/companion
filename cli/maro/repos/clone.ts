@@ -2,6 +2,7 @@ import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
 import { ForEach } from "@steps/flow/ForEach";
 import { PathClone } from "@steps/repos/PathClone";
+import { MultiProgressController } from "@workflow/progress/multi";
 import { Workflow } from "@workflow/workflow";
 
 export default {
@@ -12,8 +13,7 @@ export default {
     const ctx = ExecutionContext.get();
     const config = ctx.config;
     const paths = Object.keys(config.paths);
-    // TODO: improve this with loading bars
-    const spinner = ctx.ui.loading("Cloning");
+
     await new Workflow([
       new ForEach({
         concurrency: true,
@@ -21,7 +21,8 @@ export default {
         items: (state: { paths: PathKey[] }) => state.paths,
         step: new PathClone()
       })
-    ]).run(ctx, { paths });
-    spinner.succeed();
+    ], {
+      progressController: new MultiProgressController(ctx.ui)
+    }).run(ctx, { paths });
   }
 };
