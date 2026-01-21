@@ -30,7 +30,7 @@ export class AppNew extends WorkflowStep<Reads> {
     return this.runFn(this, ...args);
   }
 
-  private replaceFiles(ctx: ExecutionContext, reads: Reads, app_repo: AppRepo) {
+  private replaceFiles(ctx: ExecutionContext, reads: Reads, app_repo: AppRepo, origin: string) {
     const { name, description } = reads;
     const author = ctx.config.gitlab.username;
 
@@ -134,9 +134,9 @@ export class AppNew extends WorkflowStep<Reads> {
         const dependencies = dependenciesMap[app_type] as Dependency[];
         const app_repo = await self.init_repo(dir, mf_template_link, dependencies);
 
-        self.replaceFiles(ctx, reads, app_repo);
+        const origin = await self.create_remote(app_repo, frontend_id, reads);
+        self.replaceFiles(ctx, reads, app_repo, origin);
         await self.initial_commit(app_repo);
-        await self.create_remote(app_repo, frontend_id, reads);
         await app_repo.push("master");
 
         await app_repo.createNewBranch("release");
@@ -197,7 +197,6 @@ export class AppNew extends WorkflowStep<Reads> {
         const app_repo = await self.init_repo(dir, ms_template_link, dependencies);
 
         const src = dir.sub("src");
-        const swagger = dir.sub("swagger");
         const tests = dir.sub("tests");
 
         const configuration = src.sub("configuration");
@@ -339,7 +338,8 @@ export class AppNew extends WorkflowStep<Reads> {
         if (usesS3) envs.push(s3_env);
 
         const merged = self.mergeEnvironmentFiles(envs);
-        self.writeEnvFile(configuration.getFile("environment.ts"), merged);
+        const env_file = configuration.getFile("environment.ts");
+        env_file.write(merged);
 
         files_to_remove.push(...envs);
 
@@ -359,8 +359,9 @@ export class AppNew extends WorkflowStep<Reads> {
           package_json.replace("app.ts", "main.ts");
         }
 
-        await self.initial_commit(app_repo);
         const origin = await self.create_remote(app_repo, backend_id, reads);
+        self.replaceFiles(ctx, reads, app_repo, origin);
+        await self.initial_commit(app_repo);
         await self.initial_deploy(app_repo, "master");
 
         return {};
