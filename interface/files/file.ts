@@ -5,7 +5,7 @@ import path from "node:path";
 import { FileNotFound } from "./errors";
 import { FileFormatter } from "./formatters";
 
-export class File<T> {
+export class File<T = any> {
   readonly path: string;
   formatter: FileFormatter<T>;
 

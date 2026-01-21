@@ -7,6 +7,11 @@ export class TextFile extends File<string> {
     super(path, new StringFormatter());
   }
 
+  lineCount() {
+    const lines = this.read().split("\n");
+    return lines.length;
+  }
+
   insertLine(lineNo: number, line: string) {
     const lines = this.read().split("\n");
     lines.splice(lineNo - 1, 0, line);

@@ -69,7 +69,7 @@ export class Dir {
   }
 
   delete() {
-    if (this.exists()) fs.rmSync(this.path);
+    if (this.exists()) fs.rmSync(this.path, { recursive: true });
   }
 
   contains(file: File<unknown>) {

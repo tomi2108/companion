@@ -77,6 +77,12 @@ export class Repo {
     return await this.git.checkoutLocalBranch(name);
   }
 
+  async addAll() {
+    // TODO: Test if this respects .gitignore, if it does not, change
+    const files = this.dir.traverse();
+    for (const file of files) this.add(file);
+  }
+
   async add(file: File<unknown>) {
     const spinner = this.ui.loading(`Adding file: ${file}`);
     await this.git.add(file.path);
