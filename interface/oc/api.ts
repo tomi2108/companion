@@ -5,9 +5,13 @@ import { Config } from "@lib/config";
 import { EXCLUDED_SECRETS } from "@lib/constants";
 import { Secret } from "@oc/secret";
 
-let token: string | null = null;
+const cache: Record<"cuyo" | "brc", string | null> = {
+  cuyo: null,
+  brc: null
+};
+
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
-  if (token) return token;
+  if (cache[s]) return cache;
   const oc_config = Config.getView().get("openshift");
 
   const authUrl = {
@@ -35,7 +39,7 @@ export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
       const access_token = new URLSearchParams(
         new URL(err.response?.headers.location).hash.slice(1)
       ).get("access_token") ?? "";
-      token = access_token;
+      cache[s] = access_token;
       return access_token;
     } else {
       console.dir(err, { depth: null });
