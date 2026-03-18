@@ -1,0 +1,32 @@
+{
+  "team": "",
+  "paths": {
+    "backend": "",
+    "frontend": "",
+    "despliegues": "",
+    "threescale": "",
+    "argocd": "",
+    "vault": "",
+    "rest": ""
+  },
+  "openshift": {
+    "username": "",
+    "password": ""
+  },
+  "vault": {
+    "token": ""
+  },
+  "gitlab": {
+    "username": "",
+    "token": ""
+  },
+  "jira": {
+    "username": "",
+    "token": ""
+  },
+  "preferences": {
+    "logs_path": "",
+    "browser": "",
+    "editor": ""
+  }
+}

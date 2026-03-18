@@ -1,0 +1,101 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "es2021",
+      "dom"
+    ],
+    "module": "nodenext",
+    "outDir": "./dist",
+    "rootDir": ".",
+    "baseUrl": "./",
+    "paths": {
+      "@cli/*": [
+        "cli/maro/*"
+      ],
+      "@oc": [
+        "interface/oc/index"
+      ],
+      "@oc/*": [
+        "interface/oc/*"
+      ],
+      "@jira": [
+        "interface/jira/index"
+      ],
+      "@jira/*": [
+        "interface/jira/*"
+      ],
+      "@glab": [
+        "interface/git/glab/index"
+      ],
+      "@glab/*": [
+        "interface/git/glab/*"
+      ],
+      "@vault": [
+        "interface/vault/index"
+      ],
+      "@vault/*": [
+        "interface/vault/*"
+      ],
+      "@workflow/*": [
+        "lib/workflow/*"
+      ],
+      "@steps/*": [
+        "lib/workflow/steps/*"
+      ],
+      "@files": [
+        "interface/files/index"
+      ],
+      "@files/*": [
+        "interface/files/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@interface/*": [
+        "interface/*"
+      ],
+      "@mocks/*": [
+        "tests/mocks/*"
+      ]
+    },
+    "strict": true,
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": false,
+    "noEmitOnError": false
+  },
+  "include": [
+    "cli",
+    "lib",
+    "interface",
+    "tests"
+  ],
+  "exclude": [
+    "configs",
+    "dist",
+    "maro-plugins"
+  ]
+}
