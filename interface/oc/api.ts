@@ -11,7 +11,7 @@ const cache: Record<"cuyo" | "brc", string | null> = {
 };
 
 export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
-  if (cache[s]) return cache;
+  if (cache[s]) return cache[s];
   const oc_config = Config.getView().get("openshift");
 
   const authUrl = {
