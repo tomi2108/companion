@@ -73,64 +73,21 @@ Accede y gestiona secretos de forma segura y centralizada, protegidos bajo llave
 
 ---
 
-## ✅ Checklist funcionalidades de Companion
+## 🧰 Instrumentos del Círculo del Creador de Plugins
 
-### 🔧 Inicialización de Entornos
-- [x] Generación automática de estructura de carpetas para el proyecto
-- [x] Carga de configuraciones según equipo (ej. frontend, backend, devops)
+Las profundidades de Maro abren sus dominios a quienes deseen expandir el mapa con nuevos rituales. A disposición de los exploradores y arquitectos de nuevos “Círculos”, Maro ofrece un arsenal de instrumentos:
 
-### 🧠 Configuraciones por Equipo/Proyecto
-- [x] Carga condicional de configuración basada en clave `"team"`
-- [x] Fallback a configuraciones por defecto si no se encuentra personalización
-- [x] Comando interactivo `companion setup` para facilitar configuración 
-- [x] Validación automática de esquemas de configuración.
+- **Sistema de Plugins y Comandos:** Registra, crea y publica nuevas habilidades usando `Plugin`, `PluginRegistry`, `PluginExport` y `Command`.
+- **Flujos y Steps Encadenados:** Estructura lógicas complejas utilizando `Workflow`, `WorkflowStep`, `WorkflowRuntime`.
+- **Guardianes del Conocimiento:** Manipula y valida configuraciones con `Config`, `ConfigRegistry`, `ValidateConfig`, `ConfigHelp` y `ConfigView`.
+- **Domadores de Archivos:** Lee, escribe y transforma archivos de todo tipo (`File`, `JsonFile`, `YamlFile`, `TextFile`, `ObjectFile`, `FileFormatter`).
+- **Señales y Rituales Visuales:** Construye prompts, spinners y progresos interactivos con `Input`, `Spinner`, `MultiProgressController`, `SingleProgressController`.
+- **Comando sobre el Caos:** Automatiza procesos, invoca comandos y orquesta servicios (`CommandRunner`, `ServiceProcess`).
+- **Voz sobre Proyectos y Repositorios:** Interactúa con repos, despliegues y estructuras de aplicaciones (`AppRepo`, `Repo`, `Project`, `Deployment`).
+- **Oráculos y Efemérides:** Reacciona a eventos del flujo usando `Action`, `ActionRegistry`, `CommitEvent`, entre otros.
+- **Atajos y Portales del Entorno:** Abre archivos en tu editor o browser, añade decoradores y utilidades (`openInEditor`, `openInBrowser`, `loading`).
 
-### 🚀 Integración con OpenShift
-- [x] Login automático al clúster mediante configuración guardada
-- [x] Despliegue de aplicaciones 
-- [x] Visualización de logs en tiempo real de pods específicos
-- [ ] Ejecución de comandos dentro de contenedores activos (`oc rsh`)
-- [x] Eliminación, reinicio y monitoreo de pods y deployments
-- [ ] Forwarding de puertos para servicios específicos
-- [x] Gestión de secretos y configuración de variables de entorno
-- [x] Generación de rutas públicas para testing rápido
-- [x] Creación de archivos `.env` con la configuración de ambientes desplegados
-
-### 🔁 Utilidades para GitLab
-- [x] Clonación inteligente de repositorios del grupo del proyecto
-- [x] Creación y asignación automática de *merge requests*
-- [x] Revisión del estado de pipelines asociados a una MR o branch
-- [x] Asignación de revisores automáticamente según reglas del equipo
-- [ ] Integración con ramas de Jira para nombrar ramas con prefijos de ticket
-- [x] Sincronización de ramas locales con `origin` automáticamente
-- [x] Nivelación de ramas
-
-### 📋 Integración con Jira
-- [x] Creación de tickets 
-- [ ] Cambio automático de estado de ticket al crear una nueva rama
-- [x] Actualización del ticket con comentarios 
-- [ ] Enlace automático entre tickets y commits o MRs
-- [ ] Búsqueda de tickets abiertos asignados al usuario actual (🚧 en progreso)
-- [ ] Filtro de tickets por sprint, tipo o estado desde la CLI (🚧 en progreso)
-- [ ] Transiciones de estado automatizadas según evento (ej. push a `main`)
-- [x] Comando para estimar tickets 
-
-### 🛡️ Integración con Vault  
-- [x] Lectura y escritura de secretos por entorno/proyecto
-- [x] Reinicio de deployments afectados por un secret luego de su actualizacion
-
-### 🗄️ Utilidades para MongoDB  
-- [ ] Conexión simplificada a instancias MongoDB.
-- [ ] Exploración rápida de colecciones y conteo de documentos  
-- [ ] Ejecución de consultas predefinidas o scripts desde archivos `.js`  
-- [ ] Exportación e importación de datos.
-- [ ] Generación de backups. 
-
-### 🛠 Otras Utilidades
-- [ ] Generación de documentación interna 
-- [ ] Notificaciones locales o vía Slack en eventos clave
-- [x] Comando `companion upgrade` para autoactualización de la herramienta
-- [x] Comando `companion open` para abrir un repositorio en el editor 
+Cada herramienta es un fragmento del saber de Maro, lista para ser encadenada en nuevos rituales y extensiones.
 
 ---
 
@@ -158,7 +115,7 @@ Aunque **Maro** es **opinionada por diseño**, la sabiduría siempre permanece a
 
 Un buen guía no te hace repetir lo que ya sabe; **Maro** lo recuerda por ti.
 
-### 🛠 Configuración asistida
+### 🛠️ Configuración asistida
 
 ```bash
 maro setup
@@ -167,25 +124,16 @@ maro setup
 
 ---
 
-## 🛠️ Herramientas y APIs utilizadas
+## 🧩 Sistema de Plugins y Extensiones
 
-Maro se apoya en APIs oficiales:
+Cuando los caminos trazados no bastan, Maro abre portales a nuevos círculos a través de su sistema de plugins. Estos rituales codificados —creados tanto por los antiguos como por los osados viajeros de hoy— permiten a cada equipo expandir los dominios del guía según sus propias necesidades y desafíos.
 
-### ☁️ OpenShift
+Cualquiera puede forjar un plugin: una integración inédita, un flujo jamás recorrido, una herramienta perdida en el tiempo. Cada plugin es un fragmento de sabiduría compartida, un atajo secreto en el inframundo de la infraestructura.
 
-[https://docs.redhat.com/en/documentation/openshift_container_platform](https://docs.redhat.com/en/documentation/openshift_container_platform)
+- Los **plugins oficiales**, validados por los guardianes del mapa, se encuentran en: [https://github.com/Maro-Ecosystem](https://github.com/Maro-Ecosystem).
+- La comunidad es bienvenida a enriquecer el legado: crea, comparte y documenta tu propio plugin para sumar un círculo nuevo a la guía de Maro.
 
-### 🧪 GitLab
-
-[https://docs.gitlab.com/api/rest/](https://docs.gitlab.com/api/rest/)
-
-### 📋 Jira
-
-[https://developer.atlassian.com/cloud/jira/platform/rest/v3/](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
-
-### 🛡️ Vault
-
-[https://developer.hashicorp.com/vault/api-docs](https://developer.hashicorp.com/vault/api-docs)
+No te conformes con las rutas existentes. Dirige el curso de tu propio descenso, deja tu marca en el abismo y ayuda a iluminar el sendero para quienes vendrán. A través de los plugins, tu conocimiento puede trascender los siglos y ser la luz de futuras expediciones.
 
 ---
 
