@@ -1,27 +1,24 @@
 import { ExecutionContext } from "@lib/ctx";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
 import { Project } from "@oc/project";
+import { OpenshiftServer } from "@oc/server";
 
-import { WorkflowOptions, WorkflowStep } from "../..";
+import { WorkflowStep } from "../..";
 
 type Writes = { project: Project };
 type Options<Reads> = {
-  server: "brc" | "cuyo";
   filter?: (project: Project, reads: Reads) => boolean;
 };
 
-export class PromptOcProject<Reads extends {} = {}> extends WorkflowStep<Reads, Writes, Options<Reads>> {
+type Reads = {
+  server: OpenshiftServer;
+};
 
-  constructor(override options: WorkflowOptions<Options<Reads>, Writes>) {
-    super(options);
-  }
+export class PromptOcProject extends WorkflowStep<Reads, Writes, Options<Reads>> {
 
   async run(ctx: ExecutionContext, reads: Reads) {
-    const token = await getOcToken(this.options.server);
-    const projects = await new Openshift(token, this.options.server).getProjects();
-    const filtered = this.options.filter
-      ? projects.filter((p) => this.options.filter!(p, reads))
+    const projects = await reads.server.getProjects();
+    const filtered = this.options?.filter
+      ? projects.filter((p) => this.options?.filter!(p, reads))
       : projects;
 
     const project = await ctx.ui.promptChoice(filtered, { message: "Select project" });

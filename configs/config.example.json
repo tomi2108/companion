@@ -10,8 +10,22 @@
     "rest": ""
   },
   "openshift": {
-    "username": "",
-    "password": ""
+    "servers": {
+      "dev-example": {
+        "username": "",
+        "password": "",
+        "url": "",
+        "authUrl": ""
+      }
+    },
+    "prod_servers": {
+      "prod-example": {
+        "username": "",
+        "password": "",
+        "url": "",
+        "authUrl": ""
+      }
+    }
   },
   "vault": {
     "token": ""

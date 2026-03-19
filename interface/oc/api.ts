@@ -1,62 +1,11 @@
 import axios from "axios";
 
-import { base64Encode } from "@files/utils";
-import { Config } from "@lib/config";
 import { EXCLUDED_SECRETS } from "@lib/constants";
 import { Secret } from "@oc/secret";
 
-const cache: Record<"cuyo" | "brc", string | null> = {
-  cuyo: null,
-  brc: null
-};
-
-export async function getOcToken(s: "cuyo" | "brc" = "cuyo") {
-  if (cache[s]) return cache[s];
-  const oc_config = Config.getView().get("openshift");
-
-  const authUrl = {
-    cuyo: oc_config.auth_server_cuyo,
-    brc: oc_config.auth_server_barracas
-  }[s];
-  const string = `${oc_config.username}:${oc_config.password}`;
-  const encodedString = base64Encode(string);
-
-  const params = {
-    client_id: "openshift-challenging-client",
-    code_challenge_method: "S256",
-    response_type: "token",
-    redirect_uri: `${authUrl}/oauth/token/implicit`
-  };
-  const headers = {
-    Authorization: `Basic ${encodedString}`,
-    "X-CSRF-Token": "1"
-  };
-  try {
-    await axios.get(`${authUrl}/oauth/authorize`, { maxRedirects: 0, params, headers });
-    return "";
-  } catch (err) {
-    if (axios.isAxiosError(err) && err.response?.headers.location) {
-      const access_token = new URLSearchParams(
-        new URL(err.response?.headers.location).hash.slice(1)
-      ).get("access_token") ?? "";
-      cache[s] = access_token;
-      return access_token;
-    } else {
-      console.dir(err, { depth: null });
-      throw err;
-    }
-  }
-}
-
-export const oc = (token: string, server: "cuyo" | "brc" = "cuyo") => {
-  const oc_config = Config.getView().get("openshift");
-  const s = {
-    cuyo: oc_config.server_cuyo,
-    brc: oc_config.server_barracas
-  }[server];
-
+export const oc = (token: string, url: string) => {
   return axios.create({
-    baseURL: `https://${s}`,
+    baseURL: url,
     headers: { Authorization: `Bearer ${token}` }
   });
 };

@@ -1,10 +1,9 @@
 import { DeployYaml } from "@files/deploy_yaml";
 import { ExecutionContext } from "@lib/ctx";
-import { Openshift } from "@oc";
-import { getOcToken } from "@oc/api";
 import { ConfigMap } from "@oc/configmap";
 import { Project } from "@oc/project";
 import { Secret } from "@oc/secret";
+import { OpenshiftServer } from "@oc/server";
 
 import { WorkflowStep } from "..";
 
@@ -21,8 +20,8 @@ export class PromptDeploymentEnvs extends WorkflowStep<Reads, Writes> {
     if (!namespace) throw new Error("Missing namespace in PromptDeploymentEnvs");
     const ui = ctx.ui;
 
-    const token = await getOcToken();
-    const oc_project = project ?? await new Openshift(token).getProject(namespace);
+    const oc = await new OpenshiftServer("cuyo").authenticate();
+    const oc_project = project ?? await oc.getProject(namespace);
 
     const secrets_available = await oc_project.getSecrets();
     const configmaps_availabie = await oc_project.getConfigMaps();

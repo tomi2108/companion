@@ -4,12 +4,14 @@ import { JsonFormatter } from "@files/formatters/json_formatter";
 import { StringFormatter } from "@files/formatters/string_formatter";
 import { Command } from "@lib/index";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 
 const TestRouteCommand: Command = {
   name: "test",
   description: "Test if routes are healthy and correctly expose services, issuing simulated requests and checking responses.",
   async run({ ctx }) {
-    const { project } = await new PromptOcProject({ server: "cuyo" }).run(ctx, {});
+    const { server } = await new PromptOcServer().run(ctx);
+    const { project } = await new PromptOcProject().run(ctx, { server });
     const routes = await project.getRoutes();
 
     if (!routes.length) {

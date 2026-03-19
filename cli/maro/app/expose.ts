@@ -4,6 +4,7 @@ import { GetAppRepo } from "@steps/app/GetAppRepo";
 import { GetDeployRepo } from "@steps/app/GetDeployRepo";
 import { PromptOcDeployment } from "@steps/oc/deployments/PromptOcDeployment";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const ExposeCommand: Command = {
@@ -12,7 +13,8 @@ const ExposeCommand: Command = {
   description: "Expose app in 3scale",
   run: async ({ ctx }) => {
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new PromptOcDeployment(),
       new GetDeployRepo(),
       new GetAppRepo(),

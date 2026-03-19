@@ -14,10 +14,12 @@ export class MockConfig {
       server: "https://mock_gitlab_server"
     },
     openshift: {
-      auth_server_cuyo: "https://localhost",
-      auth_server_barracas: "https://localhost",
-      server_cuyo: "localhost",
-      server_barracas: "localhost",
+      servers: {
+        local: {
+          url: "http://localhost",
+          authUrl: "http://localhost"
+        }
+      },
       mf_host_template: "template"
     },
     vault: {
