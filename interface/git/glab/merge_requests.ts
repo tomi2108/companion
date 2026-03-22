@@ -1,5 +1,7 @@
 import { MergeRequestSchema } from "@gitbeaker/rest";
 
+import { Config } from "@lib/config";
+
 import { MergeRequest } from "../merge_request";
 import { MergeRequestProvider } from "../provider";
 import { GitlabCredentials, glab } from "./api";
@@ -35,17 +37,31 @@ export class GitlabMergeRequestProvider implements MergeRequestProvider {
 
   async create(
     project: GitProject,
-    opts: { sourceBranch: string; targetBranch: string; title: string; description?: string }
+    opts: {
+      sourceBranch: string;
+      targetBranch: string;
+      title: string;
+      description?: string;
+    }
   ) {
     const { sourceBranch, title, targetBranch, description } = opts;
     const me = await this.userProvider.me();
     const assigneeId = me.id;
+
+    const default_reviewer = Config.getView().get("gitlab.default_reviewer");
+    const reviewer = default_reviewer ? await this.userProvider.search(default_reviewer) : undefined;
+
     const mr = await this.glab.MergeRequests.create(
       project.id,
       sourceBranch,
       targetBranch,
       title,
-      { removeSourceBranch: true, description, assigneeId }
+      {
+        removeSourceBranch: true,
+        description,
+        assigneeId,
+        reviewerIds: reviewer ? [reviewer.id] : undefined
+      }
     );
     return this.fromMergeRequestResponse(mr);
   }

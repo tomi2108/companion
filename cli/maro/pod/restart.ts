@@ -8,6 +8,7 @@ import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
 import { PromptDeploymentSources } from "@steps/oc/deployments/PromptDeploymentSources";
 import { PromptOcSecrets } from "@steps/oc/envs/PromptOcSecrets";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const RestartCommand: Command = {
@@ -43,7 +44,8 @@ const RestartCommand: Command = {
   run: async ({ ctx, args }) => {
     const { secret, all, frontend, backend } = args || {};
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new GetDeployments(),
       new If({
         condition: () => Boolean(secret),

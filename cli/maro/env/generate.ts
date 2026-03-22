@@ -7,6 +7,7 @@ import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
 import { PromptDeploymentSources } from "@workflow/steps/oc/deployments/PromptDeploymentSources";
 import { GenerateConfigMap } from "@workflow/steps/oc/envs/GenerateConfigMap";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const GenerateEnvCommand: Command = {
@@ -29,7 +30,8 @@ const GenerateEnvCommand: Command = {
     const excluded_prefix: string[] = config.get("envs.generate.prefix_exclusions") ?? [];
 
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new GetDeployments({
         transform: ({
           deployments

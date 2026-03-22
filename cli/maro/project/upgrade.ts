@@ -8,6 +8,7 @@ import { GetDeployRepo } from "@steps/app/GetDeployRepo";
 import { ForEach } from "@steps/flow/ForEach";
 import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const UpgradeCommand: Command = {
@@ -16,8 +17,8 @@ const UpgradeCommand: Command = {
   description: "Upgrade all apps to the latest version in a project",
   run: async ({ ctx }) => {
     await new Workflow([
+      new PromptOcServer(),
       new PromptOcProject({
-        server: "cuyo",
         transform: ({ project }) => ({ project, namespaces: [{ name: project.name, secrets: [], configmaps: [] }] })
       }),
       new GetDeployments({

@@ -11,6 +11,7 @@ import { ForEach } from "@steps/flow/ForEach";
 import { Write } from "@steps/flow/Write";
 import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const CopyCommand: Command = {
@@ -20,9 +21,10 @@ const CopyCommand: Command = {
   run: async ({ ctx }) => {
     const config = Config.getView();
     await new Workflow([
-      new PromptOcProject({ server: "cuyo", transform: ({ project }) => ({ from: project, project }) }),
+      new PromptOcServer(),
+      new PromptOcProject({ transform: ({ project }) => ({ from: project, project }) }),
       new GetDeployments({ transform: ({ deployments }) => ({ from_deployments: deployments }) }),
-      new PromptOcProject({ server: "cuyo", transform: ({ project }) => ({ to: project, project }) }),
+      new PromptOcProject({ transform: ({ project }) => ({ to: project, project }) }),
       new GetDeployments({ transform: ({ deployments }) => ({ to_deployments: deployments }) }),
       new ForEach({
         concurrency: 10,

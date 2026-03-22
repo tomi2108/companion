@@ -4,6 +4,7 @@ import { PromptPaths } from "@steps/app/PromptPaths";
 import { CopyEnv } from "@steps/env/CopyEnv";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Spinner } from "@steps/ui/Spinner";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const CopyEnvCommand: Command = {
@@ -16,7 +17,8 @@ const CopyEnvCommand: Command = {
         paths: ["backend"],
         transform: ({ path }) => ({ app_repo: new AppRepo(path) })
       }),
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new Spinner({
         step: new CopyEnv(),
         message: async ({ app_repo, project }) => {

@@ -10,6 +10,7 @@ import { PromptPaths } from "@workflow/steps/app/PromptPaths";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { Write } from "@workflow/steps/flow/Write";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const StartCommand: Command = {
@@ -37,7 +38,8 @@ const StartCommand: Command = {
     const { raw } = args || {};
 
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new PromptPaths({
         paths: ["backend"],
         multiple: true,

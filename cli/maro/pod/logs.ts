@@ -3,6 +3,7 @@ import { PromptOcDeployment } from "@steps/oc/deployments/PromptOcDeployment";
 import { GetPods } from "@steps/oc/pods/GetPods";
 import { PodFollowLogs } from "@steps/oc/pods/PodFollowLogs";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const LogsCommand: Command = {
@@ -21,7 +22,8 @@ const LogsCommand: Command = {
     const { raw } = args || {};
 
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new PromptOcDeployment(),
       new GetPods(),
       new PodFollowLogs({ raw })

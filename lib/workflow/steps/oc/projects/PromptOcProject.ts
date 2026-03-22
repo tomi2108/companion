@@ -13,9 +13,9 @@ type Reads = {
   server: OpenshiftServer;
 };
 
-export class PromptOcProject extends WorkflowStep<Reads, Writes, Options<Reads>> {
+export class PromptOcProject<R extends {}> extends WorkflowStep<Reads & R, Writes, Options<Reads & R>> {
 
-  async run(ctx: ExecutionContext, reads: Reads) {
+  async run(ctx: ExecutionContext, reads: Reads & R) {
     const projects = await reads.server.getProjects();
     const filtered = this.options?.filter
       ? projects.filter((p) => this.options?.filter!(p, reads))

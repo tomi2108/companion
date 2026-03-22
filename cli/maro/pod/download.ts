@@ -6,6 +6,7 @@ import { GetPods } from "@steps/oc/pods/GetPods";
 import { PodDownloadLogs } from "@steps/oc/pods/PodDownloadLogs";
 import { PromptOcPod } from "@steps/oc/pods/PromptOcPod";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const DownloadLogsCommand: Command = {
@@ -23,9 +24,8 @@ const DownloadLogsCommand: Command = {
   run: async ({ ctx, args }) => {
     const { raw } = args || {};
     await new Workflow([
-      new PromptOcProject({
-        server: "cuyo"
-      }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new GetPods(),
       new PromptOcPod(),
       new ForEach({

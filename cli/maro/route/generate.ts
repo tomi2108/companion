@@ -5,6 +5,7 @@ import { ForEach } from "@steps/flow/ForEach";
 import { GetDeployments } from "@steps/oc/deployments/GetDeployments";
 import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { GenerateFrontendRoutes } from "@steps/routes/GenerateFrontendRoutes";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const GenerateCommand: Command = {
@@ -12,9 +13,8 @@ const GenerateCommand: Command = {
   description: "Generate OpenShift routes",
   run: async ({ ctx }) => {
     await new Workflow([
-      new PromptOcProject({
-        server: "cuyo"
-      }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new GetDeployments({
         transform: ({ deployments }) => ({ deployments: deployments.filter(filterFrontendDeployments) })
       }),

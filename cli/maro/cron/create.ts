@@ -6,6 +6,7 @@ import { PromptPaths } from "@workflow/steps/app/PromptPaths";
 import { ValidateConfig } from "@workflow/steps/config/ValidateConfig";
 import { CreateCron } from "@workflow/steps/oc/crons/CreateCron";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Input } from "@workflow/steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
 
@@ -16,7 +17,8 @@ const CreateCommand: Command = {
   run: async ({ ctx }) => {
     await new Workflow([
       new ValidateConfig({ keys: ["paths.namespaces"] }),
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new Input({
         write: "cron_name",
         message: "Cron job name:"

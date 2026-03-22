@@ -8,6 +8,7 @@ import { AppStatus } from "@workflow/steps/app/AppStatus";
 import { GetDeployRepo } from "@workflow/steps/app/GetDeployRepo";
 import { ForEach } from "@workflow/steps/flow/ForEach";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Spinner } from "@workflow/steps/ui/Spinner";
 import { Table } from "@workflow/steps/ui/Table";
 import { Workflow } from "@workflow/workflow";
@@ -26,7 +27,8 @@ const StatusCommand: Command = {
     ].map((d) => new AppRepo(d));
 
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new Table({
         sortByColumn: { index: 0, direction: "asc" },
         head: () => ["App", "Current version", "Last version", "Updated", "Mocked"],

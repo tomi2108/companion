@@ -42,13 +42,6 @@ export class RepoWithGitProvider extends Repo {
     const title = opts?.title || commits?.[0]?.message || `Merge '${sourceBranch}' into ${targetBranch}`;
     const description = MergeRequest.descriptionFromCommits(commits);
 
-    // TODO(20260318-002459): implement
-    // const assigneeId = await new GitlabUser(Config.get().gitlab.username).getId();
-    // const reviewerIds: number[] = [];
-    // if (opts?.reviewer) {
-    //   const reviewerId = await new GitlabUser(opts.reviewer).getId();
-    //   if (reviewerId !== undefined) reviewerIds.push(reviewerId);
-    // }
     const project = await this.getProject();
     return await this.provider.mergeRequests.create(project, {
       sourceBranch,

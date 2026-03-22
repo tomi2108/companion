@@ -1,5 +1,5 @@
 import { CronYaml } from "@files/cron_yaml";
-import { Command, Project } from "@lib/index";
+import { Command, If, Project } from "@lib/index";
 import { GetAppRepo } from "@workflow/steps/app/GetAppRepo";
 import { PromptAppVersion } from "@workflow/steps/app/PromptAppVersion";
 import { PromptDeploymentEnvs } from "@workflow/steps/app/PromptDeploymentEnvs";
@@ -10,6 +10,7 @@ import { PromptCron } from "@workflow/steps/oc/crons/PromptCron";
 import { WaitPipeline } from "@workflow/steps/oc/pipelines/WaitPipeline";
 import { FindProject } from "@workflow/steps/oc/projects/FindProject";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Input } from "@workflow/steps/ui/Input";
 import { Workflow } from "@workflow/workflow";
 
@@ -20,7 +21,8 @@ const DeployCommand: Command = {
   run: async ({ ctx }) => {
     await new Workflow([
       new ValidateConfig({ keys: ["paths.namespaces"] }),
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new PromptCron(),
       new Input({
         write: "schedule",
@@ -34,17 +36,23 @@ const DeployCommand: Command = {
       new PromptAppVersion(),
       new PromptDeploymentEnvs(),
       new DeployCron(),
-      new FindProject({ server: "brc", projectName: "cd-paas", transform: ({ project }) => ({ deploy_project: project }) }),
-      new Write({
-        write: async ({
-          project,
-          deploy_project
-        }: {
-          project: Project;
-          deploy_project: Project;
-        }) => ({ pipeline: await deploy_project.findPipeline({ q: project.name }) })
-      }),
-      new WaitPipeline()
+      new If({
+        condition: () => ctx.ui.confirm({ message: "Wait for pipeline?" }),
+        then: new Workflow([
+          new PromptOcServer(),
+          new FindProject({ projectName: "cd-paas", transform: ({ project }) => ({ deploy_project: project }) }),
+          new Write({
+            write: async ({
+              project,
+              deploy_project
+            }: {
+              project: Project;
+              deploy_project: Project;
+            }) => ({ pipeline: await deploy_project.findPipeline({ q: project.name }) })
+          }),
+          new WaitPipeline()
+        ])
+      })
     ]).run(ctx);
   }
 };

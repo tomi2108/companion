@@ -8,6 +8,7 @@ import { If } from "@workflow/steps/flow/If";
 import { CreateConfigMap } from "@workflow/steps/oc/envs/CreateConfigMap";
 import { CreateSecret } from "@workflow/steps/oc/envs/CreateSecret";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Input } from "@workflow/steps/ui/Input";
 import { PromptTempFile } from "@workflow/steps/ui/PromptTempFile";
 import { Search } from "@workflow/steps/ui/Search";
@@ -21,7 +22,8 @@ const CreateEnvCommand: Command = {
     const choices = ["configmap", "secret"] as const;
     await new Workflow([
       new ValidateConfig({ keys: ["paths.namespaces"] }),
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new Search({
         choices,
         message: "Choose type of resource to create"

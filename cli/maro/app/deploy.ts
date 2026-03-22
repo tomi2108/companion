@@ -1,6 +1,6 @@
 import { DeployYaml } from "@files/deploy_yaml";
 import { DeployRepo } from "@interface/dirs/deploy_repo";
-import { AppRepo, Command, Project } from "@lib/index";
+import { AppRepo, Command, If, Project } from "@lib/index";
 import { DeployApp } from "@steps/app/DeployApp";
 import { GetAppRepo } from "@steps/app/GetAppRepo";
 import { PromptAppVersion } from "@steps/app/PromptAppVersion";
@@ -11,6 +11,7 @@ import { ForEach } from "@steps/flow/ForEach";
 import { Write } from "@workflow/steps/flow/Write";
 import { WaitPipeline } from "@workflow/steps/oc/pipelines/WaitPipeline";
 import { FindProject } from "@workflow/steps/oc/projects/FindProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const DeployCommand: Command = {
@@ -33,14 +34,20 @@ const DeployCommand: Command = {
         item: "deploy_yaml"
       }),
       new DeployApp(),
-      new FindProject({ server: "brc", projectName: "cd-paas" }),
-      new Write({
-        write: async ({ project, app_repo }: {
-          app_repo: AppRepo;
-          project: Project;
-        }) => ({ pipeline: await app_repo.findPipeline(project, "sync") })
-      }),
-      new WaitPipeline()
+      new FindProject({ projectName: "cd-paas" }),
+      new If({
+        condition: async () => await ctx.ui.confirm({ message: "Wait for pipeline?" }),
+        then: new Workflow([
+          new PromptOcServer(),
+          new Write({
+            write: async ({ project, app_repo }: {
+              app_repo: AppRepo;
+              project: Project;
+            }) => ({ pipeline: await app_repo.findPipeline(project, "sync") })
+          }),
+          new WaitPipeline()
+        ])
+      })
     ]).run(ctx);
   }
 };

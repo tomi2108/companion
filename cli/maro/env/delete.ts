@@ -6,6 +6,7 @@ import { DeleteResource } from "@workflow/steps/oc/envs/DeleteResource";
 import { PromptOcConfigMaps } from "@workflow/steps/oc/envs/PromptOcConfigMaps";
 import { PromptOcSecrets } from "@workflow/steps/oc/envs/PromptOcSecrets";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Search } from "@workflow/steps/ui/Search";
 import { Workflow } from "@workflow/workflow";
 
@@ -16,7 +17,8 @@ const DeleteEnvCommand: Command = {
   run: async ({ ctx }) => {
     const choices = ["configmap", "secret"] as const;
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new Search({
         choices,
         message: "Choose type of resource to delete"

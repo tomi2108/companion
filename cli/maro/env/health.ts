@@ -10,6 +10,7 @@ import { ForEach } from "@workflow/steps/flow/ForEach";
 import { GetDeployments } from "@workflow/steps/oc/deployments/GetDeployments";
 import { PromptDeploymentSources } from "@workflow/steps/oc/deployments/PromptDeploymentSources";
 import { PromptOcProject } from "@workflow/steps/oc/projects/PromptOcProject";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Table } from "@workflow/steps/ui/Table";
 import { Workflow } from "@workflow/workflow";
 
@@ -29,7 +30,8 @@ const HealthEnvCommand: Command = {
     const all = args?.all;
     const config = Config.getView();
     await new Workflow([
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new GetDeployments(),
       new PromptDeploymentSources({
         backend: all

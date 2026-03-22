@@ -14,6 +14,7 @@ import { PromptOcProject } from "@steps/oc/projects/PromptOcProject";
 import { Search } from "@steps/ui/Search";
 import { Spinner } from "@steps/ui/Spinner";
 import { EditResource } from "@workflow/steps/oc/envs/EditResource";
+import { PromptOcServer } from "@workflow/steps/oc/servers/PromptOcServer";
 import { Workflow } from "@workflow/workflow";
 
 const EditEnvCommand: Command = {
@@ -24,7 +25,8 @@ const EditEnvCommand: Command = {
     const choices = ["configmap", "secret"] as const;
     await new Workflow([
       new ValidateConfig({ keys: ["paths.namespaces"] }),
-      new PromptOcProject({ server: "cuyo" }),
+      new PromptOcServer(),
+      new PromptOcProject(),
       new Search({
         choices,
         message: "Choose type of resource to edit"
