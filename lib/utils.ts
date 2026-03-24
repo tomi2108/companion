@@ -16,22 +16,8 @@ export function deepMerge(obj1: any, obj2: any) {
   return obj1;
 }
 
-export function removePrefix(str: string, prefix: string) {
-  if (str.startsWith(prefix)) return str.slice(prefix.length);
-  return str;
-}
-
-export function removeSuffix(str: string, suffix: string) {
-  if (str.endsWith(suffix)) return str.slice(0, -suffix.length);
-  return str;
-}
-
 export function kebabToCamel(str: string) {
   return str.replace(/-./g, (x) => x[1]?.toUpperCase() ?? "");
-}
-
-export function removeDuplicates<T>(arr: T[]) {
-  return Array.from(new Set(arr));
 }
 
 export function removeDuplicatesByKey<T>(arr: T[], getKey: (item: T) => string) {
@@ -54,43 +40,7 @@ export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function mapObject<
-  T extends Record<PropertyKey, any>,
-  K extends PropertyKey,
-  V
->(
-  obj: T,
-  fn: (entry: [key: keyof T, value: T[keyof T]]) => readonly [K, V]
-): Record<K, V> {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) =>
-      fn([key as keyof T, value as T[keyof T]])
-    )
-  ) as Record<K, V>;
-}
-
 export const mapToChoice = (e: { toChoice(): Choice }) => e.toChoice();
 
-export function centerPad(str: string, targetLength: number, padChar = " ") {
-  if (str.length >= targetLength) return str;
-
-  const totalPadding = targetLength - str.length;
-  const padLeftLength = Math.floor(totalPadding / 2);
-
-  const paddedStr = str
-    .padStart(str.length + padLeftLength, padChar)
-    .padEnd(str.length + totalPadding, padChar);
-
-  return paddedStr;
-}
-
-export function zip<A, B>(a: A[], b: B[]): Array<[A, B]> {
-  const len = Math.min(a.length, b.length);
-  const result: Array<[A, B]> = [];
-
-  for (let i = 0; i < len; i++) {
-    result.push([a[i] as A, b[i] as B]);
-  }
-
-  return result;
-}
+// TODO(20260318-002421): not the best, find another way to filter out micro_front_end deployments
+export const filterFrontendDeployments = (e: { name: string }) => e.name.startsWith("app-");

@@ -13,29 +13,11 @@
       "@cli/*": [
         "cli/maro/*"
       ],
-      "@oc": [
-        "interface/oc/index"
-      ],
-      "@oc/*": [
-        "interface/oc/*"
-      ],
-      "@jira": [
-        "interface/jira/index"
-      ],
-      "@jira/*": [
-        "interface/jira/*"
-      ],
       "@glab": [
         "interface/git/glab/index"
       ],
       "@glab/*": [
         "interface/git/glab/*"
-      ],
-      "@vault": [
-        "interface/vault/index"
-      ],
-      "@vault/*": [
-        "interface/vault/*"
       ],
       "@workflow/*": [
         "lib/workflow/*"
@@ -92,7 +74,7 @@
     "lib",
     "interface",
     "tests"
-  ],
+, "maro-plugins/maro-plugin-oc/src/commands/env/index.ts", "maro-plugins/maro-plugin-oc/src/commands/env/delete.ts", "maro-plugins/maro-plugin-oc/src/commands/env/edit.ts", "maro-plugins/maro-plugin-oc/src/commands/env/health.ts", "maro-plugins/maro-plugin-oc/src/commands/env/copy.ts", "maro-plugins/maro-plugin-oc/src/commands/env/generate.ts"  ],
   "exclude": [
     "configs",
     "dist",

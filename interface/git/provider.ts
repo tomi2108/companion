@@ -1,5 +1,4 @@
 import { MergeRequest } from "@interface/git/merge_request";
-import { Project } from "@oc/project";
 
 import { GitIssue } from "./issue";
 import { GitProject } from "./project";
@@ -7,7 +6,6 @@ import { GitUser } from "./user";
 
 export interface IssueProvider {
   createIssue(project: GitProject, opts: { title: string; description: string }): Promise<GitIssue>;
-  createArgoIssue(appName: string, version: string, project: Project): Promise<GitIssue>;
 }
 
 export interface ProjectProvider {

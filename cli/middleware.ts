@@ -3,27 +3,20 @@ import path from "node:path";
 
 import AppCommands from "@cli/app";
 import ConfigCommands from "@cli/config";
-import CronCommands from "@cli/cron";
-import EnvCommands from "@cli/env";
 import MrCommands from "@cli/mr";
 import { PluginCommands } from "@cli/plugin";
-import PodCommands from "@cli/pod";
-import ProjectCommands from "@cli/project";
 import ReposCommands from "@cli/repos";
-import RouteCommands from "@cli/route";
 import UpgradeCommand from "@cli/upgrade";
 import { AppRepo } from "@interface/dirs/app_repo";
 import { Dir } from "@interface/dirs/dir";
 import { RepoWithGitProvider } from "@interface/dirs/withProvider";
 import { GitProvider } from "@interface/git/provider";
-import { LintDeploymentFilesAction } from "@lib/actions/lint_deployment_files";
 import { Config } from "@lib/config";
 import { AppConfig } from "@lib/config/app";
 import { DynatraceConfig } from "@lib/config/dynatrace";
 import { EnvsConfig } from "@lib/config/envs";
 import { GitlabConfig } from "@lib/config/glab";
 import { ConfigLoader } from "@lib/config/loader";
-import { OpenShiftConfig } from "@lib/config/oc";
 import { PathsConfig } from "@lib/config/paths";
 import { PluginsConfig } from "@lib/config/plugins";
 import { PreferencesConfig, root } from "@lib/config/preferences";
@@ -34,7 +27,6 @@ import { ReposConfig } from "@lib/config/repos";
 import { SonarConfig } from "@lib/config/sonar";
 import { SqlConfig } from "@lib/config/sql";
 import { ThreescaleConfig } from "@lib/config/threescale";
-import { VaultConfig } from "@lib/config/vault";
 import { ConfigView } from "@lib/config/view";
 import { ExecutionContext } from "@lib/ctx";
 import { GitProviderFactory } from "@lib/ctx/git_provider";
@@ -47,20 +39,23 @@ import { DefaultUI } from "@lib/ui/default";
 
 export async function initConfig({ config }: { config?: string }) {
   const configs = [
-    new OpenShiftConfig(),
-    new GitlabConfig(),
-    new VaultConfig(),
-    new SonarConfig(),
     new PreferencesConfig(),
-    new ThreescaleConfig(),
     new PathsConfig(),
-    new DynatraceConfig(),
-    new ReposConfig(),
-    new EnvsConfig(),
-    new AppConfig(),
-    new ProjectConfig(),
+    new PluginsConfig(),
+    new GitlabConfig(),
+
+    new SonarConfig(),
+
     new SqlConfig(),
-    new PluginsConfig()
+
+    new DynatraceConfig(),
+    new ThreescaleConfig(),
+
+    new AppConfig(),
+    new ReposConfig(),
+
+    new ProjectConfig(),
+    new EnvsConfig()
   ];
   for (const section of configs) ConfigRegistry.register(section);
   await Config.check(config);
@@ -70,10 +65,6 @@ function createLogger(runtime: RuntimeConfig) {
   if (runtime.logFile) return new FileLogger(runtime.logFile);
   if (runtime.debug) return new DebugLogger();
   return new ConsoleLogger();
-}
-
-export async function registerActions() {
-  new LintDeploymentFilesAction().register();
 }
 
 async function addConfigs(registry: PluginRegistry) {
@@ -92,12 +83,6 @@ export async function registerCore(registry: PluginRegistry) {
       PluginCommands,
       ConfigCommands,
       UpgradeCommand,
-
-      ProjectCommands,
-      EnvCommands,
-      PodCommands,
-      CronCommands,
-      RouteCommands,
 
       MrCommands,
       ReposCommands,

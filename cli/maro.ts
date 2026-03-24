@@ -9,7 +9,6 @@ import {
   initConfig,
   initCtx,
   readPlugins,
-  registerActions,
   registerCore
 } from "./middleware";
 
@@ -35,7 +34,6 @@ const configPath = earlyArgv.config ?? earlyArgv.c;
   const registry = new PluginRegistry();
   await registerCore(registry);
   await readPlugins(registry, { config: configPath });
-  await registerActions();
 
   await parser
     .middleware(initCtx)

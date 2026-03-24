@@ -9,7 +9,6 @@ import { Repo } from "@interface/dirs/repo";
 import { CommandRunner } from "@interface/process/runner";
 import { ServiceProcess } from "@interface/process/service";
 import { loading } from "@lib/decorators/ui";
-import { Project } from "@oc/project";
 
 export type Dependency = {
   name: string;
@@ -93,12 +92,6 @@ export class AppRepo extends Repo {
     return this.package.read();
   }
 
-  async findPipeline(project: Project, q: string) {
-    const { name } = await this.getInfo();
-    const pipelines = await project.getPipelineRuns();
-    const pipeline = pipelines.find((p) => p.name.includes(q) && p.app?.includes(name));
-    return pipeline;
-  }
 }
 
 class InvalidAppRepo extends Error {

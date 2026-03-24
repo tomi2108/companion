@@ -4,6 +4,7 @@ import path from "node:path";
 import { JsonFile } from "@files/json_file";
 import { Dir } from "@interface/dirs/dir";
 import { ExecutionContext } from "@lib/ctx";
+import { ConsoleLogger } from "@lib/log/console";
 
 const configs_dir = path.resolve(__dirname, "../../../configs");
 
@@ -28,7 +29,8 @@ export class PresetLoader {
     const files = this.getAvailablePresets();
     const file = files.find((f) => f.name() === `config.${preset}.json`);
     if (!file) {
-      console.log(chalk.red(`Unknown preset ${preset}, config might be incomplete !!! are you missing a plugin ????`));
+      const logger = new ConsoleLogger();
+      logger.error(chalk.red(`Unknown preset ${preset}, config might be incomplete !!! are you missing a plugin ????`));
       return {};
     }
     return new JsonFile(file.path).read() as Record<string, unknown>;

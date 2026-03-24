@@ -5,22 +5,20 @@ type Handler<E extends Event> = (event: E) => void | Promise<void>;
 
 export class ActionRegistry {
 
-  private static actions = new Map<
-    Function,
-    Handler<any>[]
-  >();
+  private static actions = new Map<string, Handler<any>[]>();
 
   static on<E extends Event>(
     event: new (...args: any[]) => E,
     handler: Handler<E>
   ) {
-    const list = this.actions.get(event) ?? [];
+    const name = (new event).name;
+    const list = this.actions.get(name) ?? [];
     list.push(handler);
-    this.actions.set(event, list);
+    this.actions.set(name, list);
   }
 
   static async dispatch<E extends Event>(event: E) {
-    const handlers = this.actions.get(event.constructor) ?? [];
+    const handlers = this.actions.get(event.name) ?? [];
     // new EventLogger().log(event);
     for (const handler of handlers) {
       await handler(event);
