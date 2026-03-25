@@ -48,7 +48,6 @@ export { RuntimeConfig } from "@lib/runtime";
 export { ServiceProcess } from "@interface/process/service";
 export { SingleProgressController } from "@workflow/progress/single";
 export { Spinner } from "@workflow/steps/ui/Spinner";
-export { Sql } from "@interface/sql/sql";
 export { StringFormatter } from "@files/formatters/string_formatter";
 export { TempFile } from "@files/temp_file";
 export { TextFile } from "@files/text_file";

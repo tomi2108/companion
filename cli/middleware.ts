@@ -18,7 +18,6 @@ import { PluginsConfig } from "@lib/config/plugins";
 import { PreferencesConfig, root } from "@lib/config/preferences";
 import { PresetLoader } from "@lib/config/preset";
 import { ConfigRegistry } from "@lib/config/registry";
-import { SqlConfig } from "@lib/config/sql";
 import { ConfigView } from "@lib/config/view";
 import { ExecutionContext } from "@lib/ctx";
 import { GitProviderFactory } from "@lib/ctx/git_provider";
@@ -34,9 +33,7 @@ export async function initConfig({ config }: { config?: string }) {
     new PreferencesConfig(),
     new PathsConfig(),
     new PluginsConfig(),
-    new GitlabConfig(),
-
-    new SqlConfig()
+    new GitlabConfig()
   ];
   for (const section of configs) ConfigRegistry.register(section);
   await Config.check(config);
