@@ -12,21 +12,15 @@ import { Dir } from "@interface/dirs/dir";
 import { RepoWithGitProvider } from "@interface/dirs/withProvider";
 import { GitProvider } from "@interface/git/provider";
 import { Config } from "@lib/config";
-import { AppConfig } from "@lib/config/app";
-import { DynatraceConfig } from "@lib/config/dynatrace";
-import { EnvsConfig } from "@lib/config/envs";
 import { GitlabConfig } from "@lib/config/glab";
 import { ConfigLoader } from "@lib/config/loader";
 import { PathsConfig } from "@lib/config/paths";
 import { PluginsConfig } from "@lib/config/plugins";
 import { PreferencesConfig, root } from "@lib/config/preferences";
 import { PresetLoader } from "@lib/config/preset";
-import { ProjectConfig } from "@lib/config/project";
 import { ConfigRegistry } from "@lib/config/registry";
-import { ReposConfig } from "@lib/config/repos";
 import { SonarConfig } from "@lib/config/sonar";
 import { SqlConfig } from "@lib/config/sql";
-import { ThreescaleConfig } from "@lib/config/threescale";
 import { ConfigView } from "@lib/config/view";
 import { ExecutionContext } from "@lib/ctx";
 import { GitProviderFactory } from "@lib/ctx/git_provider";
@@ -46,16 +40,7 @@ export async function initConfig({ config }: { config?: string }) {
 
     new SonarConfig(),
 
-    new SqlConfig(),
-
-    new DynatraceConfig(),
-    new ThreescaleConfig(),
-
-    new AppConfig(),
-    new ReposConfig(),
-
-    new ProjectConfig(),
-    new EnvsConfig()
+    new SqlConfig()
   ];
   for (const section of configs) ConfigRegistry.register(section);
   await Config.check(config);
