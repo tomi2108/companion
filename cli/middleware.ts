@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import path from "node:path";
 
-import AppCommands from "@cli/app";
 import ConfigCommands from "@cli/config";
 import MrCommands from "@cli/mr";
 import { PluginCommands } from "@cli/plugin";
@@ -19,7 +18,6 @@ import { PluginsConfig } from "@lib/config/plugins";
 import { PreferencesConfig, root } from "@lib/config/preferences";
 import { PresetLoader } from "@lib/config/preset";
 import { ConfigRegistry } from "@lib/config/registry";
-import { SonarConfig } from "@lib/config/sonar";
 import { SqlConfig } from "@lib/config/sql";
 import { ConfigView } from "@lib/config/view";
 import { ExecutionContext } from "@lib/ctx";
@@ -37,8 +35,6 @@ export async function initConfig({ config }: { config?: string }) {
     new PathsConfig(),
     new PluginsConfig(),
     new GitlabConfig(),
-
-    new SonarConfig(),
 
     new SqlConfig()
   ];
@@ -70,9 +66,7 @@ export async function registerCore(registry: PluginRegistry) {
       UpgradeCommand,
 
       MrCommands,
-      ReposCommands,
-
-      AppCommands
+      ReposCommands
     ],
     dir: new Dir(root),
     name: "core",
