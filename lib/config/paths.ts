@@ -3,20 +3,6 @@ import { ExecutionContext } from "@lib/ctx";
 
 import { ConfigHelp, ConfigSection } from "./interface";
 
-// const paths = [
-//   "despliegues",
-//   "frontend",
-//   "backend",
-//   "threescale",
-//   "argocd",
-//   "namespaces",
-//   "dataset",
-//   "mongo",
-//   "monitors",
-//   "tasks",
-//   "notes"
-// ] as const;
-
 type Path = { description: string };
 
 export class PathRegistry {
@@ -41,17 +27,6 @@ export class PathsConfig implements ConfigSection {
       description: path.description,
       type: "string"
     }));
-
-    // return [
-    //   { key: "despliegues", description: "Path to deployment repositories", type: "string" },
-    //   { key: "threescale", description: "Path to 3scale repositories", type: "string" },
-    //   { key: "argocd", description: "Path to ArgoCD repositories", type: "string" },
-    //   { key: "namespaces", description: "Path to namespace repositories", type: "string" },
-    //   { key: "dataset", description: "Path to dataset files", type: "string" },
-    //   { key: "mongo", description: "Path to Mongo-related repositories", type: "string" },
-    //   { key: "monitors", description: "Path to monitor repositories", type: "string" },
-    //   { key: "tasks", description: "Path to task repositories", type: "string" }
-    // ];
   }
 
   async setup(ctx: ExecutionContext) {
