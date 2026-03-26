@@ -67,6 +67,7 @@ export class PluginInstaller {
         await this.installDependencies(depPlugin, visiting);
 
         const appRepo = new AppRepo(repo.dir);
+        await appRepo.install([], { ignorePeer: true });
         await appRepo.build();
         spinner.succeed();
       } else if (this.disabled.includes(dep.name)) console.log(chalk.red(
