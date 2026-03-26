@@ -1,5 +1,4 @@
 import { Config } from "@lib/config";
-import { PathKey } from "@lib/config/paths";
 import { Command } from "@lib/index";
 import { ForEach } from "@steps/flow/ForEach";
 import { PathClone } from "@steps/repos/PathClone";
@@ -18,7 +17,7 @@ const CloneCommand: Command = {
       new ForEach({
         concurrency: true,
         item: "path",
-        items: (state: { paths: PathKey[] }) => state.paths,
+        items: (state: { paths: string[] }) => state.paths,
         step: new PathClone()
       })
     ], {

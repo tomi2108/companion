@@ -1,3 +1,4 @@
+export { PathRegistry } from "./config/paths";
 export { GetAppLatestVersion } from "@workflow/steps/app/GetAppVersion";
 export { CreateAndMergeMr } from "@workflow/steps/mr/CreateAndMergeMr";
 export { GitProviderFactory } from "./ctx/git_provider";

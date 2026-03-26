@@ -13,7 +13,7 @@ import { GitProvider } from "@interface/git/provider";
 import { Config } from "@lib/config";
 import { GitlabConfig } from "@lib/config/glab";
 import { ConfigLoader } from "@lib/config/loader";
-import { PathsConfig } from "@lib/config/paths";
+import { PathRegistry, PathsConfig } from "@lib/config/paths";
 import { PluginsConfig } from "@lib/config/plugins";
 import { PreferencesConfig, root } from "@lib/config/preferences";
 import { PresetLoader } from "@lib/config/preset";
@@ -54,6 +54,8 @@ async function addConfigs(registry: PluginRegistry) {
 }
 
 export async function registerCore(registry: PluginRegistry) {
+  PathRegistry.register("frontend", "Path to frontend repositories");
+  PathRegistry.register("backend", "Path to backend repositories");
   registry.registerPlugin([], {
     version: "1.0.0",
     dependencies: [],
@@ -61,7 +63,6 @@ export async function registerCore(registry: PluginRegistry) {
       PluginCommands,
       ConfigCommands,
       UpgradeCommand,
-
       MrCommands,
       ReposCommands
     ],

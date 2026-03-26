@@ -1,13 +1,12 @@
 import { Dir } from "@interface/dirs/dir";
 import { Config } from "@lib/config";
-import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions, WorkflowRuntime, WorkflowStep } from "..";
 import { RepoClone } from "./RepoClone";
 import { ForEach } from "../flow/ForEach";
 
-type Reads = { path: PathKey };
+type Reads = { path: string };
 type Writes = {};
 type Options = { current?: boolean };
 

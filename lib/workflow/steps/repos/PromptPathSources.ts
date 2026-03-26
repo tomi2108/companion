@@ -1,6 +1,5 @@
 import { getPaths } from "@files";
 import { Dir } from "@interface/dirs/dir";
-import { PathKey } from "@lib/config/paths";
 import { ExecutionContext } from "@lib/ctx";
 
 import { WorkflowOptions } from "..";
@@ -9,10 +8,10 @@ import { PromptPaths } from "../app/PromptPaths";
 
 type Writes = { dirs: Dir[] };
 type Options = {
-  sources: { enabled: boolean; source: PathKey }[];
+  sources: { enabled: boolean; source: string }[];
 };
 
-export class PromptPathSources extends PromptSources<PathKey, Dir, "dirs"> {
+export class PromptPathSources extends PromptSources<string, Dir, "dirs"> {
   key = "dirs" as const;
 
   constructor(override options: WorkflowOptions<Options, Writes>) {
@@ -26,7 +25,7 @@ export class PromptPathSources extends PromptSources<PathKey, Dir, "dirs"> {
     return dir;
   }
 
-  override transform(sources: PathKey[]): Dir[] {
+  override transform(sources: string[]): Dir[] {
     return sources.flatMap((s) => getPaths(s));
   }
 }
