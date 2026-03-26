@@ -1,5 +1,5 @@
 import { Repo } from "@interface/dirs/repo";
-import { Command, Dir, getPaths, PathRegistry } from "@lib/index";
+import { Command, Dir, PathRegistry } from "@lib/index";
 import { ForEach } from "@steps/flow/ForEach";
 import { If } from "@steps/flow/If";
 import { RepoClean } from "@steps/repos/RepoClean";
