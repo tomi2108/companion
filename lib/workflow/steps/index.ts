@@ -2,7 +2,7 @@ import { ExecutionContext } from "@lib/ctx";
 import { ProgressScope } from "@workflow/progress/types";
 
 export type WorkflowOptions<Options, Writes> = Options & {
-  transform?: (output: Writes) => Record<string, any>;
+  transform?: (output: Writes) => Record<string, any> | Promise<Record<string, any>>;
   onEnd?: (output: any) => void | Promise<void>;
 };
 

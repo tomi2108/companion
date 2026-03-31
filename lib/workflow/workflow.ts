@@ -31,7 +31,7 @@ export class Workflow extends WorkflowStep<Reads, Writes, Options> {
     for (const step of this.steps) {
       try {
         const output = await step.run(ctx, state, runtime);
-        const transformed = step.options?.transform?.(output) ?? output;
+        const transformed = await step.options?.transform?.(output) ?? output;
         const newState = { ...state, ...transformed };
         await step.options?.onEnd?.(newState);
         state = newState;
