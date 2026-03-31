@@ -1,3 +1,4 @@
+export { getPluginPath } from "./config/plugins";
 export { PathRegistry } from "./config/paths";
 export { GetAppLatestVersion } from "@workflow/steps/app/GetAppVersion";
 export { CreateAndMergeMr } from "@workflow/steps/mr/CreateAndMergeMr";
