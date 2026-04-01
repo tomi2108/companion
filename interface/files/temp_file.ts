@@ -20,7 +20,7 @@ export class TempFile extends TextFile {
 
   async prompt() {
     const m1 = this.getMd5();
-    openInEditor(this, { wait: true });
+    await openInEditor(this, { wait: true });
     const m2 = this.getMd5();
     const new_content = this.read();
     return { changed: m1 !== m2, new_content };
