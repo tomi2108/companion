@@ -33,7 +33,7 @@ export class RepoInstall extends WorkflowStep<Reads, Writes, Options> {
         ? repo_package.devDependencies
         : { ...repo_package.dependencies, ...repo_package.peerDependencies };
       const current_version = dependencies?.[dependency];
-      if (current_version && current_version.includes(version)) return;
+      if (current_version?.includes(version)) return;
       await app_repo.install([{ name: dependency, version }], { dev });
       await app_repo.build();
       await app_repo.add(app_repo.package);

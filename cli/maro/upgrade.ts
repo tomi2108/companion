@@ -9,11 +9,7 @@ const UpgradeCommand: Command = {
   description: "Upgrade maro",
   run: async () => {
     const full_path = new Dir(root).prev();
-    await new CommandRunner().run(
-      "./install.sh",
-      [],
-      { cwd: full_path }
-    );
+    await new CommandRunner("./install.sh").run({ cwd: full_path });
   }
 };
 

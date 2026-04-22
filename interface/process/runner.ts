@@ -9,15 +9,25 @@ type CommandOptions<T extends boolean = false> = {
 };
 
 export class CommandRunner {
+  private bin = "";
+  private args: string[] = [];
+
+  constructor(bin: string) {
+    this.bin = bin;
+  }
+
+  append(...args: string[]) {
+    this.args = [...this.args, ...args];
+    return this;
+  }
+
   run<T extends boolean = false>(
-    bin: string,
-    args: string[],
     opts: CommandOptions<T>
   ): Promise<T extends true ? string : void> {
     return new Promise((resolve, reject) => {
       const child = cp.spawn(
-        bin,
-        args,
+        this.bin,
+        this.args,
         {
           ...opts,
           cwd: opts.cwd.path,
@@ -39,7 +49,7 @@ export class CommandRunner {
           (opts.supressStdout ? stdout : undefined) as T extends true ? string : void
         );
         else reject(
-          new Error(`${bin} ${args.join(" ")} exited with ${code}`)
+          new Error(`${this.bin} ${this.args.join(" ")} exited with ${code}`)
         );
       });
     });

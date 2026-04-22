@@ -36,28 +36,22 @@ export class AppRepo extends Repo {
   }
 
   async npm(cmd: string, supressStdout: boolean = false) {
-    return new CommandRunner()
-      .run("npm", [cmd], { cwd: this.dir, supressStdout });
+    return new CommandRunner("npm").append(cmd).run({ cwd: this.dir, supressStdout });
   }
 
   async npmRun(cmd: string, supressStdout: boolean = false) {
-    return new CommandRunner()
-      .run("npm", ["run", cmd], { cwd: this.dir, supressStdout });
+    return new CommandRunner("npm").append("run", cmd).run({ cwd: this.dir, supressStdout });
   }
 
   @loading("Installing dependencies")
   async install(libs: Dependency[] = [], opts?: { dev?: boolean; ignorePeer?: boolean }) {
-    const args = ["install"];
+    const cmd = new CommandRunner("npm").append("install");
 
-    if (opts?.dev) args.push("-D");
-    if (opts?.ignorePeer) args.push("--legacy-peer-deps");
-    args.push(...libs.map(dependencyToString));
+    if (opts?.dev) cmd.append("-D");
+    if (opts?.ignorePeer) cmd.append("--legacy-peer-deps");
+    cmd.append(...libs.map(dependencyToString));
 
-    return new CommandRunner().run(
-      "npm",
-      args,
-      { cwd: this.dir, supressStdout: true }
-    );
+    return cmd.run({ cwd: this.dir, supressStdout: true });
   }
 
   async build() {
