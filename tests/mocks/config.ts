@@ -1,4 +1,3 @@
-
 export class MockConfig {
   static getView = () => new MockConfigView(this.mockData);
   static mockData = {
@@ -49,14 +48,19 @@ export class MockConfig {
 }
 
 export class MockConfigView {
-  private data: any;
+  private readonly data: any;
+
   constructor(data?: any) {
     this.data = data ?? {};
   }
-  validate() {
-    return true;
+
+  validate(r: Record<string, unknown>) {
+    return r;
   }
+
   get(k?: string) {
     return k ? this.data[k] : this.data;
   }
 }
+
+export const config = MockConfig.getView();

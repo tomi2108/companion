@@ -1,4 +1,7 @@
+import { vi } from "vitest";
+
 import { Dir } from "@interface/dirs/dir";
+import { ExecutionContext, GitProvider } from "@lib/index";
 
 import { MockUi } from "./ui";
 
@@ -14,9 +17,9 @@ const mockMR = async () => ({
   state: "opened",
   description: "Mock MR",
   web_url: "https://mock.mr",
-  merge: async () => await mockMR(),
-  close: async () => await mockMR(),
-  approve: async () => await mockMR(),
+  merge: vi.fn(async () => await mockMR()),
+  close: vi.fn(async () => await mockMR()),
+  approve: vi.fn(async () => await mockMR()),
   openInBrowser: () => { },
   toChoice: () => ({ name: "Mock MR" })
 });
@@ -66,10 +69,7 @@ export class MockLogger {
   };
 }
 
-export class MockGitProvider {
-  // Add mock/stub methods as needed for your tests
-  currentBranch = "main";
-  getBranches = () => ["main"];
+export class MockGitProvider implements GitProvider {
   issues = {
     createIssue: async () => ({ id: 1, web_url: "https://mock.url" }),
     createArgoIssue: async () => ({ id: 1, web_url: "https://mock.url" })
@@ -88,7 +88,7 @@ export class MockGitProvider {
   };
 }
 
-export class MockExecutionContext {
+export class MockExecutionContext implements ExecutionContext {
   ui = new MockUi();
   env = {};
   gitProvider = new MockGitProvider();

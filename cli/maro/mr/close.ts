@@ -10,14 +10,13 @@ const CloseCommand: Command = {
   aliases: [],
   description: "Close merge request",
   run: async ({ ctx }) => {
-    const wk = new Workflow([
+    new Workflow([
       new Write({
         write: () => ({ repo: new Repo(ctx.cwd) })
       }),
       new PromptMr(),
       new CloseMr()
-    ]);
-    await wk.run(ctx);
+    ]).run(ctx);
   }
 };
 

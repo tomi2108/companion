@@ -122,7 +122,7 @@ export class Repo {
   }
 
   async addOrigin(remoteRepo: string) {
-    this.git.addRemote("origin", remoteRepo);
+    return await this.git.addRemote("origin", remoteRepo);
   }
 
   async getOriginUrl() {

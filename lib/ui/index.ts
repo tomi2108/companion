@@ -11,6 +11,8 @@ export type PromptChoiceOptions<T = false, K = false> = Omit<ArrayPromptOptions<
 export type Spinner = {
   succeed: (text?: string) => void;
   fail: (text?: string) => void;
+  text?: (text?: string) => void;
+  elapsedTime: () => string;
 };
 
 export type ProgressBar = {

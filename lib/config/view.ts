@@ -13,7 +13,7 @@ export class ConfigView {
     this.data = this.validate(raw, preset, validate);
   }
 
-  private validate(
+  protected validate(
     raw: Record<string, unknown>,
     preset?: Record<string, unknown>,
     validate?: boolean

@@ -14,11 +14,11 @@ vi.spyOn(process, "exit").mockReturnValue(undefined as never);
 
 vi.mock("@lib/utils", async () => ({
   ...await vi.importActual("@lib/utils"),
-  isGitRepo: vi.fn().mockResolvedValue(true)
+  isGitRepo: vi.fn(() => true)
 }));
 
 vi.mock("simple-git", () => ({
-  default: vi.fn().mockReturnValue({
+  default: vi.fn(() => ({
     clone: vi.fn(),
     add: vi.fn(),
     commit: vi.fn().mockResolvedValue({ commit: "fake-commit" }),
@@ -36,7 +36,7 @@ vi.mock("simple-git", () => ({
     checkoutLocalBranch: vi.fn(),
     pull: vi.fn(),
     branchLocal: vi.fn().mockResolvedValue({ current: "master", all: ["master"] })
-  })
+  }))
 }));
 
 afterEach(() => {

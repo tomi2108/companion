@@ -33,12 +33,12 @@ export class Dir {
   }
 
   readDirs() {
-    const ignore = [".git", "node_modules"];
+    const ignore = new Set([".git", "node_modules"]);
     if (!this.exists()) return [];
 
     return fs.readdirSync(this.path, { withFileTypes: true })
       .filter((d) => d.isDirectory())
-      .filter((d) => !ignore.includes(d.name))
+      .filter((d) => !ignore.has(d.name))
       .map((d) => new Dir(path.join(this.path, d.name)));
   }
 
@@ -104,7 +104,7 @@ export class Dir {
   traverse() {
     const gitignore = this.createFile(".gitignore");
     const gitignored = gitignore.exists() ? gitignore.read().split("\n") : [];
-    const ignore = [
+    const ignore = new Set([
       ...gitignored,
       ".git",
       "dist",
@@ -115,7 +115,7 @@ export class Dir {
       "out",
       "build",
       ".yarn"
-    ];
+    ]);
     const result: Array<TextFile> = [];
     if (!this.exists()) return result;
     const walk = (dir: Dir) => {
@@ -124,11 +124,12 @@ export class Dir {
         const fullPath = path.join(dir.path, entry.name);
 
         if (entry.isDirectory()) {
-          if (ignore.includes(entry.name)) continue;
+          if (ignore.has(entry.name)) continue;
           walk(new Dir(fullPath));
         }
+
         if (entry.isFile()) {
-          if (ignore.includes(entry.name)) continue;
+          if (ignore.has(entry.name)) continue;
           result.push(new TextFile(fullPath));
         }
       }

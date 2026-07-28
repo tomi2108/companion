@@ -44,3 +44,4 @@ yarn-lock.json
 config.json
 .env
 maro-plugins
+.scannerwork
